@@ -20,7 +20,7 @@ return [
     'not_acceptable'           => '参数错误',
     'method_not_allowed'       => '不支持该请求方法',
     'import_started'           => '文件上传成功，导入开始...',
-    'export_started'           => '导出开始...',
+    'export_started'           => '已提交记录导出请求，请稍候...',
     'import_succeeded'         => '导入成功',
     'import_request_submitted' => '已提交导入请求<br />需要新增的记录数：%s<br />需要更新的记录数：%s',
     'import_illegals'          => '<br />非法记录数: %s, 请参考导出文件',
@@ -51,6 +51,11 @@ return [
         'title'              => '班级管理',
         'not_found'          => '未找到该班级的相关信息',
         'no_related_classes' => '您尚未绑定任何班级',
+    ],
+    'custodian'                 => [
+        'title'                   => '监护人',
+        'not_found'               => '没有这个监护人',
+        'export_completed'        => '监护人导出完毕，请打开下载的excel文件查看详情',
     ],
     'department'               => [
         'title'           => '部门管理',

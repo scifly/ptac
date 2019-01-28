@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Jobs\ExportCustodian;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -38,7 +39,7 @@ class Custodian extends Model {
     
     use ModelTrait;
     
-    const EXCEL_EXPORT_TITLE = [
+    const EXCEL_TITLES = [
         '监护人姓名', '性别', '电子邮箱',
         '手机号码', '创建于', '更新于',
     ];
@@ -299,54 +300,6 @@ class Custodian extends Model {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 导出（仅对当前用户可见的）监护人记录
-     *
-     * @return array|bool
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     * @throws ReflectionException
-     */
-    function export() {
-        
-        $range = Request::query('range');
-        $departmentId = null;
-        switch ($range) {
-            case 0:
-                $departmentId = Squad::find(Request::query('id'))->department_id;
-                break;
-            case 1:
-                $departmentId = Grade::find(Request::query('id'))->department_id;
-                break;
-            default:
-                break;
-        }
-        if ($departmentId) {
-            $groupId = Group::whereName('监护人')->first()->id;
-            $userIds = $this->userIds($departmentId, $groupId);
-            $custodianIds = User::whereIn('id', $userIds)->with('custodian')
-                ->get()->pluck('custodian.id')->toArray();
-        } else {
-            $custodianIds = $this->contactIds('custodian');
-        }
-        $custodians = $this->whereIn('id', $custodianIds)->get();
-        $records = [self::EXCEL_EXPORT_TITLE];
-        foreach ($custodians as $custodian) {
-            if (!$custodian->user) continue;
-            $records[] = [
-                $custodian->user->realname,
-                $custodian->user->gender == Constant::ENABLED ? '男' : '女',
-                $custodian->user->email,
-                implode(', ', $custodian->user->mobiles->pluck('mobile')->toArray()),
-                $custodian->created_at,
-                $custodian->updated_at,
-            ];
-        }
-        
-        return $this->excel($records);
         
     }
     

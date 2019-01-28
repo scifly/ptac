@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
 use App\Jobs\ExportStudent;
 use App\Jobs\ImportStudent;
 use Carbon\Carbon;
@@ -65,11 +65,7 @@ class Student extends Model {
         '年级', '班级', '学号', '卡号',
         '住校', '备注', '监护关系',
     ];
-    const EXPORT_RANGES = [
-        'class' => 0,
-        'grade' => 1,
-        'all'   => 2,
-    ];
+    
     
     protected $fillable = [
         'user_id', 'class_id', 'student_number',
@@ -378,20 +374,20 @@ class Student extends Model {
         abort_if(
             !in_array(
                 $range = Request::input('range'),
-                array_values(self::EXPORT_RANGES)
+                array_values(Constant::EXPORT_RANGES)
             ),
             HttpstatusCode::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );
         $students = collect([]);
         switch ($range) {
-            case self::EXPORT_RANGES['class']:
+            case Constant::EXPORT_RANGES['class']:
                 $students = Squad::find($id)->students;
                 break;
-            case self::EXPORT_RANGES['grade']:
+            case Constant::EXPORT_RANGES['grade']:
                 $students = Grade::find($id)->students;
                 break;
-            case self::EXPORT_RANGES['all']:
+            case Constant::EXPORT_RANGES['all']:
                 $students = $this->whereIn('id', $this->contactIds('student'))->get();
                 break;
             default:

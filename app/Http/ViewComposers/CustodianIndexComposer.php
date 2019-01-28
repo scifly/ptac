@@ -29,13 +29,6 @@ class CustodianIndexComposer {
             ->pluck('name', 'id')
             ->toArray();
         $view->with([
-            'buttons' => [
-                'export' => [
-                    'id'    => 'export',
-                    'label' => '批量导出',
-                    'icon'  => 'fa fa-download',
-                ],
-            ],
             'batch'   => true,
             'filter'  => true,
             'titles'  => [

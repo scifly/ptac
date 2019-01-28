@@ -126,20 +126,4 @@ class CustodianController extends Controller {
         
     }
     
-    /**
-     * 导出监护人
-     *
-     * @return array|JsonResponse
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     * @throws \ReflectionException
-     */
-    public function export() {
-        
-        return Request::method() == 'POST'
-            ? $this->custodian->csList()
-            : $this->custodian->export();
-        
-    }
-    
 }
