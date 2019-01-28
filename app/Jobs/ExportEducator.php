@@ -61,7 +61,7 @@ class ExportEducator implements ShouldQueue {
                     $model = (new ReflectionClass($className))->newInstance();
                     /** @var Collection $collection */
                     // $collection = $model->whereRaw($educator->id . ' IN (educator_ids)')->get();
-                    $collection = $model->where('educator_ids', 'like', ',' . $educator->id)->get();
+                    $collection = $model->where('educator_ids', 'like', '%,' . $educator->id . '%')->get();
                 
                     return $collection->isEmpty() ? ''
                         : implode(',', $collection->pluck('name')->toArray());
