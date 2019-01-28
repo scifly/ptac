@@ -556,7 +556,7 @@ class Department extends Model {
         $childrenIds = Department::whereParentId($id)->pluck('id')->toArray();
         Log::debug($id);
         Log::info('ids', $childrenIds);
-        Log::info('subIds', $subIds);
+        Log::info('subIds', $subIds ?? []);
         foreach ($childrenIds as $childId) {
             $subIds[] = $childId;
             $this->subIds($childId);
