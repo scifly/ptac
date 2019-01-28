@@ -343,7 +343,10 @@ trait ModelTrait {
      */
     function userIds($departmentId, $type = null): array {
         
-        $departmentIds = [$departmentId] + (new Department)->subIds($departmentId);
+        $departmentIds = array_merge(
+            [$departmentId],
+            (new Department)->subIds($departmentId)
+        );
         $userIds = DepartmentUser::whereIn('department_id', $departmentIds)
             ->pluck('user_id')->toArray();
         if (!$type) return array_unique($userIds);
