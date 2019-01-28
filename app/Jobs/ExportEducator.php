@@ -67,6 +67,7 @@ class ExportEducator implements ShouldQueue {
                 }, ['squad', 'grade']
             );
             $eces = EducatorClass::whereEducatorId($educator->id)->get();
+            $cses = [];
             foreach ($eces as $ec) {
                 $squad = $ec->squad;
                 $subject = $ec->subject;
