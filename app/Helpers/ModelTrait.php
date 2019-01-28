@@ -343,7 +343,8 @@ trait ModelTrait {
      */
     function userIds($departmentId, $type = null): array {
         
-        $departmentIds = [$departmentId] + (new Department)->subIds($departmentId);
+        $subIds = [];
+        $departmentIds = [$departmentId] + (new Department)->subIds($departmentId, $subIds);
         $userIds = DepartmentUser::whereIn('department_id', $departmentIds)
             ->pluck('user_id')->toArray();
         if (!$type) return array_unique($userIds);
@@ -372,19 +373,21 @@ trait ModelTrait {
                 ? School::find($schoolId)->department
                 : Department::find($role == '运营' ? 1 : $this->topDeptId($user));
             $departmentIds[] = $department->id;
+            $subIds = [];
             
             return array_unique(
                 array_merge(
                     $departmentIds,
-                    $department->subIds($department->id)
+                    $department->subIds($department->id, $subIds)
                 )
             );
         }
         $departments = $user->depts();
         foreach ($departments as $d) {
+            $subIds = [];
             $departmentIds[] = $d->id;
             $departmentIds = array_merge(
-                $d->subIds($d->id),
+                $d->subIds($d->id, $subIds),
                 $departmentIds
             );
         }
@@ -603,8 +606,9 @@ trait ModelTrait {
         if (in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
             $school = School::find($this->schoolId());
             $departmentId = $school->department_id;
+            $subIds = [];
             $departmentIds = array_merge(
-                [$departmentId], $school->department->subIds($departmentId)
+                [$departmentId], $school->department->subIds($departmentId, $subIds)
             );
         } else {
             $departmentIds = $this->departmentIds();
