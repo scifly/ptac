@@ -221,10 +221,11 @@ class Educator extends Model {
                 ],
             ],
         ];
+        $condition = 'Educator.user_id IN (%s) AND Educator.school_id = %s';
         
         return Datatable::simple(
             $this->getModel(), $columns, $joins,
-            'Educator.user_id IN (' . $this->visibleUserIds() . ') AND Educator.school_id = ' . $this->schoolId()
+            sprintf($condition, $this->visibleUserIds(), $this->schoolId())
         );
         
     }
@@ -278,7 +279,6 @@ class Educator extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (!$id) return $this->batchUpdateContact($this);
         try {
             DB::transaction(function () use ($data, $id) {
                 if ($id) {
@@ -469,18 +469,16 @@ class Educator extends Model {
         
         $classes = Squad::whereIn('id', $this->classIds())->where('enabled', 1)->get();
         $gradeIds = array_unique($classes->pluck('grade_id')->toArray());
-        // Grade::whereIn('id', )->pluck('id')->toArray();
-        $subjects = Subject::where(['enabled' => 1, 'school_id' => $this->schoolId()])->get()->filter(
-            function (Subject $subject) use ($gradeIds) {
+        $subjects = Subject::where(['enabled' => 1, 'school_id' => $this->schoolId()])
+            ->get()->filter(function (Subject $subject) use ($gradeIds) {
                 return !empty(array_intersect($gradeIds, explode(',', $subject->grade_ids)));
             }
         );
-        $educatorId = $id ?? Request::route('id');
-        if ($educatorId && Request::method() == 'GET') {
+        if (($educatorId = $id ?? Request::route('id')) && Request::method() == 'GET') {
             $educator = $this->find($educatorId);
             $mobiles = $educator ? $educator->user->mobiles : null;
-            $selectedDepartmentIds = $educator
-                ? $educator->user->depts($educator->user_id)->pluck('id')->toArray() : [];
+            $selectedDepartmentIds = !$educator ? []
+                : $educator->user->depts($educator->user_id)->pluck('id')->toArray();
             $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
         }
         $firstOption = [0 => '(请选择)'];

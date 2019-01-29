@@ -236,7 +236,7 @@ class Student extends Model {
                 $data['user_id'] = $user->id;
                 $student = $this->create($data);
                 # 保存手机号码
-                (new Mobile)->store($data['mobile'], $user->id);
+                // (new Mobile)->store($data['mobile'], $user->id);
                 # 保存用户所处部门
                 (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
                 # 创建企业微信会员
@@ -267,7 +267,7 @@ class Student extends Model {
                     $student = $this->find($id);
                     $student->user->update($data['user']);
                     $student->update($data);
-                    (new Mobile)->store($data['mobile'], $student->user_id);
+                    // (new Mobile)->store($data['mobile'], $student->user_id);
                     (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
                 } else {
                     $this->batchUpdateContact($this);
