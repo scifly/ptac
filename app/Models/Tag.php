@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use ReflectionClass;
 use Throwable;
 
 /**
@@ -192,36 +193,26 @@ class Tag extends Model {
     /**
      * 删除标签
      *
-     * @param $id
+     * @param $value
+     * @param null $field - 按指定字段删除记录
+     * @param bool $soft
      * @return bool|null
      * @throws Throwable
      */
-    function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
+    function remove($value = null, $field = null, $soft = false) {
     
-    /**
-     * 删除指定标签的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
-            DB::transaction(function () use ($id) {
-                TagUser::whereTagId($id)->delete();
-                DepartmentTag::whereTagId($id)->delete();
-                $this->sync($id, 'delete');
-                $this->find($id)->delete();
+            DB::transaction(function () use ($value, $field, $soft) {
+                $this->sync($value, 'delete');
+                $this->purge(
+                    [class_basename($this), 'TagUser', 'DepartmentTag'],
+                    'tag_id', $value, $soft
+                );
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

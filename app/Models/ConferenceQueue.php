@@ -194,13 +194,45 @@ class ConferenceQueue extends Model {
     /**
      * 删除会议
      *
-     * @param $id
+     * @param $value
+     * @param null $field - 按指定字段删除记录
+     * @param bool $soft - 是否软删除
      * @return bool
      * @throws Throwable
      */
-    function remove($id = null) {
+    function remove($value = null, $field = null, $soft = false) {
+
+        # 按id删除记录
+        if (!$field) return $this->del($this, $value);
         
-        return $this->del($this, $id);
+        # 按id, educator_id以外的字段删除记录
+        $builder = $this->where($field, $value);
+        if ($field != 'educator_id') {
+            return !$soft ? $builder->delete() : $builder->update([$field => '0']);
+        }
+        
+        # 按educator_id删除记录
+        try {
+            DB::transaction(function () use ($value) {
+                $fields = ['educator_ids', 'attended_educator_ids'];
+                $cqs = $this->where([$fields[0], 'like', "%,$value,%"])
+                    ->orWhere([$fields[1], 'like', "%,$value,%"])->get();
+                foreach ($cqs as $cq) {
+                    $data = array_combine(
+                        $fields, array_map(
+                            function ($name) use ($cq, $value) {
+                                return array_diff(explode(',', $cq->{$name}), [$value]);
+                            }, $fields
+                        )
+                    );
+                    $cq->update($data);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
         
     }
     
@@ -235,19 +267,7 @@ class ConferenceQueue extends Model {
      */
     function removeEducator($educatorId) {
         
-        try {
-            DB::transaction(function () use ($educatorId) {
-                $cqs = $this->whereRaw($educatorId . ' IN (educator_ids)')->get();
-                foreach ($cqs as $cq) {
-                    $educatorIds = array_diff(explode(',', $cq->educator_ids), [$educatorId]);
-                    $cq->update(['educator_ids' => implode(',', $educatorIds)]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+    
         
     }
     

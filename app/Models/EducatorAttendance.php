@@ -495,4 +495,16 @@ class EducatorAttendance extends Model {
         
     }
     
+    /**
+     * 删除指定教职员工的考勤记录
+     *
+     * @param $educatorId
+     * @throws Exception
+     */
+    function removeEducator($educatorId) {
+        
+        $this->whereEducatorId($educatorId)->delete();
+        
+    }
+    
 }

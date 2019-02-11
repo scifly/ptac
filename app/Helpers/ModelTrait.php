@@ -10,6 +10,7 @@ use App\Policies\Route;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Log, Facades\Request, Facades\Storage};
 use Illuminate\Validation\Rule;
@@ -57,6 +58,40 @@ trait ModelTrait {
     }
     
     /**
+     * 删除指定对象对应的记录
+     *
+     * @param array $classes
+     * @param string $foreignId
+     * @param $value
+     * @param bool $soft
+     * @return bool
+     * @throws Throwable
+     */
+    function purge(array $classes, $foreignId = null, $value = null, $soft = false) {
+        
+        try {
+            DB::transaction(function () use ($classes, $foreignId, $value, $soft) {
+                $fields = [null] + (!$foreignId ? [] : array_fill(1, sizeof($classes) - 1, $foreignId));
+                array_map(
+                    function ($class, $field) use ($value, $soft) {
+                        $model = (new ReflectionClass("App\Models\\$class"))->newInstance();
+                        $values = $value ? (is_array($value) ? $value : [$value])
+                            : array_values(Request::input('ids'));
+                        /** @var Builder $builder */
+                        $builder = $model->{'whereIn'}($field ?? 'id', $values);
+                        !$soft ? $builder->delete() : $builder->update(['enabled' => 0]);
+                    }, $classes, $fields
+                );
+            });
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
      * (批量)删除记录
      *
      * @param Model $model
@@ -96,6 +131,24 @@ trait ModelTrait {
         Request::merge(['ids' => $ids]);
         
         return $model->{'remove'}();
+        
+    }
+    
+    /**
+     * 删除关联数据
+     *
+     * @param $id
+     * @param $method
+     * @param array $models
+     */
+    function clear($id, $method, array $models) {
+    
+        array_map(
+            function ($class) use ($id, $method, $models) {
+                (new ReflectionClass("App\Models\\$class"))
+                    ->newInstance()->{$method}($id);
+            }, $models
+        );
         
     }
     

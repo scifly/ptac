@@ -106,38 +106,6 @@ class Educator extends Model {
     }
     
     /**
-     * 获取指定年级的年级主任教职员工对象
-     *
-     * @param $gradeId
-     * @return Collection|static[]
-     */
-    function gradeDeans($gradeId) {
-        
-        $conditions = ['id' => $gradeId, 'enabled' => 1];
-        $educatorIds = Grade::where($conditions)->first()->educator_ids;
-        
-        return $this->whereIn('id', explode(',', $educatorIds))
-            ->where('enabled', 1)->get();
-        
-    }
-    
-    /**
-     * 获取指定班级的班级主任教职员工对象
-     *
-     * @param $classId
-     * @return Collection|static[]
-     */
-    function classDeans($classId) {
-        
-        $conditions = ['id' => $classId, 'enabled' => 1];
-        $educatorIds = Squad::where($conditions)->first()->educator_ids;
-        
-        return self::whereIn('id', explode(',', $educatorIds))
-            ->where('enabled', 1)->get();
-        
-    }
-    
-    /**
      * 返回教职员工列表
      *
      * @param array $ids
@@ -193,12 +161,13 @@ class Educator extends Model {
             [
                 'db'        => 'Educator.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
-                    $id = $row['id'];
-                    $user = Auth::user();
-                    $rechargeLink = sprintf(Snippet::DT_LINK_RECHARGE, 'recharge_' . $id);
+                    $rechargeLink = sprintf(
+                        Snippet::DT_LINK_RECHARGE,
+                        'recharge_' . $row['id']
+                    );
                     
                     return Datatable::status($d, $row, false) .
-                        ($user->can('act', self::uris()['recharge']) ? $rechargeLink : '');
+                        (Auth::user()->can('act', self::uris()['recharge']) ? $rechargeLink : '');
                 },
             ],
         ];
@@ -281,40 +250,34 @@ class Educator extends Model {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                if ($id) {
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                if (!$id) {
+                    $data = ['enabled' => Request::input('action') == 'enable' ? 1 : 0];
+                    $this->whereIn('id', $ids)->update($data);
+                } else {
                     $educator = $this->find($id);
-                    # 更新用户
                     $educator->user->update($data['user']);
-                    # 更新教职员工
                     $educator->update($data);
-                    # 保存班级科目绑定关系
                     (new EducatorClass)->storeByEducatorId($educator->id, $data['cs']);
-                    # 更新教职员工&部门绑定关系
                     (new DepartmentUser)->storeByUserId($educator->user_id, $data['selectedDepartments']);
-                    # 保存手机号码
                     (new Mobile)->store($data['mobile'], $educator->user_id);
                     # 如果同时也是监护人
                     $custodian = $educator->user->custodian;
                     if (!$data['singular']) {
-                        $custodian ?: $custodian = Custodian::create([
-                            'user_id' => $educator->user_id,
-                            'enabled' => $educator->enabled
-                        ]);
+                        $custodian ?: Custodian::create(
+                            array_combine(Constant::CUSTODIAN_FIELDS, [
+                                $educator->user_id, $educator->enabled
+                            ])
+                        );
                     } else {
-                        !$custodian ?: (new Custodian)->purge($custodian->id);
+                        !$custodian ?: (new Custodian)->remove($custodian->id);
                     }
-                    $userIds = [$educator->user_id];
-                } else {
-                    $this->batchUpdateContact($this);
-                    $ids = array_values(Request::input('ids'));
-                    $userIds = $this->whereIn('id', $ids)->pluck('user_id')->toArray();
                 }
                 # 同步企业微信
                 (new User)->sync(
                     array_map(
-                        function ($userId) {
-                            return [$userId, '', 'update'];
-                        }, $userIds
+                        function ($userId) {return [$userId, '', 'update']; },
+                        $this->whereIn('id', $ids)->get()->pluck('user_id')->toArray()
                     )
                 );
             });
@@ -367,34 +330,33 @@ class Educator extends Model {
      */
     function remove($id = null) {
         
-        return (new User)->clean($this, $id);
-        
-    }
-    
-    /**
-     * 删除指定教职员工的所有数据
-     *
-     * @param $id
-     * @param bool $broadcast
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id, $broadcast = true) {
-        
         try {
-            DB::transaction(function () use ($id, $broadcast) {
-                $educator = $this->find($id);
-                ConferenceParticipant::whereEducatorId($id)->delete();
-                (new ConferenceQueue)->removeEducator($id);
-                (new EducatorAppeal)->removeEducator($id);
-                EducatorAttendance::whereEducatorId($id)->delete();
-                EducatorClass::whereEducatorId($id)->delete();
-                TagUser::whereUserId($educator->user_id)->delete();
-                Event::whereEducatorId($id)->delete();
-                (new Grade)->removeEducator($id);
-                (new Squad)->removeEducator($id);
-                $educator->user->custodian ?: $educator->user->purge($educator->user_id);
-                $educator->delete();
+            DB::transaction(function () use ($id) {
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $userIds = $this->whereIn('id', $ids)->pluck('user_id')->toArray();
+                $rUsers = User::whereIn('id', $userIds)->get()
+                    ->filter(function (User $user) { return !$user->custodian; });
+                $rUserIds = $rUsers->pluck('id')->toArray();
+                $uUserIds = array_diff($userIds, $rUserIds);
+                $user = new User;
+                # 更新同时也是监护人的用户
+                if (!empty($uUserIds)) {
+                    # 删除部门绑定关系
+                    (new DepartmentUser)->where([['enabled', '=', 1], ['user_id', 'in', $uUserIds]])->delete();
+                    Request::replace(['ids' => $uUserIds]);
+                    $user->modify(['group_id' => Group::whereName('监护人')->first()->id]);
+                }
+                # 删除用户
+                if (!empty($rUserIds)) {
+                    Request::replace(['ids' => $rUserIds]);
+                    $user->remove();
+                }
+                # 删除教职员工
+                Request::replace(['ids' => $ids]);
+                $this->purge([
+                    class_basename($this), 'ConferenceParticipant', 'EducatorAppeal',
+                    'EducatorAttendance', 'EducatorClass', 'Event', 'SmsEducator'
+                ], 'educator_id');
             });
         } catch (Exception $e) {
             throw $e;

@@ -3,14 +3,12 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
-use App\Jobs\ExportCustodian;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\{Auth, DB, Log, Request};
-use ReflectionException;
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
@@ -167,9 +165,7 @@ class Custodian extends Model {
         
         try {
             DB::transaction(function () use ($data) {
-                # 创建用户(User)
                 $user = User::create($data['user']);
-                # 创建监护人(Custodian) 记录
                 $data['user_id'] = $user->id;
                 $custodian = $this->create($data);
                 # 保存监护人用户&部门绑定关系、监护关系、手机号码
@@ -184,9 +180,10 @@ class Custodian extends Model {
                     $user->update(['group_id' => $groupId]);
                     # 创建教职员工(Educator)记录
                     Educator::create(
-                        array_combine(Constant::EDUCATOR_FIELDS, [
-                            $user->id, $schoolId, 0, 1,
-                        ])
+                        array_combine(
+                            Constant::EDUCATOR_FIELDS,
+                            [$user->id, $schoolId, 0, 1,]
+                        )
                     );
                 }
                 # 创建企业微信成员
@@ -213,11 +210,13 @@ class Custodian extends Model {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                if ($id) {
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                if (!$id) {
+                    $data = ['enabled' => Request::input('action') == 'enable' ? 1 : 0];
+                    $this->whereIn('id', $ids)->update($data);
+                } else {
                     $custodian = $this->find($id);
-                    # 更新用户数据
                     $custodian->user->update($data['user']);
-                    # 更新监护人记录
                     $custodian->update($data);
                     # 更新监护人用户&部门绑定关系、监护关系、手机号码
                     $this->storeProperties($custodian, $data);
@@ -230,20 +229,14 @@ class Custodian extends Model {
                             ])
                         );
                     } else {
-                        !$educator ?: (new Educator)->purge($educator->id);
+                        !$educator ?: (new Educator)->remove($educator->id);
                     }
-                    $userIds = [$custodian->user_id];
-                } else {
-                    $this->batchUpdateContact($this);
-                    $ids = array_values(Request::input('ids'));
-                    $userIds = $this->whereIn('id', $ids)->pluck('user_id')->toArray();
                 }
                 # 同步企业微信
                 (new User)->sync(
                     array_map(
-                        function ($userId) {
-                            return [$userId, '监护人', 'update'];
-                        }, $userIds
+                        function ($userId) { return [$userId, '监护人', 'update']; },
+                        $this->whereIn('id', $ids)->get()->pluck('user_id')->toArray()
                     )
                 );
             });
@@ -264,42 +257,66 @@ class Custodian extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return (new User)->clean($this, $id);
-        
-    }
     
-    /**
-     * 删除监护人
-     *
-     * @param null $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $custodian = $this->find($id);
-                $cses = CustodianStudent::whereCustodianId($id)->get();
-                $schoolId = $this->schoolId();
-                $schoolCses = $cses->filter(function (CustodianStudent $cs) use ($schoolId) {
-                    return $cs->student->squad->grade->school_id == $schoolId;
-                });
-                if ($cses->count() <= 1 || $schoolCses->count() == $cses->count()) {
-                    Log::debug('wtf');
-                    CustodianStudent::whereCustodianId($id)->delete();
-                    $custodian->user->educator ?: (new User)->purge($custodian->user_id);
-                    $custodian->delete();
-                } else {
-                    $studentIds = $schoolCses->pluck('student_id')->toArray();
-                    CustodianStudent::whereCustodianId($id)->whereIn('student_id', $studentIds)->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                # 隶属于当前学校的学生id，监护人id，部门id，以及需要删除(部门绑定关系)的用户id
+                list($sIds, $cIds, $dIds, $rUIds, $uUIds) = value(
+                    function () use ($ids) {
+                        foreach ($ids as $id) {
+                            $custodian = $this->find($id);
+                            $csCnt = CustodianStudent::whereCustodianId($id)->count();
+                            (!$custodian->user->educator && $csCnt <= 1)
+                                ? $rUIds[] = $custodian->user_id
+                                : $uUIds[] = $custodian->user_id;
+                            $students = $custodian->students->filter(
+                                function (Student $student) {
+                                    return $student->squad->grade->school_id == $this->schoolId();
+                                }
+                            );
+                            if ($students->isNotEmpty()) {
+                                $sIds = array_merge(
+                                    $sIds ?? [],
+                                    $students->pluck('id')->toArray()
+                                );
+                                $cIds[] = $id;
+                                /** @var Student $student */
+                                foreach ($students as $student) {
+                                    $dIds[] = $student->squad->department_id;
+                                }
+                            }
+                        }
+                        return array_map('array_unique', [
+                            $sIds ?? [], $cIds ?? [], $dIds ?? [],
+                            $rUIds ?? [], $uUIds ??[]
+                        ]);
+                    }
+                );
+                $user = new User;
+                # 删除用户 & 部门 / 监护人 & 学生绑定关系
+                if (!empty($uUIds)) {
+                    $condition = [['user_id', 'in', $uUIds], ['department_id', 'in', $dIds]];
+                    (new DepartmentUser)->where($condition)->delete();
+                    $condition = [['custodian_id', 'in', $cIds], ['student_id', 'in', $sIds]];
+                    (new CustodianStudent)->where($condition)->delete();
+                    Request::replace(['ids' => $uUIds]);
+                    $user->modify(['position' => '教职员工']);
+                }
+                # 删除用户 & 监护人
+                if (!empty($rUIds)) {
+                    Request::replace(['ids' => $rUIds]);
+                    $user->remove();
+                    Request::replace([
+                        'ids' => $this->whereIn('user_id', $rUIds)->pluck('id')->toArray()
+                    ]);
+                    $this->purge([class_basename($this), 'CustodianStudent'], 'custodian_id');
                 }
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

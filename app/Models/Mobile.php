@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -9,7 +10,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -61,16 +61,15 @@ class Mobile extends Model {
         try {
             DB::transaction(function () use ($mobiles, $userId) {
                 $this->where('user_id', $userId)->delete();
-                $records = [];
                 foreach ($mobiles as $mobile) {
-                    $records[] = [
-                        'user_id'   => $userId,
-                        'mobile'    => $mobile['mobile'],
-                        'isdefault' => $mobile['isdefault'],
-                        'enabled'   => $mobile['enabled'],
-                    ];
+                    $records[] = array_combine(
+                        Constant::MOBILE_FIELDS, [
+                            $userId, $mobile['mobile'],
+                            $mobile['isdefault'], $mobile['enabled']
+                        ]
+                    );
                 }
-                $this->insert($records);
+                $this->insert($records ?? []);
             });
         } catch (Exception $e) {
             throw $e;
@@ -98,15 +97,17 @@ class Mobile extends Model {
     /**
      * 删除手机号码
      *
-     * @param $id
+     * @param $value
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
-    function remove($id = null) {
+    function remove($value = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        return $this->purge(
+            [class_basename($this)],
+            null, $value
+        );
+    
         
     }
     

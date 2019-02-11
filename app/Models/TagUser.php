@@ -2,12 +2,14 @@
 namespace App\Models;
 
 use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -31,6 +33,8 @@ use Throwable;
  * @mixin Eloquent
  */
 class TagUser extends Model {
+    
+    use ModelTrait;
     
     protected $table = 'tags_users';
     
@@ -93,6 +97,21 @@ class TagUser extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 删除标签
+     *
+     * @param null $value
+     * @param null $field
+     * @param bool $soft
+     * @return bool|null
+     * @throws Exception
+     */
+    function remove($value = null, $field = null, $soft = false) {
+
+        return $this->clear($this, $value, $field, $soft) ? true : false;
         
     }
     

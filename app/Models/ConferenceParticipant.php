@@ -161,4 +161,16 @@ class ConferenceParticipant extends Model {
         
     }
     
+    /**
+     * 删除指定教职员工的与会记录
+     *
+     * @param $educatorId
+     * @throws Exception
+     */
+    function removeEducator($educatorId) {
+        
+        $this->whereEducatorId($educatorId)->delete();
+        
+    }
+    
 }

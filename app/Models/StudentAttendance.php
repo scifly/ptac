@@ -928,4 +928,16 @@ class StudentAttendance extends Model {
         
     }
     
+    /**
+     * 移除指定学生的考勤记录
+     *
+     * @param $studentId
+     * @throws Exception
+     */
+    function removeStudent($studentId) {
+        
+        $this->whereStudentId($studentId)->delete();
+        
+    }
+    
 }

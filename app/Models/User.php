@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\{Builder,
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Notifications\{DatabaseNotification, DatabaseNotificationCollection, Notifiable};
-use Illuminate\Support\Facades\{Auth, DB, Hash, Log, Request};
+use Illuminate\Support\Facades\{Auth, DB, Hash, Request};
 use Laravel\Passport\{Client, HasApiTokens, Token};
 use ReflectionClass;
 use Throwable;
@@ -447,7 +447,12 @@ class User extends Authenticatable {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                if ($id) {
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                if (!$id) {
+                    !Request::has('action')
+                        ?: $data = ['enabled' => Request::input('action') == 'enable' ? 1 : 0];
+                    $this->whereIn('id', $ids)->update($data);
+                } else {
                     $user = $this->find($id);
                     $mobile = $data['mobile'];
                     if (isset($data['enabled'])) unset($data['mobile']);
@@ -471,15 +476,13 @@ class User extends Authenticatable {
                         Mobile::where(['user_id' => $user->id, 'isdefault' => 1])
                             ->update(['mobile' => $mobile]);
                     }
-                } else {
-                    $this->batch($this);
                 }
                 # 同步企业微信会员
                 $this->sync(
                     array_map(
                         function ($userId) {
                             return [$userId, $this->role($userId), 'update'];
-                        }, $id ? [$id] : array_values(Request::input('ids'))
+                        }, $ids
                     )
                 );
             });
@@ -547,102 +550,39 @@ class User extends Authenticatable {
      * 删除用户
      *
      * @param $id
+     * @param bool $partner - 是否为“合作伙伴”类型用户
      * @return bool
      * @throws Throwable
      */
-    function remove($id = null) {
+    function remove($id = null, $partner = false) {
         
         try {
-            DB::transaction(function () use ($id) {
-                $userIds = $id ? [$id] : array_values(Request::input('ids'));
-                $this->sync(array_map(
-                    function ($userId) {
-                        return [$userId, $this->role($userId), 'delete'];
-                    }, $userIds
-                ));
-                foreach ($userIds as $userId) $this->purge($userId);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 删除指定用户的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id): bool {
-        
-        try {
-            DB::transaction(function () use ($id) {
-                $user = $this->find($id);
-                DepartmentUser::whereUserId($id)->delete();
-                TagUser::whereUserId($id)->delete();
-                Tag::whereUserId($id)->delete();
-                Mobile::whereUserId($id)->delete();
-                (new Order)->removeUser($id);
-                PollQuestionnaire::whereUserId($id)->update(['user_id' => 0]);
-                PollQuestionnaireAnswer::whereUserId($id)->delete();
-                PollQuestionnaireParticipant::whereUserId($id)->delete();
-                (new ProcedureStep)->removeUser($id);
-                (new ProcedureLog)->removeUser($id);
-                (new Event)->removeUser($id);
-                (new Message)->removeUser($id);
-                MessageReply::whereUserId($id)->delete();
-                $user->delete();
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 删除合作伙伴
-     *
-     * @param null $id
-     * @return bool
-     * @throws Throwable
-     */
-    function pRemove($id = null) {
-        
-        try {
-            DB::transaction(function () use ($id) {
-                $userIds = $id ? [$id] : array_values(Request::input('ids'));
-                foreach ($userIds as $userId) $this->pPurge($userId);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 删除指定合作伙伴的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function pPurge($id) {
-        
-        try {
-            DB::transaction(function () use ($id) {
-                $messageType = MessageType::whereUserId($id)->first();
-                $messages = Message::whereMessageTypeId($messageType->id)->get();
-                !$messages->count() ?: Message::whereMessageTypeId($messageType->id)->update(['message_type_id' => 0]);
-                $messageType->delete();
-                $this->find($id)->delete();
+            DB::transaction(function () use ($id, $partner) {
+                if (!$partner) {
+                    $this->sync(
+                        array_map(
+                            function ($id) { return [$id, $this->role($id), 'delete']; },
+                            $id ? [$id] : array_values(Request::input('ids'))
+                        )
+                    );
+                    $this->purge([
+                        class_basename($this), 'DepartmentUser', 'TagUser',
+                        'Tag', 'Mobile', 'PollQuestionnaire', 'MessageReply',
+                        'PollQuestionnaireAnswer', 'PollQuestionnaireParticipant'
+                    ], 'user_id');
+                } else {
+                    $ids = $id ? [$id] : array_values(Request::input('ids'));
+                    array_map(
+                        function ($id) {
+                            $mt = MessageType::whereUserId($id)->first();
+                            Message::whereMessageTypeId($mt->id)->update([
+                                'message_type_id' => 0
+                            ]);
+                            $mt->delete();
+                            $this->find($id)->delete();
+                        }, $ids
+                    );
+                }
             });
         } catch (Exception $e) {
             throw $e;

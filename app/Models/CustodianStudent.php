@@ -91,4 +91,16 @@ class CustodianStudent extends Model {
         
     }
     
+    /**
+     * 移除指定学生的监护人绑定关系
+     *
+     * @param $studentId
+     * @throws Exception
+     */
+    function removeStudent($studentId) {
+        
+        $this->whereStudentId($studentId)->delete();
+        
+    }
+    
 }

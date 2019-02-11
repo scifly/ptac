@@ -52,7 +52,10 @@ class DepartmentUser extends Model {
         try {
             DB::transaction(function () use ($userId, $departmentIds, $custodian) {
                 $enabled = $custodian ? Constant::DISABLED : Constant::ENABLED;
-                $this->where(['user_id' => $userId, 'enabled' => $enabled])->delete();
+                $this->where([
+                    'user_id' => $userId,
+                    'enabled' => $enabled
+                ])->delete();
                 $records = [];
                 $record = ['user_id' => $userId, 'enabled' => $enabled];
                 $departmentIds = array_unique($departmentIds);
@@ -138,17 +141,34 @@ class DepartmentUser extends Model {
         try {
             DB::transaction(function () use($userId, $departmentId) {
                 $this->where('user_id', $userId)->delete();
-                $this->create([
-                    'user_id' => $userId,
-                    'department_id' => $departmentId,
-                    'enabled' => Constant::ENABLED
-                ]);
+                $this->create(
+                    array_combine(
+                        Constant::DU_FIELDS,
+                        [$departmentId, $userId, 1]
+                    )
+                );
             });
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 删除部门 & 用户绑定关系
+     *
+     * @param $value
+     * @return bool|null
+     * @throws Throwable
+     */
+    function remove($value = null) {
+        
+        return $this->purge(
+            [class_basename($this)],
+            null, $value
+        );
         
     }
     

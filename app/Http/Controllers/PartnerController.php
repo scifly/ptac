@@ -114,7 +114,7 @@ class PartnerController extends Controller {
     public function destroy($id = null) {
         
         return $this->result(
-            $this->partner->pRemove($id)
+            $this->partner->remove($id, true)
         );
         
     }

@@ -431,4 +431,16 @@ class Event extends Model {
         
     }
     
+    /**
+     * 删除与指定教职员工关联的所有事件
+     *
+     * @param $educatorId
+     * @throws Exception
+     */
+    function removeEducator($educatorId) {
+        
+        $this->whereEducatorId($educatorId)->delete();
+        
+    }
+    
 }

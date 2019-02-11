@@ -1431,4 +1431,16 @@ class Score extends Model {
         
     }
     
+    /**
+     * 移除指定学生的成绩记录
+     *
+     * @param $studentId
+     * @throws Exception
+     */
+    function removeStudent($studentId) {
+        
+        $this->whereStudentId($studentId)->delete();
+        
+    }
+    
 }
