@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\{Builder,
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Notifications\{DatabaseNotification, DatabaseNotificationCollection, Notifiable};
-use Illuminate\Support\Facades\{Auth, DB, Hash, Request};
+use Illuminate\Support\Facades\{Auth, DB, Hash, Log, Request};
 use Laravel\Passport\{Client, HasApiTokens, Token};
 use ReflectionClass;
 use Throwable;
@@ -383,6 +383,7 @@ class User extends Authenticatable {
      */
     function store(array $data) {
         
+        Log::info('data', $data);
         try {
             DB::transaction(function () use ($data) {
                 $data['user']['password'] = bcrypt($data['user']['password']);
