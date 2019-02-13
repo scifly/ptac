@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use ReflectionClass;
 use Throwable;
 
@@ -109,29 +110,21 @@ class DepartmentType extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定部门类型的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $this->delRelated('department_type_id', 'Department', $id);
-                $this->find($id)->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $departmentIds = Department::whereIn('department_type_id', $ids)
+                    ->pluck('id')->unique()->values()->toArray();
+                Request::replace(['ids' => $departmentIds]);
+                (new Department)->remove();
+                Request::replace(['ids' => $ids]);
+                $this->purge([class_basename($this)], 'id');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

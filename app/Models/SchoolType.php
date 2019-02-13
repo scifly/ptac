@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -105,29 +106,21 @@ class SchoolType extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定学校类型的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $this->delRelated('school_type_id', 'School', $id);
-                $this->find($id)->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $schoolIds = School::whereIn('school_type_id', $ids)
+                    ->pluck('id')->toArray();
+                Request::replace(['ids' => $schoolIds]);
+                (new School)->remove();
+                Request::replace(['ids' => $ids]);
+                $this->purge(['SchoolType'], 'id');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

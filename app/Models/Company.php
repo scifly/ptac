@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany,
     Relations\HasManyThrough};
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -180,32 +181,29 @@ class Company extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定运营者的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $company = $this->find($id);
-                $this->delRelated('company_id', 'Corp', $id);
-                (new Department)->remove($company->department_id);
-                (new Menu)->remove($company->menu_id);
-                $company->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $companies = Company::whereIn('id', $ids)->get();
+                array_map(
+                    function ($class, Collection $_ids) {
+                        $model = $this->model($class);
+                        Request::replace(['ids' => $_ids->toArray()]);
+                        $model->remove();
+                    }, ['Corp', 'Department', 'Menu'], [
+                        Corp::whereIn('company_id', $ids)->pluck('id'),
+                        $companies->pluck('department_id'),
+                        $companies->pluck('menu_id')
+                    ]
+                );
+                Request::replace(['ids' => $ids]);
+                $this->purge([class_basename($this)], 'id');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

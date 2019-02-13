@@ -228,31 +228,18 @@ class Group extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定角色的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                ActionGroup::whereGroupId($id)->delete();
-                GroupMenu::whereGroupId($id)->delete();
-                GroupTab::whereGroupId($id)->delete();
-                $this->find($id)->delete();
+                $this->purge([
+                    'Group', 'ActionGroup', 'GroupMenu', 'GroupTab', 'Tab'],
+                    'group_id', 'purge', $id
+                );
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

@@ -159,16 +159,13 @@ class DepartmentUser extends Model {
     /**
      * 删除部门 & 用户绑定关系
      *
-     * @param $value
+     * @param $id
      * @return bool|null
      * @throws Throwable
      */
-    function remove($value = null) {
+    function remove($id = null) {
         
-        return $this->purge(
-            [class_basename($this)],
-            null, $value
-        );
+        return $this->purge([class_basename($this)], 'id', 'purge', $id);
         
     }
     

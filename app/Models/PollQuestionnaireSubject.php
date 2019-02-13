@@ -190,30 +190,19 @@ class PollQuestionnaireSubject extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定调查问卷题目的所有相关数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                PollQuestionnaireAnswer::wherePqsId($id)->delete();
-                PollQuestionnaireSubjectChoice::wherePqsId($id)->delete();
-                $this->find($id)->delete();
+                $pre = 'PollQuestionnaire';
+                $this->purge(
+                    [$pre . 'Subject', $pre . 'Answer', $pre . 'SubjectChoice'],
+                    'pqs_id', 'purge', $id
+                );
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

@@ -98,29 +98,16 @@ class ActionType extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定HTTP请求类型的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                (new Action)->removeActionType($id);
-                $this->find($id)->delete();
+                $this->purge([class_basename($this)], 'action_type_id', 'purge', $id);
+                $this->purge(['Action'], ['action_type_ids'], 'clear', $id);
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

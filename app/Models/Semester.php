@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -131,29 +132,21 @@ class Semester extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定学期的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $this->delRelated('semester_id', 'StudentAttendanceSetting', $id);
-                $this->find($id)->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $sasIds = StudentAttendanceSetting::whereIn('semester_id', $ids)
+                    ->pluck('id')->toArray();
+                Request::replace(['ids' => $sasIds]);
+                (new StudentAttendanceSetting)->remove();
+                Request::replace(['ids' => $ids]);
+                $this->purge(['Semester'], 'id');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

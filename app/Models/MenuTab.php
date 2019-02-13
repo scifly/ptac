@@ -38,58 +38,28 @@ class MenuTab extends Model {
     protected $fillable = ['menu_id', 'tab_id', 'tab_order', 'enabled'];
     
     /**
-     * 按菜单ID保存记录
+     * 保存菜单 & 卡片绑定关系
      *
-     * @param $menuId
-     * @param array $tabIds
+     * @param string $field
+     * @param $value
+     * @param array $ids
      * @return bool
      * @throws Throwable
      */
-    function storeByMenuId($menuId, array $tabIds) {
+    function store(string $field, $value, array $ids) {
         
         try {
-            DB::transaction(function () use ($menuId, $tabIds) {
+            DB::transaction(function () use ($field, $value, $ids) {
+                $this->where($field, $value)->delete();
                 $records = [];
-                foreach ($tabIds as $tabId) {
-                    $records[] = [
-                        'menu_id'    => $menuId,
-                        'tab_id'     => $tabId,
-                        'created_at' => now()->toDateTimeString(),
-                        'updated_at' => now()->toDateTimeString(),
-                        'enabled'    => Constant::ENABLED,
-                    ];
-                }
-                $this->insert($records);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 按卡片ID保存记录
-     *
-     * @param $tabId
-     * @param array $menuIds
-     * @return bool
-     * @throws Throwable
-     */
-    function storeByTabId($tabId, array $menuIds) {
-        
-        try {
-            DB::transaction(function () use ($tabId, $menuIds) {
-                $records = [];
-                foreach ($menuIds as $menuId) {
-                    $records[] = [
-                        'menu_id'    => $menuId,
-                        'tab_id'     => $tabId,
-                        'created_at' => now()->toDateTimeString(),
-                        'updated_at' => now()->toDateTimeString(),
-                        'enabled'    => Constant::ENABLED,
-                    ];
+                foreach ($ids as $id) {
+                    $records[] = array_merge(Constant::MT_FIELDS, [
+                        $field == 'menu_id' ? $value : $id,
+                        $field == 'menu_id' ? $id : $value,
+                        now()->toDateTimeString(),
+                        now()->toDateTimeString(),
+                        Constant::ENABLED
+                    ]);
                 }
                 $this->insert($records);
             });

@@ -1,11 +1,12 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\{Eloquent\Builder, Eloquent\Model, Eloquent\Relations\BelongsTo};
-use Illuminate\Support\{Facades\DB, Facades\Request};
+use Illuminate\Support\{Facades\DB};
 use Throwable;
 
 /**
@@ -35,6 +36,8 @@ use Throwable;
  * @mixin Eloquent
  */
 class EducatorClass extends Model {
+    
+    use ModelTrait;
     
     protected $table = 'educators_classes';
     
@@ -128,25 +131,11 @@ class EducatorClass extends Model {
      *
      * @param null $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-        
-    }
-    
-    /**
-     * 删除指定教职员工的科目绑定记录
-     *
-     * @param $educatorId
-     * @throws Exception
-     */
-    function removeEducator($educatorId) {
-        
-        $this->whereEducatorId($educatorId)->delete();
+        return $this->purge([class_basename($this)], 'id', 'purge', $id);
         
     }
     

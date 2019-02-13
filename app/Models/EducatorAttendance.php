@@ -221,29 +221,18 @@ class EducatorAttendance extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定教职员工考勤记录的所有相关数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                (new EducatorAppeal)->removeEducatorAttendance($id);
-                $this->find($id)->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $this->purge(['EducatorAppeal'], 'ea_ids', 'clear', $ids);
+                Request::replace(['ids' => $ids]);
+                $this->purge([class_basename($this)], 'id');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

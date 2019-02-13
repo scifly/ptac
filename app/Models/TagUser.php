@@ -9,7 +9,6 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -103,15 +102,21 @@ class TagUser extends Model {
     /**
      * 删除标签
      *
-     * @param null $value
-     * @param null $field
-     * @param bool $soft
+     * @param null $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
-    function remove($value = null, $field = null, $soft = false) {
+    function remove($id = null) {
 
-        return $this->clear($this, $value, $field, $soft) ? true : false;
+        try {
+            DB::transaction(function () use ($id) {
+                $this->purge(['TagUser'], 'id', 'purge', $id);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     

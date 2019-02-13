@@ -134,8 +134,9 @@ class Major extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $major = $this->create($data);
-                (new MajorSubject)->storeByMajorId(
-                    $major->id, $data['subject_ids'] ?? []
+                (new MajorSubject)->store(
+                    'major_id', $major->id,
+                    $data['subject_ids'] ?? []
                 );
             });
         } catch (Exception $e) {
@@ -159,8 +160,9 @@ class Major extends Model {
         try {
             DB::transaction(function () use ($data, $id) {
                 $this->find($id)->update($data);
-                (new MajorSubject)->storeByMajorId(
-                    $id, $data['subject_ids'] ?? []
+                (new MajorSubject)->store(
+                    'major_id', $id,
+                    $data['subject_ids'] ?? []
                 );
             });
         } catch (Exception $e) {
@@ -179,29 +181,18 @@ class Major extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定专业的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                MajorSubject::whereMajorId($id)->delete();
-                $this->find($id)->delete();
+                $this->purge(
+                    ['Major', 'MajorSubject'],
+                    'major_id', 'purge', $id
+                );
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

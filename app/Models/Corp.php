@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\HasMany,
     Relations\HasManyThrough};
-use Illuminate\Support\Facades\{Auth, DB, Session};
+use Illuminate\Support\Facades\{Auth, DB, Request, Session};
 use Throwable;
 
 /**
@@ -248,35 +248,35 @@ class Corp extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定企业的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $corp = $this->find($id);
-                $classes = ['App', 'School'];
-                $keys = array_fill(0, sizeof($classes), 'corp_id');
-                $values = array_fill(0, sizeof($classes), $id);
-                array_map([$this, 'delRelated'], $keys, $classes, $values);
-                (new Department)->remove($corp->department_id);
-                (new Menu)->remove($corp->menu_id);
-                $corp->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $corps = $this->whereIn('id', $ids)->get();
+                list($appIds, $schoolIds) = array_map(
+                    function ($class) use ($ids) {
+                        return $this->model($class)->whereIn('corp_id', $ids)->pluck('id')->toArray();
+                    }, ['App', 'School']
+                );
+                list($departmentIds, $menuIds) = array_map(
+                    function ($field) use ($corps) {
+                        return $corps->pluck($field)->toArray();
+                    }, ['department_id', 'menu_id']
+                );
+                array_map(
+                    function ($class, $ids) {
+                        Request::replace(['ids' => $ids]);
+                        $this->model($class)->remove();
+                    }, ['App', 'School', 'Department', 'Menu'],
+                    [$appIds, $schoolIds, $departmentIds, $menuIds]
+                );
+                Request::replace(['ids' => $ids]);
+                $this->purge([class_basename($this)], 'id');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

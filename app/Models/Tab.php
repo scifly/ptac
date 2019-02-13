@@ -96,6 +96,7 @@ class Tab extends Model {
                 'db'        => 'Tab.name', 'dt' => 1,
                 'formatter' => function ($d, $row) {
                     $iconId = $this->find($row['id'])->icon_id;
+                    
                     return $iconId
                         ? sprintf(Snippet::ICON, Icon::find($iconId)->name, '') . $d
                         : sprintf(Snippet::ICON, 'fa-calendar-check-o text-gray', '') . $d;
@@ -107,11 +108,16 @@ class Tab extends Model {
                 'formatter' => function ($d) {
                     $group = $d ? Group::find($d)->name : '所有';
                     switch ($group) {
-                        case '所有': return sprintf(Snippet::BADGE_BLACK, $group);
-                        case '运营': return sprintf(Snippet::BADGE_LIGHT_BLUE, $group);
-                        case '企业': return sprintf(Snippet::BADGE_GREEN, $group);
-                        case '学校': return sprintf(Snippet::BADGE_FUCHSIA, $group);
-                        default: return '-';
+                        case '所有':
+                            return sprintf(Snippet::BADGE_BLACK, $group);
+                        case '运营':
+                            return sprintf(Snippet::BADGE_LIGHT_BLUE, $group);
+                        case '企业':
+                            return sprintf(Snippet::BADGE_GREEN, $group);
+                        case '学校':
+                            return sprintf(Snippet::BADGE_FUCHSIA, $group);
+                        default:
+                            return '-';
                     }
                 },
             ],
@@ -126,15 +132,19 @@ class Tab extends Model {
             ['db' => 'Tab.created_at', 'dt' => 5],
             ['db' => 'Tab.updated_at', 'dt' => 6],
             [
-                'db' => 'Tab.category', 'dt' => 7,
+                'db'        => 'Tab.category', 'dt' => 7,
                 'formatter' => function ($d) {
                     switch ($d) {
-                        case 0: return sprintf(Snippet::BADGE_LIGHT_BLUE, '后台');
-                        case 1: return sprintf(Snippet::BADGE_GREEN, '前端');
-                        case 2: return sprintf(Snippet::BADGE_GRAY, '其他');
-                        default: return '-';
+                        case 0:
+                            return sprintf(Snippet::BADGE_LIGHT_BLUE, '后台');
+                        case 1:
+                            return sprintf(Snippet::BADGE_GREEN, '前端');
+                        case 2:
+                            return sprintf(Snippet::BADGE_GRAY, '其他');
+                        default:
+                            return '-';
                     }
-                }
+                },
             ],
             [
                 'db'        => 'Tab.enabled', 'dt' => 8,
@@ -175,7 +185,7 @@ class Tab extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $tab = $this->create($data);
-                (new MenuTab)->storeByTabId($tab->id, $data['menu_ids']);
+                (new MenuTab)->store('tab_id', $tab->id, $data['menu_ids']);
             });
         } catch (Exception $e) {
             throw $e;
@@ -197,17 +207,14 @@ class Tab extends Model {
     function modify(array $data, $id = null) {
         
         if (isset($id)) {
-            $tab = self::find($id);
-            if (!isset($tab)) {
-                return false;
-            }
+            if (!($tab = self::find($id))) return false;
             try {
                 DB::transaction(function () use ($data, $id, $tab) {
                     $tab->update($data);
                     $menuIds = $data['menu_ids'];
                     $menuTab = new MenuTab();
                     $menuTab::whereTabId($id)->delete();
-                    $menuTab->storeByTabId($id, $menuIds);
+                    $menuTab->store('tab_id', $id, $menuIds);
                 });
             } catch (Exception $e) {
                 throw $e;
@@ -226,23 +233,25 @@ class Tab extends Model {
     }
     
     /**
-     * 删除指定卡片的所有数据
+     * 移除指定的卡片
      *
      * @param $id
-     * @return bool
+     * @return bool|mixed
      * @throws Throwable
      */
-    function purge($id) {
-        
+    function remove($id = null) {
+    
         try {
             DB::transaction(function () use ($id) {
-                MenuTab::whereTabId($id)->delete();
-                $this->find($id)->delete();
+                $this->purge(
+                    ['Tab', 'MenuTab'],
+                    'tab_id', 'purge', $id
+                );
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }
@@ -284,13 +293,13 @@ class Tab extends Model {
                     $ctlrName = $paths[sizeof($paths) - 1];
                     if (in_array($ctlrName, Constant::EXCLUDED_CONTROLLERS)) continue;
                     $record = [
-                        'name'       => $ctlrName,
-                        'comment'    => self::controllerComments($obj),
-                        'remark'     => $controller,
-                        'action_id'  => self::indexActionId($ctlrName),
-                        'category'   => $obj->hasProperty('category')
+                        'name'      => $ctlrName,
+                        'comment'   => self::controllerComments($obj),
+                        'remark'    => $controller,
+                        'action_id' => self::indexActionId($ctlrName),
+                        'category'  => $obj->hasProperty('category')
                             ? $obj->getProperty('category')->getValue() : 0,
-                        'enabled'    => Constant::ENABLED,
+                        'enabled'   => Constant::ENABLED,
                     ];
                     $tab = $this->whereName($record['name'])->first();
                     if ($tab) {
@@ -311,6 +320,67 @@ class Tab extends Model {
         }
         
         return true;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 根据角色返回可访问的卡片id
+     *
+     * @return array
+     */
+    function allowedTabIds() {
+        
+        $user = Auth::user();
+        $role = $user->role();
+        list($corpGid, $schoolGid) = array_map(
+            function ($role) {
+                return Group::whereName($role)->first()->id;
+            }, ['企业', '学校']
+        );
+        switch ($role) {
+            case '运营':
+                $builder = $this->whereEnabled(1);
+                break;
+            case '企业':
+                $builder = $this->whereEnabled(1)
+                    ->whereIn('group_id', [0, $corpGid, $schoolGid]);
+                break;
+            case '学校':
+                $builder = $this->whereEnabled(1)
+                    ->whereIn('group_id', [0, $schoolGid]);
+                break;
+            default:
+                $builder = GroupTab::whereGroupId($user->group_id);
+                $field = 'tab_id';
+                break;
+        }
+        
+        return $builder->pluck($field ?? 'id')->toArray();
+        
+    }
+    
+    /**
+     * 获取指定控制器的注释文本
+     *
+     * @param ReflectionClass $controller
+     * @return mixed|string
+     */
+    private function controllerComments(ReflectionClass $controller) {
+        
+        $comment = $controller->getDocComment();
+        $name = 'n/a';
+        preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
+        if (isset($matches[0][0])) {
+            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+        } else {
+            preg_match_all("#\/\*\*\r\n\s{1}\*[^\*]*\*#", $comment, $matches);
+            if (isset($matches[0][0])) {
+                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+            }
+        }
+        
+        return $name;
         
     }
     
@@ -348,45 +418,6 @@ class Tab extends Model {
     }
     
     /**
-     * 移除指定的卡片
-     *
-     * @param $id
-     * @return bool|mixed
-     * @throws Throwable
-     */
-    function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
-    
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-
-    /**
-     * 获取指定控制器的注释文本
-     *
-     * @param ReflectionClass $controller
-     * @return mixed|string
-     */
-    private function controllerComments(ReflectionClass $controller) {
-        
-        $comment = $controller->getDocComment();
-        $name = 'n/a';
-        preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
-        if (isset($matches[0][0])) {
-            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
-        } else {
-            preg_match_all("#\/\*\*\r\n\s{1}\*[^\*]*\*#", $comment, $matches);
-            if (isset($matches[0][0])) {
-                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
-            }
-        }
-        
-        return $name;
-        
-    }
-    
-    /**
      * 获取index方法的action_id
      *
      * @param $ctlrName
@@ -397,47 +428,11 @@ class Tab extends Model {
         $tab = Tab::whereName($ctlrName)->first();
         $action = (new Action)->where([
             'enabled' => 1,
-            'tab_id' => $tab ? $tab->id : 0,
-            'method' => 'index'
+            'tab_id'  => $tab ? $tab->id : 0,
+            'method'  => 'index',
         ])->first();
         
         return $action ? $action->id : 0;
-        
-    }
-    
-    /**
-     * 根据角色返回可访问的卡片id
-     *
-     * @return array
-     */
-    function allowedTabIds() {
-        
-        $user = Auth::user();
-        $role = $user->role();
-        list($corpGid, $schoolGid) = array_map(
-            function ($role) {
-                return Group::whereName($role)->first()->id;
-            }, ['企业', '学校']
-        );
-        switch ($role) {
-            case '运营':
-                $builder = $this->whereEnabled(1);
-                break;
-            case '企业':
-                $builder = $this->whereEnabled(1)
-                    ->whereIn('group_id', [0, $corpGid, $schoolGid]);
-                break;
-            case '学校':
-                $builder = $this->whereEnabled(1)
-                    ->whereIn('group_id', [0, $schoolGid]);
-                break;
-            default:
-                $builder = GroupTab::whereGroupId($user->group_id);
-                $field = 'tab_id';
-                break;
-        }
-        
-        return $builder->pluck($field ?? 'id')->toArray();
         
     }
     

@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany,
     Relations\HasOne};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\{Auth, DB, Log, Request};
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
@@ -313,7 +313,7 @@ class Department extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
         
         $department = $this->find($id);
         !$department ?: $this->sync($id, 'delete');

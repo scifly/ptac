@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * App\Models\MessageReply
@@ -59,13 +60,11 @@ class MessageReply extends Model {
      *
      * @param null $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        return $this->purge([class_basename($this)], 'id', 'purge', $id);
         
     }
     

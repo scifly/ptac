@@ -205,8 +205,9 @@ class Subject extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $subject = $this->create($data);
-                (new MajorSubject)->storeBySubjectId(
-                    $subject->id, $data['major_ids'] ?? []
+                (new MajorSubject)->store(
+                    'subject_id', $subject->id,
+                    $data['major_ids'] ?? []
                 );
             });
         } catch (Exception $e) {
@@ -230,8 +231,9 @@ class Subject extends Model {
         try {
             DB::transaction(function () use ($data, $id) {
                 $this->find($id)->update($data);
-                (new MajorSubject)->storeBySubjectId(
-                    $id, $data['major_ids'] ?? []
+                (new MajorSubject)->store(
+                    'subject_id', $id,
+                    $data['major_ids'] ?? []
                 );
             });
             
@@ -252,59 +254,20 @@ class Subject extends Model {
      * @throws \Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 从科目中移除已删除的年级
-     *
-     * @param $gradeId
-     * @throws Throwable
-     */
-    function removeGrade($gradeId) {
-        
-        try {
-            DB::transaction(function () use ($gradeId) {
-                $subjects = $this->whereRaw($gradeId . ' IN (grade_ids)')->get();
-                foreach ($subjects as $subject) {
-                    $grade_ids = implode(
-                        ',', array_diff(explode(',', $subject->grade_ids), [$gradeId])
-                    );
-                    $subject->update(['grade_ids' => $grade_ids]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-    }
-    
-    /**
-     * 删除指定科目的所有记录
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                EducatorClass::whereSubjectId($id)->delete();
-                Event::whereSubjectId($id)->delete();
-                (new Exam)->removeSubject($id);
-                SubjectModule::whereSubjectId($id)->delete();
-                MajorSubject::whereSubjectId($id)->delete();
-                (new ScoreRange)->removeSubject($id);
-                (new Score)->removeSubject($id);
-                $this->find($id)->delete();
+                $this->purge(['Exam', 'ScoreRange'], 'subject_ids', 'clear', $id);
+                $this->purge(['Score'], 'subject_id', 'reset', $id);
+                $this->purge(
+                    [class_basename($this), 'EducatorClass', 'Event', 'SubjectModule', 'MajorSubject'],
+                    'subject_id', 'purge', $id
+                );
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

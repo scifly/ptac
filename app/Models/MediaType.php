@@ -8,6 +8,7 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\HasMany};
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -106,29 +107,21 @@ class MediaType extends Model {
      * @throws Throwable
      */
     function remove($id) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定媒体类型的所有相关数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                Media::whereMediaTypeId($id)->update(['media_type_id' => 0]);
-                $this->find($id)->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $mediaIds = Media::whereIn('media_type_id', $ids)
+                    ->pluck('id')->toArray();
+                Request::replace(['ids' => $mediaIds]);
+                (new Media)->remove();
+                Request::replace(['ids' => $ids]);
+                $this->purge(['MediaType'], 'id');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

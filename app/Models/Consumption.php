@@ -173,13 +173,11 @@ class Consumption extends Model {
      *
      * @param null $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        return $this->purge(['Consumption'], 'id', 'purge', $id);
         
     }
     
@@ -319,18 +317,6 @@ class Consumption extends Model {
         }
         
         return $this->excel($records);
-        
-    }
-    
-    /**
-     * 移除指定学生的消费记录
-     *
-     * @param $studentId
-     * @throws Exception
-     */
-    function removeStudent($studentId) {
-        
-        $this->whereStudentId($studentId)->delete();
         
     }
     

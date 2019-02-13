@@ -318,13 +318,20 @@ class Constant {
         'title', 'remark', 'location', 'contact', 'url', 'start', 'end', 'ispublic', 'iscourse', 'educator_id',
         'subject_id', 'alertable', 'alert_mins', 'user_id', 'enabled'
     ];
-    const CS_FIELDS = ['custodian_id', 'student_id', 'relationship', 'enabled'];
+    const CS_FIELDS = ['custodian_id', 'student_id', 'relationship', 'created_at', 'updated_at', 'enabled'];
     const DU_FIELDS = ['department_id', 'user_id', 'enabled'];
     const EC_FIELDS = ['educator_id', 'class_id', 'subject_id', 'enabled'];
     const SA_FIELDS = [
         'student_id', 'sas_id', 'punch_time', 'inorout', 'attendance_machine_id',
         'media_id', 'status', 'longitude', 'latitude'
     ];
+    const AG_FIELDS = ['group_id', 'action_id', 'created_at', 'updated_at', 'enabled'];
+    const GM_FIELDS = ['group_id', 'menu_id', 'created_at', 'updated_at', 'enabled'];
+    const GT_FIELDS = ['group_id', 'tab_id', 'created_at', 'updated_at', 'enabled'];
+    const MS_FIELDS = ['major_id', 'subject_id', 'created_at', 'updated_at'];
+    const MT_FIELDS = ['menu_id', 'tab_id', 'created_at', 'updated_at', 'enabled'];
+    
+    
     const MEMBER_FIELDS = [
         'userid', 'username', 'position', 'name', 'english_name',
         'mobile', 'email', 'department', 'gender', 'remark', 'enable'

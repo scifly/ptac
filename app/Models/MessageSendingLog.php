@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -78,32 +79,21 @@ class MessageSendingLog extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定消息批次相关的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $classes = ['Message', 'MessageReply'];
-                $keys = array_fill(0, sizeof($classes), 'msl_id');
-                $values = array_fill(0, sizeof($classes), $id);
-                array_map([$this, 'delRelated'], $keys, $classes, $values);
-                $this->find($id)->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $messageIds = Message::whereIn('msl_id', $ids)
+                    ->pluck('id')->toArray();
+                Request::replace(['ids' => $messageIds]);
+                (new Message)->remove();
+                Request::replace(['ids' => $ids]);
+                $this->purge([class_basename($this), 'MessageReply'], 'msl_id');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

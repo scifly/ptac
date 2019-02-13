@@ -154,32 +154,18 @@ class Icon extends Model {
      * @return bool|null
      * @throws Throwable
      */
-    function remove($id) {
-        
-        return $this->del($this, $id);
-        
-    }
+    function remove($id = null) {
     
-    /**
-     * 删除指定图标的所有相关数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                Tab::whereIconId($id)->update(['icon_id' => null]);
-                $this->find($id)->delete();
+                $this->purge(['Tab'], 'icon_id', 'reset', $id);
+                $this->purge(['Icon'], 'id', 'purge', $id);
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
-        
     }
     
 }

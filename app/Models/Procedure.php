@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -155,32 +156,21 @@ class Procedure extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定审批流程的所有先关数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $classes = ['ProcedureStep', 'ProcedureLog'];
-                $keys = array_fill(0, sizeof($classes), $id);
-                $values = array_fill(0, sizeof($classes), $id);
-                array_map([$this, 'delRelated'], $keys, $classes, $values);
-                $this->find($id)->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $psIds = ProcedureStep::whereIn('procedure_id', $ids)
+                    ->pluck('id')->toArray();
+                Request::replace(['ids' => $psIds]);
+                (new ProcedureStep)->remove();
+                Request::replace(['ids' => $ids]);
+                $this->purge(['Procedure', 'ProcedureLog'], 'procedure_id');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

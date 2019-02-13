@@ -133,31 +133,16 @@ class ComboType extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定套餐类型的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                Order::whereComboTypeId($id)->update([
-                    'combo_type_id' => 0,
-                ]);
-                $this->find($id)->delete();
+                $this->purge([class_basename($this)], 'id', 'purge', $id);
+                $this->purge(['Order'], 'combo_type_id', 'reset', $id);
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

@@ -258,34 +258,15 @@ class Score extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定分数记录的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $score = $this->find($id);
-                (new ScoreTotal)->removeSubject(
-                    $score->subject_id,
-                    $score->exam_id,
-                    $score->score
-                );
-                $score->delete();
+                $this->purge(['Score'], 'id', 'purge', $id);
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }
@@ -581,27 +562,6 @@ class Score extends Model {
             'students' => $this->singleSelectList($studentList ?? [], 'student_id'),
             'subjects' => $this->singleSelectList($subjectList, 'subject_id'),
         ]);
-        
-    }
-    
-    /**
-     * 删除指定科目对应的所有考试成绩
-     * 更新对应的总分记录
-     *
-     * @param $subjectId
-     * @throws Throwable
-     */
-    function removeSubject($subjectId) {
-        
-        try {
-            DB::transaction(function () use ($subjectId) {
-                $scoreIds = $this->where('subject_id', $subjectId)->pluck('id');
-                array_map([$this, 'purge'], $scoreIds->toArray());
-                $this->where('subject_id', $subjectId)->delete();
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
         
     }
     

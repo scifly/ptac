@@ -2,18 +2,12 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo};
+use Illuminate\Support\Facades\{Auth, DB};
 use Throwable;
 
 /**
@@ -161,51 +155,18 @@ class Exam extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 从所有考试中删除指定的科目
-     *
-     * @param $subjectId
-     * @throws Throwable
-     */
-    function removeSubject($subjectId) {
-        
-        try {
-            DB::transaction(function () use ($subjectId) {
-                $exams = $this->whereRaw($subjectId . ' IN (subject_ids)')->get();
-                foreach ($exams as $exam) {
-                    $subjectIds = array_diff(explode(',', $exam->subject_ids), [$subjectId]);
-                    $exam->update(['subject_ids' => implode(',', $subjectIds)]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-    }
-    
-    /**
-     * 删除指定考试的所有相关数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                Score::whereExamId($id)->delete();
-                $this->find($id)->delete();
+                $this->purge(
+                    [class_basename($this), 'Score', 'ScoreTotal'],
+                    'exam_id', 'purge', $id
+                );
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

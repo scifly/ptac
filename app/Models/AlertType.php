@@ -90,34 +90,20 @@ class AlertType extends Model {
     /**
      * 删除警告类型
      *
-     * @param $id
+     * @param null|$id
      * @return bool|null
      * @throws Throwable
      */
-    function remove($id) {
-        
-        return $this->del($this, $id);
-        
-    }
+    function remove($id = null) {
     
-    /**
-     * 删除指定警告类型的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                # todo:
-                $this->find($id)->delete();
+                $this->purge([class_basename($this)], 'id', 'purge', $id);
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

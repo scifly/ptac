@@ -2,21 +2,15 @@
 namespace App\Models;
 
 use App\Facades\Wechat;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
 use App\Http\Requests\AppRequest;
 use App\Jobs\SyncApp;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\{Auth, DB};
 use Throwable;
 
 /**
@@ -240,12 +234,12 @@ class App extends Model {
      * @return bool|null
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
         
         try {
             DB::transaction(function () use ($id) {
-                Message::whereAppId($id)->update(['app_id' => 0]);
-                $this->find($id)->delete();
+                $this->purge(['Message'], 'app_id', 'reset', $id);
+                $this->purge(['App'], 'id', 'purge', $id);
             });
         } catch (Exception $e) {
             throw $e;

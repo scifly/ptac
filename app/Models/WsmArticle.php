@@ -8,9 +8,8 @@ use Eloquent;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
-use Illuminate\Support\Facades\{DB, Request};
+use Illuminate\Support\Facades\{Request};
 use Illuminate\View\View;
-use Throwable;
 
 /**
  * App\Models\WsmArticle 微网站栏目文章
@@ -179,35 +178,7 @@ class WsmArticle extends Model {
         
     }
     
-    /**
-     * 从微网站栏目文章中删除指定的媒体数据
-     *
-     * @param $mediaId
-     * @throws Throwable
-     */
-    function removeMedia($mediaId) {
-        
-        try {
-            DB::transaction(function () use ($mediaId) {
-                WsmArticle::whereThumbnailMediaId($mediaId)->update([
-                    'thumbnail_media_id' => 0
-                ]);
-                $articles = $this->whereRaw($mediaId . ' IN (media_ids)')->get();
-                foreach ($articles as $article) {
-                    $media_ids = implode(
-                        ',', array_diff(explode(',', $article->media_ids), [$mediaId])
-                    );
-                    $article->update(['media_ids' => $media_ids]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-    }
-    
     /** 微信端 ------------------------------------------------------------------------------------------------------- */
-
     /**
      * 上传微网站文章轮播图
      *
@@ -258,7 +229,5 @@ class WsmArticle extends Model {
         ]);
         
     }
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-    
     
 }

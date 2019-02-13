@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
@@ -118,33 +119,20 @@ class Media extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定媒体的所有相关数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $media = $this->find($id);
-                (new WapSite)->removeMedia($id);
-                (new WsmArticle)->removeMedia($id);
-                WapSiteModule::whereMediaId($id)->update(['media_id' => 0]);
-                Storage::disk('uploads')->delete($media->path);
-                $media->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                Request::replace(['ids' => $ids]);
+                $this->purge(['WapSite', 'WsmArticle', 'Message'], 'media_ids', 'clear');
+                $this->purge(['WapSiteModule', 'WsmArticle'], ['media_id', 'thumbnail_media_id'], 'reset');
+                $this->purge(['Media'], 'id');
+                array_map(function ($id) {Storage::disk('uploads')->delete($this->find($id)->path); }, $ids);
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

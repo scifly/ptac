@@ -129,29 +129,18 @@ class AttendanceMachine extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定考勤机的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                StudentAttendance::whereAttendanceMachineId($id)->delete();
-                $this->find($id)->delete();
+                $this->purge(
+                    [class_basename($this), 'StudentAttendance'],
+                    'attendance_machine_id', 'purge', $id
+                );
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

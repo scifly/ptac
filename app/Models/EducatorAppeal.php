@@ -2,13 +2,13 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -44,6 +44,8 @@ use Throwable;
  * @mixin Eloquent
  */
 class EducatorAppeal extends Model {
+    
+    use ModelTrait;
     
     protected $table = 'educator_appeals';
     
@@ -134,66 +136,11 @@ class EducatorAppeal extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-        
-    }
-    
-    /**
-     * 删除指定教职员工相关的申诉记录
-     *
-     * @param $educatorId
-     * @return bool
-     * @throws Throwable
-     */
-    function removeEducator($educatorId) {
-        
-        try {
-            DB::transaction(function () use ($educatorId) {
-                $this->where('educator_id', $educatorId)->delete();
-                $approvers = $this->whereRaw($educatorId . ' IN (approver_educator_ids)')->get();
-                $relates = $this->whereRaw($educatorId . ' IN (related_educator_ids)')->get();
-                foreach ($approvers as $ea) {
-                    $educatorIds = array_diff(explode(',', $ea->approver_educator_ids), [$educatorId]);
-                    $ea->update(['approver_educator_ids' => implode(',', $educatorIds)]);
-                }
-                foreach ($relates as $ea) {
-                    $educatorIds = array_diff(explode(',', $ea->related_educator_ids), [$educatorId]);
-                    $ea->update(['related_educator_ids' => implode(',', $educatorIds)]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 从教职员工申诉记录中删除教职员工考勤记录
-     *
-     * @param $eaId
-     * @throws Throwable
-     */
-    function removeEducatorAttendance($eaId) {
-        
-        try {
-            DB::transaction(function () use ($eaId) {
-                $eas = $this->whereRaw($eaId . ' IN (ea_ids)')->get();
-                foreach ($eas as $ea) {
-                    $eaIds = array_diff(explode(',', $ea->ea_ids), [$eaId]);
-                    $ea->update(['ea_ids' => implode(',', $eaIds)]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        return $this->purge([class_basename($this)], 'id', 'purge', $id);
         
     }
     

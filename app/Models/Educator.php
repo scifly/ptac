@@ -252,8 +252,7 @@ class Educator extends Model {
             DB::transaction(function () use ($data, $id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
                 if (!$id) {
-                    $data = ['enabled' => Request::input('action') == 'enable' ? 1 : 0];
-                    $this->whereIn('id', $ids)->update($data);
+                    $this->batch($this);
                 } else {
                     $educator = $this->find($id);
                     $educator->user->update($data['user']);
@@ -333,22 +332,32 @@ class Educator extends Model {
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $userIds = $this->whereIn('id', $ids)->pluck('user_id')->toArray();
-                $rUsers = User::whereIn('id', $userIds)->get()
-                    ->filter(function (User $user) { return !$user->custodian; });
-                $rUserIds = $rUsers->pluck('id')->toArray();
-                $uUserIds = array_diff($userIds, $rUserIds);
+                list($rUIds, $uUIds) = value(
+                    function () use ($ids) {
+                        $uIds = $this->whereIn('id', $ids)
+                            ->pluck('user_id')->toArray();
+                        $rUIds = User::whereIn('id', $uIds)->get()
+                            ->filter(function (User $user) { return !$user->custodian; })
+                            ->pluck('id')->toArray();
+                        $uUIds = array_diff($uIds, $rUIds);
+                        
+                        return [$rUIds, $uUIds];
+                    }
+                );
                 $user = new User;
                 # 更新同时也是监护人的用户
-                if (!empty($uUserIds)) {
+                if (!empty($uUIds)) {
                     # 删除部门绑定关系
-                    (new DepartmentUser)->where([['enabled', '=', 1], ['user_id', 'in', $uUserIds]])->delete();
-                    Request::replace(['ids' => $uUserIds]);
+                    (new DepartmentUser)->where([
+                        ['user_id', 'in', $uUIds],
+                        ['enabled', '=', 1]
+                    ])->delete();
+                    Request::replace(['ids' => $uUIds]);
                     $user->modify(['group_id' => Group::whereName('监护人')->first()->id]);
                 }
                 # 删除用户
-                if (!empty($rUserIds)) {
-                    Request::replace(['ids' => $rUserIds]);
+                if (!empty($rUIds)) {
+                    Request::replace(['ids' => $rUIds]);
                     $user->remove();
                 }
                 # 删除教职员工

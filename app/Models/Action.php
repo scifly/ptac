@@ -83,95 +83,6 @@ class Action extends Model {
     function tab() { return $this->belongsTo('App\Models\Tab'); }
     
     /**
-     * 返回HTTP请求方法中包含GET以及路由中不带参数的action列表
-     *
-     * @return array
-     */
-    function actions() {
-        
-        $data = self::whereEnabled(1)->get([
-            'tab_id', 'name', 'id',
-            'action_type_ids', 'route',
-        ]);
-        $actions = [];
-        # 获取HTTP请求类型为GET的Action类型ID
-        $id = ActionType::whereName('GET')->first()->id;
-        foreach ($data as $action) {
-            $tab = Tab::find($action->tab_id);
-            if (!$tab) continue;
-            if (
-                in_array($id, explode(',', $action['action_type_ids'])) &&
-                !strpos($action['route'], '{') &&
-                $tab->category != 2 # 其他类型控制器
-            ) {
-                $actions[$action->tab->name][$action->id] = $action['name'] . ' - ' . $action['route'];
-            }
-        }
-        ksort($actions);
-        
-        return $actions;
-        
-    }
-    
-    /**
-     * 更新功能
-     *
-     * @param array $data
-     * @param integer $id
-     * @return bool
-     */
-    function modify(array $data, $id) {
-        
-        return $this->find($id)->update($data);
-        
-    }
-    
-    /**
-     * 删除指定功能的所有相关数据
-     *
-     * @param integer $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
-        try {
-            DB::transaction(function () use ($id) {
-                ActionGroup::whereActionId($id)->delete();
-                $this->delRelated('action_id', 'Tab', $id);
-                $this->find($id)->delete();
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 从所有功能中移除指定的功能请求类型
-     *
-     * @param integer $actionTypeId
-     * @throws Throwable
-     */
-    function removeActionType($actionTypeId) {
-        
-        try {
-            DB::transaction(function () use ($actionTypeId) {
-                $actions = $this->where('action_type_id', $actionTypeId)->get();
-                foreach ($actions as $action) {
-                    $actionTypeIds = array_diff(explode(',', $action->action_type_ids), [$actionTypeId]);
-                    $action->update(['action_type_ids' => implode(',', $actionTypeIds)]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-    }
-    
-    /**
      * 功能列表
      *
      * @return array
@@ -227,8 +138,8 @@ class Action extends Model {
                 'formatter' => function ($d) {
                     return !$d ? sprintf(Snippet::BADGE_LIGHT_BLUE, '后台')
                         : (
-                            $d == 1 ? sprintf(Snippet::BADGE_GREEN, '前端')
-                                : sprintf(Snippet::BADGE_GRAY, '其他')
+                        $d == 1 ? sprintf(Snippet::BADGE_GREEN, '前端')
+                            : sprintf(Snippet::BADGE_GRAY, '其他')
                         );
                 },
             ],
@@ -256,22 +167,7 @@ class Action extends Model {
         return Datatable::simple($this->getModel(), $columns, $joins);
         
     }
-    
-    /**
-     * 根据ActionType IDs返回Http action名称
-     *
-     * @param string $action_type_ids
-     * @return string
-     */
-    private function actionTypes($action_type_ids) {
-        
-        $actionTypes = ActionType::whereIn('id', explode(',', $action_type_ids))
-            ->where('enabled', 1)->pluck('name')->toArray();
-        
-        return implode(',', $actionTypes);
-        
-    }
-    
+
     /**
      * 扫描所有控制器中的方法
      *
@@ -336,7 +232,7 @@ class Action extends Model {
                             }
                         }
                     }
-        
+                    
                 }
                 foreach ($selfDefinedMethods as $actions) {
                     foreach ($actions as $action) {
@@ -376,6 +272,121 @@ class Action extends Model {
     }
     
     /**
+     * 更新功能
+     *
+     * @param array $data
+     * @param integer $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        return $this->find($id)->update($data);
+        
+    }
+    
+    /**
+     * 删除功能
+     *
+     * @param null|integer $id
+     * @return bool
+     * @throws Throwable
+     */
+    function remove($id = null) {
+    
+        try {
+            DB::transaction(function () use ($id) {
+                array_map(
+                    function (array $classes, string $action) use($id) {
+                        $this->purge($classes, 'action_id', $action, $id);
+                    }, [[class_basename($this), 'ActionGroup'], ['Tab']], ['purge', 'reset']
+                );
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 获取网站根所处的路径
+     *
+     * @return bool|string
+     */
+    function siteRoot() {
+        
+        return substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
+        
+    }
+    
+    /**
+     * 返回HTTP请求方法中包含GET以及路由中不带参数的action列表
+     *
+     * @return array
+     */
+    function actions() {
+        
+        $data = self::whereEnabled(1)->get([
+            'tab_id', 'name', 'id',
+            'action_type_ids', 'route',
+        ]);
+        $actions = [];
+        # 获取HTTP请求类型为GET的Action类型ID
+        $id = ActionType::whereName('GET')->first()->id;
+        foreach ($data as $action) {
+            $tab = Tab::find($action->tab_id);
+            if (!$tab) continue;
+            if (
+                in_array($id, explode(',', $action['action_type_ids'])) &&
+                !strpos($action['route'], '{') &&
+                $tab->category != 2 # 其他类型控制器
+            ) {
+                $actions[$action->tab->name][$action->id] = $action['name'] . ' - ' . $action['route'];
+            }
+        }
+        ksort($actions);
+        
+        return $actions;
+        
+    }
+    
+    /**
+     * 返回控制器的完整名字空间路径
+     *
+     * @param array $controllers
+     */
+    function controllerNamespaces(array &$controllers) {
+        
+        $siteRoot = str_replace('/', '\\', $this->siteRoot());
+        for ($i = 0; $i < sizeof($controllers); $i++) {
+            $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
+            $controllers[$i] = str_replace($siteRoot, '', $controllers[$i]);
+            $controllers[$i] = str_replace('.php', '', $controllers[$i]);
+        }
+        
+    }
+    
+    /**
+     * 返回去除名字空间路径的控制器名称数组
+     *
+     * @param array $controllers
+     * @return array
+     */
+    function controllerNames(array $controllers) {
+        
+        $controllerNames = [];
+        foreach ($controllers as $controller) {
+            $paths = explode('\\', $controller);
+            $controllerNames[] = $paths[sizeof($paths) - 1];
+        }
+        
+        return $controllerNames;
+        
+    }
+    
+    /**
      * 返回所有控制器的完整路径
      *
      * @param string $rootDir
@@ -405,66 +416,6 @@ class Action extends Model {
         }
         
         return $allData;
-        
-    }
-    
-    /**
-     * 获取网站根所处的路径
-     *
-     * @return bool|string
-     */
-    function siteRoot() {
-        
-        return substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
-        
-    }
-    
-    /**
-     * 返回控制器的完整名字空间路径
-     *
-     * @param array $controllers
-     */
-    function controllerNamespaces(array &$controllers) {
-        
-        $siteRoot = str_replace('/', '\\', $this->siteRoot());
-        for ($i = 0; $i < sizeof($controllers); $i++) {
-            $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
-            $controllers[$i] = str_replace($siteRoot, '', $controllers[$i]);
-            $controllers[$i] = str_replace('.php', '', $controllers[$i]);
-        }
-        
-    }
-    
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-
-    /**
-     * 返回去除名字空间路径的控制器名称数组
-     *
-     * @param array $controllers
-     * @return array
-     */
-    function controllerNames(array $controllers) {
-        
-        $controllerNames = [];
-        foreach ($controllers as $controller) {
-            $paths = explode('\\', $controller);
-            $controllerNames[] = $paths[sizeof($paths) - 1];
-        }
-        
-        return $controllerNames;
-        
-    }
-    
-    /**
-     * 删除功能
-     *
-     * @param null|integer $id
-     * @return bool
-     * @throws Throwable
-     */
-    function remove($id = null) {
-        
-        return $this->del($this, $id);
         
     }
     
@@ -556,6 +507,21 @@ class Action extends Model {
         }
         
         return $name;
+        
+    }
+    
+    /**
+     * 根据ActionType IDs返回Http action名称
+     *
+     * @param string $action_type_ids
+     * @return string
+     */
+    private function actionTypes($action_type_ids) {
+        
+        $actionTypes = ActionType::whereIn('id', explode(',', $action_type_ids))
+            ->where('enabled', 1)->pluck('name')->toArray();
+        
+        return implode(',', $actionTypes);
         
     }
     

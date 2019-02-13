@@ -5,9 +5,9 @@ use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Builder, Model};
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\ActionGroup
@@ -40,31 +40,27 @@ class ActionGroup extends Model {
      *
      * @param $groupId
      * @param array $ids
-     * @throws Exception
-     * @throws \Throwable
+     * @return bool
+     * @throws Throwable
      */
     function storeByGroupId($groupId, array $ids = []) {
         
         try {
             DB::transaction(function () use ($groupId, $ids) {
-                # step 1: 删除group_id等于$groupId的所有记录
-                self::whereGroupId($groupId)->delete();
-                # step 2: 创建ids对应的所有记录
-                $records = [];
+                $this->whereGroupId($groupId)->delete();
                 foreach ($ids as $id) {
-                    $records[] = [
-                        'group_id'   => $groupId,
-                        'action_id'  => $id,
-                        'created_at' => now()->toDateTimeString(),
-                        'updated_at' => now()->toDateTimeString(),
-                        'enabled'    => Constant::ENABLED,
-                    ];
+                    $records[] = array_combine(Constant::AG_FIELDS, [
+                        $groupId, $id, now()->toDateTimeString(),
+                        now()->toDateTimeString(), Constant::ENABLED,
+                    ]);
                 }
-                self::insert($records);
+                $this->insert($records ?? []);
             });
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
         
     }
     

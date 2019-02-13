@@ -2,23 +2,14 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Illuminate\View\View;
 use Throwable;
 
@@ -189,53 +180,21 @@ class WapSite extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 从微网站中删除指定的媒体数据
-     *
-     * @param $mediaId
-     * @throws Throwable
-     */
-    function removeMedia($mediaId) {
-        
-        try {
-            DB::transaction(function () use ($mediaId) {
-                $wapSites = $this->whereRaw($mediaId . ' IN (media_ids)')->get();
-                foreach ($wapSites as $wapSite) {
-                    $media_ids = implode(
-                        ',', array_diff(explode(',', $wapSite->media_ids), [$mediaId])
-                    );
-                    $wapSite->update(['media_ids' => $media_ids]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-    }
-    
-    /**
-     * 删除指定微网站的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $this->delRelated('wap_site_id', 'WapSiteModule', $id);
-                $this->find($id)->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $wsmIds = WapSiteModule::whereIn('wap_site_id', $ids)
+                    ->pluck('id')->toArray();
+                Request::replace(['ids' => $wsmIds]);
+                (new WapSiteModule)->remove();
+                Request::replace(['ids' => $ids]);
+                $this->purge(['WapSite'], 'id');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

@@ -59,13 +59,12 @@ class GroupMenu extends Model {
                 self::whereGroupId($groupId)->delete();
                 $records = [];
                 foreach ($ids as $id) {
-                    $records[] = [
-                        'group_id'   => $groupId,
-                        'menu_id'    => $id,
-                        'created_at' => now()->toDateTimeString(),
-                        'updated_at' => now()->toDateTimeString(),
-                        'enabled'    => Constant::ENABLED,
-                    ];
+                    $records[] = array_combine(Constant::GM_FIELDS, [
+                        $groupId, $id,
+                        now()->toDateTimeString(),
+                        now()->toDateTimeString(),
+                        Constant::ENABLED,
+                    ]);
                 }
                 $this->insert($records);
             });

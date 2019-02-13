@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -109,29 +110,21 @@ class ProcedureType extends Model {
      * @throws Throwable
      */
     function remove($id) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定审批流程类型的所有相关数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $this->delRelated('procedure_type_id', 'Procedure', $id);
-                $this->find($id)->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $pIds = Procedure::whereIn('procedure_type_id', $ids)
+                    ->pluck('id')->toArray();
+                Request::replace(['ids' => $pIds]);
+                (new Procedure)->remove();
+                Request::replace(['ids' => $ids]);
+                $this->purge(['Procedure'], 'id');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Request};
-use ReflectionClass;
 use ReflectionException;
 use Throwable;
 
@@ -260,11 +259,8 @@ class Student extends Model {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $userIds = [];
                 if (!$id) {
-                    $data = ['enable' => Request::input('action') == 'enable' ? 1 : 0];
-                    $this->whereIn('id', $ids)->update($data);
+                    $this->batch($this);
                 } else {
                     $student = $this->find($id);
                     # 如果学生班级发生变化，则需更新对应监护人的部门绑定关系
@@ -294,9 +290,11 @@ class Student extends Model {
                         $student->squad->department_id
                     );
                 }
-                empty($userIds) ?: (new User)->sync(
+                empty($userIds = $userIds ?? []) ?: (new User)->sync(
                     array_map(
-                        function ($userId) { return [$userId, '监护人', 'update']; }, $userIds
+                        function ($userId) {
+                            return [$userId, '监护人', 'update'];
+                        }, $userIds
                     )
                 );
             });
@@ -321,28 +319,23 @@ class Student extends Model {
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
-                # 更新对应监护人信息
                 foreach ($ids as $id) {
                     $student = $this->find($id);
-                    foreach ($student->custodians as $custodian) {
-                        CustodianStudent::where([
-                            'student_id' => $id,
-                            'custodian_id' => $custodian->id
-                        ])->delete();
-                        DepartmentUser::where([
-                            'department_id' => $student->squad->department_id,
-                            'user_id' => $custodian->user_id,
-                            'enabled' => 0
-                        ])->delete();
-                        $custodian->students->isNotEmpty()
-                            ? $uUserIds[] = [$custodian->user_id, '监护人', 'update']
-                            : $rUserIds[] = [$custodian->user_id, '监护人', 'delete'];
-                    }
+                    $cIds = array_merge(
+                        $cIds ?? [],
+                        $student->custodians->pluck('id')->toArray()
+                    );
+                    $uIds[] = $student->user_id;
                 }
-                array_map(
-                    function (array $contacts) { (new User)->sync($contacts); },
-                    [$uUserIds ?? [], $rUserIds ?? []]
-                );
+                if (!empty($cIds = array_unique($cIds ?? []))) {
+                    Request::replace(['ids' => $cIds]);
+                    (new Custodian)->remove();
+                }
+                if (!empty($uIds = $uIds ?? [])) {
+                    Request::replace(['ids' => $uIds]);
+                    (new User)->remove();
+                }
+                Request::replace(['ids' => $ids]);
                 $this->purge([
                     class_basename($this), 'Consumption', 'CustodianStudent',
                     'ScoreTotal', 'Score', 'StudentAttendance'

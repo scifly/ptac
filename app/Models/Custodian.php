@@ -212,8 +212,7 @@ class Custodian extends Model {
             DB::transaction(function () use ($data, $id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
                 if (!$id) {
-                    $data = ['enabled' => Request::input('action') == 'enable' ? 1 : 0];
-                    $this->whereIn('id', $ids)->update($data);
+                    $this->batch($this);
                 } else {
                     $custodian = $this->find($id);
                     $custodian->user->update($data['user']);
@@ -222,14 +221,14 @@ class Custodian extends Model {
                     $this->storeProperties($custodian, $data);
                     # 如果同时也是教职员工
                     $educator = $custodian->user->educator;
-                    if (!$data['singular']) {
-                        $educator ?: Educator::create(
+                    if (!$educator && !$data['singular']) {
+                        Educator::create(
                             array_combine(Constant::EDUCATOR_FIELDS, [
                                 $custodian->user_id, $this->schoolId(), 0, 1,
                             ])
                         );
-                    } else {
-                        !$educator ?: (new Educator)->remove($educator->id);
+                    } elseif ($educator && $data['singular']) {
+                        $educator->remove($educator->id);
                     }
                 }
                 # 同步企业微信
@@ -289,17 +288,21 @@ class Custodian extends Model {
                         }
                         return array_map('array_unique', [
                             $sIds ?? [], $cIds ?? [], $dIds ?? [],
-                            $rUIds ?? [], $uUIds ??[]
+                            $rUIds ?? [], $uUIds ?? []
                         ]);
                     }
                 );
                 $user = new User;
                 # 删除用户 & 部门 / 监护人 & 学生绑定关系
                 if (!empty($uUIds)) {
-                    $condition = [['user_id', 'in', $uUIds], ['department_id', 'in', $dIds]];
-                    (new DepartmentUser)->where($condition)->delete();
-                    $condition = [['custodian_id', 'in', $cIds], ['student_id', 'in', $sIds]];
-                    (new CustodianStudent)->where($condition)->delete();
+                    (new DepartmentUser)->where([
+                        ['user_id', 'in', $uUIds],
+                        ['department_id', 'in', $dIds]
+                    ])->delete();
+                    (new CustodianStudent)->where([
+                        ['custodian_id', 'in', $cIds],
+                        ['student_id', 'in', $sIds]
+                    ])->delete();
                     Request::replace(['ids' => $uUIds]);
                     $user->modify(['position' => '教职员工']);
                 }

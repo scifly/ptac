@@ -108,31 +108,16 @@ class AttachmentType extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定附件类型的所有相关数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                Attachment::whereAttachmentTypeId($id)->update([
-                    'attachment_type_id' => 0,
-                ]);
-                $this->find($id)->delete();
+                $this->purge([class_basename($this)], 'id', 'purge', $id);
+                $this->purge(['Attachment'], 'attachment_type_id', 'reset', $id);
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

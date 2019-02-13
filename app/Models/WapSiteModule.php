@@ -144,35 +144,45 @@ class WapSiteModule extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定微网站栏目的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                WsmArticle::whereWsmId($id)->delete();
-                $this->find($id)->delete();
+                $this->purge(
+                    [class_basename($this), 'WsmArticle'],
+                    'wsm_id', 'purge', $id
+                );
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }
     
     /** 微信端 ------------------------------------------------------------------------------------------------------- */
-
+    /**
+     * 返回微网站栏目列表（微信）
+     *
+     * @return Factory|View
+     */
+    function wIndex() {
+        
+        $id = Request::input('id');
+        $articles = WsmArticle::whereWsmId($id)
+            ->where('enabled', 1)
+            ->orderByDesc("created_at")
+            ->get();
+        $module = $this->find($id);
+        
+        return view('wechat.mobile_site.module', [
+            'articles' => $articles,
+            'module'   => $module,
+            'ws'       => true,
+        ]);
+        
+    }
+    
     /**
      * 上传微网站栏目图片
      *
@@ -196,30 +206,6 @@ class WapSiteModule extends Model {
         );
         
         return response()->json($uploadedFile);
-        
-    }
-    
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-
-    /**
-     * 返回微网站栏目列表（微信）
-     *
-     * @return Factory|View
-     */
-    function wIndex() {
-        
-        $id = Request::input('id');
-        $articles = WsmArticle::whereWsmId($id)
-            ->where('enabled', 1)
-            ->orderByDesc("created_at")
-            ->get();
-        $module = $this->find($id);
-        
-        return view('wechat.mobile_site.module', [
-            'articles' => $articles,
-            'module'   => $module,
-            'ws'       => true,
-        ]);
         
     }
     

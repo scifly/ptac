@@ -65,6 +65,7 @@ class CustodianStudent extends Model {
      *
      * @param $custodianId
      * @param array $relationships
+     * @return bool
      * @throws Throwable
      */
     function storeByCustodianId($custodianId, array $relationships) {
@@ -72,34 +73,20 @@ class CustodianStudent extends Model {
         try {
             DB::transaction(function () use ($custodianId, $relationships) {
                 $this->where('custodian_id', $custodianId)->delete();
-                $records = [];
                 foreach ($relationships as $studentId => $relationship) {
-                    $records[] = [
-                        'custodian_id' => $custodianId,
-                        'student_id'   => $studentId,
-                        'enabled'      => Constant::ENABLED,
-                        'relationship' => $relationship,
-                        'created_at'   => now()->toDateTimeString(),
-                        'updated_at'   => now()->toDateTimeString(),
-                    ];
+                    $records[] = array_combine(Constant::CS_FIELDS, [
+                        $custodianId, $studentId, $relationship,
+                        now()->toDateTimeString(), now()->toDateTimeString(),
+                        Constant::ENABLED,
+                    ]);
                 }
-                $this->insert($records);
+                $this->insert($records ?? []);
             });
         } catch (Exception $e) {
             throw $e;
         }
         
-    }
-    
-    /**
-     * 移除指定学生的监护人绑定关系
-     *
-     * @param $studentId
-     * @throws Exception
-     */
-    function removeStudent($studentId) {
-        
-        $this->whereStudentId($studentId)->delete();
+        return true;
         
     }
     

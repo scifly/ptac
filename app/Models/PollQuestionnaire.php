@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -138,7 +139,7 @@ class PollQuestionnaire extends Model {
             ['db' => 'PollQuestionnaire.id', 'dt' => 0],
             ['db' => 'PollQuestionnaire.name', 'dt' => 1],
             [
-                'db' => 'School.name as school_name', 'dt' => 2,
+                'db'        => 'School.name as school_name', 'dt' => 2,
                 'formatter' => function ($d) {
                     return Snippet::school($d);
                 }
@@ -219,25 +220,16 @@ class PollQuestionnaire extends Model {
      */
     function remove($id = null) {
         
-        return $this->del($this, $id);
-        
-    }
-    
-    /**
-     * 删除指定调查问卷的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                PollQuestionnaireParticipant::wherePqId($id)->delete();
-                PollQuestionnaireAnswer::wherePqId($id)->delete();
-                $this->delRelated('pq_id', 'PollQuestionnaireSubject', $id);
-                $this->find($id)->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $pqsIds = PollQuestionnaireSubject::whereIn('pq_id', $ids)
+                    ->pluck('id')->toArray();
+                Request::replace(['ids' => $pqsIds]);
+                (new PollQuestionnaireSubject)->remove();
+                Request::replace(['ids' => $ids]);
+                $class = 'PollQuestionnaire';
+                $this->purge([$class, $class . 'Participant', $class . 'Answer'], 'pq_id');
             });
         } catch (Exception $e) {
             throw $e;

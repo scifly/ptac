@@ -386,7 +386,7 @@ class User extends Authenticatable {
         try {
             DB::transaction(function () use ($data) {
                 $data['user']['password'] = bcrypt($data['user']['password']);
-                $user = $this->create($data['user']);
+                $user = $this->create($data['user'] ?? $data);
                 # 如果角色为校级管理员，则同时创建教职员工记录
                 if (!in_array($this->role($user->id), Constant::NON_EDUCATOR)) {
                     $data['user_id'] = $user->id;
@@ -558,11 +558,13 @@ class User extends Authenticatable {
         
         try {
             DB::transaction(function () use ($id, $partner) {
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
                 if (!$partner) {
                     $this->sync(
                         array_map(
-                            function ($id) { return [$id, $this->role($id), 'delete']; },
-                            $id ? [$id] : array_values(Request::input('ids'))
+                            function ($id) {
+                                return [$id, $this->role($id), 'delete'];
+                            }, $ids
                         )
                     );
                     $this->purge([
@@ -571,13 +573,10 @@ class User extends Authenticatable {
                         'PollQuestionnaireAnswer', 'PollQuestionnaireParticipant'
                     ], 'user_id');
                 } else {
-                    $ids = $id ? [$id] : array_values(Request::input('ids'));
                     array_map(
                         function ($id) {
                             $mt = MessageType::whereUserId($id)->first();
-                            Message::whereMessageTypeId($mt->id)->update([
-                                'message_type_id' => 0
-                            ]);
+                            Message::whereMessageTypeId($mt->id)->update(['message_type_id' => 0]);
                             $mt->delete();
                             $this->find($id)->delete();
                         }, $ids
@@ -662,6 +661,7 @@ class User extends Authenticatable {
         
         foreach ($contacts as $contact) {
             list($userId, $role, $method) = $contact;
+            if ($role == '学生') continue;
             $user = $this->find($userId);
             
             $params = [

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\HasMany,
     Relations\HasManyThrough};
-use Illuminate\Support\Facades\{Auth, DB};
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
@@ -246,60 +246,22 @@ class Grade extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定年级的所有相关数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $grade = $this->find($id);
-                (new Department)->remove($grade->department_id);
-                (new Subject)->removeGrade($id);
-                $classes = ['StudentAttendanceSetting', 'Squad'];
-                $keys = array_fill(0, sizeof($classes), 'grade_id');
-                $values = array_fill(0, sizeof($classes), $id);
-                array_map([$this, 'delRelated'], $keys, $classes, $values);
-                $grade->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $this->purge(['Subject'], 'grade_ids', 'clear', $id);
+                $departmentIds = $this->whereIn('id', $ids)
+                    ->pluck('department_id')->toArray();
+                Request::replace(['ids' => $departmentIds]);
+                (new Department)->remove();
+                Request::replace(['ids' => $ids]);
+                $this->purge(['Grade', 'StudentAttendanceSetting', 'Squad'], 'grade_id');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
-        return true;
-        
-    }
     
-    /**
-     * 删除指定教职员工的年级主任任职记录
-     *
-     * @param $educatorId
-     * @return bool
-     * @throws Throwable
-     */
-    function removeEducator($educatorId) {
-        
-        try {
-            DB::transaction(function () use ($educatorId) {
-                $grades = $this->whereRaw($educatorId . ' IN (educator_ids)')->get();
-                foreach ($grades as $grade) {
-                    $educatorIds = array_diff(explode(',', $grade->educator_ids), [$educatorId]);
-                    $grade->update(['educator_ids' => implode(',', $educatorIds)]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
         return true;
         
     }

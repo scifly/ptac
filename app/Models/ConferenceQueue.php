@@ -111,21 +111,15 @@ class ConferenceQueue extends Model {
                 'formatter' => function ($d, $row) {
                     $user = Auth::user();
                     $id = $row['id'];
-                    $statusHtml = '<i class="fa fa-circle text-%s" title="%s"></i>';
-                    $status = '';
-                    switch ($d) {
-                        case 0:
-                            $status = sprintf($statusHtml, 'green', '进行中');
-                            break;
-                        case 1:
-                            $status = sprintf($statusHtml, 'red', '已结束');
-                            break;
-                        case 2:
-                            $status = sprintf($statusHtml, 'gray', '已取消');
-                            break;
-                        default:
-                            break;
-                    }
+                    $statuses = [
+                        ['green', '进行中'],
+                        ['red', '已结束'],
+                        ['gray', '已取消'],
+                    ];
+                    $status = sprintf(
+                        '<i class="fa fa-circle text-%s" title="%s"></i>',
+                        $statuses[$d][0], $statuses[$d][1]
+                    );
                     $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
@@ -194,80 +188,24 @@ class ConferenceQueue extends Model {
     /**
      * 删除会议
      *
-     * @param $value
-     * @param null $field - 按指定字段删除记录
-     * @param bool $soft - 是否软删除
+     * @param null $id
      * @return bool
      * @throws Throwable
      */
-    function remove($value = null, $field = null, $soft = false) {
-
-        # 按id删除记录
-        if (!$field) return $this->del($this, $value);
-        
-        # 按id, educator_id以外的字段删除记录
-        $builder = $this->where($field, $value);
-        if ($field != 'educator_id') {
-            return !$soft ? $builder->delete() : $builder->update([$field => '0']);
-        }
-        
-        # 按educator_id删除记录
-        try {
-            DB::transaction(function () use ($value) {
-                $fields = ['educator_ids', 'attended_educator_ids'];
-                $cqs = $this->where([$fields[0], 'like', "%,$value,%"])
-                    ->orWhere([$fields[1], 'like', "%,$value,%"])->get();
-                foreach ($cqs as $cq) {
-                    $data = array_combine(
-                        $fields, array_map(
-                            function ($name) use ($cq, $value) {
-                                return array_diff(explode(',', $cq->{$name}), [$value]);
-                            }, $fields
-                        )
-                    );
-                    $cq->update($data);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-    
-        return true;
-        
-    }
-    
-    /**
-     * 删除指定会议的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
+    function remove($id = null) {
         
         try {
             DB::transaction(function () use ($id) {
-                ConferenceParticipant::whereConferenceQueueId($id)->delete();
-                $this->find($id)->delete();
+                $this->purge(
+                    [class_basename($this), 'ConferenceParticipant'],
+                    'conference_queue_id', 'purge', $id
+                );
             });
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 删除指定教职员工的与会记录
-     *
-     * @param $educatorId
-     * @return bool
-     * @throws Throwable
-     */
-    function removeEducator($educatorId) {
-        
-    
         
     }
     

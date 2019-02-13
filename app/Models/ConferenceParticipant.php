@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * App\Models\ConferenceParticipant 与会者
@@ -151,25 +152,11 @@ class ConferenceParticipant extends Model {
      *
      * @param null $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-        
-    }
-    
-    /**
-     * 删除指定教职员工的与会记录
-     *
-     * @param $educatorId
-     * @throws Exception
-     */
-    function removeEducator($educatorId) {
-        
-        $this->whereEducatorId($educatorId)->delete();
+        return $this->purge([class_basename($this)], 'id', 'purge', $id);
         
     }
     

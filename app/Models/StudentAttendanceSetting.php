@@ -197,29 +197,18 @@ class StudentAttendanceSetting extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定学生考勤设置的所有数据
-     *
-     * @param $id
-     * @return bool|null
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                StudentAttendance::whereSasId($id)->delete();
-                $this->find($id)->delete();
+                $this->purge(
+                    [class_basename($this), 'StudentAttendance'],
+                    'sas_id', 'purge', $id
+                );
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

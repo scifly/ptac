@@ -328,13 +328,14 @@ class StudentAttendance extends Model {
      *
      * @param null $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        return $this->purge(
+            ['StudentAttendance'],
+            'id', 'purge', $id
+        );
         
     }
     

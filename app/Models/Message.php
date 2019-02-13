@@ -10,7 +10,7 @@ use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasOne};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\{Auth, DB, Log, Request};
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Illuminate\View\View;
 use ReflectionClass;
 use ReflectionException;
@@ -486,32 +486,18 @@ class Message extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定消息的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $wechatSms = WechatSms::whereMessageId($id)->first();
-                !$wechatSms ?: $wechatSms->delete();
-                $message = $this->find($id);
-                !$message->event_id ?: Event::find($message->event_id)->delete();
-                $message->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                Request::replace(['ids' => $ids]);
+                $this->purge(['Message', 'WechatSms'], 'message_id');
+                $this->purge(['Message'], 'message_id', 'reset');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

@@ -8,11 +8,9 @@ use App\Models\{
 };
 use App\Policies\Route;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\{Eloquent\Collection, Eloquent\Model, Query\Builder};
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Log, Facades\Request, Facades\Storage};
+use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Request, Facades\Storage};
 use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\{Exception, IOFactory, Spreadsheet};
 use ReflectionClass;
@@ -40,46 +38,56 @@ trait ModelTrait {
     }
     
     /**
-     * 批量启用/禁用联系人
-     *
-     * @param Model $model
-     * @return bool
-     * @throws Throwable
-     */
-    function batchUpdateContact(Model $model) {
-        
-        $updated = $this->batch($model);
-        $ids = Request::input('ids');
-        $userIds = $model->{'whereIn'}('id', array_values($ids))->pluck('user_id')->toArray();
-        Request::replace(['ids' => $userIds]);
-        
-        return $updated ? $this->batch(new User) : false;
-        
-    }
-    
-    /**
      * 删除指定对象对应的记录
      *
      * @param array $classes
-     * @param string $foreignId
+     * @param string $action
+     * @param $field
      * @param $value
-     * @param bool $soft
      * @return bool
      * @throws Throwable
      */
-    function purge(array $classes, $foreignId = null, $value = null, $soft = false) {
+    function purge(array $classes, $field, $action = 'purge', $value = null) {
         
         try {
-            DB::transaction(function () use ($classes, $foreignId, $value, $soft) {
-                $fields = [null] + (!$foreignId ? [] : array_fill(1, sizeof($classes) - 1, $foreignId));
+            DB::transaction(function () use ($classes, $action, $field, $value) {
+                $fields = is_array($field) ? $field
+                    : array_fill(0, sizeof($classes), $field);
+                $values = $value
+                    ? (is_array($value) ? $value : [$value])
+                    : array_values(Request::input('ids'));
+                $action != 'purge' ?: $fields[0] = 'id';
                 array_map(
-                    function ($class, $field) use ($value, $soft) {
-                        $model = (new ReflectionClass("App\Models\\$class"))->newInstance();
-                        $values = $value ? (is_array($value) ? $value : [$value])
-                            : array_values(Request::input('ids'));
-                        /** @var Builder $builder */
-                        $builder = $model->{'whereIn'}($field ?? 'id', $values);
-                        !$soft ? $builder->delete() : $builder->update(['enabled' => 0]);
+                    function ($class, $field) use ($action, $values) {
+                        $model = $this->model($class);
+                        switch ($action) {
+                            case 'purge':
+                            case 'reset':
+                                /** @var Builder $builder */
+                                $builder = $model->whereIn($field, $values);
+                                $action == 'purge' ? $builder->delete() : $builder->update([$field => '0']);
+                                break;
+                            case 'clear':
+                                $records = $model->all()->filter(
+                                    function (Model $record) use ($values) {
+                                        return !empty(
+                                            array_intersect(
+                                                explode(',', $record->{$field}), $values
+                                            )
+                                        );
+                                    }
+                                );
+                                /** @var Model $record */
+                                foreach ($records as $record) {
+                                    $val = implode(',', array_diff(
+                                        explode(',', $record->{$field}), $values
+                                    ));
+                                    $record->update([$field => $val]);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
                     }, $classes, $fields
                 );
             });
@@ -92,63 +100,15 @@ trait ModelTrait {
     }
     
     /**
-     * (批量)删除记录
+     * 返回指定名称对应的Model对象
      *
-     * @param Model $model
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function del(Model $model, $id) {
-        
-        try {
-            DB::transaction(function () use ($model, $id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                foreach ($ids as $id) $model->{'purge'}($id);
-            });
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 删除关联表中的所有数据
-     *
-     * @param $key
      * @param $class
-     * @param $value
-     * @return mixed
+     * @return object
+     * @throws ReflectionException
      */
-    function delRelated($key, $class, $value) {
+    function model($class) {
         
-        /** @var Model $model */
-        $class = '\\App\\Models\\' . $class;
-        $model = new $class;
-        $ids = $model->{'where'}($key, $value)->pluck('id')->toArray();
-        Request::merge(['ids' => $ids]);
-        
-        return $model->{'remove'}();
-        
-    }
-    
-    /**
-     * 删除关联数据
-     *
-     * @param $id
-     * @param $method
-     * @param array $models
-     */
-    function clear($id, $method, array $models) {
-    
-        array_map(
-            function ($class) use ($id, $method, $models) {
-                (new ReflectionClass("App\Models\\$class"))
-                    ->newInstance()->{$method}($id);
-            }, $models
-        );
+        return (new ReflectionClass("App\Models\\$class"))->newInstance();
         
     }
     
@@ -222,7 +182,7 @@ trait ModelTrait {
         if ($tab = Tab::whereName($controller)->first()) {
             $routes = Action::where([
                 ['tab_id', '=', $tab->id],
-                ['route', '<>', null]
+                ['route', '<>', null],
             ])->pluck('route', 'method')->toArray();
         }
         $uris = [];
@@ -833,7 +793,7 @@ trait ModelTrait {
         
         $app = App::where([
             'corp_id' => $corpId,
-            'name' => $name ?? config('app.name')
+            'name' => $name ?? config('app.name'),
         ])->first();
         abort_if(
             !$app, HttpStatusCode::NOT_FOUND,

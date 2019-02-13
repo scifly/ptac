@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\BelongsToMany,
     Relations\HasMany};
-use Illuminate\Support\Facades\{Auth, DB};
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
@@ -221,31 +221,25 @@ class Squad extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->del($this, $id);
-        
-    }
     
-    /**
-     * 删除指定班级的所有相关数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
-                $class = $this->find($id);
-                $this->delRelated('class_id', 'Student', $id);
-                (new Department)->remove($class->department_id);
-                $class->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $studentIds = Student::whereIn('class_id', $ids)
+                    ->pluck('id')->toArray();
+                Request::replace(['ids' => $studentIds]);
+                (new Student)->remove();
+                $departmentIds = $this->whereIn('id', $ids)
+                    ->pluck('department_id')->toArray();
+                Request::replace(['ids' => $departmentIds]);
+                (new Department)->remove();
+                Request::replace(['ids' => $ids]);
+                $this->purge(['Squad'], 'id');
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

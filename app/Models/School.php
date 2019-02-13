@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany,
     Relations\HasManyThrough,
     Relations\HasOne};
-use Illuminate\Support\Facades\{Auth, DB};
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
@@ -282,10 +282,10 @@ class School extends Model {
             ['db' => 'School.created_at', 'dt' => 5],
             ['db' => 'School.updated_at', 'dt' => 6],
             [
-                'db' => 'Department.synced as synced', 'dt' => 7,
+                'db'        => 'Department.synced as synced', 'dt' => 7,
                 'formatter' => function ($d) {
                     return $this->synced($d);
-                }
+                },
             ],
             [
                 'db'        => 'School.enabled', 'dt' => 8,
@@ -411,36 +411,35 @@ class School extends Model {
      */
     function remove($id = null) {
         
-        return $this->del($this, $id);
-        
-    }
-    
-    /**
-     * 删除指定学校的所有相关数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id) {
-        
         try {
             DB::transaction(function () use ($id) {
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
                 session(['schoolId' => $id]);
-                $school = $this->find($id);
                 $classes = [
-                    'AttendanceMachine', 'ConferenceRoom', 'ComboType',
-                    'ExamType', 'EducatorAttendanceSetting', 'Grade',
-                    'Group', 'Major', 'PollQuestionnaire',
-                    'Procedure', 'Semester', 'Subject',
-                    'Tag', 'WapSite', 'Educator',
+                    'AttendanceMachine', 'ConferenceRoom',
+                    'ComboType', 'ExamType', 'EducatorAttendanceSetting',
+                    'Grade', 'Group', 'Major', 'PollQuestionnaire',
+                    'Procedure', 'Semester', 'Subject', 'Tag',
+                    'WapSite', 'Educator', 'Department', 'Menu'
                 ];
-                $keys = array_fill(0, sizeof($classes), 'school_id');
-                $values = array_fill(0, sizeof($classes), $id);
-                array_map([$this, 'delRelated'], $keys, $classes, $values);
-                (new Department)->remove($school->department_id);
-                (new Menu)->remove($school->menu_id);
-                $school->delete();
+                array_map(
+                    function ($class) use ($ids) {
+                        $model = $this->model($class);
+                        if (in_array($class, ['Department', 'Menu'])) {
+                            $obj = $this;
+                            $_id = 'id';
+                            $field = $class == 'Menu' ? 'menu_id' : 'department_id';
+                        } else {
+                            $obj = $model;
+                            $_id = 'school_id';
+                            $field = 'id';
+                        }
+                        Request::replace(['ids' => $obj->whereIn($_id, $ids)->pluck($field)->toArray()]);
+                        $model->remove();
+                    }, $classes
+                );
+                Request::replace(['ids' => $ids]);
+                $this->purge(['School'], 'id');
             });
         } catch (Exception $e) {
             throw $e;
