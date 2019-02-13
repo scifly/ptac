@@ -140,10 +140,10 @@ class Tag extends Model {
             DB::transaction(function () use ($data) {
                 $tag = $this->create($data);
                 if (isset($data['user_ids'])) {
-                    (new TagUser)->storeByTagId($tag->id, $data['user_ids']);
+                    $this->retain('TagUser', $tag->id, $data['user_ids']);
                 }
                 if (isset($data['dept_ids'])) {
-                    (new DepartmentTag)->storeByTagId($tag->id, $data['dept_ids']);
+                    $this->retain('DepartmentTag', $tag->id, $data['dept_ids'], false);
                 }
                 if ($tag) {
                     $this->sync($tag->id, 'create');
@@ -173,10 +173,10 @@ class Tag extends Model {
                 TagUser::whereTagId($tag->id)->delete();
                 DepartmentTag::whereTagId($tag->id)->delete();
                 if (isset($data['user_ids'])) {
-                    (new TagUser)->storeByTagId($id, $data['user_ids']);
+                    $this->retain('TagUser', $id, $data['user_ids']);
                 }
                 if (isset($data['dept_ids'])) {
-                    (new DepartmentTag)->storeByTagId($tag->id, $data['dept_ids']);
+                    $this->retain('DepartmentTag', $tag->id, $data['dept_ids'], false);
                 }
                 $updated = $tag->update($data);
                 if ($updated) { $this->sync($id, 'update'); }

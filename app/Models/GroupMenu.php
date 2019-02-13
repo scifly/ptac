@@ -1,13 +1,10 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\GroupMenu
@@ -42,38 +39,5 @@ class GroupMenu extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     function menu() { return $this->belongsTo('App\Models\Menu'); }
-    
-    /**
-     * 根据角色id保存所有菜单id
-     *
-     * @param $groupId
-     * @param array $ids
-     * @return bool
-     * @throws Exception
-     * @throws \Throwable
-     */
-    function storeByGroupId($groupId, array $ids = []) {
-        
-        try {
-            DB::transaction(function () use ($groupId, $ids) {
-                self::whereGroupId($groupId)->delete();
-                $records = [];
-                foreach ($ids as $id) {
-                    $records[] = array_combine(Constant::GM_FIELDS, [
-                        $groupId, $id,
-                        now()->toDateTimeString(),
-                        now()->toDateTimeString(),
-                        Constant::ENABLED,
-                    ]);
-                }
-                $this->insert($records);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
     
 }

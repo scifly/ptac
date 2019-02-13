@@ -5,9 +5,7 @@ use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -61,23 +59,28 @@ class CustodianStudent extends Model {
     function student() { return $this->belongsTo('App\Models\Student'); }
     
     /**
-     * 按监护人ID保存记录
+     * 保存监护人 & 学生绑定关系
      *
-     * @param $custodianId
+     * @param $value
      * @param array $relationships
+     * @param bool $forward
      * @return bool
      * @throws Throwable
      */
-    function storeByCustodianId($custodianId, array $relationships) {
+    function store($value, array $relationships, bool $forward = true) {
         
         try {
-            DB::transaction(function () use ($custodianId, $relationships) {
-                $this->where('custodian_id', $custodianId)->delete();
-                foreach ($relationships as $studentId => $relationship) {
-                    $records[] = array_combine(Constant::CS_FIELDS, [
-                        $custodianId, $studentId, $relationship,
-                        now()->toDateTimeString(), now()->toDateTimeString(),
-                        Constant::ENABLED,
+            DB::transaction(function () use ($value, $relationships, $forward) {
+                $field = $this->fillable[$forward ? 0 : 1];
+                $this->where($field, $value)->delete();
+                foreach ($relationships as $id => $relationship) {
+                    $records[] = array_merge(Constant::CS_FIELDS, [
+                        $forward ? $value : $id,
+                        $forward ? $id : $value,
+                        $relationship,
+                        now()->toDateTimeString(),
+                        now()->toDateTimeString(),
+                        Constant::ENABLED
                     ]);
                 }
                 $this->insert($records ?? []);

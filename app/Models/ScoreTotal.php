@@ -12,8 +12,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 use ReflectionException;
+use Throwable;
 
 /**
  * App\Models\ScoreTotal 总分
@@ -213,41 +213,11 @@ class ScoreTotal extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-        
-    }
-    
-    /**
-     * 从所有总分记录中减去指定科目的考试分数
-     *
-     * @param $subjectId
-     * @param $examId
-     * @param $score
-     * @throws Exception
-     */
-    function removeSubject($subjectId, $examId, $score) {
-        
-        try {
-            $scoreTotal = $this->whereRaw($subjectId . ' IN (subject_ids)')
-                ->where('exam_id', $examId)->first();
-            if ($scoreTotal) {
-                $subject_ids = implode(
-                    ',', array_diff(explode(',', $scoreTotal->subject_ids), [$subjectId])
-                );
-                $scoreTotal->update([
-                    'subject_ids' => $subject_ids,
-                    'score'       => $scoreTotal->score - $score,
-                ]);
-            }
-        } catch (Exception $e) {
-            throw $e;
-        }
+        return $this->purge(['ScoreTotal'], 'id', 'purge', $id);
         
     }
     
@@ -366,18 +336,6 @@ class ScoreTotal extends Model {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 移除指定学生的总成绩记录
-     *
-     * @param $studentId
-     * @throws Exception
-     */
-    function removeStudent($studentId) {
-        
-        $this->whereStudentId($studentId)->delete();
         
     }
     

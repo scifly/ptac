@@ -1,14 +1,10 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 /**
  * Class DepartmentTag
@@ -36,65 +32,5 @@ class DepartmentTag extends Model {
     protected $table = 'departments_tags';
     
     protected $fillable = ['department_id', 'tag_id', 'enabled'];
-    
-    /**
-     * 保存指定部门所属的标签记录
-     *
-     * @param $departmentId
-     * @param array $tagIds
-     * @return bool
-     * @throws Throwable
-     */
-    function storeByDepartmentId($departmentId, array $tagIds) {
-        
-        try {
-            DB::transaction(function () use ($departmentId, $tagIds) {
-                $records = [];
-                foreach ($tagIds as $tagId) {
-                    $records[] = [
-                        'department_id' => $departmentId,
-                        'tag_id'  => $tagId,
-                        'enabled' => Constant::ENABLED,
-                    ];
-                }
-                $this->insert($records);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 保存指定标签所包含的部门记录
-     *
-     * @param $tagId
-     * @param array $departmentIds
-     * @return bool
-     * @throws Throwable
-     */
-    function storeByTagId($tagId, array $departmentIds) {
-        
-        try {
-            DB::transaction(function () use ($tagId, $departmentIds) {
-                $records = [];
-                foreach ($departmentIds as $departmentId) {
-                    $records[] = [
-                        'department_id' => $departmentId,
-                        'tag_id'  => $tagId,
-                        'enabled' => Constant::ENABLED,
-                    ];
-                }
-                $this->insert($records);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
     
 }

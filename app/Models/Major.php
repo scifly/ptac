@@ -134,10 +134,7 @@ class Major extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $major = $this->create($data);
-                (new MajorSubject)->store(
-                    'major_id', $major->id,
-                    $data['subject_ids'] ?? []
-                );
+                $this->retain('MajorSubject', $major->id, $data['subject_ids'] ?? []);
             });
         } catch (Exception $e) {
             throw $e;
@@ -160,10 +157,7 @@ class Major extends Model {
         try {
             DB::transaction(function () use ($data, $id) {
                 $this->find($id)->update($data);
-                (new MajorSubject)->store(
-                    'major_id', $id,
-                    $data['subject_ids'] ?? []
-                );
+                $this->retain('MajorSubject', $id, $data['subject_ids'] ?? []);
             });
         } catch (Exception $e) {
             throw $e;

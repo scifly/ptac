@@ -205,9 +205,9 @@ class Subject extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $subject = $this->create($data);
-                (new MajorSubject)->store(
-                    'subject_id', $subject->id,
-                    $data['major_ids'] ?? []
+                $this->retain(
+                    'MajorSubject', $subject->id,
+                    $data['subject_ids'] ?? [], false
                 );
             });
         } catch (Exception $e) {
@@ -231,9 +231,9 @@ class Subject extends Model {
         try {
             DB::transaction(function () use ($data, $id) {
                 $this->find($id)->update($data);
-                (new MajorSubject)->store(
-                    'subject_id', $id,
-                    $data['major_ids'] ?? []
+                $this->retain(
+                    'MajorSubject', $id,
+                    $data['subject_ids'] ?? [], false
                 );
             });
             

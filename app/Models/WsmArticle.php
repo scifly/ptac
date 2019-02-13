@@ -5,11 +5,11 @@ use App\Facades\Datatable;
 use App\Helpers\{HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Facades\{Request};
 use Illuminate\View\View;
+use Throwable;
 
 /**
  * App\Models\WsmArticle 微网站栏目文章
@@ -168,13 +168,11 @@ class WsmArticle extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        return $this->purge(['WsmArticle'], 'id', 'purge', $id);
         
     }
     

@@ -113,6 +113,39 @@ trait ModelTrait {
     }
     
     /**
+     * 保存绑定关系
+     *
+     * @param string $class
+     * @param $value
+     * @param array $ids
+     * @param bool $forward
+     * @return bool
+     * @throws Throwable
+     */
+    function retain(string $class, $value, array $ids, bool $forward = true) {
+    
+        DB::transaction(function () use ($class, $value, $ids, $forward) {
+            $model = $this->model($class);
+            $fields = array_merge($model->fillable, ['created_at', 'updated_at']);
+            $field = $fields[$forward ? 0 : 1];
+            $model->where($field, $value)->delete();
+            foreach ($ids as $id) {
+                $records[] = array_merge($fields, [
+                    $forward ? $value : $id,
+                    $forward ? $id : $value,
+                    Constant::ENABLED,
+                    now()->toDateTimeString(),
+                    now()->toDateTimeString(),
+                ]);
+            }
+            $model->insert($records ?? []);
+        });
+    
+        return true;
+        
+    }
+    
+    /**
      * 判断指定记录能否被删除
      *
      * @param Model $model

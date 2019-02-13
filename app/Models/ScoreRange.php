@@ -5,13 +5,13 @@ use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * App\Models\ScoreRange 分数统计范围
@@ -118,13 +118,11 @@ class ScoreRange extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        return $this->purge(['ScoreRange'], 'id', 'purge', $id);
         
     }
     

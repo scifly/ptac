@@ -259,16 +259,8 @@ class Score extends Model {
      */
     function remove($id = null) {
     
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge(['Score'], 'id', 'purge', $id);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        return $this->purge(['Score'], 'id', 'purge', $id);
     
-        return true;
-        
     }
     
     /**
@@ -1388,18 +1380,6 @@ class Score extends Model {
                 }
             }, $ids, ['class_rank', 'grade_rank']
         );
-        
-    }
-    
-    /**
-     * 移除指定学生的成绩记录
-     *
-     * @param $studentId
-     * @throws Exception
-     */
-    function removeStudent($studentId) {
-        
-        $this->whereStudentId($studentId)->delete();
         
     }
     

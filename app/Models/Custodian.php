@@ -430,15 +430,9 @@ class Custodian extends Model {
             true
         );
         # 更新监护人&学生关系
-        (new CustodianStudent)->storeByCustodianId(
-            $custodian->id,
-            $data['relationships'] ?? []
-        );
+        (new CustodianStudent)->store($custodian->id, $data['relationships'] ?? []);
         # 更新监护人手机号码
-        (new Mobile)->store(
-            $data['mobile'],
-            $custodian->user->id
-        );
+        (new Mobile)->store($data['mobile'], $custodian->user->id);
         
     }
     

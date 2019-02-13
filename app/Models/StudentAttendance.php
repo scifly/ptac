@@ -332,10 +332,7 @@ class StudentAttendance extends Model {
      */
     function remove($id = null) {
         
-        return $this->purge(
-            ['StudentAttendance'],
-            'id', 'purge', $id
-        );
+        return $this->purge(['StudentAttendance'], 'id', 'purge', $id);
         
     }
     

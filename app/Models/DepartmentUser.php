@@ -48,7 +48,7 @@ class DepartmentUser extends Model {
      * @throws Throwable
      */
     function storeByUserId($userId, array $departmentIds, $custodian = null) {
-        
+
         try {
             DB::transaction(function () use ($userId, $departmentIds, $custodian) {
                 $enabled = $custodian ? Constant::DISABLED : Constant::ENABLED;

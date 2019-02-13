@@ -33,39 +33,6 @@ class MajorSubject extends Model {
     
     protected $table = 'majors_subjects';
     
-    protected $fillable = ['major_id', 'subject_id'];
-    
-    /**
-     * 保存专业 & 科目绑定关系
-     *
-     * @param string $field
-     * @param $value
-     * @param array $ids
-     * @return bool
-     * @throws Throwable
-     */
-    function store(string $field, $value, array $ids) {
-    
-        try {
-            DB::transaction(function () use ($field, $value, $ids) {
-                $this->where($field, $value)->delete();
-                $records = [];
-                foreach ($ids as $id) {
-                    $records[] = array_merge(Constant::MS_FIELDS, [
-                        $field == 'major_id' ? $value : $id,
-                        $field == 'major_id' ? $id : $value,
-                        now()->toDateTimeString(),
-                        now()->toDateTimeString(),
-                    ]);
-                }
-                $this->insert($records);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-    
-        return true;
-        
-    }
+    protected $fillable = ['major_id', 'subject_id', 'enabled'];
     
 }

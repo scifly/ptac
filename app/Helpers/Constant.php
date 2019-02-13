@@ -302,21 +302,28 @@ class Constant {
     ];
     
     # field names
-    const USER_FIELDS = ['username', 'group_id', 'password', 'realname', 'gender', 'userid', 'position', 'enabled'];
+    const USER_FIELDS = [
+        'username', 'group_id', 'password', 'realname',
+        'gender', 'userid', 'position', 'enabled'
+    ];
     const EDUCATOR_FIELDS = ['user_id', 'school_id', 'sms_quote', 'enabled'];
     const STUDENT_FIELDS = [
-        'user_id', 'class_id', 'student_number', 'card_number', 'oncampus', 'birthday', 'remark', 'enabled',
+        'user_id', 'class_id', 'student_number', 'card_number',
+        'oncampus', 'birthday', 'remark', 'enabled',
     ];
     const CUSTODIAN_FIELDS = ['user_id', 'enabled'];
     const MOBILE_FIELDS = ['user_id', 'mobile', 'isdefault', 'enabled'];
-    const SCORE_FIELDS = ['student_id', 'subject_id', 'exam_id', 'class_rank', 'grade_rank', 'score', 'enabled'];
+    const SCORE_FIELDS = [
+        'student_id', 'subject_id', 'exam_id', 'class_rank',
+        'grade_rank', 'score', 'enabled'
+    ];
     const MESSAGE_FIELDS = [
         'comm_type_id', 'media_type_id', 'app_id', 'msl_id', 'title', 'content', 'serviceid', 'message_id',
         'url', 'media_ids', 's_user_id', 'r_user_id', 'message_type_id', 'read', 'sent'
     ];
     const EVENT_FIELDS = [
-        'title', 'remark', 'location', 'contact', 'url', 'start', 'end', 'ispublic', 'iscourse', 'educator_id',
-        'subject_id', 'alertable', 'alert_mins', 'user_id', 'enabled'
+        'title', 'remark', 'location', 'contact', 'url', 'start', 'end', 'ispublic', 'iscourse',
+        'educator_id', 'subject_id', 'alertable', 'alert_mins', 'user_id', 'enabled'
     ];
     const CS_FIELDS = ['custodian_id', 'student_id', 'relationship', 'created_at', 'updated_at', 'enabled'];
     const DU_FIELDS = ['department_id', 'user_id', 'enabled'];
@@ -325,12 +332,7 @@ class Constant {
         'student_id', 'sas_id', 'punch_time', 'inorout', 'attendance_machine_id',
         'media_id', 'status', 'longitude', 'latitude'
     ];
-    const AG_FIELDS = ['group_id', 'action_id', 'created_at', 'updated_at', 'enabled'];
-    const GM_FIELDS = ['group_id', 'menu_id', 'created_at', 'updated_at', 'enabled'];
-    const GT_FIELDS = ['group_id', 'tab_id', 'created_at', 'updated_at', 'enabled'];
-    const MS_FIELDS = ['major_id', 'subject_id', 'created_at', 'updated_at'];
     const MT_FIELDS = ['menu_id', 'tab_id', 'created_at', 'updated_at', 'enabled'];
-    
     
     const MEMBER_FIELDS = [
         'userid', 'username', 'position', 'name', 'english_name',

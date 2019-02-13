@@ -7,12 +7,11 @@ use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * App\Models\PollQuestionnaireSubjectChoice 调查问卷题目选项
@@ -150,13 +149,11 @@ class PollQuestionnaireSubjectChoice extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        return $this->purge([class_basename($this)], 'id', 'purge', $id);
         
     }
     

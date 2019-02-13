@@ -5,12 +5,9 @@ use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -108,20 +105,6 @@ class ProcedureStep extends Model {
     }
     
     /**
-     * 返回指定审批流程步骤相关的审批者用户
-     *
-     * @param string $d
-     * @return string
-     */
-    private function userList($d) {
-    
-        $userList = User::whereIn('id', explode(',', $d))->pluck('realname')->toArray();
-        
-        return implode(',', $userList);
-        
-    }
-    
-    /**
      * 保存审批流程步骤
      *
      * @param array $data
@@ -133,8 +116,6 @@ class ProcedureStep extends Model {
         
     }
     
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-
     /**
      * 更新审批流程步骤
      *
@@ -155,41 +136,26 @@ class ProcedureStep extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        return $this->purge(['ProcedureStep'], 'id', 'purge', $id);
         
     }
     
     /**
-     * 从审批流程步骤中删除指定的用户
+     * 返回指定审批流程步骤相关的审批者用户
      *
-     * @param $userId
-     * @throws Throwable
+     * @param string $d
+     * @return string
      */
-    function removeUser($userId) {
+    private function userList($d) {
         
-        try {
-            DB::transaction(function () use ($userId) {
-                $condition = $userId . ' IN (approver_user_ids) OR ' . $userId . ' IN (related_user_ids)';
-                $pses = $this->whereRaw($condition)->get();
-                foreach ($pses as $ps) {
-                    $user_ids = array_map(function ($field) use ($ps, $userId) {
-                        return implode(',', array_diff(explode(',', $ps->{$field}), [$userId]));
-                    }, ['approver_user_ids', 'related_user_ids']);
-                    $ps->update([
-                        'approver_user_ids' => $user_ids[0],
-                        'related_user_ids'  => $user_ids[1],
-                    ]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $userList = User::whereIn('id', explode(',', $d))
+            ->pluck('realname')->toArray();
+        
+        return implode(',', $userList);
         
     }
     

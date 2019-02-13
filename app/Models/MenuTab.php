@@ -40,25 +40,27 @@ class MenuTab extends Model {
     /**
      * 保存菜单 & 卡片绑定关系
      *
-     * @param string $field
      * @param $value
      * @param array $ids
+     * @param bool $forward
      * @return bool
      * @throws Throwable
      */
-    function store(string $field, $value, array $ids) {
+    function store($value, array $ids, $forward = true) {
         
         try {
-            DB::transaction(function () use ($field, $value, $ids) {
+            DB::transaction(function () use ($value, $ids, $forward) {
+                $field = $this->fillable[$forward ? 0 : 1];
+                $fields = array_merge($this->fillable, ['created_at', 'updated_at']);
                 $this->where($field, $value)->delete();
                 $records = [];
                 foreach ($ids as $id) {
-                    $records[] = array_merge(Constant::MT_FIELDS, [
-                        $field == 'menu_id' ? $value : $id,
-                        $field == 'menu_id' ? $id : $value,
+                    $records[] = array_merge($fields, [
+                        $forward ? $value : $id,
+                        $forward ? $id : $value,
+                        null, Constant::ENABLED,
                         now()->toDateTimeString(),
-                        now()->toDateTimeString(),
-                        Constant::ENABLED
+                        now()->toDateTimeString()
                     ]);
                 }
                 $this->insert($records);

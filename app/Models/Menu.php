@@ -226,7 +226,7 @@ class Menu extends Model {
                 $data['position'] = $this->all()->max('position') + 1;
                 $menu = $this->create($data);
                 $tabIds = $data['tab_ids'] ?? [];
-                (new MenuTab)->store('menu_id', $menu->id, $tabIds);
+                (new MenuTab)->store($menu->id, $tabIds);
             });
         } catch (Exception $e) {
             throw $e;
@@ -284,7 +284,7 @@ class Menu extends Model {
                 $uri = $data['uri'] ?? '';
                 if (empty($uri)) {
                     if (!empty($tabIds)) {
-                        $menu->children->count() ?: $menuTab->store('menu_id', $id, $tabIds);
+                        $menu->children->count() ?: $menuTab->store($id, $tabIds);
                     } else {
                         $enabledSubMenus = $menu->children->filter(
                             function (Menu $menu) { return $menu->enabled; }

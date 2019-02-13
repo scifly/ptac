@@ -534,20 +534,27 @@ class User extends Authenticatable {
                             }, $ids
                         )
                     );
+                    Request::replace(['ids' => $ids]);
+                    $this->purge(
+                        array_fill(0, 2, 'ProcedureStep'),
+                        ['approver_user_ids', 'related_user_ids'], 'clear'
+                    );
+                    $this->purge(
+                        array_fill(0, 2, 'ProcedureLog'),
+                        ['initiator_user_id', 'operator_user_id'], 'reset'
+                    );
                     $this->purge([
                         class_basename($this), 'DepartmentUser', 'TagUser',
                         'Tag', 'Mobile', 'PollQuestionnaire', 'MessageReply',
                         'PollQuestionnaireAnswer', 'PollQuestionnaireParticipant'
                     ], 'user_id');
                 } else {
-                    array_map(
-                        function ($id) {
-                            $mt = MessageType::whereUserId($id)->first();
-                            Message::whereMessageTypeId($mt->id)->update(['message_type_id' => 0]);
-                            $mt->delete();
-                            $this->find($id)->delete();
-                        }, $ids
-                    );
+                    $mtIds = MessageType::whereIn('user_id', $ids)
+                        ->pluck('id')->toArray();
+                    Request::replace(['ids' => $mtIds]);
+                    (new MessageType)->remove();
+                    Request::replace(['ids' => $ids]);
+                    $this->purge(['User'], 'id');
                 }
             });
         } catch (Exception $e) {

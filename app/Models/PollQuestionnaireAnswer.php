@@ -1,13 +1,13 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * App\Models\PollQuestionnaireAnswer 调查问卷答案
@@ -37,6 +37,8 @@ use Illuminate\Support\Facades\Request;
  * @mixin Eloquent
  */
 class PollQuestionnaireAnswer extends Model {
+    
+    use ModelTrait;
     
     protected $table = 'poll_questionnaire_answers';
     
@@ -101,13 +103,11 @@ class PollQuestionnaireAnswer extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        return $this->purge([class_basename($this)], 'id', 'purge', $id);
         
     }
     

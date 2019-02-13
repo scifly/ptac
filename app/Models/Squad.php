@@ -245,31 +245,6 @@ class Squad extends Model {
     }
     
     /**
-     * 更新指定教职员工的班级主任任职记录
-     *
-     * @param $educatorId
-     * @return bool
-     * @throws Throwable
-     */
-    function removeEducator($educatorId) {
-        
-        try {
-            DB::transaction(function () use ($educatorId) {
-                $classes = $this->whereRaw($educatorId . ' IN (educator_ids)')->get();
-                foreach ($classes as $class) {
-                    $educatorIds = array_diff(explode(',', $class->educator_ids), [$educatorId]);
-                    $class->update(['educator_ids' => implode(',', $educatorIds)]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
      * 返回指定班级包含的学生列表html
      *
      * @param $id

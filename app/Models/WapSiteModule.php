@@ -6,12 +6,10 @@ use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Throwable;
@@ -145,19 +143,11 @@ class WapSiteModule extends Model {
      */
     function remove($id = null) {
     
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge(
-                    [class_basename($this), 'WsmArticle'],
-                    'wsm_id', 'purge', $id
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        return $this->purge(
+            [class_basename($this), 'WsmArticle'],
+            'wsm_id', 'purge', $id
+        );
     
-        return true;
-        
     }
     
     /** 微信端 ------------------------------------------------------------------------------------------------------- */

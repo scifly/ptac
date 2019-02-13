@@ -185,7 +185,7 @@ class Tab extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $tab = $this->create($data);
-                (new MenuTab)->store('tab_id', $tab->id, $data['menu_ids']);
+                (new MenuTab)->store($tab->id, $data['menu_ids'], false);
             });
         } catch (Exception $e) {
             throw $e;
@@ -207,14 +207,11 @@ class Tab extends Model {
     function modify(array $data, $id = null) {
         
         if (isset($id)) {
-            if (!($tab = self::find($id))) return false;
+            if (!($tab = $this->find($id))) return false;
             try {
                 DB::transaction(function () use ($data, $id, $tab) {
                     $tab->update($data);
-                    $menuIds = $data['menu_ids'];
-                    $menuTab = new MenuTab();
-                    $menuTab::whereTabId($id)->delete();
-                    $menuTab->store('tab_id', $id, $menuIds);
+                    (new MenuTab)->store($id, $data['menu_ids'], false);
                 });
             } catch (Exception $e) {
                 throw $e;
@@ -224,7 +221,7 @@ class Tab extends Model {
             $action = Request::input('action');
             
             return $this->whereIn('id', $ids)->update([
-                'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED,
+                'enabled' => $action == 'enable' ? 1 : 0
             ]);
         }
         
@@ -241,19 +238,8 @@ class Tab extends Model {
      */
     function remove($id = null) {
     
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge(
-                    ['Tab', 'MenuTab'],
-                    'tab_id', 'purge', $id
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        return $this->purge(['Tab', 'MenuTab'], 'tab_id', 'purge', $id);
     
-        return true;
-        
     }
     
     /**

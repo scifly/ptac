@@ -40,66 +40,6 @@ class TagUser extends Model {
     protected $fillable = ['tag_id', 'user_id', 'enabled'];
     
     /**
-     * 保存指定用户所属的标签记录
-     *
-     * @param $userId
-     * @param array $tagIds
-     * @return bool
-     * @throws Throwable
-     */
-    function storeByUserId($userId, array $tagIds) {
-        
-        try {
-            DB::transaction(function () use ($userId, $tagIds) {
-                $records = [];
-                foreach ($tagIds as $tagId) {
-                    $records[] = [
-                        'user_id' => $userId,
-                        'tag_id'  => $tagId,
-                        'enabled' => Constant::ENABLED,
-                    ];
-                }
-                $this->insert($records);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 保存指定标签所包含的用户记录
-     *
-     * @param $tagId
-     * @param array $userIds
-     * @return bool
-     * @throws Throwable
-     */
-    function storeByTagId($tagId, array $userIds) {
-        
-        try {
-            DB::transaction(function () use ($tagId, $userIds) {
-                $records = [];
-                foreach ($userIds as $userId) {
-                    $records[] = [
-                        'user_id' => $userId,
-                        'tag_id'  => $tagId,
-                        'enabled' => Constant::ENABLED,
-                    ];
-                }
-                $this->insert($records);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
      * 删除标签
      *
      * @param null $id
@@ -107,17 +47,9 @@ class TagUser extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge(['TagUser'], 'id', 'purge', $id);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
+    
+        return $this->purge(['TagUser'], 'id', 'purge', $id);
+    
     }
     
 }

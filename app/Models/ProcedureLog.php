@@ -2,15 +2,13 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
+use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -54,6 +52,8 @@ use Throwable;
  * @mixin Eloquent
  */
 class ProcedureLog extends Model {
+    
+    use ModelTrait;
     
     // todo: needs to be refactored
     const DT_PEND = '<span class="badge bg-orange">%s</span>';
@@ -216,32 +216,11 @@ class ProcedureLog extends Model {
      *
      * @param null $id
      * @return bool|null
-     * @throws \Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-        
-    }
-    
-    /**
-     * 从审批流程日志中删除用户数据
-     *
-     * @param $userId
-     * @throws Throwable
-     */
-    function removeUser($userId) {
-        
-        try {
-            DB::transaction(function () use ($userId) {
-                $this->where('initiator_user_id', $userId)->delete();
-                $this->where('operator_user_id', $userId)->update(['operator_user_id' => 0]);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        return $this->purge(['ProcedureLog'], 'id', 'purge', $id);
         
     }
     

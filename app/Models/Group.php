@@ -166,7 +166,7 @@ class Group extends Model {
      * @param array $data
      * @return bool
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function store(array $data) {
         
@@ -178,9 +178,7 @@ class Group extends Model {
                     'enabled'   => $data['enabled'],
                     'school_id' => $data['school_id'],
                 ]);
-                (new ActionGroup)->storeByGroupId($group->id, $data['action_ids']);
-                (new GroupMenu)->storeByGroupId($group->id, $data['menu_ids']);
-                (new GroupTab)->storeByGroupId($group->id, $data['tab_ids']);
+                $this->binding($group->id, $data);
             });
         } catch (Exception $e) {
             throw $e;
@@ -196,8 +194,7 @@ class Group extends Model {
      * @param array $data
      * @param $id
      * @return bool
-     * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function modify(array $data, $id) {
         
@@ -208,9 +205,7 @@ class Group extends Model {
                     'remark'  => $data['remark'],
                     'enabled' => $data['enabled'],
                 ]);
-                (new ActionGroup)->storeByGroupId($id, $data['action_ids']);
-                (new GroupMenu)->storeByGroupId($id, $data['menu_ids']);
-                (new GroupTab)->storeByGroupId($id, $data['tab_ids']);
+                $this->binding($id, $data);
             });
         } catch (Exception $e) {
             throw $e;
@@ -269,6 +264,28 @@ class Group extends Model {
             'school_id' => $this->schoolId(),
             'enabled'   => 1,
         ])->pluck('name', 'id')->toArray();
+        
+    }
+    
+    /**
+     * 保存角色 & 功能/菜单/卡片绑定关系
+     *
+     * @param $id
+     * @param array $data
+     */
+    private function binding($id, array $data) {
+    
+        array_map(
+            function ($class, $ids, $forward) use ($id, $data) {
+                $this->retain($class, $id, $data[$ids], $forward);
+            }, [
+                'ActionGroup', 'GroupMenu', 'GroupTab'
+            ], [
+                'action_ids', 'menu_ids', 'tab_ids'
+            ], [
+                false, true, true
+            ]
+        );
         
     }
     
