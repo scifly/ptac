@@ -387,16 +387,17 @@ class User extends Authenticatable {
         try {
             DB::transaction(function () use ($data) {
                 $data['user']['password'] = bcrypt($data['user']['password']);
-                $user = $this->create($data['user'] ?? $data);
+                $mobiles = $data['mobile'];
+                unset($data['user']['mobile']);
+                $user = $this->create($data['user']);
                 # 如果角色为校级管理员，则同时创建教职员工记录
                 if (!in_array($this->role($user->id), Constant::NON_EDUCATOR)) {
                     $data['user_id'] = $user->id;
                     Educator::create($data);
                 }
-                (new Mobile)->store($data['mobile'], $user->id);
+                (new Mobile)->store($mobiles, $user->id);
                 (new DepartmentUser)->storeByUserId($user->id, [$this->departmentId($data)]);
                 $group = Group::find($data['user']['group_id']);
-                
                 $this->sync([
                     [$user->id, $group->name, 'create']
                 ]);
