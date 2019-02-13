@@ -9,7 +9,6 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
-    Model,
     Relations\BelongsTo,
     Relations\BelongsToMany,
     Relations\HasMany,
@@ -17,9 +16,8 @@ use Illuminate\Database\Eloquent\{Builder,
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Notifications\{DatabaseNotification, DatabaseNotificationCollection, Notifiable};
-use Illuminate\Support\Facades\{Auth, DB, Hash, Log, Request};
+use Illuminate\Support\Facades\{Auth, DB, Hash, Request};
 use Laravel\Passport\{Client, HasApiTokens, Token};
-use ReflectionClass;
 use Throwable;
 
 /**
@@ -385,48 +383,33 @@ class User extends Authenticatable {
         
         try {
             DB::transaction(function () use ($data) {
-                $data['user']['password'] = bcrypt($data['user']['password']);
-                $mobiles = $data['mobile'];
-                unset($data['user']['mobile']);
-                $user = $this->create($data['user']);
-                # 如果角色为校级管理员，则同时创建教职员工记录
-                if (!in_array($this->role($user->id), Constant::NON_EDUCATOR)) {
-                    $data['user_id'] = $user->id;
-                    Educator::create($data);
+                # 创建超级用户(运营/企业/学校)
+                if ($data['group_id'] != Group::whereName('api')->first()->id) {
+                    $data['user']['password'] = bcrypt($data['user']['password']);
+                    $mobiles = $data['mobile'];
+                    unset($data['user']['mobile']);
+                    $user = $this->create($data['user']);
+                    # 如果角色为校级管理员，则同时创建教职员工记录
+                    if (!in_array($this->role($user->id), Constant::NON_EDUCATOR)) {
+                        $data['user_id'] = $user->id;
+                        Educator::create($data);
+                    }
+                    (new Mobile)->store($mobiles, $user->id);
+                    (new DepartmentUser)->storeByUserId($user->id, [$this->departmentId($data)]);
+                    $group = Group::find($data['user']['group_id']);
+                    $this->sync([
+                        [$user->id, $group->name, 'create']
+                    ]);
+                # 创建合作伙伴(api用户)
+                } else {
+                    $partner = $this->create($data);
+                    MessageType::create([
+                        'name'    => $partner->realname,
+                        'user_id' => $partner->id,
+                        'remark'  => $partner->realname . '接口消息',
+                        'enabled' => 0 # 不会显示在消息中心“消息类型”下拉列表中
+                    ]);
                 }
-                (new Mobile)->store($mobiles, $user->id);
-                (new DepartmentUser)->storeByUserId($user->id, [$this->departmentId($data)]);
-                $group = Group::find($data['user']['group_id']);
-                $this->sync([
-                    [$user->id, $group->name, 'create']
-                ]);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 保存合作伙伴
-     *
-     * @param array $data
-     * @return bool
-     * @throws Throwable
-     */
-    function pStore(array $data) {
-        
-        try {
-            DB::transaction(function () use ($data) {
-                $partner = $this->create($data);
-                MessageType::create([
-                    'name'    => $partner->realname,
-                    'user_id' => $partner->id,
-                    'remark'  => $partner->realname . '接口消息',
-                    'enabled' => 0 # 不会显示在消息中心“消息类型”下拉列表中
-                ]);
             });
         } catch (Exception $e) {
             throw $e;
@@ -448,75 +431,58 @@ class User extends Authenticatable {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                if (!$id) {
-                    !Request::has('action')
-                        ?: $data = ['enabled' => Request::input('action') == 'enable' ? 1 : 0];
-                    $this->whereIn('id', $ids)->update($data);
-                } else {
-                    $user = $this->find($id);
-                    $mobile = $data['mobile'];
-                    if (isset($data['enabled'])) unset($data['mobile']);
-                    $user->update($data);
-                    $role = isset($data['group_id']) ? Group::find($data['group_id'])->name : null;
-                    if ($role && $role == '学校') {
-                        abort_if(
-                            $user->educator && $user->educator->school_id != $data['school_id'],
-                            HttpStatusCode::NOT_ACCEPTABLE,
-                            __('messages.educator.switch_school_not_allowed')
-                        );
-                        Educator::updateOrCreate(
-                            ['user_id' => $id],
-                            ['enabled' => $data['enabled']]
-                        );
-                    }
-                    if (isset($data['enabled'])) {
-                        (new Mobile)->store($mobile, $user->id);
-                        (new DepartmentUser)->store($user->id, $this->departmentId($data));
+                # 更新超级用户(运营/企业/学校)
+                if ($data['group_id'] != Group::whereName('api')->first()->id) {
+                    $ids = $id ? [$id] : array_values(Request::input('ids'));
+                    if (!$id) {
+                        !Request::has('action')
+                            ?: $data = ['enabled' => Request::input('action') == 'enable' ? 1 : 0];
+                        $this->whereIn('id', $ids)->update($data);
                     } else {
-                        Mobile::where(['user_id' => $user->id, 'isdefault' => 1])
-                            ->update(['mobile' => $mobile]);
+                        $user = $this->find($id);
+                        $mobile = $data['mobile'];
+                        if (isset($data['enabled'])) unset($data['mobile']);
+                        $user->update($data);
+                        $role = isset($data['group_id']) ? Group::find($data['group_id'])->name : null;
+                        if ($role && $role == '学校') {
+                            abort_if(
+                                $user->educator && $user->educator->school_id != $data['school_id'],
+                                HttpStatusCode::NOT_ACCEPTABLE,
+                                __('messages.educator.switch_school_not_allowed')
+                            );
+                            Educator::updateOrCreate(
+                                ['user_id' => $id],
+                                ['enabled' => $data['enabled']]
+                            );
+                        }
+                        if (isset($data['enabled'])) {
+                            (new Mobile)->store($mobile, $user->id);
+                            (new DepartmentUser)->store($user->id, $this->departmentId($data));
+                        } else {
+                            Mobile::where(['user_id' => $user->id, 'isdefault' => 1])
+                                ->update(['mobile' => $mobile]);
+                        }
                     }
-                }
-                # 同步企业微信会员
-                $this->sync(
-                    array_map(
-                        function ($userId) {
-                            return [$userId, $this->role($userId), 'update'];
-                        }, $ids
-                    )
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 更新合作伙伴
-     *
-     * @param array $data
-     * @param null $id
-     * @return bool
-     * @throws Throwable
-     */
-    function pModify(array $data, $id = null) {
-        
-        try {
-            DB::transaction(function () use ($data, $id) {
-                if ($id) {
-                    $this->find($id)->update($data);
-                    $messageType = MessageType::whereUserId($id)->first();
-                    $messageType->update([
-                        'name'    => $data['realname'],
-                        'remark'  => $data['realname'] . '接口消息',
-                        'enabled' => 0,
-                    ]);
+                    # 同步企业微信会员
+                    $this->sync(
+                        array_map(
+                            function ($userId) {
+                                return [$userId, $this->role($userId), 'update'];
+                            }, $ids
+                        )
+                    );
+                # 更新合作伙伴(api)
                 } else {
-                    $this->batch($this);
+                    if ($id) {
+                        $this->find($id)->update($data);
+                        MessageType::whereUserId($id)->first()->update([
+                            'name'    => $data['realname'],
+                            'remark'  => $data['realname'] . '接口消息',
+                            'enabled' => 0,
+                        ]);
+                    } else {
+                        $this->batch($this);
+                    }
                 }
             });
         } catch (Exception $e) {
@@ -592,64 +558,6 @@ class User extends Authenticatable {
         
     }
     
-    /**
-     * 删除联系人(学生、监护人、教职员工）及所有相关数据
-     *
-     * @param Model $contact
-     * @param null $id
-     * @return bool
-     * @throws Throwable
-     */
-    function clean(Model $contact, $id = null) {
-        
-        try {
-            DB::transaction(function () use ($contact, $id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $type = lcfirst((new ReflectionClass($contact))->getShortName());
-                abort_if(
-                    !empty($ids) && empty(array_intersect(
-                        array_values($ids),
-                        array_map('strval', $this->contactIds($type))
-                    )),
-                    HttpStatusCode::NOT_ACCEPTABLE,
-                    __('messages.unauthorized')
-                );
-                # 删除企业微信会员
-                if ($type != 'student') {
-                    $user = $contact->{'find'}($id)->user;
-                    $this->sync(array_map(
-                        function ($userId) use ($type, $user) {
-                            if ($type == 'custodian' && $user->educator) {
-                                $method = 'update';
-                                $user->{$method}([
-                                    'position' => $user->group->name
-                                ]);
-                            } elseif ($type == 'educator' && $user->custodian) {
-                                $method = 'update';
-                                $user->{$method}([
-                                    'position' => '监护人',
-                                    'group_id' => Group::whereName('监护人')->first()->id
-                                ]);
-                            }
-                            return [
-                                $userId,
-                                $type == 'custodian' ? '监护人' : '',
-                                $method ?? 'delete'
-                            ];
-                        }, $contact->{'whereIn'}('id', $ids)->pluck('user_id')->toArray()
-                    ));
-                }
-                # 删除本地联系人
-                foreach ($ids as $id) $contact->{'purge'}($id);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
     /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 同步企业微信会员
@@ -686,7 +594,7 @@ class User extends Authenticatable {
                     'enable'       => $user->enabled,
                 ]);
                 # 在创建会员时，默认情况下不向该会员发送邀请
-                $method != 'create' ?: $params = array_merge($params, ['to_invite' => false]);
+                // $method != 'create' ?: $params = array_merge($params, ['to_invite' => false]);
             }
             $members[] = [$params, $method];
         }
@@ -713,20 +621,19 @@ class User extends Authenticatable {
         );
         $result = ['statusCode' => HttpStatusCode::OK];
         # 获取企业和学校列表
-        $corpId = 0;
         if ($field == 'group_id') {
-            $role = Group::find($value)->name;
-            $corps = $this->corps();
-            $result['corpList'] = $this->selectList($corps, 'corp_id');
-            if ($role == '学校') {
+            $result['corpList'] = $this->selectList(
+                $corps = $this->corps(), 'corp_id'
+            );
+            if (Group::find($value)->name == '学校') {
                 reset($corps);
                 $corpId = key($corps);
             }
         } else {
             $corpId = $value;
         }
-        $condition = ['corp_id' => $corpId, 'enabled' => 1];
-        $schools = !$corpId ? [] : School::where($condition)->pluck('name', 'id');
+        $condition = ['corp_id' => $corpId ?? 0, 'enabled' => 1];
+        $schools = !($corpId ?? 0) ? [] : School::where($condition)->pluck('name', 'id');
         $result['schoolList'] = $this->selectList($schools->toArray(), 'school_id');
         
         return response()->json($result);

@@ -64,7 +64,7 @@ class PartnerController extends Controller {
     public function store(PartnerRequest $request) {
         
         return $this->result(
-            $this->partner->pStore(
+            $this->partner->store(
                 $request->all()
             )
         );
@@ -97,7 +97,7 @@ class PartnerController extends Controller {
     public function update(PartnerRequest $request, $id = null) {
         
         return $this->result(
-            $this->partner->pModify(
+            $this->partner->modify(
                 $request->all(), $id
             )
         );

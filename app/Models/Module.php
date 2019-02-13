@@ -19,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
+use Throwable;
 
 /**
  * App\Models\Module - 应用模块
@@ -192,20 +193,22 @@ class Module extends Model {
      * @param $id
      * @return bool
      */
-    function modify(array $data, $id) {
+    function modify(array $data, $id = null) {
         
         return $this->find($id)->update($data);
         
     }
     
     /**
+     * （批量）删除应用模块
+     *
      * @param $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        return $this->find($id)->delete();
+        return $this->purge(['Module'], 'id', 'purge', $id);
         
     }
     

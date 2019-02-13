@@ -418,22 +418,18 @@ class School extends Model {
                 $classes = [
                     'AttendanceMachine', 'ConferenceRoom',
                     'ComboType', 'ExamType', 'EducatorAttendanceSetting',
-                    'Grade', 'Group', 'Major', 'PollQuestionnaire',
-                    'Procedure', 'Semester', 'Subject', 'Tag',
-                    'WapSite', 'Educator', 'Department', 'Menu'
+                    'Grade', 'Group', 'Major', 'Module',
+                    'PollQuestionnaire', 'Procedure',
+                    'Semester', 'Subject', 'Tag', 'WapSite',
+                    'Educator', 'Department', 'Menu'
                 ];
                 array_map(
                     function ($class) use ($ids) {
                         $model = $this->model($class);
-                        if (in_array($class, ['Department', 'Menu'])) {
-                            $obj = $this;
-                            $_id = 'id';
-                            $field = $class == 'Menu' ? 'menu_id' : 'department_id';
-                        } else {
-                            $obj = $model;
-                            $_id = 'school_id';
-                            $field = 'id';
-                        }
+                        $isDM = in_array($class, ['Department', 'Menu']);
+                        $obj = $isDM ? $this : $model;
+                        $_id = $isDM ? 'id' : 'school_id';
+                        $field = $isDM ? ($class == 'Menu' ? 'menu_id' : 'department_id') : 'id';
                         Request::replace(['ids' => $obj->whereIn($_id, $ids)->pluck($field)->toArray()]);
                         $model->remove();
                     }, $classes
@@ -456,7 +452,8 @@ class School extends Model {
      */
     function gradeList() {
         
-        $grades = Grade::whereIn('id', $this->gradeIds())->pluck('name', 'id')->toArray();
+        $grades = Grade::whereIn('id', $this->gradeIds())
+            ->pluck('name', 'id')->toArray();
         reset($grades);
         
         return [
