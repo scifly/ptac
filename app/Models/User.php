@@ -383,7 +383,6 @@ class User extends Authenticatable {
      */
     function store(array $data) {
         
-        Log::info('data', $data);
         try {
             DB::transaction(function () use ($data) {
                 $data['user']['password'] = bcrypt($data['user']['password']);
