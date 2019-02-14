@@ -74,7 +74,7 @@ class CustodianStudent extends Model {
                 $field = $this->fillable[$forward ? 0 : 1];
                 $this->where($field, $value)->delete();
                 foreach ($relationships as $id => $relationship) {
-                    $records[] = array_merge(Constant::CS_FIELDS, [
+                    $records[] = array_combine(Constant::CS_FIELDS, [
                         $forward ? $value : $id,
                         $forward ? $id : $value,
                         $relationship,
