@@ -588,8 +588,7 @@ class User extends Authenticatable {
             ];
             if ($method != 'delete') {
                 $departments = !in_array($role, ['运营', '企业'])
-                    ? $this->depts($userId)->pluck('id')->toArray() : [1];
-                Log::info('departments: ', $departments);
+                    ? $this->depts($userId, $role)->pluck('id')->toArray() : [1];
                 $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
                 $params = array_merge($params, [
                     'name'         => $user->realname,
@@ -669,13 +668,14 @@ class User extends Authenticatable {
      * 返回指定用户直属的部门集合
      *
      * @param null $id
+     * @param string $role
      * @return Department[]|Collection
      */
-    function depts($id = null) {
+    function depts($id = null, $role = '') {
         
         $id = $id ?? Auth::id();
         $user = $this->find($id);
-        $role = $this->role($id);
+        $role = !empty($role) ? $role : $this->role($id);
         if (in_array($role, Constant::NON_EDUCATOR) && $role != '监护人') {
             return $user->departments;
         }
