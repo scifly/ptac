@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\{Builder,
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Notifications\{DatabaseNotification, DatabaseNotificationCollection, Notifiable};
-use Illuminate\Support\Facades\{Auth, DB, Hash, Request};
+use Illuminate\Support\Facades\{Auth, DB, Hash, Log, Request};
 use Laravel\Passport\{Client, HasApiTokens, Token};
 use Throwable;
 
@@ -589,6 +589,7 @@ class User extends Authenticatable {
             if ($method != 'delete') {
                 $departments = !in_array($role, ['运营', '企业'])
                     ? $this->depts($userId)->pluck('id')->toArray() : [1];
+                Log::info('departments: ', $departments);
                 $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
                 $params = array_merge($params, [
                     'name'         => $user->realname,
