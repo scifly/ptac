@@ -588,7 +588,7 @@ class User extends Authenticatable {
             ];
             if ($method != 'delete') {
                 $departments = !in_array($role, ['运营', '企业'])
-                    ? $this->depts($userId, $role)->pluck('id')->toArray() : [1];
+                    ? /*$this->depts($userId, $role)*/$user->departments->pluck('id')->toArray() : [1];
                 $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
                 $params = array_merge($params, [
                     'name'         => $user->realname,
