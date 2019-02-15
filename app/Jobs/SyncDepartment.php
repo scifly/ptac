@@ -3,7 +3,7 @@ namespace App\Jobs;
 
 use App\Facades\Wechat;
 use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
-use App\Models\{Corp, Department, DepartmentTag, DepartmentUser, User};
+use App\Models\{Corp, Department, DepartmentUser, User};
 use Exception;
 use Illuminate\{Bus\Queueable,
     Contracts\Queue\ShouldQueue,
@@ -46,7 +46,7 @@ class SyncDepartment implements ShouldQueue {
             $userId, Constant::SYNC_ACTIONS[$action] . '企业微信部门',
             HttpStatusCode::OK, __('messages.ok'),
         ]);
-    
+        
     }
     
     /**
@@ -64,16 +64,16 @@ class SyncDepartment implements ShouldQueue {
                     $ids = $this->remove();
                     # 删除部门&用户绑定关系 / 部门&标签绑定关系 / 指定部门及其子部门
                     array_map(
-                        function ($obj, $field) use ($ids) {
-                            $obj->{'whereIn'}($field, $ids)->delete();
+                        function ($class, $field) use ($ids) {
+                            $this->model($class)->whereIn($field, $ids)->delete();
                         },
-                        [new DepartmentUser, new DepartmentTag, $d],
+                        ['DepartmentUser', 'DepartmentTag', 'Department'],
                         ['department_id', 'department_id', 'id']
                     );
                     $this->response['message'] = __('messages.department.deleted');
                 } else {
                     $this->corp = Corp::find($d->corpId($this->departmentId));
-                    $this->createUpdate();
+                    $this->syncParty();
                 }
             });
         } catch (Exception $e) {
@@ -82,9 +82,8 @@ class SyncDepartment implements ShouldQueue {
             !$this->userId ?: $this->bc->broadcast($this->response);
             throw $e;
         }
-
         !$this->userId ?: $this->bc->broadcast($this->response);
-    
+        
     }
     
     /**
@@ -104,63 +103,87 @@ class SyncDepartment implements ShouldQueue {
      * @throws Throwable
      */
     private function remove() {
-    
+        
         $deletedIds = [];
         try {
             DB::transaction(function () use (&$deletedIds) {
                 $d = new Department;
-                $ids = array_merge(
-                    [$this->departmentId],
-                    $d->subIds($this->departmentId)
-                );
-                foreach ($ids as $id) {
+                $ids = [];
+                foreach ($this->departmentId as $dId) {
+                    $ids = array_merge(
+                        $ids, array_merge([$dId], $d->subIds($dId))
+                    );
+                }
+                foreach (array_unique($ids) as $id) {
                     if ($d->needSync($d->find($id))) {
                         $level = 0;
-                        $syncIds[$id] = $d->level($id, $level);
+                        $syncIds[$d->corpId($id)][$id] = $d->level($id, $level);
                     }
                 }
-                arsort($syncIds);
-                $deptIds = array_keys($syncIds);
-                $this->corp = Corp::find($d->corpId($deptIds[0]));
-                foreach ($deptIds as $id) {
-                    foreach ($d->find($id)->users as $user) {
-                        $depts = $user->depts($user->id);
-                        if ($depts->count() > 1) {
-                            $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
-                            $userDeptIds = array_map(
-                                function (Department $dept) {
-                                    return in_array($dept->departmentType->name, ['运营', '企业'])
-                                        ? $this->corp->departmentid : $dept->id;
-                                }, $depts);
-                            $updates[] = array_combine(Constant::MEMBER_FIELDS, [
-                                $user->userid, $user->username, $user->position, $user->realname,
-                                $user->english_name, $mobile, $user->email, array_diff($userDeptIds, [$id])
-                            ]);
-                        } else {
-                            $deletes[] = $user->userid;
+                foreach ($syncIds ?? [] as $corpId => $_syncIds) {
+                    # step 1 - 同步处于需要删除部门下的所有会员
+                    $this->corp = Corp::find($corpId);
+                    $corpDIds = array_merge(
+                        [$this->corp->department_id],
+                        $d->subIds($this->corp->department_id)
+                    );
+                    arsort($_syncIds);
+                    $deptIds = array_keys($_syncIds);
+                    $uIds = DepartmentUser::whereIn('department_id', $deptIds)
+                        ->pluck('user_id')->unique()->toArray();
+                    $uDeptIds = DepartmentUser::whereIn('user_id', $uIds)
+                        ->pluck('department_id')->unique()->toArray();
+                    // $uUIds / $dUIds - 需要更新 / 删除的用户Id
+                    $uUIds = DepartmentUser::whereIn('department_id', array_diff($uDeptIds, $deptIds))
+                        ->pluck('user_id')->unique()->toArray();
+                    /** @var User $user */
+                    foreach (User::whereIn('id', $uUIds)->get() as $user) {
+                        $departments = array_diff(
+                            array_intersect(
+                                $user->departments->pluck('id')->toArray(),
+                                $corpDIds
+                            ), $deptIds
+                        );
+                        if (in_array($this->corp->department_id, $departments)) {
+                            $departments = array_merge(
+                                [$this->corp->departmentid],
+                                array_diff($departments, [$this->corp->department_id])
+                            );
                         }
+                        $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
+                        $updates[] = array_combine(Constant::MEMBER_FIELDS, [
+                            $user->userid, $user->username, $user->position, $user->realname,
+                            $user->english_name, $mobile, $user->email, $departments,
+                        ]);
                     }
-                    # 更新/删除指定部门中的企业微信会员
+                    $deletions = User::whereIn('id', array_diff($uIds, $uUIds))
+                        ->pluck('userid')->toArray();
+                    
                     list($updated, $deleted) = array_map(
-                        function ($members, $method) { return $this->updateDelMember($members, $method); },
-                        [$updates ?? [], $deletes ?? []], ['update', 'delete']
+                        function ($members, $method) {
+                            return $this->syncMember($members, $method);
+                        }, [$updates ?? [], $deletions], ['update', 'delete']
                     );
                     array_map(
-                        function ($userids, $method) use ($id) {
+                        function ($userids, $method) use ($deptIds) {
                             $userIds = User::whereIn('userid', $userids)->pluck('id')->toArray();
                             if ($method == 'update') {
-                                # 更新部门&用户绑定关系
                                 DepartmentUser::whereIn('user_id', $userIds)
-                                    ->where('department_id', $id)->delete();
+                                    ->whereIn('department_id', $deptIds)->delete();
                             } else {
-                                # 禁用已删除的企业微信会员对应的本地用户
-                                User::whereIn('id', $userIds)->update(['enabled' => 0]);
+                                User::whereIn('id', $userIds)->update([
+                                    'synced' => 0, 'subscribed' => 0, 'enabled' => 0,
+                                ]);
                             }
                         }, [$updated, $deleted], ['update', 'delete']
                     );
+                    # step 2 - 删除部门
+                    $deletedIds = array_merge(
+                        $deletedIds,
+                        $this->syncParty($deptIds),
+                        array_diff($ids, $deptIds)
+                    );
                 }
-                # 删除企业微信部门并返回已删除的企业微信部门id
-                $deletedIds = $this->delDept($deptIds);
             });
         } catch (Exception $e) {
             throw $e;
@@ -179,82 +202,72 @@ class SyncDepartment implements ShouldQueue {
      * @throws PusherException
      * @throws Throwable
      */
-    private function updateDelMember($members, $method) {
-    
+    private function syncMember($members, $method) {
+        
         $accessToken = $this->accessToken();
         $data = $method == 'update' ? $members : array_chunk($members, 200);
         $api = $method == 'update' ? 'updateUser' : 'batchDelUser';
         $succeeded = [];
         foreach ($data as $datum) {
             $result = Wechat::$api($accessToken, $datum);
-            if (!$result['errcode']) {
-                if ($method == 'update') {
-                    $succeeded[] = $datum['userid'];
-                } else {
-                    $succeeded = array_merge($succeeded, $datum);
-                }
-            }
+            $result['errcode'] ?: (
+                $method == 'update'
+                    ? $succeeded[] = $datum['userid']
+                    : $succeeded = array_merge($succeeded, $datum)
+            );
         }
         
         return $succeeded;
-    
+        
     }
     
     /**
      * 同步企业微信部门
      *
      * @param array $deptIds
-     * @return array
+     * @return array|bool
      * @throws Throwable
      */
-    private function delDept(array $deptIds) {
-    
+    private function syncParty(array $deptIds = null) {
+        
         $accessToken = $this->accessToken();
-        foreach ($deptIds as $id) {
-            $result = json_decode(
-                Wechat::deleteDept($accessToken, $id), true
+        if (!$deptIds) {
+            $action = $this->action == 'create' ? 'createDept' : 'updateDept';
+            $d = (new Department)->find($this->departmentId);
+            $parentid = $d->departmentType->name == '学校'
+                ? $d->school->corp->departmentid
+                : $d->parent_id;
+            $params = array_combine(
+                ['id', 'name', 'parentid', 'order'],
+                [$d->id, $d->name, $parentid, $d->order]
             );
-            if (($result['errcode'] && $result['errcode'] == 60123) || !$result['errcode']) {
-                $deleted[] = $id;
-            }
-        }
-        
-        return $deleted ?? [];
-        
-    }
-    
-    /**
-     * 创建或更新企业微信部门
-     *
-     * @throws PusherException
-     */
-    private function createUpdate() {
-    
-        $d = new Department;
-        $accessToken = $this->accessToken();
-        $action = $this->action == 'create' ? 'createDept' : 'updateDept';
-        $department = $d->find($this->departmentId);
-        $parentid = $department->departmentType->name == '学校'
-            ? $department->school->corp->departmentid
-            : $department->parent_id;
-        $params = array_combine(
-            ['id', 'name', 'parentid', 'order'],
-            [$department->id, $department->name, $parentid, $department->order]
-        );
-        $result = json_decode(Wechat::$action($accessToken, $params), true);
-        $errcode = $result['errcode'];
-        if ($errcode) {
-            # 如果在更新部门时返回"部门ID不存在"
-            if ($errcode == 60003) {
-                $result = json_decode(Wechat::createDept($accessToken, $params), true);
-                $errcode = $result['errcode'];
-            }
+            $result = json_decode(Wechat::$action($accessToken, $params), true);
+            $errcode = $result['errcode'];
             if ($errcode) {
-                $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                $this->response['message'] = Constant::WXERR[$errcode];
+                # 如果在更新部门时返回"部门ID不存在"
+                if ($errcode == 60003) {
+                    $result = json_decode(Wechat::createDept($accessToken, $params), true);
+                    $errcode = $result['errcode'];
+                }
+                if ($errcode) {
+                    $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                    $this->response['message'] = Constant::WXERR[$errcode];
+                }
             }
+            $response = $d->update(['synced' => !$errcode ? 1 : 0]);
+        } else {
+            foreach ($deptIds as $id) {
+                $result = json_decode(
+                    Wechat::deleteDept($accessToken, $id), true
+                );
+                if (($result['errcode'] && $result['errcode'] == 60123) || !$result['errcode']) {
+                    $deleted[] = $id;
+                }
+            }
+            $response = $deleted ?? [];
         }
-        $department->update(['synced' => !$errcode ? 1 : 0]);
+        
+        return $response;
         
     }
     
@@ -265,7 +278,7 @@ class SyncDepartment implements ShouldQueue {
      * @throws PusherException
      */
     private function accessToken() {
-    
+        
         $token = Wechat::getAccessToken(
             $this->corp->corpid,
             $this->corp->contact_sync_secret,

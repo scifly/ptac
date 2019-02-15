@@ -185,7 +185,7 @@ class Department extends Model {
                 if ($department->movable($id, $parentId)) {
                     $moved = $department->move($id, $parentId);
                     if ($moved && $this->needSync($department)) {
-                        $this->sync($id, 'update');
+                        SyncDepartment::dispatch($id, 'update', Auth::id());
                     }
                 }
                 break;
@@ -207,7 +207,7 @@ class Department extends Model {
         
         $department = $this->create($data);
         if ($department && $this->needSync($department)) {
-            $this->sync($department->id, 'create');
+            SyncDepartment::dispatch($department->id, 'create', Auth::id());
         }
         
         return $department;
@@ -261,7 +261,7 @@ class Department extends Model {
         $department = self::find($id);
         $updated = $department->update($data);
         if ($this->needSync($department) && $updated) {
-            $this->sync($id, 'update');
+            SyncDepartment::dispatch($id, 'update', Auth::id());
         }
         
         return $updated ? $this->find($id) : null;
@@ -315,8 +315,10 @@ class Department extends Model {
      */
     function remove($id = null) {
         
-        $department = $this->find($id);
-        !$department ?: $this->sync($id, 'delete');
+        SyncDepartment::dispatch(
+            $id ?? array_values(Request::input('ids')),
+            'delete', Auth::id()
+        );
         
         return true;
         
@@ -617,18 +619,6 @@ class Department extends Model {
     }
     
     /**
-     * 同步企业微信部门
-     *
-     * @param $id
-     * @param $method
-     */
-    private function sync($id, $method) {
-        
-        SyncDepartment::dispatch($id, $method, Auth::id());
-        
-    }
-    
-    /**
      * 更新年级/班级主任与部门的绑定关系
      *
      * @param $dtType
@@ -719,17 +709,16 @@ class Department extends Model {
     private function topId() {
         
         $user = Auth::user();
-        $ids = $user->depts()->pluck('id')->toArray();
         $levels = [];
-        foreach ($ids as $id) {
+        foreach (($ids = $user->deptIds()) as $id) {
             $level = 0;
-            $levels[$id] = self::level($id, $level);
+            $levels[$id] = $this->level($id, $level);
         }
         asort($levels);
         reset($levels);
         $topLevelId = key($levels);
         
-        return self::find($topLevelId)->parent->id;
+        return $this->find($topLevelId)->parent->id;
         
     }
     
@@ -743,35 +732,30 @@ class Department extends Model {
     private function movable($id, $parentId) {
         
         if (!isset($id, $parentId)) return false;
-        $allowedDepartmentIds = $this->departmentIds(Auth::id());
         # 如果部门(被移动的部门和目标部门）不在当前用户的可见范围内，则抛出401异常
         abort_if(
-            !in_array($id, $allowedDepartmentIds) ||
-            !in_array($parentId, $allowedDepartmentIds),
+            sizeof(array_intersect([$id, $parentId], $this->departmentIds(Auth::id()))) < 2,
             HttpStatusCode::UNAUTHORIZED,
             __('messages.forbidden')
         );
-        $department = $this->find($id);
-        $parentDepartment = $this->find($parentId);
-        $type = $department->departmentType->name;
-        $parentType = $parentDepartment->departmentType->name;
+        list($type, $parentType) = array_map(
+            function ($id) { return $this->find($id)->departmentType->name; },
+            [$id, $parentId]
+        );
         switch ($type) {
             case '运营':
                 return $parentType == '根';
             case '企业':
                 return $parentType == '运营';
             case '学校':
-                return $parentType == '企业'
-                    ? $this->corpId($id) == $this->corpId($parentId)
-                    : false;
+                return $parentType != '企业' ? false
+                    : $this->corpId($id) == $this->corpId($parentId);
             case '年级':
-                return in_array($parentType, ['学校', '其他'])
-                    ? $this->corpId($id) == $this->corpId($parentId)
-                    : false;
+                return !in_array($parentType, ['学校', '其他']) ? false
+                    : $this->corpId($id) == $this->corpId($parentId);
             case '班级':
-                return in_array($parentType, ['年级', '其他'])
-                    ? $this->corpId($id) == $this->corpId($parentId)
-                    : false;
+                return !in_array($parentType, ['年级', '其他']) ? false
+                    : $this->corpId($id) == $this->corpId($parentId);
             case '其他':
                 return !in_array($parentType, ['运营', '企业'])
                     && $this->corpId($id) == $this->corpId($parentId);

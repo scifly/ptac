@@ -255,7 +255,8 @@ class Corp extends Model {
                 $corps = $this->whereIn('id', $ids)->get();
                 list($appIds, $schoolIds) = array_map(
                     function ($class) use ($ids) {
-                        return $this->model($class)->whereIn('corp_id', $ids)->pluck('id')->toArray();
+                        return $this->model($class)->whereIn('corp_id', $ids)
+                            ->pluck('id')->toArray();
                     }, ['App', 'School']
                 );
                 list($departmentIds, $menuIds) = array_map(
@@ -267,7 +268,7 @@ class Corp extends Model {
                     function ($class, $ids) {
                         Request::replace(['ids' => $ids]);
                         $this->model($class)->remove();
-                    }, ['App', 'School', 'Department', 'Menu'],
+                    }, ['Department', 'Menu', 'App', 'School'],
                     [$appIds, $schoolIds, $departmentIds, $menuIds]
                 );
                 Request::replace(['ids' => $ids]);

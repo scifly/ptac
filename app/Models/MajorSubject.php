@@ -1,13 +1,9 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model};
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 /**
  * App\Models\MajorSubject 专业与科目关系

@@ -359,10 +359,7 @@ class Message extends Model {
         /** @var User $user */
         foreach ($users as $user) {
             $departmentId = head(
-                array_intersect(
-                    $allowedDeptIds,
-                    $user->depts()->pluck('id')->toArray()
-                )
+                array_intersect($allowedDeptIds, $user->deptIds())
             );
             $targetIds[] = 'user-' . $departmentId . '-' . $user->id;
         }

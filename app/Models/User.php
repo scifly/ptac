@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\{Builder,
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Notifications\{DatabaseNotification, DatabaseNotificationCollection, Notifiable};
-use Illuminate\Support\Facades\{Auth, DB, Hash, Log, Request};
+use Illuminate\Support\Facades\{Auth, DB, Hash, Request};
 use Laravel\Passport\{Client, HasApiTokens, Token};
 use Throwable;
 
@@ -587,8 +587,8 @@ class User extends Authenticatable {
                 'corpIds'  => $this->corpIds($userId),
             ];
             if ($method != 'delete') {
-                $departments = !in_array($role, ['运营', '企业'])
-                    ? /*$this->depts($userId, $role)*/$user->departments->pluck('id')->toArray() : [1];
+                $departments = in_array($role, ['运营', '企业']) ? [1]
+                    : $user->departments->unique()->pluck('id')->toArray();
                 $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
                 $params = array_merge($params, [
                     'name'         => $user->realname,
@@ -669,22 +669,20 @@ class User extends Authenticatable {
      *
      * @param null $id
      * @param string $role
-     * @return Department[]|Collection
+     * @return array
      */
-    function depts($id = null, $role = '') {
+    function deptIds($id = null, $role = '') {
         
         $id = $id ?? Auth::id();
         $user = $this->find($id);
         $role = !empty($role) ? $role : $this->role($id);
-        if (in_array($role, Constant::NON_EDUCATOR) && $role != '监护人') {
-            return $user->departments;
-        }
-        $departmentIds = DepartmentUser::where([
-            'user_id' => $user->id,
-            'enabled' => $role == '监护人' ? 0 : 1,
-        ])->pluck('department_id')->toArray();
         
-        return Department::whereIn('id', $departmentIds)->get();
+        return in_array($role, Constant::NON_EDUCATOR) && $role != '监护人'
+            ? $user->departments->pluck('id')->toArray()
+            : DepartmentUser::where([
+                'user_id' => $user->id,
+                'enabled' => $role == '监护人' ? 0 : 1,
+            ])->pluck('department_id')->toArray();
         
     }
     

@@ -365,9 +365,9 @@ trait ModelTrait {
                 School::find($schoolId)->department_id, $type
             );
         } else {
-            foreach ($user->depts() as $d) {
+            foreach ($user->deptIds() as $id) {
                 $userIds = array_merge(
-                    $this->userIds($d->id, $type), $userIds
+                    $this->userIds($id, $type), $userIds
                 );
             }
         }
@@ -429,11 +429,12 @@ trait ModelTrait {
                 )
             );
         }
-        $departments = $user->depts();
-        foreach ($departments as $d) {
-            $departmentIds[] = $d->id;
+        $d = new Department;
+        $deptIds = $user->deptIds();
+        foreach ($deptIds as $id) {
+            $departmentIds[] = $id;
             $departmentIds = array_merge(
-                $d->subIds($d->id),
+                $d->subIds($id),
                 $departmentIds
             );
         }

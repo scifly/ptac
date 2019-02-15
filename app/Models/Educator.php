@@ -449,7 +449,7 @@ class Educator extends Model {
             $educator = $this->find($educatorId);
             $mobiles = $educator ? $educator->user->mobiles : null;
             $selectedDepartmentIds = !$educator ? []
-                : $educator->user->depts($educator->user_id)->pluck('id')->toArray();
+                : $educator->user->deptIds($educator->user_id);
             $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
         }
         $firstOption = [0 => '(请选择)'];

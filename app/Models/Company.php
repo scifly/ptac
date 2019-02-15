@@ -188,9 +188,8 @@ class Company extends Model {
                 $companies = Company::whereIn('id', $ids)->get();
                 array_map(
                     function ($class, Collection $_ids) {
-                        $model = $this->model($class);
                         Request::replace(['ids' => $_ids->toArray()]);
-                        $model->remove();
+                        $this->model($class)->remove();
                     }, ['Corp', 'Department', 'Menu'], [
                         Corp::whereIn('company_id', $ids)->pluck('id'),
                         $companies->pluck('department_id'),
