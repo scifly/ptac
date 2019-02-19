@@ -55,7 +55,7 @@ class MenuTab extends Model {
                 $this->where($field, $value)->delete();
                 $records = [];
                 foreach ($ids as $id) {
-                    $records[] = array_merge($fields, [
+                    $records[] = array_combine($fields, [
                         $forward ? $value : $id,
                         $forward ? $id : $value,
                         null, Constant::ENABLED,
