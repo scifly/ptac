@@ -242,11 +242,15 @@ class Menu extends Model {
      * @param Model $model
      * @param null $beLongsTo
      * @return $this|Model
-     * @throws ReflectionException
      */
     function stow(Model $model, $beLongsTo = null) {
-        
-        list($iconId, $mtId) = (new MenuType)->mtIds($model);
+    
+        $icons = [
+            'company' => 'fa fa-building',
+            'corp'    => 'fa fa-weixin',
+            'school'  => 'fa fa-university',
+        ];
+        $class = lcfirst(class_basename($model));
         
         return $this->create([
             'parent_id'    => $beLongsTo
@@ -254,8 +258,8 @@ class Menu extends Model {
                 : $this->where('parent_id', null)->first()->id,
             'name'         => $model->{'name'},
             'remark'       => $model->{'remark'},
-            'menu_type_id' => $mtId,
-            'icon_id'      => $iconId,
+            'menu_type_id' => MenuType::whereRemark($class)->first()->id,
+            'icon_id'      => Icon::whereName($icons[$class])->first()->id,
             'position'     => $this->all()->max('position') + 1,
             'enabled'      => $model->{'enabled'},
         ]);

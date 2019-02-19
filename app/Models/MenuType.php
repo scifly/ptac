@@ -13,8 +13,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
-use ReflectionClass;
-use ReflectionException;
 use Throwable;
 
 /**
@@ -127,30 +125,6 @@ class MenuType extends Model {
         }
     
         return true;
-        
-    }
-    
-    /**
-     * 返回指定model（运营/企业/学校)对应的菜单类型id和图标id
-     *
-     * @param Model $model
-     * @return array
-     * @throws ReflectionException
-     */
-    function mtIds(Model $model): array {
-        
-        $icons = [
-            'company' => Icon::whereName('fa fa-building')->first()->id,
-            'corp'    => Icon::whereName('fa fa-weixin')->first()->id,
-            'school'  => Icon::whereName('fa fa-university')->first()->id,
-        ];
-        $iconType = lcfirst((new ReflectionClass(get_class($model)))->getShortName());
-        $mtType = array_search($iconType, Constant::MENU_TYPES);
-        
-        return [
-            $icons[$iconType],
-            $this->where('name', $mtType)->first()->id,
-        ];
         
     }
     

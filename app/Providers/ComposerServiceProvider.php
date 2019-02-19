@@ -21,6 +21,8 @@ class ComposerServiceProvider extends ServiceProvider {
     public function boot() {
     
         $ns = 'App\Http\ViewComposers\\';
+        # 系统参数
+        View::composer('init.index', $ns . 'InitComposer');
         
         # 功能 - Action
         View::composer('action.index', $ns . 'ActionIndexComposer');

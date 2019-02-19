@@ -18,6 +18,12 @@ use Illuminate\Support\Facades\Route;
 */
 Route::auth();
 
+# 系统参数
+Route::group(['prefix' => 'inits'], function () {
+    $c = 'InitController';
+    Route::get('index', $c . '@index');
+    Route::post('index', $c . '@index');
+});
 # 关闭注册功能
 Route::any('register', function () { return redirect('login'); });
 Route::get('logout', 'Auth\LoginController@logout');

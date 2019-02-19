@@ -6,6 +6,103 @@ namespace App\Helpers;
  */
 class Constant {
     
+    const SYSTEM_PARAMS = [
+        [
+            'id' => 'ActionType',
+            'name' => '请求类型',
+            'data' => [
+                ['GET', ''],
+                ['POST', ''],
+                ['PUT', ''],
+                ['DELETE', ''],
+                ['HEAD', ''],
+                ['OPTIONS', ''],
+                ['TRACE', ''],
+                ['CONNECT', ''],
+                ['PATCH', '']
+            ]
+        ],
+        [
+            'id' => 'AlertType',
+            'name' => '提醒类型',
+            'data' => []
+        ],
+        [
+            'id' => 'AttachmentType',
+            'name' => '附件类型',
+            'data' => []
+        ],
+        [
+            'id' => 'CommType',
+            'name' => '通信方式',
+            'data' => [
+                ['微信', ''],
+                ['短信', '']
+            ]
+        ],
+        [
+            'id' => 'DepartmentType',
+            'name' => '部门类型',
+            'data' => [
+                ['根', 'root'],
+                ['运营', 'company'],
+                ['企业', 'corp'],
+                ['学校', 'school'],
+                ['年级', 'grade'],
+                ['班级', 'squad'],
+                ['其他', 'other']
+            ]
+        ],
+        [
+            'id' => 'IconType',
+            'name' => '图标类型',
+            'data' => [
+                ['通用', '']
+            ]
+        ],
+        [
+            'id' => 'MediaType',
+            'name' => '媒体类型',
+            'data' => [
+                ['text', '文本'],
+                ['image', '图片'],
+                ['video', '视频'],
+                ['file', '文件'],
+                ['voice', '语音'],
+                ['textcard', '卡片'],
+                ['mpnews', '图文']
+            ]
+        ],
+        [
+            'id' => 'MenuType',
+            'name' => '菜单类型',
+            'data' => [
+                ['根', 'root'],
+                ['运营', 'company'],
+                ['企业', 'corp'],
+                ['学校', 'school'],
+                ['其他', 'other']
+            ]
+        ],
+        [
+            'id' => 'MessageType',
+            'name' => '消息类型',
+            'data' => [
+                ['成绩消息', ''],
+                ['考勤消息', ''],
+                ['作业消息', '']
+            ]
+        ],
+        [
+            'id' => 'SchoolType',
+            'name' => '学校类型',
+            'data' => [
+                ['小学', ''],
+                ['初中', ''],
+                ['高中', '']
+            ]
+        ],
+    ];
     # 状态
     const DISABLED = 0;
     const ENABLED = 1;
@@ -40,32 +137,15 @@ class Constant {
         'update' => '更新',
         'delete' => '删除',
     ];
-    const ROOT_DEPARTMENT_ID = 1;
-    const DEPARTMENT_TYPES = [
-        '根'  => 'root',
-        '运营' => 'company',
-        '企业' => 'corp',
-        '学校' => 'school',
-        '年级' => 'grade',
-        '班级' => 'class',
-        '其他' => 'other',
-    ];
-    const MENU_TYPES = [
-        '根'  => 'root',
-        '运营' => 'company',
-        '企业' => 'corp',
-        '学校' => 'school',
-        '其他' => 'other',
-    ];
     const MEDIA_TYPE_ICONS = [
-        'text' => '<i class="fa fa-file-text-o"></i>',
-        'image' => '<i class="fa fa-file-image-o"></i>',
-        'voice' => '<i class="fa fa-file-sound-o"></i>',
-        'video' => '<i class="fa fa-file-movie-o"></i>',
-        'file' => '<i class="fa fa-file-o"></i>',
+        'text'     => '<i class="fa fa-file-text-o"></i>',
+        'image'    => '<i class="fa fa-file-image-o"></i>',
+        'voice'    => '<i class="fa fa-file-sound-o"></i>',
+        'video'    => '<i class="fa fa-file-movie-o"></i>',
+        'file'     => '<i class="fa fa-file-o"></i>',
         'textcard' => '<i class="fa fa-folder-o"></i>',
-        'mpnews' => '<i class="fa fa-th-list"></i>',
-        'sms' => '<i class="fa fa-file-text"></i>'
+        'mpnews'   => '<i class="fa fa-th-list"></i>',
+        'sms'      => '<i class="fa fa-file-text"></i>',
     ];
     const NODE_TYPES = [
         '根'  => ['color' => 'text-gray', 'type' => 'root', 'icon' => 'fa fa-sitemap'],
@@ -304,7 +384,7 @@ class Constant {
     # field names
     const USER_FIELDS = [
         'username', 'group_id', 'password', 'realname',
-        'gender', 'userid', 'position', 'enabled'
+        'gender', 'userid', 'position', 'enabled',
     ];
     const EDUCATOR_FIELDS = ['user_id', 'school_id', 'sms_quote', 'enabled'];
     const STUDENT_FIELDS = [
@@ -315,27 +395,26 @@ class Constant {
     const MOBILE_FIELDS = ['user_id', 'mobile', 'isdefault', 'enabled'];
     const SCORE_FIELDS = [
         'student_id', 'subject_id', 'exam_id', 'class_rank',
-        'grade_rank', 'score', 'enabled'
+        'grade_rank', 'score', 'enabled',
     ];
     const MESSAGE_FIELDS = [
         'comm_type_id', 'media_type_id', 'app_id', 'msl_id', 'title', 'content', 'serviceid', 'message_id',
-        'url', 'media_ids', 's_user_id', 'r_user_id', 'message_type_id', 'read', 'sent'
+        'url', 'media_ids', 's_user_id', 'r_user_id', 'message_type_id', 'read', 'sent',
     ];
     const EVENT_FIELDS = [
         'title', 'remark', 'location', 'contact', 'url', 'start', 'end', 'ispublic', 'iscourse',
-        'educator_id', 'subject_id', 'alertable', 'alert_mins', 'user_id', 'enabled'
+        'educator_id', 'subject_id', 'alertable', 'alert_mins', 'user_id', 'enabled',
     ];
     const CS_FIELDS = ['custodian_id', 'student_id', 'relationship', 'created_at', 'updated_at', 'enabled'];
     const DU_FIELDS = ['department_id', 'user_id', 'enabled'];
     const EC_FIELDS = ['educator_id', 'class_id', 'subject_id', 'enabled'];
     const SA_FIELDS = [
         'student_id', 'sas_id', 'punch_time', 'inorout', 'attendance_machine_id',
-        'media_id', 'status', 'longitude', 'latitude'
+        'media_id', 'status', 'longitude', 'latitude',
     ];
     const MT_FIELDS = ['menu_id', 'tab_id', 'created_at', 'updated_at', 'enabled'];
-    
     const MEMBER_FIELDS = [
         'userid', 'username', 'position', 'name', 'english_name',
-        'mobile', 'email', 'department', 'gender', 'remark', 'enable'
+        'mobile', 'email', 'department', 'gender', 'remark', 'enable',
     ];
 }

@@ -227,19 +227,19 @@ class Department extends Model {
         $department = null;
         try {
             DB::transaction(function () use ($model, $belongsTo, &$department) {
-                list($dtType, $dtId) = (new DepartmentType)->dtId($model);
+                $dType = DepartmentType::whereRemark(lcfirst(class_basename($model)))->first();
                 $department = $this->store([
                     'parent_id'          => $belongsTo
                         ? $model->{$belongsTo}->department_id
                         : $this::whereParentId(null)->first()->id,
                     'name'               => $model->{'name'},
                     'remark'             => $model->{'remark'},
-                    'department_type_id' => $dtId,
+                    'department_type_id' => $dType->id,
                     'order'              => $this->all()->max('order') + 1,
                     'enabled'            => $model->{'enabled'},
                 ]);
                 # 创建年级/班级主任用户与部门的绑定关系
-                $this->updateDu($dtType, $model, $department);
+                $this->updateDu($dType->name, $model, $department);
             });
         } catch (Exception $e) {
             throw $e;
@@ -280,11 +280,11 @@ class Department extends Model {
         
         try {
             DB::transaction(function () use ($model, $beLongsTo) {
-                list($dtType, $dtId) = (new DepartmentType)->dtId($model);
+                $dType = DepartmentType::whereRemark(lcfirst(class_basename($model)))->first();
                 $data = [
                     'name'               => $model->{'name'},
                     'remark'             => $model->{'remark'},
-                    'department_type_id' => $dtId,
+                    'department_type_id' => $dType->id,
                     'enabled'            => $model->{'enabled'},
                 ];
                 /**
@@ -297,7 +297,7 @@ class Department extends Model {
                         : $this::whereParentId(null)->first()->id;
                 }
                 $department = $this->modify($data, $model->{'department_id'});
-                $this->updateDu($dtType, $model, $department);
+                $this->updateDu($dType->name, $model, $department);
             });
         } catch (Exception $e) {
             throw $e;
@@ -349,11 +349,11 @@ class Department extends Model {
             $id = $departments[$i]['id'];
             $parentId = $i == 0 ? '#' : $departments[$i]['parent_id'];
             $departmentTypeId = $departments[$i]['department_type_id'];
-            $departmentType = DepartmentType::find($departmentTypeId)->name;
+            $departmentType = DepartmentType::find($departmentTypeId);
             $name = $departments[$i]['name'];
             $enabled = $departments[$i]['enabled'];
-            $color = Constant::NODE_TYPES[$departmentType]['color'];
-            $type = Constant::DEPARTMENT_TYPES[$departmentType];
+            $color = Constant::NODE_TYPES[$departmentType->name]['color'];
+            $type = $departmentType->remark;
             $title = '';
             $syncMark = '';
             if (!in_array($type, ['root', 'company', 'corp'])) {
@@ -574,6 +574,7 @@ class Department extends Model {
      */
     function leafPath($id, array &$path) {
         
+        $this->truncate();
         if (!($department = $this->find($id))) return '';
         $path[] = $department->name;
         !isset($department->parent_id) ?: $this->leafPath(
