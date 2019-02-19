@@ -24,11 +24,11 @@ class InitController extends Controller {
     function __construct(Configure $config) {
         
         $this->middleware(['auth', 'checkrole']);
-        abort_if(
-            Auth::user()->role() != '运营',
-            HttpStatusCode::UNAUTHORIZED,
-            __('messages.unauthorized')
-        );
+        // abort_if(
+        //     Auth::user()->role() != '运营',
+        //     HttpStatusCode::UNAUTHORIZED,
+        //     __('messages.unauthorized')
+        // );
         $this->config = $config;
         
     }
