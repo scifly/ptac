@@ -33,7 +33,7 @@ function init(paramId) {
         action: 'init'
     };
     if (typeof paramId !== 'undefined') {
-        $.extends(data, {paramId: paramId})
+        $.extend(data, {paramId: paramId})
     }
     $('.overlay').show();
     $.ajax({
