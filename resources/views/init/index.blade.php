@@ -27,7 +27,7 @@
                             <th>#</th>
                             <th class="text-center">名称</th>
                             <th>备注</th>
-                            <th>创建于</th>
+                            <th class="text-center">创建于</th>
                             <th class="text-right">状态</th>
                         </tr>
                         </thead>
