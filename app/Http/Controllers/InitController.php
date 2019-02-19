@@ -2,8 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Configure;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 

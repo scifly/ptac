@@ -15,7 +15,7 @@ class Configure {
 
     use ModelTrait;
     
-    const TPL = '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>';
+    const TPL = '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>';
     
     function __construct() { }
     
@@ -31,6 +31,7 @@ class Configure {
         foreach ($records as $record) {
             $list .= sprintf(
                 self::TPL,
+                $record->{'id'},
                 $record->{'name'},
                 $record->{'remark'},
                 $record->{'created_at'} ? $this->humanDate($record->{'created_at'}) : ' - ',

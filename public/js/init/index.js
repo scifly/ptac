@@ -25,6 +25,7 @@ $paramId.on('change', function () {
 });
 $all.on('click', function () { init(); });
 $init.on('click', function () { init($paramId.val()); });
+page.initSelect2();
 
 function init(paramId) {
     var data = {
