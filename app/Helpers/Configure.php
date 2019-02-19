@@ -15,7 +15,7 @@ class Configure {
 
     use ModelTrait;
     
-    const TPL = '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>';
+    const TPL = '<tr><td>%s</td><td class="text-center">%s</td><td>%s</td><td>%s</td><td class="text-right">%s</td></tr>';
     
     function __construct() { }
     
