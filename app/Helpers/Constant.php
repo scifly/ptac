@@ -57,7 +57,7 @@ class Constant {
             'id' => 'IconType',
             'name' => '图标类型',
             'data' => [
-                ['通用', '']
+                ['常用', '']
             ]
         ],
         [
