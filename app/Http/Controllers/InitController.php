@@ -47,7 +47,7 @@ class InitController extends Controller {
                     $this->config->init()
                 )
             )
-            : view('init.index');
+            : $this->output();
         
     }
     
