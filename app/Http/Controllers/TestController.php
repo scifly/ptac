@@ -59,6 +59,7 @@ class TestController extends Controller {
         echo "Socket created \n";
         exit;
         
+        
         try {
             DB::transaction(function () {
                 $messages = Message::all();
