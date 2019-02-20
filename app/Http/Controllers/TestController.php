@@ -49,20 +49,44 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $server = "192.168.10.225";
-        $port = 60001;
-        if (!($sock = socket_create(AF_INET, SOCK_DGRAM, 0))) {
-            $errcode = socket_last_error();
-            $errmsg = socket_strerror($errcode);
-            die ("Couldn't create socket: [$errcode] $errmsg\n");
-        }
-        echo "Socket created \n";
-        $input = 'abcdefg';
-        if( ! socket_sendto($sock, $input , strlen($input) , 0 , $server , $port)) {
-            $errorcode = socket_last_error();
-            $errormsg = socket_strerror($errorcode);
+        // $server = "192.168.10.225";
+        // $port = 60001;
+        // if (!($sock = socket_create(AF_INET, SOCK_DGRAM, 0))) {
+        //     $errcode = socket_last_error();
+        //     $errmsg = socket_strerror($errcode);
+        //     die ("Couldn't create socket: [$errcode] $errmsg\n");
+        // }
+        // echo "Socket created \n";
+        // $input = 'abcdefg';
+        // if( ! socket_sendto($sock, $input , strlen($input) , 0 , $server , $port)) {
+        //     $errorcode = socket_last_error();
+        //     $errormsg = socket_strerror($errorcode);
+        //
+        //     die("Could not send data: [$errorcode] $errormsg \n");
+        // }
+        $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+        if (!$socket) { die("socket_create failed.\n"); }
+
+        //Set socket options.
+        socket_set_nonblock($socket);
+        socket_set_option($socket, SOL_SOCKET, SO_BROADCAST, 1);
+        socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
+        if (defined('SO_REUSEPORT'))
+            socket_set_option($socket, SOL_SOCKET, SO_REUSEPORT, 1);
+
+        //Bind to any address & port 55554.
+        if(!socket_bind($socket, '0.0.0.0', 55554))
+            die("socket_bind failed.\n");
+
+        //Wait for data.
+        $read = array($socket); $write = NULL; $except = NULL;
+        while(socket_select($read, $write, $except, NULL)) {
         
-            die("Could not send data: [$errorcode] $errormsg \n");
+            //Read received packets with a maximum size of 5120 bytes.
+            while(is_string($data = socket_read($socket, 5120))) {
+                echo $data;
+            }
+        
         }
         exit;
         
