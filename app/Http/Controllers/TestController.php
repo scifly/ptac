@@ -49,6 +49,16 @@ class TestController extends Controller {
      */
     public function index() {
     
+        $server = "192.168.5.24";
+        $port = 60001;
+        if (!($sock = socket_create(AF_INET, SOCK_DGRAM, 0))) {
+            $errcode = socket_last_error();
+            $errmsg = socket_strerror($errcode);
+            die ("Couldn't create socket: [$errcode] $errmsg\n");
+        }
+        echo "Socket created \n";
+        exit;
+        
         try {
             DB::transaction(function () {
                 $messages = Message::all();
