@@ -49,7 +49,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $server = "192.168.5.24";
+        $server = "192.168.10.225";
         $port = 60001;
         if (!($sock = socket_create(AF_INET, SOCK_DGRAM, 0))) {
             $errcode = socket_last_error();
@@ -57,6 +57,13 @@ class TestController extends Controller {
             die ("Couldn't create socket: [$errcode] $errmsg\n");
         }
         echo "Socket created \n";
+        $input = 'abcdefg';
+        if( ! socket_sendto($sock, $input , strlen($input) , 0 , $server , $port)) {
+            $errorcode = socket_last_error();
+            $errormsg = socket_strerror($errorcode);
+        
+            die("Could not send data: [$errorcode] $errormsg \n");
+        }
         exit;
         
         
