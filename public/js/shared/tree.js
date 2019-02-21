@@ -11,7 +11,7 @@
                     'corp': {"icon": 'fa fa-weixin'},
                     'school': {"icon": 'fa fa-university'},
                     'grade': {"icon": 'fa fa-object-group'},
-                    'class': {"icon": 'fa fa-users'},
+                    'squad': {"icon": 'fa fa-users'},
                     'other': {"icon": 'fa fa-list'}
                 },
                 contactTypes: {
@@ -23,7 +23,7 @@
                     'corp': {"icon": 'fa fa-weixin text-green'},
                     'school': {"icon": 'fa fa-university text-purple'},
                     'grade': {"icon": 'fa fa-object-group'},
-                    'class': {"icon": 'fa fa-users'},
+                    'squad': {"icon": 'fa fa-users'},
                     'other': {"icon": 'fa fa-folder'}
                 },
             }, options),
