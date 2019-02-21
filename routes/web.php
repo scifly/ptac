@@ -358,13 +358,6 @@ Route::group(['prefix' => 'operators'], function () {
 # 合作伙伴
 Route::group(['prefix' => 'partners'], routes('PartnerController'));
 # (运营)系统设置
-Route::delete('delete/{id?}', 'ActionTypeController@destroy');
-Route::delete('delete/{id?}', 'CommTypeTypeController@destroy');
-Route::delete('delete/{id?}', 'AlertTypeController@destroy');
-Route::delete('delete/{id?}', 'DepartmentTypeController@destroy');
-Route::delete('delete/{id?}', 'MenuTypeController@destroy');
-Route::delete('delete/{id?}', 'MediaTypeController@destroy');
-Route::delete('delete/{id?}', 'AttachmentTypeController@destroy');
 Route::group(['prefix' => 'message_types'], routes('MessageTypeController'));
 Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 # 应用模块
