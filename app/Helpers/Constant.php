@@ -176,6 +176,7 @@ class Constant {
         'SyncController',
         'ApiController',
         'TestController',
+        'WechatController'
     ];
     const CONTENT_TYPE = [
         'image' => 'image/*',
