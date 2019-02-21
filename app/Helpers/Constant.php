@@ -164,7 +164,7 @@ class Constant {
         '企业' => ['color' => 'text-green', 'type' => 'corp', 'icon' => 'fa fa-weixin'],
         '学校' => ['color' => 'text-purple', 'type' => 'school', 'icon' => 'fa fa-university'],
         '年级' => ['color' => 'text-black', 'type' => 'grade', 'icon' => 'fa fa-object-group'],
-        '班级' => ['color' => 'text-black', 'type' => 'class', 'icon' => 'fa fa-users'],
+        '班级' => ['color' => 'text-black', 'type' => 'squad', 'icon' => 'fa fa-users'],
         '其他' => ['color' => 'text-black', 'type' => 'other', 'icon' => 'fa fa-folder'],
     ];
     # 控制器相对路径
