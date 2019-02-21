@@ -1,1 +1,0 @@
-page.index('icon_types');

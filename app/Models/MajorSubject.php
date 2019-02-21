@@ -23,7 +23,9 @@ use Illuminate\Database\Eloquent\{Builder, Model};
  * @method static Builder|MajorSubject newModelQuery()
  * @method static Builder|MajorSubject newQuery()
  * @method static Builder|MajorSubject query()
+ * @method static Builder|MajorSubject whereEnabled($value)
  * @mixin Eloquent
+ * @property int $enabled
  */
 class MajorSubject extends Model {
     

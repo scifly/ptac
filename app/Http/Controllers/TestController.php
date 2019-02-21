@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Apis\Kinder;
 use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
-use App\Models\{Corp, Department, Message, User};
+use App\Models\{Corp, Department, Message};
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -64,25 +64,34 @@ class TestController extends Controller {
         //
         //     die("Could not send data: [$errorcode] $errormsg \n");
         // }
+        # Now receive reply from server and print it
+        // if(socket_recv ( $sock , $reply , 2045 , MSG_WAITALL ) === FALSE) {
+        //     $errorcode = socket_last_error();
+        //     $errormsg = socket_strerror($errorcode);
+        //
+        //     die("Could not receive data: [$errorcode] $errormsg \n");
+        // }
+        //
+        // echo "Reply : $reply";
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
         if (!$socket) { die("socket_create failed.\n"); }
 
-        //Set socket options.
+        # Set socket options.
         socket_set_nonblock($socket);
         socket_set_option($socket, SOL_SOCKET, SO_BROADCAST, 1);
         socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
         if (defined('SO_REUSEPORT'))
             socket_set_option($socket, SOL_SOCKET, SO_REUSEPORT, 1);
 
-        //Bind to any address & port 55554.
+        # Bind to any address & port 55554.
         if(!socket_bind($socket, '0.0.0.0', 55554))
             die("socket_bind failed.\n");
 
-        //Wait for data.
+        # Wait for data.
         $read = array($socket); $write = NULL; $except = NULL;
         while(socket_select($read, $write, $except, NULL)) {
         
-            //Read received packets with a maximum size of 5120 bytes.
+            # Read received packets with a maximum size of 5120 bytes.
             while(is_string($data = socket_read($socket, 5120))) {
                 echo $data;
             }
@@ -343,6 +352,9 @@ class TestController extends Controller {
         
     }
     
+    /**
+     * @param $tags
+     */
     private function formatTags(&$tags) {
 
         foreach ($tags as &$tag) {

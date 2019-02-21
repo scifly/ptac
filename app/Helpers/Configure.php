@@ -40,7 +40,7 @@ class Configure {
                 $record->{'id'},
                 $record->{'name'},
                 $record->{'remark'},
-                $record->{'created_at'} ? $this->humanDate($record->{'created_at'}) : ' - ',
+                $this->humanDate($record->{'created_at'}),
                 $record->{'enabled'} ? '已启用' : '已禁用'
             );
         }

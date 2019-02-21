@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ScoreRangeRequest;
 use App\Models\ScoreRange;
 use App\Models\Subject;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Request;
@@ -113,7 +112,7 @@ class ScoreRangeController extends Controller {
      *
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         

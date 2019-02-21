@@ -1,1 +1,0 @@
-page.edit('formDepartmentType', 'department_types');

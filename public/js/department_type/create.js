@@ -1,1 +1,0 @@
-page.create('formDepartmentType', 'department_types');

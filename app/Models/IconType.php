@@ -1,14 +1,11 @@
 <?php
 namespace App\Models;
 
-use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\HasMany};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -45,58 +42,6 @@ class IconType extends Model {
      * @return HasMany
      */
     function icons() { return $this->hasMany('App\Models\Icon'); }
-    
-    /**
-     * 图标类型列表
-     *
-     * @return array
-     */
-    function index() {
-        
-        $columns = [
-            ['db' => 'IconType.id', 'dt' => 0],
-            ['db' => 'IconType.name', 'dt' => 1],
-            ['db' => 'IconType.remark', 'dt' => 2],
-            ['db' => 'IconType.created_at', 'dt' => 3],
-            ['db' => 'IconType.updated_at', 'dt' => 4],
-            [
-                'db'        => 'IconType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::status($d, $row);
-                },
-            ],
-        ];
-        
-        return Datatable::simple(
-            $this->getModel(), $columns
-        );
-        
-    }
-    
-    /**
-     * 保存图标类型
-     *
-     * @param array $data
-     * @return bool
-     */
-    function store(array $data) {
-        
-        return $this->create($data) ? true : false;
-        
-    }
-    
-    /**
-     * 更新图标类型
-     *
-     * @param array $data
-     * @param $id
-     * @return bool
-     */
-    function modify(array $data, $id) {
-        
-        return $this->find($id)->update($data);
-        
-    }
     
     /**
      * 删除图标类型

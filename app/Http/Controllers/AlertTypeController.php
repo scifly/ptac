@@ -1,10 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AlertTypeRequest;
 use App\Models\AlertType;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -26,80 +24,6 @@ class AlertTypeController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->at = $at;
         $this->approve($at);
-        
-    }
-    
-    /**
-     * 警告类型列表
-     *
-     * @return JsonResponse
-     * @throws Throwable
-     */
-    public function index() {
-        
-        return Request::get('draw')
-            ? response()->json($this->at->index())
-            : $this->output();
-        
-    }
-    
-    /**
-     * 创建警告类型
-     *
-     * @return JsonResponse
-     * @throws Throwable
-     */
-    public function create() {
-        
-        return $this->output();
-        
-    }
-    
-    /**
-     * 保存警告类型
-     *
-     * @param AlertTypeRequest $request
-     * @return JsonResponse
-     */
-    public function store(AlertTypeRequest $request) {
-        
-        return $this->result(
-            $this->at->store(
-                $request->all()
-            )
-        );
-        
-    }
-    
-    /**
-     * 编辑警告类型
-     *
-     * @param $id
-     * @return JsonResponse
-     * @throws Throwable
-     */
-    public function edit($id) {
-        
-        return $this->output([
-            'at' => $this->at->find($id),
-        ]);
-        
-    }
-    
-    /**
-     * 更新警告类型
-     *
-     * @param AlertTypeRequest $request
-     * @param $id
-     * @return bool|JsonResponse
-     */
-    public function update(AlertTypeRequest $request, $id) {
-        
-        return $this->result(
-            $this->at->modify(
-                $request->all(), $id
-            )
-        );
         
     }
     

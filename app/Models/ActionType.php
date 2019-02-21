@@ -1,13 +1,11 @@
 <?php
 namespace App\Models;
 
-use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -41,56 +39,6 @@ class ActionType extends Model {
     protected $fillable = ['name', 'remark', 'enabled'];
     
     /**
-     * Http请求类型列表
-     *
-     * @return array
-     */
-    function index() {
-        
-        $columns = [
-            ['db' => 'ActionType.id', 'dt' => 0],
-            ['db' => 'ActionType.name', 'dt' => 1],
-            ['db' => 'ActionType.remark', 'dt' => 2],
-            ['db' => 'ActionType.created_at', 'dt' => 3],
-            ['db' => 'ActionType.updated_at', 'dt' => 4],
-            [
-                'db'        => 'ActionType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::status($d, $row, false);
-                },
-            ],
-        ];
-        
-        return Datatable::simple($this->getModel(), $columns);
-        
-    }
-    
-    /**
-     * 保存Http请求类型
-     *
-     * @param array $data
-     * @return bool
-     */
-    function store(array $data) {
-        
-        return $this->create($data) ? true : false;
-        
-    }
-    
-    /**
-     * 更新Http请求类型
-     *
-     * @param array $data
-     * @param $id
-     * @return bool
-     */
-    function modify(array $data, $id) {
-        
-        return $this->find($id)->update($data);
-        
-    }
-    
-    /**
      * 删除Http请求类型
      *
      * @param $id
@@ -109,18 +57,6 @@ class ActionType extends Model {
         }
     
         return true;
-        
-    }
-    
-    /**
-     * 返回指定Http请求类型包含的功能
-     *
-     * @param $id
-     * @return Collection|\Illuminate\Support\Collection|static[]
-     */
-    function actions($id) {
-        
-        return Action::whereRaw('FIND_IN_SET(' . $id . ', action_type_ids)')->get();
         
     }
     

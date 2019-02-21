@@ -1,1 +1,0 @@
-page.edit('formIconType', 'icon_types');

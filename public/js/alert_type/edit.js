@@ -1,1 +1,0 @@
-page.edit('formAlertType', 'alert_types');

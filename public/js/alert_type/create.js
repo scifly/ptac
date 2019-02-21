@@ -1,1 +1,0 @@
-page.create('formAlertType', 'alert_types');

@@ -1,1 +1,0 @@
-page.edit('formAttachmentType', 'attachment_types');

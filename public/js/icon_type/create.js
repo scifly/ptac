@@ -1,1 +1,0 @@
-page.create('formIconType', 'icon_types');

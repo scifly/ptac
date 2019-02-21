@@ -1,19 +1,12 @@
 <?php
 namespace App\Models;
 
-use App\Facades\Datatable;
-use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
-use ReflectionClass;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\HasMany};
+use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**
@@ -49,58 +42,6 @@ class DepartmentType extends Model {
      * @return HasMany
      */
     function departments() { return $this->hasMany('App\Models\Department'); }
-    
-    /**
-     * 部门类型列表
-     *
-     * @return array
-     */
-    function index() {
-        
-        $columns = [
-            ['db' => 'DepartmentType.id', 'dt' => 0],
-            ['db' => 'DepartmentType.name', 'dt' => 1],
-            ['db' => 'DepartmentType.remark', 'dt' => 2],
-            ['db' => 'DepartmentType.created_at', 'dt' => 3],
-            ['db' => 'DepartmentType.updated_at', 'dt' => 4],
-            [
-                'db'        => 'DepartmentType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::status($d, $row, false);
-                },
-            ],
-        ];
-        
-        return Datatable::simple(
-            $this->getModel(), $columns
-        );
-        
-    }
-    
-    /**
-     * 创建部门类型
-     *
-     * @param array $data
-     * @return bool
-     */
-    function store(array $data) {
-        
-        return $this->create($data) ? true : false;
-        
-    }
-    
-    /**
-     * 更新部门类型
-     *
-     * @param array $data
-     * @param $id
-     * @return bool
-     */
-    function modify(array $data, $id) {
-        
-        return $this->find($id)->update($data);
-        
-    }
     
     /**
      * 删除部门类型

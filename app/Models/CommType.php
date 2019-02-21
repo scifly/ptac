@@ -1,7 +1,6 @@
 <?php
 namespace App\Models;
 
-use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -47,56 +46,6 @@ class CommType extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     function messages() { return $this->hasMany('App\Models\Message'); }
-    
-    /**
-     * 通信方式列表
-     *
-     * @return array
-     */
-    function index() {
-        
-        $columns = [
-            ['db' => 'CommType.id', 'dt' => 0],
-            ['db' => 'CommType.name', 'dt' => 1],
-            ['db' => 'CommType.remark', 'dt' => 2],
-            ['db' => 'CommType.created_at', 'dt' => 3],
-            ['db' => 'CommType.updated_at', 'dt' => 4],
-            [
-                'db'        => 'CommType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::status($d, $row, false);
-                },
-            ],
-        ];
-        
-        return Datatable::simple($this->getModel(), $columns);
-        
-    }
-    
-    /**
-     * 保存通信类型
-     *
-     * @param array $data
-     * @return bool
-     */
-    function store(array $data) {
-        
-        return $this->create($data) ? true : false;
-        
-    }
-    
-    /**
-     * 更新通信类型
-     *
-     * @param array $data
-     * @param $id
-     * @return bool
-     */
-    function modify(array $data, $id) {
-        
-        return $this->find($id)->update($data);
-        
-    }
     
     /**
      * 移除通信类型

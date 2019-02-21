@@ -358,14 +358,14 @@ Route::group(['prefix' => 'operators'], function () {
 # 合作伙伴
 Route::group(['prefix' => 'partners'], routes('PartnerController'));
 # (运营)系统设置
-Route::group(['prefix' => 'action_types'], routes('ActionTypeController'));
+Route::delete('delete/{id?}', 'ActionTypeController@destroy');
+Route::delete('delete/{id?}', 'CommTypeTypeController@destroy');
+Route::delete('delete/{id?}', 'AlertTypeController@destroy');
+Route::delete('delete/{id?}', 'DepartmentTypeController@destroy');
+Route::delete('delete/{id?}', 'MenuTypeController@destroy');
+Route::delete('delete/{id?}', 'MediaTypeController@destroy');
+Route::delete('delete/{id?}', 'AttachmentTypeController@destroy');
 Route::group(['prefix' => 'message_types'], routes('MessageTypeController'));
-Route::group(['prefix' => 'comm_types'], routes('CommTypeController'));
-Route::group(['prefix' => 'alert_types'], routes('AlertTypeController'));
-Route::group(['prefix' => 'department_types'], routes('DepartmentTypeController'));
-Route::group(['prefix' => 'menu_types'], routes('MenuTypeController'));
-Route::group(['prefix' => 'media_types'], routes('MediaTypeController'));
-Route::group(['prefix' => 'attachment_types'], routes('AttachmentTypeController'));
 Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 # 应用模块
 Route::group(['prefix' => 'modules'], routes('ModuleController'));

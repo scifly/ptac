@@ -8,7 +8,7 @@ use App\Models\{Corp, Department, DepartmentType, DepartmentUser, Educator, Grou
 use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model};
-use Illuminate\Support\Facades\{DB, Log, Request};
+use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**
@@ -155,7 +155,7 @@ class SyncController extends Controller {
     protected function deleteUser() {
         
         !($user = User::whereUserid($this->event->{'UserID'})->first())
-            ?: $user->purge($user->id);
+            ?: $user->purge(['User'], 'id', 'purge', $user->id);
         
     }
     

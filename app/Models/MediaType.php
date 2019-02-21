@@ -1,7 +1,6 @@
 <?php
 namespace App\Models;
 
-use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -46,58 +45,6 @@ class MediaType extends Model {
      * @return HasMany
      */
     function medias() { return $this->hasMany('App\Models\Media'); }
-    
-    /**
-     * 媒体类型列表
-     *
-     * @return array
-     */
-    function index() {
-        
-        $columns = [
-            ['db' => 'MediaType.id', 'dt' => 0],
-            ['db' => 'MediaType.name', 'dt' => 1],
-            ['db' => 'MediaType.remark', 'dt' => 2],
-            ['db' => 'MediaType.created_at', 'dt' => 3],
-            ['db' => 'MediaType.updated_at', 'dt' => 4],
-            [
-                'db'        => 'MediaType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::status($d, $row, false);
-                },
-            ],
-        ];
-        
-        return Datatable::simple(
-            $this->getModel(), $columns
-        );
-        
-    }
-    
-    /**
-     * 保存媒体类型
-     *
-     * @param array $data
-     * @return bool
-     */
-    function store(array $data) {
-        
-        return $this->create($data) ? true : false;
-        
-    }
-    
-    /**
-     * 更新媒体类型
-     *
-     * @param array $data
-     * @param $id
-     * @return bool
-     */
-    function modify(array $data, $id) {
-        
-        return $this->find($id)->update($data);
-        
-    }
     
     /**
      * 删除媒体类型
