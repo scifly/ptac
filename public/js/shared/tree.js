@@ -124,7 +124,7 @@
                                             });
                                             if (
                                                 $.inArray('grade', grandParentTypes) > -1 ||
-                                                $.inArray('class', grandParentTypes) > -1
+                                                $.inArray('squad', grandParentTypes) > -1
                                             ) {
                                                 return false;
                                             }
@@ -133,7 +133,7 @@
                                             return false;
                                     }
                                 // return $.inArray(pType, ['school', 'other']) > -1;
-                                case 'class':
+                                case 'squad':
                                     if (nCorpId !== pCorpId) { return false; }
                                     switch (pType) {
                                         case 'grade':
@@ -162,11 +162,11 @@
                                             if ($.inArray('grade', childrenTypes) > -1) {
                                                 return true;
                                             }
-                                            return !($.inArray('class', childrenTypes) > -1);
+                                            return !($.inArray('squad', childrenTypes) > -1);
                                         case 'grade':
                                             return !($.inArray('grade', childrenTypes) > -1);
-                                        case 'class':
-                                            return !($.inArray('class', childrenTypes) > -1)
+                                        case 'squad':
+                                            return !($.inArray('squad', childrenTypes) > -1)
                                                 && !($.inArray('grade', childrenTypes) > -1);
                                         case 'other':
                                             grandParents = pNode.parents;
@@ -177,11 +177,11 @@
                                             });
                                             // has neither grades nor classes
                                             if (
-                                                !($.inArray('class', grandParentTypes) > -1) &&
+                                                !($.inArray('squad', grandParentTypes) > -1) &&
                                                 !($.inArray('grade', grandParentTypes) > -1)
                                             ) {
                                                 if (
-                                                    !($.inArray('class', childrenTypes) > -1) &&
+                                                    !($.inArray('squad', childrenTypes) > -1) &&
                                                     !($.inArray('grade', childrenTypes) > -1)
                                                 ) {
                                                     return true;
@@ -191,22 +191,22 @@
                                             // has grades but no classess
                                             if (
                                                 $.inArray('grade', grandParentTypes) > -1 &&
-                                                !($.inArray('class', grandParentTypes) > -1)
+                                                !($.inArray('squad', grandParentTypes) > -1)
                                             ) {
                                                 return $.inArray('grade', childrenTypes) <= -1;
                                             }
                                             // has classes but no grades
                                             if (
-                                                $.inArray('class', grandParentTypes) > -1 &&
+                                                $.inArray('squad', grandParentTypes) > -1 &&
                                                 !$.inArray('grade', grandParentTypes) > -1
                                             ) {
-                                                return !($.inArray('class', childrenTypes) > -1);
+                                                return !($.inArray('squad', childrenTypes) > -1);
                                             }
                                             break;
                                         default:
                                             return false;
                                     }
-                                    // return $.inArray(pType, ['school', 'grade', 'class', 'other']) > -1;
+                                    // return $.inArray(pType, ['school', 'grade', 'squad', 'other']) > -1;
                                     break;
                                 default:
                                     return false;
@@ -268,7 +268,7 @@
                         var type, disabled = false;
                         $.each(children, function () {
                             type = $('#tree').jstree(true).get_node(this).type;
-                            disabled = $.inArray(type, ['grade', 'class']) > -1;
+                            disabled = $.inArray(type, ['grade', 'squad']) > -1;
                             if (disabled) return false;
                         });
                         return disabled;
@@ -288,7 +288,7 @@
                         switch (node.type) {
                             case 'school':
                             case 'grade':
-                            case 'class':
+                            case 'squad':
                                 return {createItem: create};
                             case 'other':
                                 return {createItem: create, renameItem: edit, delItem: del};
