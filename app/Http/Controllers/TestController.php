@@ -50,7 +50,7 @@ class TestController extends Controller {
     public function index() {
     
         $server = "120.78.55.152";
-        $port = 60001;
+        $port = 9933;
         if (!($sock = socket_create(AF_INET, SOCK_DGRAM, 0))) {
             $errcode = socket_last_error();
             $errmsg = socket_strerror($errcode);
