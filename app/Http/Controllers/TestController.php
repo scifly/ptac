@@ -74,8 +74,8 @@ class TestController extends Controller {
         //
         // echo "Reply : $reply";
         error_reporting(~E_WARNING);
-        $server = '127.0.0.1';
-        $port = 9999;
+        $server = '119.23.73.0';
+        $port = 10000;
     
         if(!($sock = socket_create(AF_INET, SOCK_DGRAM, 0)))
         {
@@ -89,11 +89,11 @@ class TestController extends Controller {
     
         while(1)
         {
-//Take some input to send
+            //Take some input to send
             echo 'Enter a message to send : ';
             $input = fgets(STDIN);
 
-//Send the message to the server
+            //Send the message to the server
             if( ! socket_sendto($sock, $input , strlen($input) , 0 , $server , $port))
             {
                 $errorcode = socket_last_error();
@@ -102,7 +102,7 @@ class TestController extends Controller {
                 die("Could not send data: [$errorcode] $errormsg \n");
             }
 
-//Now receive reply from server and print it
+            //Now receive reply from server and print it
             if(socket_recv ( $sock , $reply , 2045 , MSG_PEEK ) === FALSE)
             {
                 $errorcode = socket_last_error();
