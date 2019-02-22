@@ -90,10 +90,11 @@ class TestController extends Controller {
         while(1)
         {
             //Take some input to send
-            echo 'Enter a message to send : ';
-            $input = fgets(STDIN);
+            // echo 'Enter a message to send : ';
+            // $input = fgets(STDIN);
 
             //Send the message to the server
+            $input = 'abcdefg';
             if( ! socket_sendto($sock, $input , strlen($input) , 0 , $server , $port))
             {
                 $errorcode = socket_last_error();
