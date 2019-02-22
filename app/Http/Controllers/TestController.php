@@ -49,7 +49,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $server = "192.168.10.225";
+        $server = "120.78.55.152";
         $port = 60001;
         if (!($sock = socket_create(AF_INET, SOCK_DGRAM, 0))) {
             $errcode = socket_last_error();
