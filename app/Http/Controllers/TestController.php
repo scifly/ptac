@@ -65,7 +65,7 @@ class TestController extends Controller {
             die("Could not send data: [$errorcode] $errormsg \n");
         }
         // # Now receive reply from server and print it
-        if(socket_recv($sock , $reply , 2045 , MSG_WAITALL ) === FALSE) {
+        if(socket_recv($sock , $reply , 2045 , MSG_PEEK ) === FALSE) {
             $errorcode = socket_last_error();
             $errormsg = socket_strerror($errorcode);
         
