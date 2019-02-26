@@ -1,10 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Apis\Kinder;
 use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
-use App\Models\{Corp, Department, Message};
+use App\Models\{Corp, Department};
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;

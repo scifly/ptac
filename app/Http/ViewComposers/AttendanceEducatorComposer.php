@@ -21,7 +21,8 @@ class AttendanceEducatorComposer {
     public function compose(View $view) {
         
         $schoolId = session('schoolId');
-        $classes = Squad::whereIn('id', $this->classIds($schoolId, Auth::id()))->pluck('name', 'id')->toArray();
+        $classes = Squad::whereIn('id', $this->classIds($schoolId, Auth::id()))
+            ->pluck('name', 'id')->toArray();
         reset($classes);
         $gradeId = Squad::find(key($classes))->grade_id;
         $sases = StudentAttendanceSetting::whereGradeId($gradeId)->pluck('name', 'id')->toArray();

@@ -22,7 +22,9 @@ class Kernel extends ConsoleKernel {
      *
      * @var array
      */
-    protected $commands = [];
+    protected $commands = [
+        'App\Console\Commands\ApiSrv'
+    ];
     
     /**
      * Define the application's command schedule.

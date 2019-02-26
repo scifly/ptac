@@ -192,6 +192,7 @@ trait JobTrait {
      */
     function inform(array $results) {
         
+        Log::info('results: ', $results);
         $total = $success = $failure = 0;
         $sms = $wx = ['total' => 0, 'success' => 0, 'failure' => 0];
         foreach ($results as $result) {
