@@ -51,10 +51,8 @@ trait JobTrait {
                         foreach ($groups as $group) {
                             $content['touser'] = implode('|', $group);
                             $result = $message->sendWx($message->app, $content);
-                            Log::info('result', $result);
                             $message->log($users = User::whereIn('userid', $group)->get(), $message, $result);
                             $results[] = array_combine($fields, [$message, $result, $users]);
-                            Log::debug(json_encode($results));
                         }
                     }
                     # step 2: 向未关注的用户（监护人、教职员工）发送短信
@@ -79,7 +77,7 @@ trait JobTrait {
             $this->eHandler($e, $response);
             throw $e;
         }
-        
+        Log::debug(json_encode($results));
         return $results;
         
     }
