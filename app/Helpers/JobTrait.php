@@ -62,6 +62,7 @@ trait JobTrait {
                             : config('app.url') . '/sms/' . $urlcode;
                     }
                 }
+                Log::info('mobiles:', $mobiles);
                 if (!empty($mobiles)) {
                     $chunks = array_chunk($mobiles, $targetSize['sms']);
                     foreach ($chunks as $chunk) {
