@@ -194,7 +194,10 @@ class Action extends Model {
                 // remove actions of non-existing controllers
                 $ctlrs = $this->groupBy('tab_id')->get(['tab_id'])->toArray();
                 $existingCtlrs = Tab::whereIn('id', $ctlrs)->pluck('id')->toArray();
-                $ctlrDiffs = array_diff($existingCtlrs, Tab::whereIn('name', $controllerNames)->pluck('id')->toArray());
+                $ctlrDiffs = array_diff(
+                    $existingCtlrs,
+                    Tab::whereIn('name', $controllerNames)->pluck('id')->toArray()
+                );
                 foreach ($ctlrDiffs as $ctlr) {
                     $actions = self::whereTabId($ctlr)->get();
                     foreach ($actions as $a) {

@@ -4,7 +4,7 @@ namespace App\Helpers;
 use App\Models\{Message, Mobile, School, User};
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\{DB, Log};
+use Illuminate\Support\Facades\{DB};
 use Pusher\PusherException;
 use Throwable;
 
@@ -62,7 +62,6 @@ trait JobTrait {
                             : config('app.url') . '/sms/' . $urlcode;
                     }
                 }
-                Log::info('mobiles:', $mobiles);
                 if (!empty($mobiles)) {
                     $chunks = array_chunk($mobiles, $targetSize['sms']);
                     foreach ($chunks as $chunk) {
@@ -78,7 +77,6 @@ trait JobTrait {
             $this->eHandler($e, $response);
             throw $e;
         }
-        Log::debug(json_encode($results));
         return $results;
         
     }
