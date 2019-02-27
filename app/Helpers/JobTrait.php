@@ -28,7 +28,7 @@ trait JobTrait {
         $fields = ['message', 'result', 'targets'];
         $targetSize = ['wx' => 1000, 'sms' => 2000];
         try {
-            DB::transaction(function () use ($message, $results, $fields, $targetSize) {
+            DB::transaction(function () use ($message, &$results, $fields, $targetSize) {
                 $content = json_decode($message->content, true);
                 $userIds = User::whereIn('userid', explode('|', $content['touser']))
                     ->pluck('id')->toArray();
