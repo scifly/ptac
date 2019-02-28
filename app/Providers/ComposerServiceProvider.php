@@ -82,9 +82,8 @@ class ComposerServiceProvider extends ServiceProvider {
     
         # 通讯录.监护人 - Custodian
         View::composer('custodian.index', $ns . 'CustodianIndexComposer');
-        View::composer('custodian.create_edit', $ns . 'CustodianComposer');
-        View::composer('custodian.edit', $ns . 'CustodianComposer');
         View::composer('custodian.create', $ns . 'CustodianComposer');
+        View::composer('custodian.edit', $ns . 'CustodianComposer');
         View::composer('custodian.relationship', $ns . 'CustodianRelationshipComposer');
     
         # 部门 - Department
@@ -105,9 +104,8 @@ class ComposerServiceProvider extends ServiceProvider {
     
         # 通讯录.教职员工 - Educator
         View::composer('educator.index', $ns . 'EducatorIndexComposer');
-        View::composer('educator.create_edit', $ns . 'EducatorComposer');
-        View::composer('educator.edit', $ns . 'EducatorComposer');
         View::composer('educator.create', $ns . 'EducatorComposer');
+        View::composer('educator.edit', $ns . 'EducatorComposer');
         View::composer('educator.recharge', $ns . 'EducatorRechargeComposer');
     
         # 日历 - Event
@@ -248,7 +246,6 @@ class ComposerServiceProvider extends ServiceProvider {
     
         # 通讯录.学生
         View::composer('student.index', $ns . 'StudentIndexComposer');
-        // View::composer('student.create_edit', $ns . 'StudentComposer');
         View::composer('student.create', $ns . 'StudentComposer');
         View::composer('student.edit', $ns . 'StudentComposer');
         View::composer('student.show', $ns . 'StudentShowComposer');
