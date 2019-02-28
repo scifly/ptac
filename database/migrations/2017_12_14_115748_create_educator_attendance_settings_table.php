@@ -18,7 +18,7 @@ class CreateEducatorAttendanceSettingsTable extends Migration {
                 $table->integer('school_id')->comment('考勤设置所属学校ID');
                 $table->time('start')->comment('考勤设置起始时间');
                 $table->time('end')->comment('考勤设置结束时间');
-                $table->boolean('inorout')->comment('进或出');
+                $table->boolean('direction')->comment('进或出');
                 $table->timestamps();
                 $table->boolean('enabled');
             });

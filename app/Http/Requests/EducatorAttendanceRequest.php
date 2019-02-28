@@ -32,7 +32,7 @@ class EducatorAttendanceRequest extends FormRequest {
             'punch_time' => 'required|date',
             'longitude'  => 'required|numeric',
             'latitude'   => 'required|numeric',
-            'inorout'    => 'required|integer',
+            'direction'  => 'required|integer',
         ];
         
     }

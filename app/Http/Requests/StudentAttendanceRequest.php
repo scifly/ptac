@@ -26,7 +26,7 @@ class StudentAttendanceRequest extends FormRequest {
         return [
             'sn'         => 'required|string|between:5,32',
             'punch_time' => 'required|date',
-            'inorout'    => 'required|integer',
+            'direction'  => 'required|integer',
             'media_id'   => 'required|integer',
             'longitude'  => 'required|numeric',
             'latitude'   => 'required|numeric',
@@ -45,7 +45,7 @@ class StudentAttendanceRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        $input['inorout'] = $input['inorout'] ?? 2;
+        $input['direction'] = $input['direction'] ?? 2;
         $input['longitude'] = $input['longitude'] ?? 0;
         $input['latitude'] = $input['latitude'] ?? 0;
         $input['machineid'] = $input['attendid'];

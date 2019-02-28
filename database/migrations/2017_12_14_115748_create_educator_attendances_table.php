@@ -18,7 +18,7 @@ class CreateEducatorAttendancesTable extends Migration {
                 $table->dateTime('punch_time')->comment('打卡日期时间');
                 $table->float('longitude')->comment('签到时所处经度');
                 $table->float('latitude')->comment('签到时所处纬度');
-                $table->boolean('inorout')->comment('进或出');
+                $table->boolean('direction')->comment('进或出');
                 $table->integer('eas_id')->comment('所属考勤设置ID');
                 $table->timestamps();
             });

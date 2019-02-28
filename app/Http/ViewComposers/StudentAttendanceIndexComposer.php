@@ -26,9 +26,9 @@ class StudentAttendanceIndexComposer {
                 ],
                 '考勤时段', '考勤机',
                 [
-                    'title' => '进/出',
+                    'title' => '方向',
                     'html' => $this->singleSelectList(
-                        [null => '全部', 0 => '进', 1 => '出'], 'filter_inorout'
+                        [null => '全部', 0 => '进', 1 => '出'], 'filter_direction'
                     )
                 ],
                 [

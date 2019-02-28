@@ -27,7 +27,7 @@ use Throwable;
  * @property string $start 考勤时段起始时间
  * @property string $end 考勤时段截止时间
  * @property string $day 星期几？
- * @property int $inorout 进或出
+ * @property int $direction 进或出
  * @property string $msg_template 考勤消息模板
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -40,7 +40,7 @@ use Throwable;
  * @method static Builder|StudentAttendanceSetting whereEnd($value)
  * @method static Builder|StudentAttendanceSetting whereGradeId($value)
  * @method static Builder|StudentAttendanceSetting whereId($value)
- * @method static Builder|StudentAttendanceSetting whereInorout($value)
+ * @method static Builder|StudentAttendanceSetting whereDirection($value)
  * @method static Builder|StudentAttendanceSetting whereIspublic($value)
  * @method static Builder|StudentAttendanceSetting whereMsgTemplate($value)
  * @method static Builder|StudentAttendanceSetting whereName($value)
@@ -61,7 +61,7 @@ class StudentAttendanceSetting extends Model {
     protected $fillable = [
         'name', 'grade_id', 'semester_id',
         'ispublic', 'start', 'end',
-        'day', 'inorout', 'msg_template',
+        'day', 'direction', 'msg_template',
     ];
     
     /**
@@ -119,7 +119,7 @@ class StudentAttendanceSetting extends Model {
             ['db' => 'StudentAttendanceSetting.start', 'dt' => 5],
             ['db' => 'StudentAttendanceSetting.end', 'dt' => 6],
             ['db' => 'StudentAttendanceSetting.day', 'dt' => 7],
-            ['db'        => 'StudentAttendanceSetting.inorout', 'dt' => 8,
+            ['db'        => 'StudentAttendanceSetting.direction', 'dt' => 8,
              'formatter' => function ($d) {
                  return $d
                      ? sprintf(Snippet::BADGE_GREEN, '进')

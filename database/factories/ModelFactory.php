@@ -357,7 +357,7 @@ $factory->define(App\Models\EducatorAttendanceSetting::class, function (Faker\Ge
         'school_id' => rand(1,20),
         'start' =>date('Y-m-d H:i:s',time()),
         'end' => date('Y-m-d H:i:s',strtotime("+8 hours")),
-        'inorout' =>rand(0,1),
+        'direction' =>rand(0,1),
 
     ];
 });
@@ -373,7 +373,7 @@ $factory->define(App\Models\StudentAttendanceSetting::class, function (Faker\Gen
         'start' =>date('Y-m-d H:i:s',time()),
         'end' => date('Y-m-d H:i:s',strtotime("+8 hours")),
         'day'=>$day[rand(0,6)],
-        'inorout' =>rand(0,1),
+        'direction' =>rand(0,1),
         'msg_template'=>$faker->name
     ];
 });

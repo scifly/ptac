@@ -2,16 +2,11 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -23,7 +18,7 @@ use Throwable;
  * @property int $school_id 考勤设置所属学校ID
  * @property string $start 考勤设置起始时间
  * @property string $end 考勤设置结束时间
- * @property int $inorout 进或出
+ * @property int $direction 进或出
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
@@ -33,7 +28,7 @@ use Throwable;
  * @method static Builder|EducatorAttendanceSetting whereEnabled($value)
  * @method static Builder|EducatorAttendanceSetting whereEnd($value)
  * @method static Builder|EducatorAttendanceSetting whereId($value)
- * @method static Builder|EducatorAttendanceSetting whereInorout($value)
+ * @method static Builder|EducatorAttendanceSetting whereDirection($value)
  * @method static Builder|EducatorAttendanceSetting whereName($value)
  * @method static Builder|EducatorAttendanceSetting whereSchoolId($value)
  * @method static Builder|EducatorAttendanceSetting whereStart($value)
@@ -51,7 +46,7 @@ class EducatorAttendanceSetting extends Model {
     
     protected $fillable = [
         'name', 'school_id', 'start',
-        'end', 'inorout', 'enabled',
+        'end', 'direction', 'enabled',
     ];
     
     /**
@@ -87,7 +82,7 @@ class EducatorAttendanceSetting extends Model {
             ['db' => 'EducatorAttendanceSetting.start', 'dt' => 3],
             ['db' => 'EducatorAttendanceSetting.end', 'dt' => 4],
             [
-                'db'        => 'EducatorAttendanceSetting.inorout', 'dt' => 5,
+                'db'        => 'EducatorAttendanceSetting.direction', 'dt' => 5,
                 'formatter' => function ($d) {
                     return $d
                         ? sprintf(Snippet::BADGE_GREEN, '进')

@@ -2,19 +2,13 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
 use App\Http\Requests\EducatorAttendanceRequest;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Support\Facades\{DB, Request, Session};
 use ReflectionException;
 use Throwable;
 use Validator;
@@ -27,7 +21,7 @@ use Validator;
  * @property string $punch_time 打卡日期时间
  * @property float $longitude 签到时所处经度
  * @property float $latitude 签到时所处纬度
- * @property int $inorout 进或出
+ * @property int $direction 进或出
  * @property int $eas_id 所属考勤设置ID
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -39,7 +33,7 @@ use Validator;
  * @method static Builder|EducatorAttendance whereEasId($value)
  * @method static Builder|EducatorAttendance whereEducatorId($value)
  * @method static Builder|EducatorAttendance whereId($value)
- * @method static Builder|EducatorAttendance whereInorout($value)
+ * @method static Builder|EducatorAttendance whereDirection($value)
  * @method static Builder|EducatorAttendance whereLatitude($value)
  * @method static Builder|EducatorAttendance whereLongitude($value)
  * @method static Builder|EducatorAttendance wherePunchTime($value)
@@ -60,7 +54,7 @@ class EducatorAttendance extends Model {
     protected $table = 'educator_attendances';
     protected $fillable = [
         'educator_id', 'punch_time', 'longitude',
-        'latitude', 'inorout', 'eas_id',
+        'latitude', 'direction', 'eas_id',
     ];
     
     /**
@@ -94,7 +88,7 @@ class EducatorAttendance extends Model {
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'EducatorAttendance.punch_time', 'dt' => 2, 'dr' => true],
             [
-                'db'        => 'EducatorAttendance.inorout', 'dt' => 3,
+                'db'        => 'EducatorAttendance.direction', 'dt' => 3,
                 'formatter' => function ($d) {
                     return $d
                         ? sprintf(Snippet::BADGE_GREEN, '进')
@@ -195,7 +189,7 @@ class EducatorAttendance extends Model {
                         'punch_time'  => $dateTime,
                         'longitude'   => $datum['longitude'],
                         'latitude'    => $datum['latitude'],
-                        'inorout'     => $datum['inorout'],
+                        'direction'   => $datum['direction'],
                         'eas_id'      => $easId,
                         'status'      => $status,
                     ];
@@ -313,7 +307,7 @@ class EducatorAttendance extends Model {
                 SELECT
                     ea.id,
                     ea.educator_id,
-                    ea.inorout,
+                    ea.direction,
                     ea.punch_time,
                     ea.status
                 FROM
@@ -384,7 +378,7 @@ class EducatorAttendance extends Model {
                         'name'       => $educator->user['realname'],
                         'mobile'     => $mobiles,
                         'punch_time' => '',
-                        'inorout'    => '',
+                        'direction'  => '',
                         'status'     => '未打',
                     ];
                 }
@@ -408,7 +402,7 @@ class EducatorAttendance extends Model {
                             'name'       => $ea->educator->user->realname,
                             'mobile'     => array_column($ea->educator->user->mobiles->toArray(), 'mobile'),
                             'punch_time' => $ea->punch_time,
-                            'inorout'    => $ea->inorout == 1 ? '进' : '出',
+                            'direction'  => $ea->direction == 1 ? '进' : '出',
                             'status'     => '正常',
                         ];
                     }
@@ -424,7 +418,7 @@ class EducatorAttendance extends Model {
                             'name'       => $ea->educator->user->realname,
                             'mobile'     => array_column($ea->student->user->mobiles->toArray(), 'mobile'),
                             'punch_time' => $ea->punch_time,
-                            'inorout'    => $ea->inorout ? '进' : '出',
+                            'direction'  => $ea->direction ? '进' : '出',
                             'status'     => '异常',
                         ];
                     }
@@ -451,7 +445,7 @@ class EducatorAttendance extends Model {
                 $detail['name'],
                 implode(',', $detail['mobile']),
                 $detail['punch_time'],
-                $detail['inorout'] ? '进' : '出',
+                $detail['direction'] ? '进' : '出',
                 $detail['status'] == 0 ? '异常' : ($detail['status'] == 1 ? '正常' : '未打'),
             ];
         }

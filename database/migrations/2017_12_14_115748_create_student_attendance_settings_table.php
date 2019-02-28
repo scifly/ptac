@@ -23,7 +23,7 @@ class CreateStudentAttendanceSettingsTable extends Migration {
                 $table->string('day', 10)->comment('星期几？');
                 $table->timestamps();
                 $table->string('msg_template')->comment('考勤消息模板');
-                $table->boolean('inorout')->comment('进或出');
+                $table->boolean('direction')->comment('进或出');
             });
         }
     }

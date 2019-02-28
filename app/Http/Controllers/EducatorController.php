@@ -2,10 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorRequest;
-use App\Models\Custodian;
-use App\Models\Department;
-use App\Models\Educator;
-use App\Models\School;
+use App\Models\{Custodian, Department, Educator, School};
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;

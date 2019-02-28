@@ -16,7 +16,7 @@ class CreateStudentAttendancesTable extends Migration {
                 $table->increments('id');
                 $table->integer('student_id')->comment('学生ID');
                 $table->dateTime('punch_time')->comment('打卡时间');
-                $table->boolean('inorout')->comment('进或出');
+                $table->boolean('direction')->comment('进或出');
                 $table->integer('attendance_machine_id')->comment('考勤机ID');
                 $table->integer('media_id')->comment('考勤照片多媒体ID');
                 $table->float('longitude')->comment('打卡时所处经度');

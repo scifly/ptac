@@ -421,7 +421,7 @@ class Constant {
     const DU_FIELDS = ['department_id', 'user_id', 'enabled'];
     const EC_FIELDS = ['educator_id', 'class_id', 'subject_id', 'enabled'];
     const SA_FIELDS = [
-        'student_id', 'sas_id', 'punch_time', 'inorout', 'attendance_machine_id',
+        'student_id', 'sas_id', 'punch_time', 'direction', 'attendance_machine_id',
         'media_id', 'status', 'longitude', 'latitude',
     ];
     const MT_FIELDS = ['menu_id', 'tab_id', 'created_at', 'updated_at', 'enabled'];

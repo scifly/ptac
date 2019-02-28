@@ -58,9 +58,9 @@
                 </div>
             </div>
             @include('shared.switch', [
-                'label' => '进或出',
-                'id' => 'inorout',
-                'value' => $eas['inorout'] ?? null,
+                'label' => '方向',
+                'id' => 'direction',
+                'value' => $eas['direction'] ?? null,
                 'options' => ['进', '出']
             ])
             @include('shared.switch', [

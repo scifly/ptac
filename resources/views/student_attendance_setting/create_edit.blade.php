@@ -85,9 +85,9 @@
                 'options' => ['是', '否']                
             ])
             @include('shared.switch', [
-              'label' => '进或出',
-              'id' => 'inorout',
-              'value' => $sas['inorout'] ?? null,
+              'label' => '方向',
+              'id' => 'direction',
+              'value' => $sas['direction'] ?? null,
               'options' => ['进', '出']
           ])
         </div>

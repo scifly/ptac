@@ -34,7 +34,7 @@ use Validator;
  * @property int $student_id 学生ID
  * @property int $sas_id 关联规则id
  * @property string $punch_time 打卡时间
- * @property int $inorout 进或出
+ * @property int $direction 进或出
  * @property int $attendance_machine_id 考勤机ID
  * @property int $media_id 考勤照片多媒体ID
  * @property int $status 考勤状态
@@ -46,11 +46,11 @@ use Validator;
  * @property-read Media $medias
  * @property-read Student $student
  * @property-read StudentAttendanceSetting $studentAttendanceSetting
- * @property-read \App\Models\Media $media
+ * @property-read Media $media
  * @method static Builder|StudentAttendance whereAttendanceMachineId($value)
  * @method static Builder|StudentAttendance whereCreatedAt($value)
  * @method static Builder|StudentAttendance whereId($value)
- * @method static Builder|StudentAttendance whereInorout($value)
+ * @method static Builder|StudentAttendance whereDirection($value)
  * @method static Builder|StudentAttendance whereLatitude($value)
  * @method static Builder|StudentAttendance whereLongitude($value)
  * @method static Builder|StudentAttendance whereMediaId($value)
@@ -76,7 +76,7 @@ class StudentAttendance extends Model {
     protected $table = 'student_attendances';
     protected $fillable = [
         'id', 'student_id', 'punch_time', 'sas_id',
-        'inorout', 'attendance_machine_id', 'media_id',
+        'direction', 'attendance_machine_id', 'media_id',
         'status', 'longitude', 'latitude', 'created_at',
         'updated_at',
     ];
@@ -128,7 +128,7 @@ class StudentAttendance extends Model {
             ['db' => 'StudentAttendanceSetting.name as sasname', 'dt' => 3],
             ['db' => 'AttendanceMachine.name as machinename', 'dt' => 4],
             [
-                'db'        => 'StudentAttendance.inorout', 'dt' => 5,
+                'db'        => 'StudentAttendance.direction', 'dt' => 5,
                 'formatter' => function ($d) {
                     if ($d == 2) return '';
                     
@@ -206,7 +206,7 @@ class StudentAttendance extends Model {
                 $app = $this->app($school->corp_id);
                 $message = new Message;
                 foreach ($data as &$datum) {
-                    $datum['inorout'] = $datum['inorout'] ?? 2;
+                    $datum['direction'] = $datum['direction'] ?? 2;
                     $datum['longitude'] = $datum['longitude'] ?? 0;
                     $datum['latitude'] = $datum['latitude'] ?? 0;
                     $datum['machineid'] = $datum['attendid'];
@@ -269,7 +269,7 @@ class StudentAttendance extends Model {
                     # 保存考勤记录
                     $sa = $this->create(
                         array_combine(Constant::SA_FIELDS, [
-                            $student->id, $sasId, $punchTime, $datum['inorout'],
+                            $student->id, $sasId, $punchTime, $datum['direction'],
                             $machine->id, $datum['media_id'], $status,
                             $datum['longitude'], $datum['latitude'],
                         ])
@@ -407,7 +407,7 @@ class StudentAttendance extends Model {
                 SELECT
                     sa.id,
                     sa.student_id,
-                    sa.inorout,
+                    sa.direction,
                     sa.status,
                     sa.punch_time
             FROM
@@ -476,7 +476,7 @@ class StudentAttendance extends Model {
                         'custodian'  => $custodians,
                         'mobile'     => $mobiles,
                         'punch_time' => '',
-                        'inorout'    => '',
+                        'direction'  => '',
                     ];
                 }
             }
@@ -498,16 +498,14 @@ class StudentAttendance extends Model {
                             'custodian'  => User::whereIn('id', $userIds)->get()->pluck('realname')->toArray(),
                             'mobile'     => array_column($sa->student->user->mobiles->toArray(), 'mobile'),
                             'punch_time' => $sa->punch_time,
-                            'inorout'    => $sa->inorout == 1 ? '进' : '出',
+                            'direction'  => $sa->direction == 1 ? '进' : '出',
                         ];
                     }
                     break;
                 case 'abnormal':
                     $saIds = [];
                     foreach ($attendances as $a) {
-                        if ($a->lastest == 0) {
-                            $saIds[] = $a->id;
-                        }
+                        if ($a->lastest == 0) $saIds[] = $a->id;
                     }
                     $sas = $this->whereIn('id', $saIds)->get();
                     foreach ($sas as $sa) {
@@ -518,7 +516,7 @@ class StudentAttendance extends Model {
                             'custodian'  => $custodians,
                             'mobile'     => array_column($sa->student->user->mobiles->toArray(), 'mobile'),
                             'punch_time' => $sa->punch_time,
-                            'inorout'    => $sa->inorout ? '进' : '出',
+                            'direction'  => $sa->direction ? '进' : '出',
                         ];
                     }
                     break;
@@ -545,7 +543,7 @@ class StudentAttendance extends Model {
                 implode(',', $detail['custodian']),
                 implode(',', $detail['mobile']),
                 $detail['punch_time'],
-                $detail['inorout'] ? '进' : '出',
+                $detail['direction'] ? '进' : '出',
             ];
         }
         session(['sa_details' => $rows]);
@@ -719,7 +717,7 @@ class StudentAttendance extends Model {
         $attendances = $this->whereStudentId($studentId)
             ->whereDate('punch_time', $date)
             ->orderBy('punch_time', 'ASC')
-            ->get()->groupBy('inorout')->toArray();
+            ->get()->groupBy('direction')->toArray();
         
         return !empty($attendances)
             ? [$attendances[1], head($attendances)]
