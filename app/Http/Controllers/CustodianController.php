@@ -78,17 +78,14 @@ class CustodianController extends Controller {
     /**
      * 编辑监护人
      *
-     * @param $id
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function edit($id) {
+    public function edit() {
         
         return Request::method() === 'POST'
             ? $this->custodian->csList()
-            : $this->output([
-                'custodian' => $this->custodian->find($id),
-            ]);
+            : $this->output();
         
     }
     

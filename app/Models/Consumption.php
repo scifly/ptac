@@ -145,14 +145,14 @@ class Consumption extends Model {
                 $data = $post['data'];
                 $consumptions = [];
                 foreach ($data as &$datum) {
-                    $student = Student::whereStudentNumber($datum['student_number'])->first();
+                    $student = Student::whereSn($datum['sn'])->first();
                     $datum['student_id'] = $student ? $student->id : 0;
                     abort_if(
                         !Validator::make($datum, (new ConsumptionRequest)->rules()),
                         HttpStatusCode::NOT_ACCEPTABLE,
                         __('messages.not_acceptable')
                     );
-                    unset($datum['student_number']);
+                    unset($datum['sn']);
                     $consumptions[] = $datum;
                 }
                 $this->insert($consumptions);

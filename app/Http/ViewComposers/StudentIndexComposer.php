@@ -53,11 +53,12 @@ class StudentIndexComposer {
                 [
                     'title' => '班级',
                     'html' => $this->singleSelectList(
-                         $optionAll + Squad::whereIn('id', $this->classIds())->pluck('name', 'id')->toArray()
+                         $optionAll + Squad::whereIn('id', $this->classIds())
+                             ->pluck('name', 'id')->toArray()
                         , 'filter_class'
                     )
                 ],
-                '学号', '卡号',
+                '学号',
                 [
                     'title' => '住校',
                     'html' => $this->singleSelectList(

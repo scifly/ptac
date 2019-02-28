@@ -82,21 +82,14 @@ class StudentController extends Controller {
     /**
      * 编辑学籍
      *
-     * @param $id
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function edit($id) {
+    public function edit() {
         
-        if (Request::method() === 'POST') {
-            return $this->student->classList();
-        }
-        $student = $this->student->find($id);
-        $student->{'grade_id'} = $student->squad->grade_id;
-        
-        return $this->output([
-            'student' => $student,
-        ]);
+        return Request::method() == 'POST'
+            ? $this->student->classList()
+            : $this->output();
         
     }
     

@@ -39,7 +39,7 @@ class ConsumptionRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        $student = Student::whereStudentNumber($input['student_number'])->first();
+        $student = Student::whereSn($input['sn'])->first();
         $input['student_id'] = $student ? $student->id : 0;
         $this->replace($input);
         

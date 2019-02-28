@@ -124,16 +124,13 @@ class StudentAttendance extends Model {
         $columns = [
             ['db' => 'StudentAttendance.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'Student.card_number', 'dt' => 2],
-            ['db' => 'StudentAttendance.punch_time', 'dt' => 3, 'dr' => true],
-            ['db' => 'StudentAttendanceSetting.name as sasname', 'dt' => 4],
-            ['db' => 'AttendanceMachine.name as machinename', 'dt' => 5],
+            ['db' => 'StudentAttendance.punch_time', 'dt' => 2, 'dr' => true],
+            ['db' => 'StudentAttendanceSetting.name as sasname', 'dt' => 3],
+            ['db' => 'AttendanceMachine.name as machinename', 'dt' => 4],
             [
-                'db'        => 'StudentAttendance.inorout', 'dt' => 6,
+                'db'        => 'StudentAttendance.inorout', 'dt' => 5,
                 'formatter' => function ($d) {
-                    if ($d == 2) {
-                        return '';
-                    }
+                    if ($d == 2) return '';
                     
                     return $d
                         ? sprintf(Snippet::BADGE_GREEN, '进')
@@ -220,7 +217,7 @@ class StudentAttendance extends Model {
                         __('messages.not_acceptable')
                     );
                     $student = Student::whereIn('class_id', $school->classes->pluck('id')->toArray())
-                        ->where('student_number', $datum['student_number'])->first();
+                        ->where('sn', $datum['sn'])->first();
                     abort_if(
                         !$student,
                         HttpStatusCode::NOT_FOUND,

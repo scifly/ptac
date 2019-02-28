@@ -107,7 +107,7 @@ class Score extends Model {
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'Student.student_number', 'dt' => 2],
+            ['db' => 'Student.sn', 'dt' => 2],
             [
                 'db'        => 'Grade.id as grade_id', 'dt' => 3,
                 'formatter' => function ($d) {
@@ -424,10 +424,10 @@ class Score extends Model {
         $examSubjectIds = explode(',', $exam->subject_ids);
         foreach ($records as $record) {
             $basic = [
-                'class'          => $record['A'],
-                'student_number' => $record['B'],
-                'student_name'   => $record['C'],
-                'exam_id'        => Request::input('examId'),
+                'class'        => $record['A'],
+                'sn'           => $record['B'],
+                'student_name' => $record['C'],
+                'exam_id'      => Request::input('examId'),
             ];
             $index = 'D';
             foreach ($subjects as $subject) {
@@ -468,7 +468,7 @@ class Score extends Model {
             $records[] = [
                 $score->student->user->realname,
                 $score->student->squad->name,
-                $score->student->student_number,
+                $score->student->sn,
                 $score->exam->name,
                 $score->subject->name,
                 $score->score,
@@ -547,7 +547,7 @@ class Score extends Model {
         $students = Student::whereIn('class_id', array_intersect($classIds, $this->classIds()))
             ->whereEnabled(1)->get();
         foreach ($students as $student) {
-            $studentList[$student->id] = $student->student_number . ' - ' . $student->user->realname;
+            $studentList[$student->id] = $student->sn . ' - ' . $student->user->realname;
         }
         
         return response()->json([
@@ -584,7 +584,7 @@ class Score extends Model {
         foreach ($students as $student) {
             $rows[] = [
                 $class->name,
-                $student->student_number,
+                $student->sn,
                 $student->user->realname,
             ];
         }
@@ -841,14 +841,14 @@ class Score extends Model {
                 ];
             }
             $result['items'][] = [
-                'student_id'     => $student->id,
-                'exam_id'        => $examId,
-                'realname'       => $student->user['realname'],
-                'student_number' => $student->student_number,
-                'class_rank'     => 3,
-                'grade_rank'     => 5,
-                'total'          => 623,
-                'detail'         => $detail,
+                'student_id' => $student->id,
+                'exam_id'    => $examId,
+                'realname'   => $student->user['realname'],
+                'sn'         => $student->sn,
+                'class_rank' => 3,
+                'grade_rank' => 5,
+                'total'      => 623,
+                'detail'     => $detail,
             ];
         }
         

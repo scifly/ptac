@@ -41,7 +41,7 @@ class ScoreStatComposer {
         $studentList = [];
         $students = Student::whereClassId($class ? $class->id : 0)->get();
         foreach ($students as $student) {
-            $studentList[$student->id] = $student->student_number . ' - ' . $student->user->realname;
+            $studentList[$student->id] = $student->sn . ' - ' . $student->user->realname;
         }
         $view->with([
             'subjects' => $subjectList,

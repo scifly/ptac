@@ -166,6 +166,7 @@ class Custodian extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $user = User::create($data['user']);
+                (new Card)->store($user);
                 $data['user_id'] = $user->id;
                 $custodian = $this->create($data);
                 # 保存监护人用户&部门绑定关系、监护关系、手机号码
@@ -215,12 +216,14 @@ class Custodian extends Model {
                     $this->batch($this);
                 } else {
                     $custodian = $this->find($id);
-                    $custodian->user->update($data['user']);
+                    $user = $custodian->user;
+                    $user->update($data['user']);
+                    (new Card)->store($user);
                     $custodian->update($data);
                     # 更新监护人用户&部门绑定关系、监护关系、手机号码
                     $this->storeProperties($custodian, $data);
                     # 如果同时也是教职员工
-                    $educator = $custodian->user->educator;
+                    $educator = $user->educator;
                     if (!$educator && !$data['singular']) {
                         Educator::create(
                             array_combine(Constant::EDUCATOR_FIELDS, [
@@ -235,7 +238,7 @@ class Custodian extends Model {
                 (new User)->sync(
                     array_map(
                         function ($userId) { return [$userId, '监护人', 'update']; },
-                        $this->whereIn('id', $ids)->get()->pluck('user_id')->toArray()
+                        $this->whereIn('id', $ids)->pluck('user_id')->toArray()
                     )
                 );
             });
@@ -395,11 +398,12 @@ class Custodian extends Model {
             ->get()->toArray();
         foreach ($records as $record) {
             if (!isset($record['user'])) continue;
-            $students[$record['id']] = $record['user']['realname'] . '-' . $record['card_number'];
+            $students[$record['id']] = $record['user']['realname'] . '-' . $record['sn'];
         }
         $custodianId = $id ?? Request::route('id');
         if ($custodianId && Request::method() == 'GET') {
             $custodian = $this->find($custodianId);
+            $custodian->{'card'} = $custodian->user->card;
             $mobiles = $custodian ? $custodian->user->mobiles : null;
             $relations = CustodianStudent::whereCustodianId($custodianId)->get()->filter(
                 function (CustodianStudent $cs) {
@@ -409,7 +413,12 @@ class Custodian extends Model {
         }
         
         return [
-            '新增监护关系', $grades, $classes, $students ?? [], $relations ?? collect([]), $mobiles ?? [],
+            $custodian ?? null,
+            '新增监护关系',
+            $grades,
+            $classes, $students ?? [],
+            $relations ?? collect([]),
+            $mobiles ?? [],
         ];
         
     }

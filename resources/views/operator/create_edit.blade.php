@@ -189,6 +189,7 @@
                     </div>
                 </div>
             </div>
+            @include('shared.card')
             <!-- 状态 -->
             @include('shared.switch', [
                 'id' => 'enabled',

@@ -104,7 +104,7 @@ class ScoreTotal extends Model {
         $columns = [
             ['db' => 'ScoreTotal.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'Student.student_number', 'dt' => 2],
+            ['db' => 'Student.sn', 'dt' => 2],
             [
                 'db'        => 'Grade.name as gradename', 'dt' => 3,
                 'formatter' => function ($d) {

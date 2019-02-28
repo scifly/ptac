@@ -45,7 +45,7 @@ class ScoreAnalysisComposer {
                 ->whereClassId(array_keys($classes)[0])
                 ->get();
             foreach ($stuData as $stu) {
-                $students[$stu->id] = $stu->student_number . '-' . $stu->user->realname;
+                $students[$stu->id] = $stu->sn . '-' . $stu->user->realname;
             }
         }
         if (empty($examarr)) {

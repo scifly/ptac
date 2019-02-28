@@ -28,7 +28,7 @@ class StudentComposer {
     
         $view->with(
             array_combine(
-                ['grades', 'classes', 'user', 'mobiles'],
+                ['student', 'grades', 'classes', 'mobiles'],
                 $this->student->compose()
             )
         );

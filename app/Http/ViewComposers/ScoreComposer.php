@@ -47,7 +47,7 @@ class ScoreComposer {
         $students = Student::whereEnabled(1)
             ->whereIn('class_id', array_intersect($classIds, $this->classIds()))->get();
         foreach ($students as $student) {
-            $studentList[$student->id] = $student->student_number . ' - ' . $student->user->realname;
+            $studentList[$student->id] = $student->sn . ' - ' . $student->user->realname;
         }
         $view->with([
             'subjects' => $subjectList,

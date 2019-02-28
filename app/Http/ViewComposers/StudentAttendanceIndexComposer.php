@@ -19,7 +19,7 @@ class StudentAttendanceIndexComposer {
         
         $view->with([
             'titles'  => [
-                '#', '姓名', '卡号',
+                '#', '姓名',
                 [
                     'title' => '打卡时间',
                     'html' => $this->inputDateTimeRange('打卡时间')

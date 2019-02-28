@@ -94,6 +94,7 @@
                 'label' => '也是教职员工',
                 'options' => ['否', '是']
             ])
+            @include('shared.card')
             <!-- 监护人状态 -->
             @include('shared.switch', [
                 'id' => 'user[enabled]',

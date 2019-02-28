@@ -25,8 +25,7 @@ use Throwable;
  * @property int $id
  * @property int $user_id 用户ID
  * @property int $class_id 班级ID
- * @property string $student_number 学号
- * @property string $card_number 卡号
+ * @property string $sn 学号
  * @property int $oncampus 是否住校
  * @property string $birthday 生日
  * @property string $remark 备注
@@ -41,14 +40,13 @@ use Throwable;
  * @property-read Collection|Consumption[] $consumptions
  * @property-read Collection|Module[] $modules
  * @method static Builder|Student whereBirthday($value)
- * @method static Builder|Student whereCardNumber($value)
  * @method static Builder|Student whereClassId($value)
  * @method static Builder|Student whereCreatedAt($value)
  * @method static Builder|Student whereEnabled($value)
  * @method static Builder|Student whereId($value)
  * @method static Builder|Student whereOncampus($value)
  * @method static Builder|Student whereRemark($value)
- * @method static Builder|Student whereStudentNumber($value)
+ * @method static Builder|Student whereSn($value)
  * @method static Builder|Student whereUpdatedAt($value)
  * @method static Builder|Student whereUserId($value)
  * @method static Builder|Student newModelQuery()
@@ -62,15 +60,14 @@ class Student extends Model {
     
     const EXCEL_TITLES = [
         '姓名', '性别', '学校', '生日',
-        '年级', '班级', '学号', '卡号',
-        '住校', '备注', '监护关系',
+        '年级', '班级', '学号', '住校',
+        '备注', '监护关系',
     ];
     
     
     protected $fillable = [
-        'user_id', 'class_id', 'student_number',
-        'card_number', 'oncampus', 'birthday',
-        'remark', 'enabled',
+        'user_id', 'class_id', 'sn', 'oncampus',
+        'birthday', 'remark', 'enabled',
     ];
     
     /**
@@ -175,30 +172,29 @@ class Student extends Model {
                     return Snippet::squad(Squad::find($d)->name);
                 },
             ],
-            ['db' => 'Student.student_number', 'dt' => 5],
-            ['db' => 'Student.card_number', 'dt' => 6],
+            ['db' => 'Student.sn', 'dt' => 5],
             [
-                'db'        => 'Student.oncampus', 'dt' => 7,
+                'db'        => 'Student.oncampus', 'dt' => 6,
                 'formatter' => function ($d) {
                     return $d == 1 ? '是' : '否';
                 },
             ],
             [
-                'db'        => 'Student.birthday', 'dt' => 8, 'dr' => true,
+                'db'        => 'Student.birthday', 'dt' => 7, 'dr' => true,
                 'formatter' => function ($d) {
                     return $d ? substr($d, 0, 10) : '';
                 },
             ],
-            ['db' => 'Student.created_at', 'dt' => 9, 'dr' => true],
-            ['db' => 'Student.updated_at', 'dt' => 10, 'dr' => true],
+            ['db' => 'Student.created_at', 'dt' => 8, 'dr' => true],
+            ['db' => 'Student.updated_at', 'dt' => 9, 'dr' => true],
             [
-                'db'        => 'Student.enabled', 'dt' => 11,
+                'db'        => 'Student.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 },
             ],
-            ['db' => 'User.synced', 'dt' => 12],
-            ['db' => 'User.subscribed', 'dt' => 13],
+            ['db' => 'User.synced', 'dt' => 11],
+            ['db' => 'User.subscribed', 'dt' => 12],
         ];
         $joins = [
             [
@@ -231,6 +227,7 @@ class Student extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $user = User::create($data['user']);
+                (new Card)->store($user);
                 $data['user_id'] = $user->id;
                 $student = $this->create($data);
                 (new DepartmentUser)->store(
@@ -284,6 +281,8 @@ class Student extends Model {
                         }
                     }
                     $student->user->update($data['user']);
+                    # 更新一卡通
+                    (new Card)->store($student->user);
                     $student->update($data);
                     (new DepartmentUser)->store(
                         $student->user_id,
@@ -358,27 +357,18 @@ class Student extends Model {
     function import() {
     
         $records = $this->upload();
-        list($sns, $cns) = array_map(
-            function ($ns) {
-                foreach ($ns as $n => $count) {
-                    if (!empty($n) && $count > 1) $ds[] = $n;
-                }
-            
-                return $ds ?? [];
-            }, array_map(
-                function ($students, $col) {
-                    return array_count_values(
-                        array_map('strval', array_pluck($students, $col))
-                    );
-                }, [$records, $records], ['G', 'H']
-            )
+        $ns = array_count_values(
+            array_map('strval', array_pluck($records, 'G'))
         );
+        foreach ($ns as $n => $count) {
+            if (!empty($n) && $count > 1) $ds[] = $n;
+        }
+        $sns = $ds ?? [];
         abort_if(
-            !empty($sns) || !empty($cns),
+            !empty($ds ?? []),
             HttpStatusCode::NOT_ACCEPTABLE,
             implode('', [
                 (!empty($sns) ? ('学号: ' . implode(',', $sns)) : ''),
-                (!empty($cns) ? ('卡号: ' . implode(',', $cns)) : ''),
                 '有重复，请检查后重试'
             ])
         );
@@ -468,29 +458,23 @@ class Student extends Model {
             ->pluck('name', 'id')
             ->toArray();
         if (Request::route('id')) {
-            $gradeId = $this->find(Request::route('id'))->squad->grade_id;
-        } else {
-            reset($grades);
-            $gradeId = key($grades);
-        }
-        if (empty($grades)) {
-            $classes = Squad::whereIn('id', $this->classIds())
-                ->pluck('name', 'id')
-                ->toArray();
-        } else {
-            $classes = Squad::whereGradeId($gradeId)
-                ->where('enabled', 1)
-                ->pluck('name', 'id')
-                ->toArray();
-        }
-        if (Request::route('id')) {
             $student = $this->find(Request::route('id'));
-            $user = $student->user;
+            $student->{'card'} = $student->user->card;
+            $student->{'grade_id'} = $student->squad->grade_id;
             $mobiles = $student->user->mobiles;
         }
-        
+        $gradeId = Request::route('id')
+            ? $this->find(Request::route('id'))->squad->grade_id
+            : key($grades);
+        $builder = empty($grades)
+            ? Squad::whereIn('id', $this->classIds())
+            : Squad::where(['grade_id' => $gradeId, 'enabled' => 1]);
+    
         return [
-            $grades, $classes, $user ?? null, $mobiles ?? null,
+            $student ?? null,
+            $grades,
+            $builder->pluck('name', 'id')->toArray(),
+            $mobiles ?? null,
         ];
         
     }

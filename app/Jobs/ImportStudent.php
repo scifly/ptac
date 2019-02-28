@@ -85,8 +85,7 @@ class ImportStudent implements ShouldQueue, MassImport {
         
         $fields = [
             'name', 'gender', 'school', 'birthday', 'grade', 'class',
-            'student_number', 'card_number', 'oncampus', 'remark',
-            'relationship',
+            'sn', 'oncampus', 'remark', 'relationship',
         ];
         $rules = array_combine($fields, [
             'required|string|between:2,60',
@@ -95,7 +94,6 @@ class ImportStudent implements ShouldQueue, MassImport {
             'required|date',
             'required|string|between:3,20',
             'required|string|between:2,20',
-            'required|alphanum|between:2,32',
             'required|alphanum|between:2,32',
             ['required', Rule::in(['住读', '走读'])],
             'nullable',
@@ -107,13 +105,12 @@ class ImportStudent implements ShouldQueue, MassImport {
             $schoolName = $datum['C'];
             $gradeName = $datum['E'];
             $className = $datum['F'];
-            $studentNumber = $datum['G'];
+            $sn = $datum['G'];
             $user = array_combine($fields, [
                 trim($datum['A']), trim($datum['B']), $schoolName,
                 trim($datum['D']), $gradeName, $className,
-                $studentNumber, trim($datum['H']),
-                trim(strval($datum['I'])), trim($datum['J']),
-                trim($datum['K']), 0, 0,
+                $sn, trim(strval($datum['H'])),
+                trim($datum['I']), trim($datum['J']), 0, 0,
             ]);
             $result = Validator::make($user, $rules);
             $failed = $result->fails();
@@ -125,14 +122,14 @@ class ImportStudent implements ShouldQueue, MassImport {
             $class = $grade ? Squad::whereName($className)->where('grade_id', $grade->id)->first() : null;
             $isClassValid = $class ? in_array($class->id, $this->classIds($school->id, $this->userId)) : false;
             if (!(!$failed && $isSchoolValid && $isGradeValid && $isClassValid)) {
-                $datum['L'] = $failed
+                $datum['K'] = $failed
                     ? json_encode($result->errors(), JSON_UNESCAPED_UNICODE)
                     : __('messages.student.import_validation_error');
                 $illegals[] = $datum;
                 continue;
             }
             $student = Student::where([
-                'student_number' => $studentNumber,
+                'sn' => $sn,
                 'class_id'       => $class->id,
             ])->first();
             $user['class_id'] = $class->id;
@@ -169,9 +166,9 @@ class ImportStudent implements ShouldQueue, MassImport {
                     # 创建学生
                     $student = Student::create(
                         array_combine(Constant::STUDENT_FIELDS, [
-                            $user->id, $insert['class_id'], $insert['student_number'],
-                            $insert['card_number'], $insert['oncampus'] == '住读' ? 1 : 0,
-                            $insert['birthday'], $insert['remark'] ?? '导入', $user->enabled,
+                            $user->id, $insert['class_id'], $insert['sn'],
+                            $insert['oncampus'] == '住读' ? 1 : 0, $insert['birthday'],
+                            $insert['remark'] ?? '导入', $user->enabled,
                         ])
                     );
                     # 保存监护关系
@@ -207,14 +204,13 @@ class ImportStudent implements ShouldQueue, MassImport {
             DB::transaction(function () use ($updates) {
                 foreach ($updates as $update) {
                     $ex = new NotFoundHttpException(__('messages.not_found'));
-                    $student = Student::whereStudentNumber($update['student_number'])->first();
+                    $student = Student::whereSn($update['sn'])->first();
                     throw_if(!$student, $ex);
                     $student->update(
                         array_combine(Constant::STUDENT_FIELDS, [
                             $student->user_id,
                             $update['class_id'],
-                            $update['student_number'],
-                            $update['card_number'],
+                            $update['sn'],
                             $update['oncampus'] == '住读' ? 1 : 0,
                             $update['birthday'],
                             '导入', $student->enabled,

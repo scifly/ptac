@@ -24,13 +24,13 @@ class StudentAttendanceRequest extends FormRequest {
     public function rules() {
         
         return [
-            'student_number' => 'required|string|between:5,32',
-            'punch_time'     => 'required|date',
-            'inorout'        => 'required|integer',
-            'media_id'       => 'required|integer',
-            'longitude'      => 'required|numeric',
-            'latitude'       => 'required|numeric',
-            'machineid'      => 'required|string|between:1,20',
+            'sn'         => 'required|string|between:5,32',
+            'punch_time' => 'required|date',
+            'inorout'    => 'required|integer',
+            'media_id'   => 'required|integer',
+            'longitude'  => 'required|numeric',
+            'latitude'   => 'required|numeric',
+            'machineid'  => 'required|string|between:1,20',
         ];
         
     }

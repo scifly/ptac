@@ -36,7 +36,7 @@ class EducatorComposer {
         $view->with(
             array_combine(
                 [
-                    'squads', 'subjects', 'groups', 'selectedDepartmentIds',
+                    'educator', 'squads', 'subjects', 'groups', 'selectedDepartmentIds',
                     'selectedDepartments', 'mobiles'
                 ],
                 $this->educator->compose()

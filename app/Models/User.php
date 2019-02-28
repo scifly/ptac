@@ -25,6 +25,7 @@ use Throwable;
  *
  * @property int $id
  * @property int $group_id 所属角色/权限ID
+ * @property int|null $card_id
  * @property string $username 用户名
  * @property string|null $remember_token "记住我"令牌，登录时用
  * @property string $password 密码
@@ -47,6 +48,7 @@ use Throwable;
  * @property-read Collection|Department[] $departments
  * @property-read Educator $educator
  * @property-read Group $group
+ * @property-read Card $card
  * @property-read Collection|Message[] $messages
  * @property-read Collection|Mobile[] $mobiles
  * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
@@ -64,6 +66,7 @@ use Throwable;
  * @property-read Collection|Tag[] $_tags
  * @method static Builder|User whereAvatarMediaid($value)
  * @method static Builder|User whereAvatarUrl($value)
+ * @method static Builder|User whereCardId($value)
  * @method static Builder|User whereCreatedAt($value)
  * @method static Builder|User whereEmail($value)
  * @method static Builder|User whereEnabled($value)
@@ -145,6 +148,13 @@ class User extends Authenticatable {
      * @return HasOne
      */
     function student() { return $this->hasOne('App\Models\Student'); }
+    
+    /**
+     * 获取指定用户对应的一卡通对象
+     *
+     * @return HasOne
+     */
+    function card() { return $this->hasOne('App\Models\Card'); }
     
     /**
      * 获取指定用户的所有订单对象
@@ -389,6 +399,7 @@ class User extends Authenticatable {
                     $mobiles = $data['mobile'];
                     unset($data['user']['mobile']);
                     $user = $this->create($data['user']);
+                    (new Card)->store($user);
                     # 如果角色为校级管理员，则同时创建教职员工记录
                     if (!in_array($this->role($user->id), Constant::NON_EDUCATOR)) {
                         $data['user_id'] = $user->id;
@@ -443,6 +454,7 @@ class User extends Authenticatable {
                         $mobile = $data['mobile'];
                         if (isset($data['enabled'])) unset($data['mobile']);
                         $user->update($data);
+                        (new Card)->store($user);
                         $role = isset($data['group_id']) ? Group::find($data['group_id'])->name : null;
                         if ($role && $role == '学校') {
                             abort_if(
@@ -544,7 +556,7 @@ class User extends Authenticatable {
                         ['initiator_user_id', 'operator_user_id'], 'reset'
                     );
                     $this->purge([
-                        class_basename($this), 'DepartmentUser', 'TagUser',
+                        class_basename($this), 'DepartmentUser', 'TagUser', 'Card',
                         'Tag', 'Mobile', 'PollQuestionnaire', 'MessageReply',
                         'PollQuestionnaireAnswer', 'PollQuestionnaireParticipant'
                     ], 'user_id');

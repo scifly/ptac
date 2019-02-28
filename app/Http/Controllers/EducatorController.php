@@ -97,11 +97,10 @@ class EducatorController extends Controller {
     /**
      * 编辑教职员工
      *
-     * @param $id
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function edit($id) {
+    public function edit() {
         
         return Request::method() === 'POST'
             ? (
@@ -109,9 +108,7 @@ class EducatorController extends Controller {
                 ? $this->custodian->csList()
                 : $this->department->contacts(false)
             )
-            : $this->output([
-                'educator' => $this->educator->find($id),
-            ]);
+            : $this->output();
         
     }
     

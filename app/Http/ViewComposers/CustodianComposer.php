@@ -35,7 +35,7 @@ class CustodianComposer {
         $view->with(
             array_combine(
                 [
-                    'title', 'grades', 'classes', 'students',
+                    'custodian', 'title', 'grades', 'classes', 'students',
                     'relations', 'mobiles', 'relationship'
                 ],
                 array_merge($this->custodian->compose(), [true])

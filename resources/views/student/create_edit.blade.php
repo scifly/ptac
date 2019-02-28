@@ -104,7 +104,7 @@
             ])
             <!-- 学号 -->
             <div class="form-group">
-                {!! Form::label('student_number', '学号', [
+                {!! Form::label('sn', '学号', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
@@ -112,7 +112,7 @@
                         <div class="input-group-addon" style="width: 45px;">
                             <strong>学</strong>
                         </div>
-                        {!! Form::text('student_number', null, [
+                        {!! Form::text('sn', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(小写字母与阿拉伯数字)',
                             'data-parsley-type' => 'alphanum',
@@ -122,26 +122,7 @@
                     </div>
                 </div>
             </div>
-            <!-- 卡号 -->
-            <div class="form-group">
-                {!! Form::label('card_number', '卡号', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group" style="width: 100%;">
-                        <div class="input-group-addon" style="width: 45px;">
-                            <strong>卡</strong>
-                        </div>
-                        {!! Form::text('card_number', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(小写字母与阿拉伯数字)',
-                            'required' => 'true',
-                            'data-parsley-type' => 'alphanum',
-                            'data-parsley-length' => '[2, 32]'
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
+            @include('shared.card')
             <!-- 生日 -->
             <div class="form-group">
                 {!! Form::label('birthday', '生日', [

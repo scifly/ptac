@@ -213,6 +213,7 @@ class Educator extends Model {
                 # 用户
                 $data['user']['password'] = bcrypt($data['user']['password']);
                 $user = User::create($data['user']);
+                (new Card)->store($user);
                 # 教职员工
                 $data['user_id'] = $user->id;
                 $educator = $this->create($data);
@@ -255,13 +256,15 @@ class Educator extends Model {
                     $this->batch($this);
                 } else {
                     $educator = $this->find($id);
-                    $educator->user->update($data['user']);
+                    $user = $educator->user;
+                    $user->update($data['user']);
                     $educator->update($data);
+                    (new Card)->store($user);
                     (new EducatorClass)->storeByEducatorId($educator->id, $data['cs']);
                     (new DepartmentUser)->storeByUserId($educator->user_id, $data['selectedDepartments']);
                     (new Mobile)->store($data['mobile'], $educator->user_id);
                     # 如果同时也是监护人
-                    $custodian = $educator->user->custodian;
+                    $custodian = $user->custodian;
                     if (!$data['singular']) {
                         $custodian ?: Custodian::create(
                             array_combine(Constant::CUSTODIAN_FIELDS, [
@@ -447,6 +450,7 @@ class Educator extends Model {
         );
         if (($educatorId = $id ?? Request::route('id')) && Request::method() == 'GET') {
             $educator = $this->find($educatorId);
+            $educator->{'card'} = $educator->user->card;
             $mobiles = $educator ? $educator->user->mobiles : null;
             $selectedDepartmentIds = !$educator ? []
                 : $educator->user->deptIds($educator->user_id);
@@ -455,6 +459,7 @@ class Educator extends Model {
         $firstOption = [0 => '(请选择)'];
         
         return [
+            $educator ?? null,
             $firstOption + $classes->pluck('name', 'id')->toArray(),
             $firstOption + $subjects->pluck('name', 'id')->toArray(),
             (new Group)->groupList(),

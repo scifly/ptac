@@ -16,8 +16,7 @@ class CreateStudentsTable extends Migration {
                 $table->increments('id');
                 $table->integer('user_id')->comment('用户ID');
                 $table->integer('class_id')->comment('班级ID');
-                $table->string('student_number', 32)->comment('学号');
-                $table->string('card_number', 32)->comment('卡号');
+                $table->string('sn', 32)->comment('学号');
                 $table->boolean('oncampus')->comment('是否住校');
                 $table->dateTime('birthday')->comment('生日');
                 $table->string('remark')->comment('备注');

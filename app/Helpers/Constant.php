@@ -400,7 +400,7 @@ class Constant {
     ];
     const EDUCATOR_FIELDS = ['user_id', 'school_id', 'sms_quote', 'enabled'];
     const STUDENT_FIELDS = [
-        'user_id', 'class_id', 'student_number', 'card_number',
+        'user_id', 'class_id', 'sn',
         'oncampus', 'birthday', 'remark', 'enabled',
     ];
     const CUSTODIAN_FIELDS = ['user_id', 'enabled'];

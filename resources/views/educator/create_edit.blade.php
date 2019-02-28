@@ -188,6 +188,7 @@
                     <a id="choose" href="#"><i class="fa fa-sitemap"></i>&nbsp; 选择</a>
                 </div>
             </div>
+            @include('shared.card')
             <!-- 状态 -->
             @include('shared.switch', [
                 'id' => 'user[enabled]',

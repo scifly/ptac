@@ -21,7 +21,7 @@
                                 {!! $relation->student->user->realname !!}
                             </td>
                             <td class="text-center">
-                                {!! $relation->student->student_number !!}
+                                {!! $relation->student->sn !!}
                             </td>
                             <td class="text-center">
                                 {!! Form::text('relationships[]', $relation->relationship, [

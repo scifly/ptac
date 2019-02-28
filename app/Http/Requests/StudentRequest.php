@@ -41,9 +41,7 @@ class StudentRequest extends FormRequest {
             'user.enabled'      => 'required|boolean',
             'mobile.*'          => ['nullable', new Mobile],
             'class_id'          => 'required|integer',
-            'card_number'       => 'required|alphanum|between:2,32|unique:students,card_number,' .
-                $this->input('user_id') . ',user_id',
-            'student_number'    => 'required|alphanum|between:2,32|unique:students,student_number,' .
+            'sn'                => 'required|alphanum|between:2,32|unique:students,sn,' .
                 $this->input('user_id') . ',user_id',
             'oncampus'          => 'required|boolean',
             'birthday'          => 'required',

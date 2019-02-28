@@ -180,8 +180,7 @@ $factory->define(App\Models\Student::class, function (Faker\Generator $faker) {
     return [
         'user_id' => 1,
         'class_id' => 1,
-        'student_number' => 2017211132,
-        'card_number' => $faker->creditCardNumber,
+        'sn' => 2017211132,
         'oncampus' => 1,
         'birthday' => $faker->date(),
         'remark' => '测试',

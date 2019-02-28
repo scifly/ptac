@@ -40,7 +40,7 @@
                 @foreach($data['items'] as $item)
                     <tr class="tongji-item" data-s="{!! $item['student_id'] !!}" data-e="{!! $item['exam_id'] !!}">
                         <td>{!! $item['realname'] !!}</td>
-                        <td>{!! $item['student_number'] !!}</td>
+                        <td>{!! $item['sn'] !!}</td>
                         <td>{!! $item['class_rank'] !!}</td>
                         <td>{!! $item['grade_rank'] !!}</td>
                         <td>{!! $item['total'] !!}</td>

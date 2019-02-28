@@ -487,7 +487,7 @@ class School extends Model {
                         ->pluck('name', 'id');
                     $students = Student::whereClassId($classes->keys()->first())
                         ->where('enabled', 1)
-                        ->pluck('student_number', 'id');
+                        ->pluck('sn', 'id');
                 }
                 break;
             case 'class':
@@ -496,7 +496,7 @@ class School extends Model {
                     ->get();
                 if (!empty($list)) {
                     foreach ($list as $s) {
-                        $students[$s->id] = $s->user->realname . "-" . $s->student_number;
+                        $students[$s->id] = $s->user->realname . "-" . $s->sn;
                     }
                 }
                 break;
@@ -542,7 +542,7 @@ class School extends Model {
                 foreach ($g as $v) {
                     $students = Student::whereClassId($v)
                         ->where('enabled', 1)
-                        ->pluck('student_number', 'id');
+                        ->pluck('sn', 'id');
                     break;
                 }
             }

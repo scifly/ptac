@@ -75,7 +75,7 @@ class ImportScore implements ShouldQueue, MassImport {
      */
     function validate(array $data) {
         
-        $fields = ['student_number', 'subject_id', 'exam_id', 'score'];
+        $fields = ['sn', 'subject_id', 'exam_id', 'score'];
         $rules = array_combine($fields, [
             'required', 'required|integer',
             'required|integer', 'required|numeric'
@@ -83,7 +83,7 @@ class ImportScore implements ShouldQueue, MassImport {
         for ($i = 0; $i < count($data); $i++) {
             $datum = $data[$i];
             $score = array_combine($fields, [
-                $datum['student_number'], $datum['subject_id'],
+                $datum['sn'], $datum['subject_id'],
                 $datum['exam_id'], $datum['score']
             ]);
             $result = Validator::make($score, $rules);
@@ -92,7 +92,7 @@ class ImportScore implements ShouldQueue, MassImport {
                 $illegals[] = array_values($datum);
                 continue;
             }
-            $student = Student::whereStudentNumber($score['student_number'])->first();
+            $student = Student::whereSn($score['sn'])->first();
             # 数据非法
             if (!$student) {
                 $datum['error'] = __('messages.student.not_found');
@@ -129,7 +129,7 @@ class ImportScore implements ShouldQueue, MassImport {
         try {
             DB::transaction(function () use ($inserts) {
                 foreach ($inserts as $insert) {
-                    $student = Student::whereStudentNumber($insert['student_number'])->first();
+                    $student = Student::whereSn($insert['sn'])->first();
                     if (!$student) continue;
                     Score::create(
                         array_combine(Constant::SCORE_FIELDS, [
@@ -160,7 +160,7 @@ class ImportScore implements ShouldQueue, MassImport {
         try {
             DB::transaction(function () use ($updates) {
                 foreach ($updates as $update) {
-                    $student = Student::whereStudentNumber($update['student_number'])->first();
+                    $student = Student::whereSn($update['sn'])->first();
                     if (!$student) continue;
                     $condition = array_combine(self::CONDITION_FIELDS, [
                         $student->id, $update['subject_id'], $update['exam_id'], 1
