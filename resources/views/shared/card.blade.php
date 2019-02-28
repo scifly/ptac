@@ -1,6 +1,6 @@
 <!-- 一卡通卡号 -->
 <div class="form-group">
-    {!! Form::label('card[sn]', '卡号', [
+    {!! Form::label('card[sn]', '一卡通卡号', [
         'class' => 'col-sm-3 control-label'
     ]) !!}
     <div class="col-sm-6">
