@@ -248,7 +248,9 @@ class ComposerServiceProvider extends ServiceProvider {
     
         # 通讯录.学生
         View::composer('student.index', $ns . 'StudentIndexComposer');
-        View::composer('student.create_edit', $ns . 'StudentComposer');
+        // View::composer('student.create_edit', $ns . 'StudentComposer');
+        View::composer('student.create', $ns . 'StudentComposer');
+        View::composer('student.edit', $ns . 'StudentComposer');
         View::composer('student.show', $ns . 'StudentShowComposer');
     
         # 科目 - Subject
