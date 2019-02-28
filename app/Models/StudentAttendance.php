@@ -2,25 +2,17 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
 use App\Http\Requests\StudentAttendanceRequest;
 use App\Jobs\SendMessage;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\{Collection, Model, Relations\BelongsTo};
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\{Auth, DB, Request, Session};
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use ReflectionException;
@@ -33,7 +25,7 @@ use Validator;
  * @property int $id
  * @property int $student_id 学生ID
  * @property int $sas_id 关联规则id
- * @property string $punch_time 打卡时间
+ * @property string $clocked_at 打卡时间
  * @property int $direction 进或出
  * @property int $attendance_machine_id 考勤机ID
  * @property int $media_id 考勤照片多媒体ID
@@ -54,7 +46,7 @@ use Validator;
  * @method static Builder|StudentAttendance whereLatitude($value)
  * @method static Builder|StudentAttendance whereLongitude($value)
  * @method static Builder|StudentAttendance whereMediaId($value)
- * @method static Builder|StudentAttendance wherePunchTime($value)
+ * @method static Builder|StudentAttendance whereClockedAt($value)
  * @method static Builder|StudentAttendance whereSasId($value)
  * @method static Builder|StudentAttendance whereStatus($value)
  * @method static Builder|StudentAttendance whereStudentId($value)
@@ -75,7 +67,7 @@ class StudentAttendance extends Model {
     const VIEW_NS = 'wechat.attendance.';
     protected $table = 'student_attendances';
     protected $fillable = [
-        'id', 'student_id', 'punch_time', 'sas_id',
+        'id', 'student_id', 'clocked_at', 'sas_id',
         'direction', 'attendance_machine_id', 'media_id',
         'status', 'longitude', 'latitude', 'created_at',
         'updated_at',
@@ -124,7 +116,7 @@ class StudentAttendance extends Model {
         $columns = [
             ['db' => 'StudentAttendance.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'StudentAttendance.punch_time', 'dt' => 2, 'dr' => true],
+            ['db' => 'StudentAttendance.clocked_at', 'dt' => 2, 'dr' => true],
             ['db' => 'StudentAttendanceSetting.name as sasname', 'dt' => 3],
             ['db' => 'AttendanceMachine.name as machinename', 'dt' => 4],
             [
@@ -223,7 +215,7 @@ class StudentAttendance extends Model {
                         HttpStatusCode::NOT_FOUND,
                         __('messages.student.not_found')
                     );
-                    $dateTime = strtotime($datum['punch_time']);
+                    $dateTime = strtotime($datum['clocked_at']);
                     $day = Constant::WEEK_DAYS[date('w', $dateTime)];
                     $strDateTime = date('Y-m-d', $dateTime);
                     $semester = Semester::where([
@@ -256,12 +248,12 @@ class StudentAttendance extends Model {
                         HttpStatusCode::NOT_FOUND,
                         __('messages.sas.not_found')
                     );
-                    $punchTime = date('Y-m-d H:i:s', $dateTime);
+                    $clockedAt = date('Y-m-d H:i:s', $dateTime);
                     $status = 0; # 考勤异常
                     $sasId = 0;
                     foreach ($sases as $sas) {
                         $sasId = $sas->id;
-                        if ($punchTime <= $sas->end && $punchTime >= $sas->start) {
+                        if ($clockedAt <= $sas->end && $clockedAt >= $sas->start) {
                             $status = 1;
                             break;
                         }
@@ -269,7 +261,7 @@ class StudentAttendance extends Model {
                     # 保存考勤记录
                     $sa = $this->create(
                         array_combine(Constant::SA_FIELDS, [
-                            $student->id, $sasId, $punchTime, $datum['direction'],
+                            $student->id, $sasId, $clockedAt, $datum['direction'],
                             $machine->id, $datum['media_id'], $status,
                             $datum['longitude'], $datum['latitude'],
                         ])
@@ -292,7 +284,7 @@ class StudentAttendance extends Model {
                                 $sa->studentAttendanceSetting->msg_template,
                                 [
                                     '{name}'   => $student->user->realname,
-                                    '{time}'   => $sa->punch_time,
+                                    '{time}'   => $sa->clocked_at,
                                     '{rule}'   => $sa->studentAttendanceSetting->name,
                                     '{status}' => $sa->status == 1 ? '正常' : '异常',
                                 ]
@@ -401,23 +393,23 @@ class StudentAttendance extends Model {
             SELECT
                 max(t.id) id,
                 t.student_id,
-                substring_index(group_concat(t.status ORDER BY t.punch_time DESC), ',', 1) lastest,
-                DATE(t.punch_time) day
+                substring_index(group_concat(t.status ORDER BY t.clocked_at DESC), ',', 1) lastest,
+                DATE(t.clocked_at) day
           FROM (
                 SELECT
                     sa.id,
                     sa.student_id,
                     sa.direction,
                     sa.status,
-                    sa.punch_time
+                    sa.clocked_at
             FROM
                 student_attendances sa
             WHERE
-                sa.punch_time >= '" . $start . "' AND
-                sa.punch_time <= '" . $end . "'
+                sa.clocked_at >= '" . $start . "' AND
+                sa.clocked_at <= '" . $end . "'
             ORDER BY
                 sa.student_id ASC,
-                sa.punch_time DESC
+                sa.clocked_at DESC
           ) t
           WHERE
                 t.student_id IN (" . $studentIds . ")
@@ -460,7 +452,7 @@ class StudentAttendance extends Model {
         if ($type == 'missed') {
             # 打过考勤的学生ids
             $nStudentIds = $this->whereIn('student_id', $studentIds)
-                ->whereBetween('punch_time', [$startDate, $endDate])
+                ->whereBetween('clocked_at', [$startDate, $endDate])
                 ->get()->pluck('student_id')->toArray();
             # 未打考勤的学生
             $mStudents = Student::whereIn('id', array_diff($studentIds, $nStudentIds))->get();
@@ -475,7 +467,7 @@ class StudentAttendance extends Model {
                         'name'       => $student->user['realname'],
                         'custodian'  => $custodians,
                         'mobile'     => $mobiles,
-                        'punch_time' => '',
+                        'clocked_at' => '',
                         'direction'  => '',
                     ];
                 }
@@ -497,7 +489,7 @@ class StudentAttendance extends Model {
                             'name'       => $sa->student->user->realname,
                             'custodian'  => User::whereIn('id', $userIds)->get()->pluck('realname')->toArray(),
                             'mobile'     => array_column($sa->student->user->mobiles->toArray(), 'mobile'),
-                            'punch_time' => $sa->punch_time,
+                            'clocked_at' => $sa->clocked_at,
                             'direction'  => $sa->direction == 1 ? '进' : '出',
                         ];
                     }
@@ -515,7 +507,7 @@ class StudentAttendance extends Model {
                             'name'       => $sa->student->user->realname,
                             'custodian'  => $custodians,
                             'mobile'     => array_column($sa->student->user->mobiles->toArray(), 'mobile'),
-                            'punch_time' => $sa->punch_time,
+                            'clocked_at' => $sa->clocked_at,
                             'direction'  => $sa->direction ? '进' : '出',
                         ];
                     }
@@ -542,7 +534,7 @@ class StudentAttendance extends Model {
                 $detail['name'],
                 implode(',', $detail['custodian']),
                 implode(',', $detail['mobile']),
-                $detail['punch_time'],
+                $detail['clocked_at'],
                 $detail['direction'] ? '进' : '出',
             ];
         }
@@ -673,26 +665,26 @@ class StudentAttendance extends Model {
         $ids = $aDays = $nDays = [];
         # 查询考勤异常的数据
         $abnormals = $this->whereStudentId($studentId)
-            ->whereBetween('punch_time', [$start, $end])
+            ->whereBetween('clocked_at', [$start, $end])
             ->where('status', 0)->get();
         foreach ($abnormals as $a) {
             # 查询考勤异常当天的所有数据
-            $date = date('Y-m-d', strtotime($a->punch_time));
-            $attendances = $this->whereDate('punch_time', $date)
-                ->whereBetween('punch_time', [$start, $end])
+            $date = date('Y-m-d', strtotime($a->clocked_at));
+            $attendances = $this->whereDate('clocked_at', $date)
+                ->whereBetween('clocked_at', [$start, $end])
                 ->where('student_id', $studentId)->get();
             foreach ($attendances as $attendance) {
                 $ids[] = $attendance->id;
-                $aDays[] = date('Y-m-d', strtotime($attendance->punch_time));
+                $aDays[] = date('Y-m-d', strtotime($attendance->clocked_at));
             }
             $aDays = array_unique($aDays);
         }
         # 查询考勤正常天数的数据
         $normals = $this->whereNotIn('id', $ids)
-            ->whereBetween('punch_time', [$start, $end])
+            ->whereBetween('clocked_at', [$start, $end])
             ->where('student_id', $studentId)->get();
         foreach ($normals as $n) {
-            $nDays[] = date('Y-m-d', strtotime($n->punch_time));
+            $nDays[] = date('Y-m-d', strtotime($n->clocked_at));
         }
         $nDays = array_unique($nDays);
         
@@ -715,8 +707,8 @@ class StudentAttendance extends Model {
     private function attendances($studentId, $date) {
         
         $attendances = $this->whereStudentId($studentId)
-            ->whereDate('punch_time', $date)
-            ->orderBy('punch_time', 'ASC')
+            ->whereDate('clocked_at', $date)
+            ->orderBy('clocked_at', 'ASC')
             ->get()->groupBy('direction')->toArray();
         
         return !empty($attendances)
@@ -848,8 +840,8 @@ class StudentAttendance extends Model {
         $attendances = StudentAttendance::whereSasId($sas->id)
             ->whereIn('student_id', $studentIds)
             ->whereNotNull('sas_id')
-            ->whereDate('punch_time', $date)
-            ->orderBy('punch_time', 'desc')
+            ->whereDate('clocked_at', $date)
+            ->orderBy('clocked_at', 'desc')
             ->get()->unique('student_id');
         $normals = $attendances->where('status', 1)->count();
         $abnormals = $attendances->where('status', 0)->count();
@@ -901,7 +893,7 @@ class StudentAttendance extends Model {
                     ];
                     $list[] = $class == 'Student'
                         ? $item
-                        : array_merge($item, ['punch_time' => $object->punch_time]);
+                        : array_merge($item, ['clocked_at' => $object->clocked_at]);
                 }
                 
                 return $list;

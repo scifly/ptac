@@ -9,7 +9,7 @@
 			@foreach($normal['mobiles'] as $mobile)
 				<div class="mobile">手机 : <span>{!! $mobile !!}</span></div>
 			@endforeach
-			<div class="otherinfo">打卡时间: {!! $normal['punch_time'] !!}</div>
+			<div class="otherinfo">打卡时间: {!! $normal['clocked_at'] !!}</div>
 		</div>
 	</div>
 	@endforeach
@@ -25,7 +25,7 @@
 				@foreach($abnormal['mobiles'] as $mobile)
 					<div class="mobile">手机 : <span>{!! $mobile !!}</span></div>
 				@endforeach
-				<div class="otherinfo">打卡时间: {!! $abnormal['punch_time'] !!}</div>
+				<div class="otherinfo">打卡时间: {!! $abnormal['clocked_at'] !!}</div>
 			</div>
 		</div>
 	@endforeach

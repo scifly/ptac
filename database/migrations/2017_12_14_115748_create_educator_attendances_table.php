@@ -15,7 +15,7 @@ class CreateEducatorAttendancesTable extends Migration {
             Schema::create('educator_attendances', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('educator_id')->comment('教职员工ID');
-                $table->dateTime('punch_time')->comment('打卡日期时间');
+                $table->dateTime('clocked_at')->comment('打卡日期时间');
                 $table->float('longitude')->comment('签到时所处经度');
                 $table->float('latitude')->comment('签到时所处纬度');
                 $table->boolean('direction')->comment('进或出');

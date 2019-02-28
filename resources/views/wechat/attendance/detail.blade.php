@@ -46,7 +46,7 @@
                               style="display:inline-block">{!! $in->studentAttendancesetting->name !!}
                         </span>
                         <span class="kaoqin-detail-status c-83db74">{!! $in->status ? '正常' : '异常' !!}</span>
-                        <span class="time">{!! date('H:i:s', strtotime($in->punch_time)) !!}</span>
+                        <span class="time">{!! date('H:i:s', strtotime($in->clocked_at)) !!}</span>
                     @endif
                 </div>
             @endforeach
@@ -55,7 +55,7 @@
                     @if (sizeof($outs) != 0)
                         <span class="js-kaoqin-status-morning" style="display:inline-block">放学</span>
                         <span class="kaoqin-detail-status c-83db74">{!! $out->status ? '正常' : '异常' !!}</span>
-                        <span class="time">{!! date('H:i:s', strtotime($out->punch_time)) !!}</span>
+                        <span class="time">{!! date('H:i:s', strtotime($out->clocked_at)) !!}</span>
                     @endif
                 </div>
             @endforeach

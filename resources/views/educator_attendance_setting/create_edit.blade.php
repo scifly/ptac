@@ -33,7 +33,7 @@
                                 'class' => 'form-control start-time timepicker',
                                 'required' => 'true',
                                 'data-parsley-start' => '.end-time',
-                                'placeholder' => '(不得大于等于结束时间)'
+                                'placeholder' => '(须小于结束时间)'
                             ]) !!}
                         </div>
                     </div>
@@ -51,7 +51,7 @@
                                 'class' => 'form-control end-time timepicker',
                                 'required' => 'true',
                                 'data-parsley-end' => '.start-time',
-                                'placeholder' => '(不得小于等于开始时间)'
+                                'placeholder' => '(须大于开始时间)'
                             ]) !!}
                         </div>
                     </div>

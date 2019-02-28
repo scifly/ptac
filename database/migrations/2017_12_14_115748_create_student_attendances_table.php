@@ -15,7 +15,7 @@ class CreateStudentAttendancesTable extends Migration {
             Schema::create('student_attendances', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('student_id')->comment('学生ID');
-                $table->dateTime('punch_time')->comment('打卡时间');
+                $table->dateTime('clocked_at')->comment('打卡时间');
                 $table->boolean('direction')->comment('进或出');
                 $table->integer('attendance_machine_id')->comment('考勤机ID');
                 $table->integer('media_id')->comment('考勤照片多媒体ID');

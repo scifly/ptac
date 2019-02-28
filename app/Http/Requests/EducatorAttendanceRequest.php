@@ -29,7 +29,7 @@ class EducatorAttendanceRequest extends FormRequest {
         
         return [
             'user_id'    => 'required|integer',
-            'punch_time' => 'required|date',
+            'clocked_at' => 'required|date',
             'longitude'  => 'required|numeric',
             'latitude'   => 'required|numeric',
             'direction'  => 'required|integer',

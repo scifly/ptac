@@ -18,7 +18,7 @@ use Validator;
  *
  * @property int $id
  * @property int $educator_id 教职员工ID
- * @property string $punch_time 打卡日期时间
+ * @property string $clocked_at 打卡日期时间
  * @property float $longitude 签到时所处经度
  * @property float $latitude 签到时所处纬度
  * @property int $direction 进或出
@@ -36,7 +36,7 @@ use Validator;
  * @method static Builder|EducatorAttendance whereDirection($value)
  * @method static Builder|EducatorAttendance whereLatitude($value)
  * @method static Builder|EducatorAttendance whereLongitude($value)
- * @method static Builder|EducatorAttendance wherePunchTime($value)
+ * @method static Builder|EducatorAttendance whereClockedAt($value)
  * @method static Builder|EducatorAttendance whereUpdatedAt($value)
  * @method static Builder|EducatorAttendance whereStatus($value)
  * @method static Builder|EducatorAttendance newModelQuery()
@@ -53,7 +53,7 @@ class EducatorAttendance extends Model {
     ];
     protected $table = 'educator_attendances';
     protected $fillable = [
-        'educator_id', 'punch_time', 'longitude',
+        'educator_id', 'clocked_at', 'longitude',
         'latitude', 'direction', 'eas_id',
     ];
     
@@ -86,7 +86,7 @@ class EducatorAttendance extends Model {
         $columns = [
             ['db' => 'EducatorAttendance.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'EducatorAttendance.punch_time', 'dt' => 2, 'dr' => true],
+            ['db' => 'EducatorAttendance.clocked_at', 'dt' => 2, 'dr' => true],
             [
                 'db'        => 'EducatorAttendance.direction', 'dt' => 3,
                 'formatter' => function ($d) {
@@ -171,22 +171,22 @@ class EducatorAttendance extends Model {
                         HttpStatusCode::NOT_FOUND,
                         __('messages.educator_not_found')
                     );
-                    $dateTime = $datum['punch_time'];
-                    $punchTime = date('H:i:s', strtotime($dateTime));
+                    $dateTime = $datum['clocked_at'];
+                    $clockedAt = date('H:i:s', strtotime($dateTime));
                     $eases = EducatorAttendanceSetting::whereSchoolId($educator->school_id)
                         ->where('enabled', 1)->get();
                     $status = 0; # 考勤异常
                     $easId = 0;
                     foreach ($eases as $eas) {
                         $easId = $eas->id;
-                        if ($punchTime <= $eas->end && $punchTime >= $eas->start) {
+                        if ($clockedAt <= $eas->end && $clockedAt >= $eas->start) {
                             $status = 1;
                             break;
                         }
                     }
                     $eas[] = [
                         'educator_id' => $educator->id,
-                        'punch_time'  => $dateTime,
+                        'clocked_at'  => $dateTime,
                         'longitude'   => $datum['longitude'],
                         'latitude'    => $datum['latitude'],
                         'direction'   => $datum['direction'],
@@ -301,23 +301,23 @@ class EducatorAttendance extends Model {
             SELECT
                 MAX(t.id) id,
                 t.educator_id,
-                SUBSTRING_INDEX(GROUP_CONCAT(t.status ORDER BY t.punch_time DESC), ',', 1) latest,
-                DATE(t.punch_time) day
+                SUBSTRING_INDEX(GROUP_CONCAT(t.status ORDER BY t.clocked_at DESC), ',', 1) latest,
+                DATE(t.clocked_at) day
             FROM (
                 SELECT
                     ea.id,
                     ea.educator_id,
                     ea.direction,
-                    ea.punch_time,
+                    ea.clocked_at,
                     ea.status
                 FROM
                     educator_attendances ea
                 WHERE
-                    ea.punch_time >= '" . $start . "' AND
-                    ea.punch_time <= '" . $end . "'
+                    ea.clocked_at >= '" . $start . "' AND
+                    ea.clocked_at <= '" . $end . "'
                 ORDER BY
                     ea.educator_id ASC,
-                    ea.punch_time DESC
+                    ea.clocked_at DESC
             ) t
             WHERE
                 t.educator_id IN (" . $educatorIds . ")
@@ -360,7 +360,7 @@ class EducatorAttendance extends Model {
         if ($type == 'missed') {
             # 打过考勤的教职员工ids
             $nEducatorIds = $this->whereIn('educator_id', $educatorIds)
-                ->whereBetween('punch_time', [$startTime, $endTime])
+                ->whereBetween('clocked_at', [$startTime, $endTime])
                 ->get()->pluck('educator_id')->toArray();
             # 未打考勤的教职员工
             $mEducators = Educator::whereIn('id', array_diff($educatorIds, $nEducatorIds))->get();
@@ -377,7 +377,7 @@ class EducatorAttendance extends Model {
                     $results[] = [
                         'name'       => $educator->user['realname'],
                         'mobile'     => $mobiles,
-                        'punch_time' => '',
+                        'clocked_at' => '',
                         'direction'  => '',
                         'status'     => '未打',
                     ];
@@ -401,7 +401,7 @@ class EducatorAttendance extends Model {
                         $results[] = [
                             'name'       => $ea->educator->user->realname,
                             'mobile'     => array_column($ea->educator->user->mobiles->toArray(), 'mobile'),
-                            'punch_time' => $ea->punch_time,
+                            'clocked_at' => $ea->clocked_at,
                             'direction'  => $ea->direction == 1 ? '进' : '出',
                             'status'     => '正常',
                         ];
@@ -417,7 +417,7 @@ class EducatorAttendance extends Model {
                         $results[] = [
                             'name'       => $ea->educator->user->realname,
                             'mobile'     => array_column($ea->student->user->mobiles->toArray(), 'mobile'),
-                            'punch_time' => $ea->punch_time,
+                            'clocked_at' => $ea->clocked_at,
                             'direction'  => $ea->direction ? '进' : '出',
                             'status'     => '异常',
                         ];
@@ -444,7 +444,7 @@ class EducatorAttendance extends Model {
             $rows[] = [
                 $detail['name'],
                 implode(',', $detail['mobile']),
-                $detail['punch_time'],
+                $detail['clocked_at'],
                 $detail['direction'] ? '进' : '出',
                 $detail['status'] == 0 ? '异常' : ($detail['status'] == 1 ? '正常' : '未打'),
             ];

@@ -109,7 +109,7 @@ $('.picker-calendar-day').on('click', function () {
         success: function (result) {
             var html = '',
                 status = '',
-                punch_time = '',
+                clocked_at = '',
                 template =
                     '<div class="mt20 history-list-con" style="">' +
                     '<span class="js-kaoqin-status-morning" style="display:inline-block">%d</span>' +
@@ -121,11 +121,11 @@ $('.picker-calendar-day').on('click', function () {
             if (result['ins'].length > 0) {
                 for (var i = 0; i < result['ins'].length; i++) {
                     status = result['ins'][i]['status'] === 1 ? '正常' : '异常';
-                    punch_time = result['ins'][i]['punch_time'];
+                    clocked_at = result['ins'][i]['clocked_at'];
                     html += template
                         .replace('%d', '上班')
                         .replace('%s', status)
-                        .replace('%p', punch_time);
+                        .replace('%p', clocked_at);
                 }
             } else {
                 html += template
@@ -136,11 +136,11 @@ $('.picker-calendar-day').on('click', function () {
             if (result['outs'].length > 0) {
                 for (var j = 0; j < result['outs'].length; j++) {
                     status = result['outs'][i]['status'] === 1 ? '正常' : '异常';
-                    punch_time = result['outs'][i]['punch_time'];
+                    clocked_at = result['outs'][i]['clocked_at'];
                     html += template
                         .replace('%d', '下班')
                         .replace('%s', status)
-                        .replace('%p', punch_time);
+                        .replace('%p', clocked_at);
                 }
             } else {
                 html += template

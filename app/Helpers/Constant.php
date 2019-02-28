@@ -8,7 +8,7 @@ class Constant {
     
     const SYSTEM_PARAMS = [
         [
-            'id' => 'ActionType',
+            'id'   => 'ActionType',
             'name' => '请求类型',
             'data' => [
                 ['GET', ''],
@@ -19,29 +19,29 @@ class Constant {
                 ['OPTIONS', ''],
                 ['TRACE', ''],
                 ['CONNECT', ''],
-                ['PATCH', '']
-            ]
+                ['PATCH', ''],
+            ],
         ],
         [
-            'id' => 'AlertType',
+            'id'   => 'AlertType',
             'name' => '提醒类型',
-            'data' => []
+            'data' => [],
         ],
         [
-            'id' => 'AttachmentType',
+            'id'   => 'AttachmentType',
             'name' => '附件类型',
-            'data' => []
+            'data' => [],
         ],
         [
-            'id' => 'CommType',
+            'id'   => 'CommType',
             'name' => '通信方式',
             'data' => [
                 ['微信', ''],
-                ['短信', '']
-            ]
+                ['短信', ''],
+            ],
         ],
         [
-            'id' => 'DepartmentType',
+            'id'   => 'DepartmentType',
             'name' => '部门类型',
             'data' => [
                 ['根', 'root'],
@@ -50,11 +50,11 @@ class Constant {
                 ['学校', 'school'],
                 ['年级', 'grade'],
                 ['班级', 'squad'],
-                ['其他', 'other']
-            ]
+                ['其他', 'other'],
+            ],
         ],
         [
-            'id' => 'Group',
+            'id'   => 'Group',
             'name' => '角色',
             'data' => [
                 ['运营', ''],
@@ -62,17 +62,17 @@ class Constant {
                 ['学校', ''],
                 ['监护人', ''],
                 ['学生', ''],
-            ]
+            ],
         ],
         [
-            'id' => 'IconType',
+            'id'   => 'IconType',
             'name' => '图标类型',
             'data' => [
-                ['常用', '']
-            ]
+                ['常用', ''],
+            ],
         ],
         [
-            'id' => 'MediaType',
+            'id'   => 'MediaType',
             'name' => '媒体类型',
             'data' => [
                 ['text', '文本'],
@@ -81,37 +81,37 @@ class Constant {
                 ['file', '文件'],
                 ['voice', '语音'],
                 ['textcard', '卡片'],
-                ['mpnews', '图文']
-            ]
+                ['mpnews', '图文'],
+            ],
         ],
         [
-            'id' => 'MenuType',
+            'id'   => 'MenuType',
             'name' => '菜单类型',
             'data' => [
                 ['根', 'root'],
                 ['运营', 'company'],
                 ['企业', 'corp'],
                 ['学校', 'school'],
-                ['其他', 'other']
-            ]
+                ['其他', 'other'],
+            ],
         ],
         [
-            'id' => 'MessageType',
+            'id'   => 'MessageType',
             'name' => '消息类型',
             'data' => [
                 ['成绩消息', ''],
                 ['考勤消息', ''],
-                ['作业消息', '']
-            ]
+                ['作业消息', ''],
+            ],
         ],
         [
-            'id' => 'SchoolType',
+            'id'   => 'SchoolType',
             'name' => '学校类型',
             'data' => [
                 ['小学', ''],
                 ['初中', ''],
-                ['高中', '']
-            ]
+                ['高中', ''],
+            ],
         ],
     ];
     # 状态
@@ -176,7 +176,7 @@ class Constant {
         'SyncController',
         'ApiController',
         'TestController',
-        'WechatController'
+        'WechatController',
     ];
     const CONTENT_TYPE = [
         'image' => 'image/*',
@@ -421,7 +421,7 @@ class Constant {
     const DU_FIELDS = ['department_id', 'user_id', 'enabled'];
     const EC_FIELDS = ['educator_id', 'class_id', 'subject_id', 'enabled'];
     const SA_FIELDS = [
-        'student_id', 'sas_id', 'punch_time', 'direction', 'attendance_machine_id',
+        'student_id', 'sas_id', 'clocked_at', 'direction', 'attendance_machine_id',
         'media_id', 'status', 'longitude', 'latitude',
     ];
     const MT_FIELDS = ['menu_id', 'tab_id', 'created_at', 'updated_at', 'enabled'];

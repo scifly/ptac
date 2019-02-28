@@ -126,7 +126,7 @@
                                             '<td>' + result[i]['name'] + '</td>' +
                                             '<td>' + result[i]['custodian'] + '</td>' +
                                             '<td>' + result[i]['mobile'] + '</td>' +
-                                            '<td>' + result[i]['punch_time'] + '</td>' +
+                                            '<td>' + result[i]['clocked_at'] + '</td>' +
                                             '<td>' + result[i]['direction'] + '</td>' +
                                         '</tr>';
                                 } else {
@@ -134,7 +134,7 @@
                                         '<tr>' +
                                             '<td>' + result[i]['name'] + '</td>' +
                                             '<td>' + result[i]['mobile'] + '</td>' +
-                                            '<td>' + result[i]['punch_time'] + '</td>' +
+                                            '<td>' + result[i]['clocked_at'] + '</td>' +
                                             '<td>' + result[i]['direction'] + '</td>' +
                                             '<td>' + result[i]['status'] + '</td>' +
                                         '</tr>';

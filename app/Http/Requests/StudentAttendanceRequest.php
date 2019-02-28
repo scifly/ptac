@@ -25,7 +25,7 @@ class StudentAttendanceRequest extends FormRequest {
         
         return [
             'sn'         => 'required|string|between:5,32',
-            'punch_time' => 'required|date',
+            'clocked_at' => 'required|date',
             'direction'  => 'required|integer',
             'media_id'   => 'required|integer',
             'longitude'  => 'required|numeric',
