@@ -2,7 +2,9 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use App\Http\Requests\CardRequest;
 use Eloquent;
 use Exception;
@@ -64,8 +66,17 @@ class Card extends Model {
             ['db' => 'Card.updated_at', 'dt' => 4, 'dr' => true],
             [
                 'db' => 'Card.status', 'dt' => 5,
-                'formatter' => function ($d) {
-                    return $d ? ($d == 1 ? '正常' : '挂失') : '待发';
+                'formatter' => function ($d, $row) {
+                    $colors = [
+                        ['text-gray', '待发'],
+                        ['text-green', '正常'],
+                        ['text-red', '挂失'],
+                    ];
+                    
+                    return sprintf(
+                        Snippet::BADGE,
+                        $colors[$d][0], $colors[$d][1]
+                    );
                 }
             ]
         ];
