@@ -8,15 +8,13 @@ use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\BelongsToMany,
+    Relations\HasMany};
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use ReflectionClass;
 use Throwable;
 
@@ -96,10 +94,11 @@ class Tab extends Model {
                 'db'        => 'Tab.name', 'dt' => 1,
                 'formatter' => function ($d, $row) {
                     $iconId = $this->find($row['id'])->icon_id;
-                    
-                    return $iconId
-                        ? sprintf(Snippet::ICON, Icon::find($iconId)->name, '') . $d
-                        : sprintf(Snippet::ICON, 'fa-calendar-check-o text-gray', '') . $d;
+                    return sprintf(
+                        Snippet::ICON,
+                        $iconId ? Icon::find($iconId)->name : 'fa-calendar-check-o text-gray',
+                        ''
+                    ) . $d;
                 },
             ],
             ['db' => 'Tab.comment', 'dt' => 2],
@@ -107,18 +106,13 @@ class Tab extends Model {
                 'db'        => 'Tab.group_id', 'dt' => 3,
                 'formatter' => function ($d) {
                     $group = $d ? Group::find($d)->name : '所有';
-                    switch ($group) {
-                        case '所有':
-                            return sprintf(Snippet::BADGE_BLACK, $group);
-                        case '运营':
-                            return sprintf(Snippet::BADGE_LIGHT_BLUE, $group);
-                        case '企业':
-                            return sprintf(Snippet::BADGE_GREEN, $group);
-                        case '学校':
-                            return sprintf(Snippet::BADGE_FUCHSIA, $group);
-                        default:
-                            return '-';
-                    }
+                    $colors = [
+                        '所有' => 'text-black',
+                        '运营' => 'text-light-blue',
+                        '企业' => 'text-green',
+                        '学校' => 'text-fuchsia'
+                    ];
+                    return sprintf(Snippet::BADGE, $colors[$group], $group);
                 },
             ],
             [
@@ -134,25 +128,19 @@ class Tab extends Model {
             [
                 'db'        => 'Tab.category', 'dt' => 7,
                 'formatter' => function ($d) {
-                    switch ($d) {
-                        case 0:
-                            return sprintf(Snippet::BADGE_LIGHT_BLUE, '后台');
-                        case 1:
-                            return sprintf(Snippet::BADGE_GREEN, '前端');
-                        case 2:
-                            return sprintf(Snippet::BADGE_GRAY, '其他');
-                        default:
-                            return '-';
-                    }
+                    $category = !$d ? '后台' : ($d == 1 ? '前端' : '其他');
+                    $colors = [
+                        '后台' => 'text-light-blue',
+                        '前端' => 'text-green',
+                        '其他' => 'text-gray'
+                    ];
+                    return sprintf(Snippet::BADGE, $colors[$category], $category);
                 },
             ],
             [
                 'db'        => 'Tab.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    $id = $row['id'];
-                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-                    
-                    return Snippet::status($d) . $editLink;
+                    return Datatable::status($d, $row, false, true, false);
                 },
             ],
         ];

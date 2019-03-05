@@ -76,7 +76,7 @@ class EducatorAttendanceSetting extends Model {
             [
                 'db'        => 'School.name as schoolname ', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::school($d);
+                    return Snippet::icon($d, 'school');
                 },
             ],
             ['db' => 'EducatorAttendanceSetting.start', 'dt' => 3],
@@ -84,9 +84,11 @@ class EducatorAttendanceSetting extends Model {
             [
                 'db'        => 'EducatorAttendanceSetting.direction', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return $d
-                        ? sprintf(Snippet::BADGE_GREEN, '进')
-                        : sprintf(Snippet::BADGE_RED, '出');
+                    return sprintf(
+                        Snippet::BADGE,
+                        $d ? 'text-green' : 'text-red',
+                        $d ? '进' : '出'
+                    );
                 },
             ],
             ['db' => 'EducatorAttendanceSetting.created_at', 'dt' => 6],

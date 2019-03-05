@@ -147,7 +147,7 @@ class Corp extends Model {
             [
                 'db'        => 'Corp.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return Snippet::corp($d);
+                    return Snippet::icon($d, 'corp');
                 },
             ],
             ['db' => 'Corp.acronym', 'dt' => 2],

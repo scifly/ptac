@@ -141,7 +141,7 @@ class PollQuestionnaire extends Model {
             [
                 'db'        => 'School.name as school_name', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::school($d);
+                    return Snippet::icon($d, 'school');
                 }
             ],
             ['db' => 'User.realname', 'dt' => 3],

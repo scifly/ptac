@@ -111,13 +111,13 @@ class Score extends Model {
             [
                 'db'        => 'Grade.id as grade_id', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return Snippet::grade(Grade::find($d)->name);
+                    return Snippet::icon(Grade::find($d)->name, 'grade');
                 },
             ],
             [
                 'db'        => 'Squad.id as squad_id', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return Snippet::squad(Squad::find($d)->name);
+                    return Snippet::icon(Squad::find($d)->name, 'squad');
                 },
             ],
             [

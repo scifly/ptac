@@ -106,7 +106,7 @@ class StudentAttendanceSetting extends Model {
             [
                 'db' => 'Grade.name as gradename', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::grade($d);
+                    return Snippet::icon($d, 'grade');
                 }
             ],
             ['db' => 'Semester.name as semestername', 'dt' => 3],
@@ -121,9 +121,11 @@ class StudentAttendanceSetting extends Model {
             ['db' => 'StudentAttendanceSetting.day', 'dt' => 7],
             ['db'        => 'StudentAttendanceSetting.direction', 'dt' => 8,
              'formatter' => function ($d) {
-                 return $d
-                     ? sprintf(Snippet::BADGE_GREEN, '进')
-                     : sprintf(Snippet::BADGE_RED, '出');
+                 return sprintf(
+                     Snippet::BADGE,
+                     $d ? 'text-green' : 'text-red',
+                     $d ? '进' : '出'
+                 );
              },
             ],
             ['db' => 'StudentAttendanceSetting.msg_template', 'dt' => 9],

@@ -107,13 +107,13 @@ class Group extends Model {
             [
                 'db'        => 'School.name as schoolname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::school($d);
+                    return Snippet::icon($d, 'school');
                 },
             ],
             [
                 'db'        => 'Corp.name as corpname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return Snippet::corp($d);
+                    return Snippet::icon($d, 'corp');
                 },
             ],
             ['db' => 'Groups.remark', 'dt' => 4],

@@ -111,13 +111,13 @@ class Squad extends Model {
             [
                 'db'        => 'Squad.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return Snippet::squad($d);
+                    return Snippet::icon($d, 'squad');
                 },
             ],
             [
                 'db'        => 'Squad.grade_id', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::grade(Grade::find($d)->name);
+                    return Snippet::icon(Grade::find($d)->name, 'grade');
                 },
             ],
             [

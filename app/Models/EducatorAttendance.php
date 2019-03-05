@@ -90,18 +90,22 @@ class EducatorAttendance extends Model {
             [
                 'db'        => 'EducatorAttendance.direction', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return $d
-                        ? sprintf(Snippet::BADGE_GREEN, '进')
-                        : sprintf(Snippet::BADGE_RED, '出');
+                    return sprintf(
+                        Snippet::BADGE,
+                        $d ? 'text-green' : 'text-red',
+                        $d ? '进' : '出'
+                    );
                 },
             ],
             ['db' => 'EducatorAttendanceSetting.name', 'dt' => 4],
             [
                 'db'        => 'EducatorAttendance.status', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return $d
-                        ? sprintf(Snippet::BADGE_GREEN, '正常')
-                        : sprintf(Snippet::BADGE_RED, '异常');
+                    return sprintf(
+                        Snippet::BADGE,
+                        $d ? 'text-green' : 'text-red',
+                        $d ? '正常' : '异常'
+                    );
                 },
             ],
         ];

@@ -90,9 +90,11 @@ class Consumption extends Model {
             [
                 'db'        => 'Consumption.ctype', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return $d == 0
-                        ? sprintf(Snippet::BADGE_GREEN, '充值')
-                        : sprintf(Snippet::BADGE_RED, '消费');
+                    return sprintf(
+                        Snippet::BADGE,
+                        $d ? 'text-red' : 'text-green',
+                        $d ? '消费' : '充值'
+                    );
                 },
             ],
             [

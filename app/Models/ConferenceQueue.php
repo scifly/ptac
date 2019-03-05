@@ -109,8 +109,6 @@ class ConferenceQueue extends Model {
             [
                 'db'        => 'ConferenceQueue.status', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    $user = Auth::user();
-                    $id = $row['id'];
                     $statuses = [
                         ['green', '进行中'],
                         ['red', '已结束'],
@@ -120,15 +118,7 @@ class ConferenceQueue extends Model {
                         '<i class="fa fa-circle text-%s" title="%s"></i>',
                         $statuses[$d][0], $statuses[$d][1]
                     );
-                    $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
-                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
-                    
-                    return
-                        $status .
-                        ($user->can('act', self::uris()['show']) ? $showLink : '') .
-                        ($user->can('act', self::uris()['edit']) ? $editLink : '') .
-                        ($user->can('act', self::uris()['destroy']) ? $delLink : '');
+                    return Datatable::status($status, $row);
                 },
             ],
         ];

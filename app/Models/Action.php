@@ -100,31 +100,31 @@ class Action extends Model {
             [
                 'db'        => 'Action.method', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Snippet::BADGE_GREEN, $d) : '-';
+                    return !empty($d) ? sprintf(Snippet::BADGE, 'text-green', $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.route', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Snippet::BADGE_YELLOW, $d) : '-';
+                    return !empty($d) ? sprintf(Snippet::BADGE, 'text-yellow', $d) : '-';
                 },
             ],
             [
                 'db'        => 'Tab.name as controller', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Snippet::BADGE_RED, $d) : '-';
+                    return !empty($d) ? sprintf(Snippet::BADGE, 'text-red', $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.view', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Snippet::BADGE_LIGHT_BLUE, $d) : '-';
+                    return !empty($d) ? sprintf(Snippet::BADGE, 'text-light-blue', $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.js', 'dt' => 6,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Snippet::BADGE_MAROON, $d) : '-';
+                    return !empty($d) ? sprintf(Snippet::BADGE, 'text-maroon', $d) : '-';
                 },
             ],
             [
@@ -136,20 +136,19 @@ class Action extends Model {
             [
                 'db'        => 'Tab.category', 'dt' => 8,
                 'formatter' => function ($d) {
-                    return !$d ? sprintf(Snippet::BADGE_LIGHT_BLUE, '后台')
-                        : (
-                        $d == 1 ? sprintf(Snippet::BADGE_GREEN, '前端')
-                            : sprintf(Snippet::BADGE_GRAY, '其他')
-                        );
+                    $category = !$d ? '后台' : ($d == 1 ? '前端' : '其他');
+                    $colors = [
+                        '后台' => 'text-light-blue',
+                        '前端' => 'text-green',
+                        '其他' => 'text-gray'
+                    ];
+                    return sprintf(Snippet::BADGE, $colors[$category], $category);
                 },
             ],
             [
                 'db'        => 'Action.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
-                    $id = $row['id'];
-                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-                    
-                    return Snippet::status($d) . $editLink;
+                    return Datatable::status($d, $row, false, true, false);
                 },
             ],
         ];

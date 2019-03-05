@@ -118,7 +118,7 @@ class Module extends Model {
             [
                 'db' => 'Module.school_id', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::school(School::find($d)->name);
+                    return Snippet::icon(School::find($d)->name, 'school');
                 }
             ],
             [

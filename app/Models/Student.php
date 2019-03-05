@@ -169,7 +169,7 @@ class Student extends Model {
             [
                 'db'        => 'Student.class_id', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return Snippet::squad(Squad::find($d)->name);
+                    return Snippet::icon(Squad::find($d)->name, 'squad');
                 },
             ],
             ['db' => 'Student.sn', 'dt' => 5],

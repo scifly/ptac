@@ -182,7 +182,7 @@ class Message extends Model {
             [
                 'db'        => 'Message.msl_id', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return $d ? $d : sprintf(Snippet::BADGE_GRAY, '(n/a)');
+                    return $d ? $d : sprintf(Snippet::BADGE, 'text-gray', '(n/a)');
                 },
             ],
             [
@@ -190,8 +190,8 @@ class Message extends Model {
                 'formatter' => function ($d, $row) {
                     $row['sent'] == 1 ?:
                         $type = '(' . (!$row['event_id']
-                                ? sprintf(Snippet::BADGE_RED, '草稿')
-                                : sprintf(Snippet::BADGE_ORANGE, '定时')
+                                ? sprintf(Snippet::BADGE, 'text-red', '草稿')
+                                : sprintf(Snippet::BADGE, 'text-orange', '定时')
                             ) . ')';
                     
                     return CommType::find($d)->name . ($type ?? '');
@@ -216,7 +216,11 @@ class Message extends Model {
                     if ($d) return $d;
                     $msl = $this->find($row['id'])->messageSendinglog;
                     
-                    return sprintf(Snippet::BADGE_GRAY, ($msl ? $msl->recipient_count : '0') . ' 人');
+                    return sprintf(
+                        Snippet::BADGE,
+                        'text-gray',
+                        ($msl ? $msl->recipient_count : '0') . ' 人'
+                    );
                 },
             ],
             [
@@ -225,7 +229,7 @@ class Message extends Model {
                     return $row['sent'] == 1 ? $d
                         : ($row['sent'] == 2
                             ? $this->humanDate(Event::find($row['event_id'])->start)
-                            : sprintf(Snippet::BADGE_GRAY, '(n/a)')
+                            : sprintf(Snippet::BADGE, 'text-gray', '(n/a)')
                         );
                 },
             ],
@@ -248,8 +252,8 @@ class Message extends Model {
                             ? sprintf($html, 'edit_' . $id, '编辑', 'fa-edit')
                             : sprintf($html, 'show_' . $id, '详情', 'fa-laptop');
                     }
-                    
-                    return $status . sprintf(Snippet::DT_LINK_DEL, $id);
+
+                    return $status . sprintf(Snippet::DT_ANCHOR, $id, '删除', 'fa-remove text-red');
                 },
             ],
             ['db' => 'Message.' . ($received ? 'sent' : 'read'), 'dt' => 9],

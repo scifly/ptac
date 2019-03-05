@@ -237,7 +237,7 @@ class User extends Authenticatable {
     
     /** crud -------------------------------------------------------------------------------------------------------- */
     /**
-     * 用户列表
+     * (超级)用户列表
      *
      * @return array
      */
@@ -248,8 +248,8 @@ class User extends Authenticatable {
             ['db' => 'User.username', 'dt' => 1],
             [
                 'db'        => 'Groups.name as role', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return Snippet::role($d);
+                'formatter' => function ($d, $row) {
+                    return Snippet::icon($d, $row['remark']);
                 },
             ],
             ['db' => 'User.realname', 'dt' => 3],
@@ -286,6 +286,7 @@ class User extends Authenticatable {
                     return Datatable::status($d, $row, false);
                 },
             ],
+            ['db' => 'Groups.remark as remark', 'dt' => 12]
         ];
         $joins = [
             [
@@ -303,8 +304,7 @@ class User extends Authenticatable {
             ['运营', '企业', '学校']
         );
         $rootMenu = Menu::find((new Menu)->rootId(true));
-        $menuType = $rootMenu->menuType->name;
-        switch ($menuType) {
+        switch ($rootMenu->menuType->name) {
             case '根':
                 $allowedGIds = [$rootGId, $corpGId, $schoolGId];
                 $condition = sprintf($sql, implode(',', $allowedGIds));

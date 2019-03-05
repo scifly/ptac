@@ -121,21 +121,25 @@ class Event extends Model {
                 'db'        => 'Event.ispublic', 'dt' => 6,
                 'formatter' => function ($d) {
                     if (!empty($d)) {
-                        return $d
-                            ? sprintf(Snippet::BADGE_GREEN, '是')
-                            : sprintf(Snippet::BADGE_RED, '否');
+                        return sprintf(
+                            Snippet::BADGE,
+                            $d ? 'text-green' : 'text-red',
+                            $d ? '是' : '否'
+                        );
                     }
                     
-                    return Snippet::BADGE_GRAY;
+                    return '-';
                 },
             ],
             ['db' => 'Subject.name', 'dt' => 7],
             [
                 'db'        => 'Event.alertable', 'dt' => 8,
                 'formatter' => function ($d) {
-                    return $d
-                        ? sprintf(Snippet::BADGE_GREEN, '是')
-                        : sprintf(Snippet::BADGE_RED, '否');
+                    return sprintf(
+                        Snippet::BADGE,
+                        $d ? 'text-green' : 'text-red',
+                        $d ? '是' : '否'
+                    );
                 },
             ],
             ['db' => 'User.realname', 'dt' => 9],

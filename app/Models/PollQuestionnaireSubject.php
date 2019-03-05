@@ -119,11 +119,7 @@ class PollQuestionnaireSubject extends Model {
             [
                 'db'        => 'PollQuestionnaireSubject.id as subject_id', 'dt' => 6,
                 'formatter' => function ($d) {
-                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $d);
-                    $delLink = sprintf(Snippet::DT_LINK_DEL, $d);
-                    
-                    return (self::uris()['edit'] ? $editLink : '')
-                        . (self::uris()['destroy'] ? $delLink : '');
+                    return Datatable::status(null, $d, false);
                 },
             ],
         ];

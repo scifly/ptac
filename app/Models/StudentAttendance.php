@@ -123,10 +123,12 @@ class StudentAttendance extends Model {
                 'db'        => 'StudentAttendance.direction', 'dt' => 5,
                 'formatter' => function ($d) {
                     if ($d == 2) return '';
-                    
-                    return $d
-                        ? sprintf(Snippet::BADGE_GREEN, '进')
-                        : sprintf(Snippet::BADGE_RED, '出');
+    
+                    return sprintf(
+                        Snippet::BADGE,
+                        $d ? 'text-green' : 'text-red',
+                        $d ? '进' : '出'
+                    );
                 },
             ],
             ['db' => 'StudentAttendance.status', 'dt' => 7],

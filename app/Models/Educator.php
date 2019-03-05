@@ -162,8 +162,9 @@ class Educator extends Model {
                 'db'        => 'Educator.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     $rechargeLink = sprintf(
-                        Snippet::DT_LINK_RECHARGE,
-                        'recharge_' . $row['id']
+                        Snippet::DT_ANCHOR,
+                        'recharge_' . $row['id'],
+                        '充值', 'fa-money'
                     );
                     
                     return Datatable::status($d, $row, false) .

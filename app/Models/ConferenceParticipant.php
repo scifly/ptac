@@ -78,8 +78,9 @@ class ConferenceParticipant extends Model {
             [
                 'db'        => 'ConferenceParticipant.status', 'dt' => 6,
                 'formatter' => function ($d) {
-                    return $d ? sprintf(Snippet::BADGE_GREEN, '签到已到') :
-                        sprintf(Snippet::BADGE_YELLOW, '签到未到');
+                    $color = $d ? 'text-green' : 'text-yellow';
+                    $text = $d ? '签到已到' : '签到未到';
+                    return sprintf(Snippet::BADGE, $color, $text);
                 },
             ],
         ];

@@ -120,7 +120,7 @@ class Grade extends Model {
             [
                 'db'        => 'Grade.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return Snippet::grade($d);
+                    return Snippet::icon($d, 'grade');
                 },
             ],
             [

@@ -108,13 +108,13 @@ class ScoreTotal extends Model {
             [
                 'db'        => 'Grade.name as gradename', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return Snippet::grade($d);
+                    return Snippet::icon($d, 'grade');
                 },
             ],
             [
                 'db'        => 'Squad.name', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return Snippet::squad($d);
+                    return Snippet::icon($d, 'squad');
                 },
             ],
             ['db' => 'Exam.name as examname', 'dt' => 5],
@@ -126,10 +126,7 @@ class ScoreTotal extends Model {
             [
                 'db'        => 'ScoreTotal.enabled', 'dt' => 11,
                 'formatter' => function ($d, $row) {
-                    $id = $row['id'];
-                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
-                    
-                    return Snippet::status($d) . $delLink;
+                    return Datatable::status($d, $row, false, false, true);
                 },
             ],
         ];

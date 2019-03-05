@@ -173,26 +173,30 @@ class Datatable {
     /**
      * Display data entry operations
      *
-     * @param $active
+     * @param $status
      * @param $row
      * @param bool $show
      * @param bool $edit
      * @param bool|true $del - if set to false, do not show delete link
      * @return string
      */
-    function status($active, $row, $show = true, $edit = true, $del = true) {
+    function status($status, $row, $show = true, $edit = true, $del = true) {
         
         $user = Auth::user();
-        $id = $row['id'];
-        $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
-        $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-        $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
+        $id = is_array($row) ? $row['id'] : $row;
+        list($showUri, $editUri, $delUri) = array_map(
+            function ($name, $title, $class) use ($id) {
+                return sprintf(Snippet::DT_ANCHOR, $name . $id, $title, $class);
+            },
+            ['show_', 'edit_', ''], ['详情', '编辑', '删除'],
+            ['fa_bars', 'fa_pencil', 'fa-remove text-red']
+        );
         
         return
-            Snippet::status($active) .
-            ($show ? ($user->can('act', $this->uris()['show']) ? $showLink : '') : '') .
-            ($edit ? ($user->can('act', $this->uris()['edit']) ? $editLink : '') : '') .
-            ($del ? ($user->can('act', $this->uris()['destroy']) ? $delLink : '') : '');
+            (isset($status) ? Snippet::status($status) : '') .
+            ($show ? ($user->can('act', $this->uris()['show']) ? $showUri : '') : '') .
+            ($edit ? ($user->can('act', $this->uris()['edit']) ? $editUri : '') : '') .
+            ($del ? ($user->can('act', $this->uris()['destroy']) ? $delUri : '') : '');
         
     }
     

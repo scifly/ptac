@@ -268,7 +268,7 @@ class School extends Model {
             [
                 'db'        => 'School.name as schoolname', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return Snippet::school($d);
+                    return Snippet::icon($d, 'school');
                 },
             ],
             ['db' => 'School.address', 'dt' => 2],
@@ -276,7 +276,7 @@ class School extends Model {
             [
                 'db'        => 'Corp.name as corpname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return Snippet::corp($d);
+                    return Snippet::icon($d, 'corp');
                 },
             ],
             ['db' => 'School.created_at', 'dt' => 5],

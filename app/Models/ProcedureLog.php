@@ -161,24 +161,10 @@ class ProcedureLog extends Model {
             [
                 'db'        => 'ProcedureLog.step_status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    switch ($d) {
-                        case 0:
-                            $status = Snippet::status(true);
-                            break;
-                        case 1:
-                            $status = Snippet::status(false);
-                            break;
-                        case 2:
-                            $status = sprintf(self::DT_PEND, '待定');
-                            break;
-                        default:
-                            $status = Snippet::status(false);
-                            break;
-                    }
-                    $id = $row['first_log_id'];
-                    $showLink = sprintf(Snippet::DT_LINK_SHOW, $id);
-                    
-                    return $status . $showLink;
+                    return Datatable::status(
+                        $d, $row['first_log_id'],
+                        true, false, false
+                    );
                 },
             ],
         ];

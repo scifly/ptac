@@ -160,10 +160,11 @@ class Subject extends Model {
             [
                 'db'        => 'Subject.isaux', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return $d
-                        ? sprintf(Snippet::BADGE_GREEN, '是')
-                        : sprintf(Snippet::BADGE_GREEN, '否');
-                    
+                    return sprintf(
+                        Snippet::BADGE,
+                          $d ? 'text-green' : 'text-gray',
+                        $d ? '是' : '否'
+                    );
                 },
             ],
             ['db' => 'Subject.max_score', 'dt' => 3],
