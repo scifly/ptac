@@ -167,7 +167,7 @@ class Educator extends Model {
                         '充值', 'fa-money'
                     );
                     
-                    return Datatable::status($d, $row, false, true, true) .
+                    return Datatable::status($d, $row) .
                         (Auth::user()->can('act', self::uris()['recharge']) ? $rechargeLink : '');
                 },
             ],
