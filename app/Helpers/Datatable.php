@@ -189,7 +189,7 @@ class Datatable {
                 return sprintf(Snippet::DT_ANCHOR, $name . $id, $title, $class);
             },
             ['show_', 'edit_', ''], ['详情', '编辑', '删除'],
-            ['fa_bars', 'fa_pencil', 'fa-remove text-red']
+            ['fa-bars', 'fa-pencil', 'fa-remove text-red']
         );
         
         return
