@@ -95,13 +95,14 @@ class Card extends Model {
             [
                 'table' => 'groups',
                 'alias' => 'Groups',
-                'type' => 'INNER',
+                'type' => 'LEFT',
                 'conditions' => [
-                    'Group.id' => 'User.group_id'
+                    'Groups.id' => 'User.group_id'
                 ]
             ]
         ];
         $sGId = Group::whereName('学生')->first()->id;
+        
         $condition = 'User.id IN (' . $this->visibleUserIds() . ') AND User.group_id <> ' . $sGId;
         
         return Datatable::simple(new User, $columns, $joins, $condition);
