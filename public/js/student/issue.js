@@ -19,7 +19,7 @@ $classId.on('change', function () {
         },
         success: function (result) {
             $('.overlay').hide();
-            $list.html(result);
+            $list.html(result !== '' ? result : '<tr><td colspan="4">- 暂无数据 -</td></tr>');
         },
         error: function (e) { page.errorHandler(e); }
     });
