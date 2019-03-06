@@ -29,7 +29,7 @@ class CardIndexComposer {
                 //     'label' => '批量导出',
                 //     'icon'  => 'fa fa-download',
                 // ],
-                'issue' => [
+                'edit' => [
                     'id' => 'issue',
                     'label' => '批量发卡',
                     'icon' => 'fa fa-asterisk'
