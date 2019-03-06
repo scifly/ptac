@@ -62,9 +62,18 @@ class Card extends Model {
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'Groups.name', 'dt' => 2],
             ['db' => 'User.username', 'dt' => 3],
-            ['db' => 'Card.sn', 'dt' => 4],
-            ['db' => 'Card.created_at', 'dt' => 5, 'dr' => true],
-            ['db' => 'Card.updated_at', 'dt' => 6, 'dr' => true],
+            [
+                'db' => 'Card.sn', 'dt' => 4,
+                'formatter' => function ($d) { return $d ?? '[n/a]'; }
+            ],
+            [
+                'db' => 'Card.created_at', 'dt' => 5, 'dr' => true,
+                'formatter' => function ($d) { return $d ?? ' - '; }
+            ],
+            [
+                'db' => 'Card.updated_at', 'dt' => 6, 'dr' => true,
+                'formatter' => function ($d) { return $d ?? ' - '; }
+            ],
             [
                 'db'        => 'Card.status', 'dt' => 7,
                 'formatter' => function ($d, $row) {
