@@ -26,6 +26,7 @@
                         <tr>
                             <th>#</th>
                             <th class="text-center">姓名</th>
+                            <th class="text-center">学号</th>
                             <th>卡号</th>
                         </tr>
                         </thead>

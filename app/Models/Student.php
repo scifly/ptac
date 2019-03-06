@@ -435,6 +435,7 @@ class Student extends Model {
 <tr>
     <td style="vertical-align: middle">%s</td>
     <td style="vertical-align: middle" class="text-center">%s</td>
+    <td style="vertical-align: middle" class="text-center">%s</td>
     <td>$snHtml</td>
 </tr>
 HTML;
@@ -444,7 +445,15 @@ HTML;
                 $user = $student->user;
                 $card = $user->card;
                 $sn = $card ? $card->sn : null;
-                $list .= sprintf($record, $user->id, $user->realname, $user->id, $i, $sn);
+                $list .= sprintf(
+                    $record,
+                    $user->id,
+                    $user->realname,
+                    $student->sn,
+                    $user->id,
+                    $i,
+                    $sn
+                );
             }
             return $list;
         }
