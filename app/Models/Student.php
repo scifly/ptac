@@ -431,7 +431,13 @@ class Student extends Model {
                 'data-uid' => '%s',
                 'data-seq' => '%s'
             ])->toHtml();
-            $record = '<tr><td>%s</td><td class="text-center">%s</td><td>' . $snHtml . '</td></tr>';
+            $record = <<<HTML
+<tr>
+    <td style="vertical-align: middle">%s</td>
+    <td style="vertical-align: middle" class="text-center">%s</td>
+    <td>' . $snHtml . '</td>
+</tr>;
+HTML;
             $list = '';
             $i = 0;
             foreach ($students as $student) {
