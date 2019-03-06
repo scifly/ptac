@@ -17,7 +17,10 @@ $classId.on('change', function () {
             _token: page.token(),
             classId: $classId.val()
         },
-        success: function (result) { $list.html(result); },
+        success: function (result) {
+            $('.overlay').hide();
+            $list.html(result);
+        },
         error: function (e) { page.errorHandler(e); }
     });
 });
@@ -29,6 +32,7 @@ $('#formStudent').parsley().on('form:validated', function () {
     $('input[name=sn]').each(function () {
         data[$(this).data('uid')] = $(this).val();
     });
+    $('.overlay').show();
     $.ajax({
         type: 'POST',
         dataType: 'json',
@@ -38,6 +42,7 @@ $('#formStudent').parsley().on('form:validated', function () {
             sns: data
         },
         success: function (result) {
+            $('.overlay').hide();
             page.inform(result['title'], result['message'], page.success);
         },
         error: function (e) { page.errorHandler(e); }

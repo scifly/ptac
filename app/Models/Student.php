@@ -426,7 +426,7 @@ class Student extends Model {
         if (Request::has('classId')) {
             $students = Student::whereClassId(Request::input('classId'))->get();
             $snHtml = Form::text('sn', '%s', [
-                'class' => 'form-control text-blue',
+                'class' => 'form-control text-blue input-sm',
                 'maxlength' => 10,
                 'data-uid' => '%s',
                 'data-seq' => '%s'
