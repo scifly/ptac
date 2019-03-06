@@ -11,23 +11,22 @@
     with event name <code>my-event</code>.
 </p>
 {!! Form::open(['url' => 'test/index', 'method' => 'post']) !!}
-{!! Form::text('sn[]', null, ['class' => 'is']) !!}<br />
-{!! Form::text('sn[]', null, ['class' => 'is']) !!}<br />
-{!! Form::text('sn[]', null, ['class' => 'is']) !!}<br />
-{!! Form::text('sn[]', null, ['class' => 'is']) !!}<br />
+{!! Form::text('sn', null, ['class' => 'sn']) !!}<br />
+{!! Form::text('sn', null, ['class' => 'sn']) !!}<br />
+{!! Form::text('sn', null, ['class' => 'sn']) !!}<br />
+{!! Form::text('sn', null, ['class' => 'sn']) !!}<br />
 {{--{!! Form::submit() !!}--}}
 {!! Form::close() !!}
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 {{--<script src="https://js.pusher.com/4.3/pusher.min.js"></script>--}}
 {{--<script src="https://js.pusher.com/4.3/pusher.min.js"></script>--}}
 <script>
-    var $inputs = $('input[name=sn]'),
+    var $inputs = $('.sn'),
     i = 0;
 
-    console.log($inputs);
     $('input').on('keyup', function() {
         i++;
-        alert(i);
+        $($inputs[i]).focus();
     });
 </script>
 </body>
