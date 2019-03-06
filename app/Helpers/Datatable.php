@@ -5,6 +5,7 @@ use DateTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -79,6 +80,7 @@ class Datatable {
         $query = "SELECT SQL_CALC_FOUND_ROWS " . $fields . " FROM " . $from . $where . $order . $limit;
         $data = DB::select($query);
         $query = "SELECT " . $useTable . ".id FROM " . $from . $where;
+        Log::debug($query);
         $ids = DB::select($query);
         $rowIds = [];
         foreach ($ids as $id) {
