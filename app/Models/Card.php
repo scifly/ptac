@@ -60,7 +60,7 @@ class Card extends Model {
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'Group.name', 'dt' => 2],
+            ['db' => 'Groups.name', 'dt' => 2],
             ['db' => 'User.username', 'dt' => 3],
             ['db' => 'Card.sn', 'dt' => 4],
             ['db' => 'Card.created_at', 'dt' => 5, 'dr' => true],
