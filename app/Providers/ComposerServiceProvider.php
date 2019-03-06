@@ -48,6 +48,9 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('attendance_machine.index', $ns . 'AttendanceMachineIndexComposer');
         View::composer('attendance_machine.create_edit', $ns . 'AttendanceMachineComposer');
     
+        # 一卡通 - Card
+        View::composer('card.index', $ns . 'CardIndexComposer');
+        
         # 通信类型 - CommType
         View::composer('comm_type.index', $ns . 'CommTypeIndexComposer');
         View::composer('comm_type.create_edit', $ns . 'CommTypeComposer');
