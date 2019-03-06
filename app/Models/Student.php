@@ -435,7 +435,7 @@ class Student extends Model {
 <tr>
     <td style="vertical-align: middle">%s</td>
     <td style="vertical-align: middle" class="text-center">%s</td>
-    <td>' . $snHtml . '</td>
+    <td> . $snHtml . </td>
 </tr>;
 HTML;
             $list = '';
