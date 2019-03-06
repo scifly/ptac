@@ -18,6 +18,23 @@ class CardIndexComposer {
     public function compose(View $view) {
         
         $view->with([
+            'buttons'        => [
+                // 'import' => [
+                //     'id'    => 'import',
+                //     'label' => '批量导入',
+                //     'icon'  => 'fa fa-upload',
+                // ],
+                // 'export' => [
+                //     'id'    => 'export',
+                //     'label' => '批量导出',
+                //     'icon'  => 'fa fa-download',
+                // ],
+                'issue' => [
+                    'id' => 'issue',
+                    'label' => '批量发卡',
+                    'icon' => 'fa fa-asterisk'
+                ]
+            ],
             'titles' => [
                 '#', '姓名', '角色', '员工编号/用户名', '卡号',
                 [
@@ -35,6 +52,8 @@ class CardIndexComposer {
                     )
                 ],
             ],
+            'batch' => true,
+            'filter' => true
         ]);
         
     }
