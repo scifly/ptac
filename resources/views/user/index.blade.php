@@ -11,10 +11,10 @@
     with event name <code>my-event</code>.
 </p>
 {!! Form::open(['url' => 'test/index', 'method' => 'post']) !!}
-{!! Form::text('sn', null, ['class' => 'sn']) !!}<br />
-{!! Form::text('sn', null, ['class' => 'sn']) !!}<br />
-{!! Form::text('sn', null, ['class' => 'sn']) !!}<br />
-{!! Form::text('sn', null, ['class' => 'sn']) !!}<br />
+{!! Form::text('sn', null, ['class' => 'sn', 'maxlength' => 10]) !!}<br />
+{!! Form::text('sn', null, ['class' => 'sn', 'maxlength' => 10]) !!}<br />
+{!! Form::text('sn', null, ['class' => 'sn', 'maxlength' => 10]) !!}<br />
+{!! Form::text('sn', null, ['class' => 'sn', 'maxlength' => 10]) !!}<br />
 {{--{!! Form::submit() !!}--}}
 {!! Form::close() !!}
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
