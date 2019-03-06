@@ -50,6 +50,7 @@ class StudentPolicy {
             case 'store':
             case 'import':
             case 'export':
+            case 'issue':
                 return $isSuperRole ? true : $this->action($user);
             case 'show':
             case 'edit':

@@ -48,6 +48,7 @@ class TestController extends Controller {
      */
     public function index() {
     
+        return view('test.index');
         // $server = "120.78.55.152";
         // $port = 9933;
         // if (!($sock = socket_create(AF_INET, SOCK_DGRAM, 0))) {

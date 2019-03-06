@@ -8,6 +8,7 @@ use App\Jobs\ImportStudent;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Form;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
@@ -63,7 +64,6 @@ class Student extends Model {
         '年级', '班级', '学号', '住校',
         '备注', '监护关系',
     ];
-    
     
     protected $fillable = [
         'user_id', 'class_id', 'sn', 'oncampus',
@@ -413,6 +413,49 @@ class Student extends Model {
         
         return true;
         
+    }
+    
+    /**
+     * 批量发卡
+     *
+     * @return bool|string
+     * @throws Throwable
+     */
+    function issue() {
+    
+        if (Request::has('classId')) {
+            $students = Student::whereClassId(Request::input('classId'))->get();
+            $snHtml = Form::text('sn', '%s', ['class' => 'form-control text-blue'])->toHtml();
+            $record = '<tr><td>%s</td><td class="text-center">%s</td><td>' . $snHtml . '</td></tr>';
+            $list = '';
+            foreach ($students as $student) {
+                $card = $student->user->card;
+                $sn = $card ? $card->sn : null;
+                $list .= sprintf(
+                    $record, $student->user_id, $student->user->realname, $sn
+                );
+            }
+            return $list;
+        }
+        try {
+            DB::transaction(function () {
+                foreach (Request::all() as $userId => $sn) {
+                    $card = Card::updateOrCreate(
+                        ['user_id' => $userId],
+                        ['sn' => $sn, 'status' => 1]
+                    );
+                    $card->user->update(['card_id' => $card->id]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return response()->json([
+            'title' => '批量发卡',
+            'message' => __('messages.ok')
+        ]);
+    
     }
     
     /**

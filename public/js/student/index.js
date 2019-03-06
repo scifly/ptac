@@ -12,6 +12,13 @@ $.getMultiScripts(['js/shared/dtrange.js']).done(
     }
 );
 /** 初始化学籍首页功能 */
-$.getMultiScripts(['js/shared/contact.js']).done(function () {
-    $.contact().index('students');
+$.getMultiScripts(['js/shared/contact.js']).done(
+    function () { $.contact().index('students'); }
+);
+/** 批量发卡 */
+$('#issue').on('click', function () {
+    page.getTabContent(
+        $('#tab_' + page.getActiveTabId()),
+        'students/issue'
+    );
 });

@@ -76,6 +76,8 @@ Route::group(['prefix' => 'students'], function () {
     Route::post('import', $c . '@import');
     Route::get('export', $c . '@export');
     Route::post('export', $c . '@export');
+    Route::get('issue', $c . '@issue');
+    Route::post('issue', $c . '@issue');
 });
 # 标签
 Route::group(['prefix' => 'tags'], routes('TagController'));

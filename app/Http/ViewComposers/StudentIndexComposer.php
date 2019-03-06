@@ -41,6 +41,11 @@ class StudentIndexComposer {
                     'label' => '批量导出',
                     'icon'  => 'fa fa-download',
                 ],
+                'issue' => [
+                    'id' => 'issue',
+                    'label' => '批量发卡',
+                    'icon' => 'fa fa-asterisk'
+                ]
             ],
             'titles'         => [
                 '#', '姓名', '头像',
