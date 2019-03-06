@@ -15,7 +15,7 @@ use Throwable;
 
 /**
  * 一卡通
- * 
+ *
  * Class Card
  *
  * @package App\Models
@@ -56,7 +56,7 @@ class Card extends Model {
      * @return array
      */
     function index() {
-    
+        
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
@@ -66,7 +66,7 @@ class Card extends Model {
             ['db' => 'Card.created_at', 'dt' => 5, 'dr' => true],
             ['db' => 'Card.updated_at', 'dt' => 6, 'dr' => true],
             [
-                'db' => 'Card.status', 'dt' => 7,
+                'db'        => 'Card.status', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     
                     $colors = [
@@ -80,29 +80,28 @@ class Card extends Model {
                     );
                     
                     return Datatable::status($status, $row, false);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'cards',
-                'alias' => 'Card',
-                'type'  => 'LEFT',
+                'table'      => 'cards',
+                'alias'      => 'Card',
+                'type'       => 'LEFT',
                 'conditions' => [
-                    'Card.id' => 'User.card_id'
-                ]
+                    'Card.id = User.card_id',
+                ],
             ],
             [
-                'table' => 'groups',
-                'alias' => 'Groups',
-                'type' => 'LEFT',
+                'table'      => 'groups',
+                'alias'      => 'Groups',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Groups.id' => 'User.group_id'
-                ]
-            ]
+                    'Groups.id = User.group_id',
+                ],
+            ],
         ];
         $sGId = Group::whereName('学生')->first()->id;
-        
         $condition = 'User.id IN (' . $this->visibleUserIds() . ') AND User.group_id <> ' . $sGId;
         
         return Datatable::simple(new User, $columns, $joins, $condition);
@@ -125,9 +124,9 @@ class Card extends Model {
                     if (Request::method() == 'POST') {
                         if (!empty($data['card']['sn'])) {
                             $card = Card::create([
-                                'sn' => $data['card_sn'],
+                                'sn'      => $data['card_sn'],
                                 'user_id' => $user->id,
-                                'status' => 1,
+                                'status'  => 1,
                             ]);
                             $user->update(['card_id' => $card->id]);
                         }
@@ -139,7 +138,7 @@ class Card extends Model {
                                 $card = Card::create(
                                     array_merge($data['card'], [
                                         'user_id' => $user->id,
-                                        'status' => 1,
+                                        'status'  => 1,
                                     ])
                                 );
                                 $user->update(['card_id' => $card->id]);
@@ -187,7 +186,7 @@ class Card extends Model {
                 } else {
                     $this->whereIn('user_id', array_values($request->input('ids')))
                         ->update([
-                            'status' => $request->input('action') == 'enable' ? 1 : 0
+                            'status' => $request->input('action') == 'enable' ? 1 : 0,
                         ]);
                 }
                 
@@ -225,5 +224,5 @@ class Card extends Model {
         return true;
         
     }
-
+    
 }
