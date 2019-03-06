@@ -68,6 +68,7 @@ class Card extends Model {
             [
                 'db' => 'Card.status', 'dt' => 7,
                 'formatter' => function ($d, $row) {
+                    
                     $colors = [
                         ['text-gray', '待发'],
                         ['text-green', '正常'],
@@ -75,7 +76,7 @@ class Card extends Model {
                     ];
                     $status = sprintf(
                         Snippet::BADGE,
-                        $colors[$d][0], $colors[$d][1]
+                        $colors[$d ?? 0][0], $colors[$d ?? 0][1]
                     );
                     
                     return Datatable::status($status, $row, false);
