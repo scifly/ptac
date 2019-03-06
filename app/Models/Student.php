@@ -427,6 +427,7 @@ class Student extends Model {
             $students = Student::whereClassId(Request::input('classId'))->get();
             $snHtml = Form::text('sn', '%s', [
                 'class' => 'form-control text-blue',
+                'maxlength' => 10,
                 'data-uid' => '%s',
                 'data-seq' => '%s'
             ])->toHtml();
@@ -437,19 +438,13 @@ class Student extends Model {
                 $user = $student->user;
                 $card = $user->card;
                 $sn = $card ? $card->sn : null;
-                $list .= sprintf(
-                    $record,
-                    $user->id,
-                    $user->realname,
-                    $user->id,
-                    $i, $sn
-                );
+                $list .= sprintf($record, $user->id, $user->realname, $user->id, $i, $sn);
             }
             return $list;
         }
         try {
             DB::transaction(function () {
-                foreach (Request::all() as $userId => $sn) {
+                foreach (Request::input('sns') as $userId => $sn) {
                     $card = Card::updateOrCreate(
                         ['user_id' => $userId],
                         ['sn' => $sn, 'status' => 1]

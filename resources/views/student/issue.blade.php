@@ -1,4 +1,9 @@
 <div class="box box-default box-solid">
+    {!! Form::open([
+        'method' => 'post',
+        'id' => 'formStudent',
+        'data-parsley-validate' => 'true'
+    ]) !!}
     <div class="box-header with-border">
         @include('shared.form_header')
     </div>
@@ -25,11 +30,11 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td colspan="3" class="text-center">
-                                    - 请选择班级批量发卡 -
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="3" class="text-center">
+                                - 请选择班级批量发卡 -
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -37,4 +42,5 @@
         </div>
     </div>
     @include('shared.form_buttons')
+    {!! Form::close() !!}
 </div>

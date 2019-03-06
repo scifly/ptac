@@ -13,7 +13,10 @@ $classId.on('change', function () {
         type: 'POST',
         dataType: 'html',
         url: 'issue',
-        data: { classId: $classId.val() },
+        data: {
+            _token: page.token(),
+            classId: $classId.val()
+        },
         success: function (result) { $list.html(result); },
         error: function (e) { page.errorHandler(e); }
     });
@@ -21,7 +24,7 @@ $classId.on('change', function () {
 page.initBackBtn('students');
 page.initSelect2();
 // 批量发卡
-$form.parsley().on('form:validated', function () {
+$('#formStudent').parsley().on('form:validated', function () {
     var data = {};
     $('input[name=sn]').each(function () {
         data[$(this).data('uid')] = $(this).val();
@@ -30,7 +33,10 @@ $form.parsley().on('form:validated', function () {
         type: 'POST',
         dataType: 'json',
         url: 'issue',
-        data: data,
+        data: {
+            _token: page.token(),
+            sns: data
+        },
         success: function (result) {
             page.inform(result['title'], result['message'], page.success);
         },
