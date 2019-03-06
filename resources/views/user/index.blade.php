@@ -25,9 +25,8 @@
 
         if ($(this).val().length === parseInt($(this).attr('maxlength'))) {
             var paths = $(this).attr('name').split('_'),
-                i = paths[1];
-            console.log('input[name=sn_' + (i+1) + ']');
-            $('input[name=sn_' + (i+1) + ']').focus();
+                i = parseInt(paths[1]) + 1;
+            $('input[name=sn_' + i + ']').focus();
         }
     });
 </script>
