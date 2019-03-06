@@ -21,16 +21,14 @@
 {{--<script src="https://js.pusher.com/4.3/pusher.min.js"></script>--}}
 {{--<script src="https://js.pusher.com/4.3/pusher.min.js"></script>--}}
 <script>
-    // Enable pusher logging - don't include this in production
-    // Pusher.logToConsole = true;
-    // var pusher = new Pusher('4e759473d69a97307905', {
-    //     cluster: 'eu',
-    //     encrypted: true
-    // });
-    // var channel = pusher.subscribe('my-channel');
-    // channel.bind('my-event', function (data) {
-    //     alert(JSON.stringify(data));
-    // });
+    var $inputs = $('input[name=sn]'),
+    i = 0;
+
+    console.log($inputs);
+    $('input').on('keyup', function() {
+        i++;
+        alert(i);
+    });
 </script>
 </body>
 </html>
