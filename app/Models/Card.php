@@ -93,7 +93,7 @@ class Card extends Model {
             ],
             [
                 'table' => 'groups',
-                'alias' => 'Group',
+                'alias' => 'Groups',
                 'type' => 'INNER',
                 'conditions' => [
                     'Group.id' => 'User.group_id'
