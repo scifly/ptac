@@ -425,7 +425,10 @@ class Student extends Model {
     
         if (Request::has('classId')) {
             $students = Student::whereClassId(Request::input('classId'))->get();
-            $snHtml = Form::text('sn', '%s', ['class' => 'form-control text-blue'])->toHtml();
+            $snHtml = Form::text('sn', '%s', [
+                'class' => 'form-control text-blue',
+                ''
+            ])->toHtml();
             $record = '<tr><td>%s</td><td class="text-center">%s</td><td>' . $snHtml . '</td></tr>';
             $list = '';
             foreach ($students as $student) {

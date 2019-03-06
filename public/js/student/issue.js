@@ -24,7 +24,7 @@ page.initSelect2();
 $form.parsley().on('form:validated', function () {
     var data = {};
     $('input[name=sn]').each(function () {
-        data[$(this).parents().eq(0).text()] = $(this).val();
+        data[$(this).data('uid')] = $(this).val();
     });
     $.ajax({
         type: 'POST',
@@ -38,4 +38,11 @@ $form.parsley().on('form:validated', function () {
     });
 }).on('form:submit', function () {
     return false;
+});
+$('input').on('keyup', function() {
+    if ($(this).val().length === parseInt($(this).attr('maxlength'))) {
+        var paths = $(this).attr('name').split('_'),
+            i = parseInt(paths[1]) + 1;
+        $('input[name=sn_' + i + ']').focus();
+    }
 });
