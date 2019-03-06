@@ -24,7 +24,7 @@
     var $inputs = $('.sn'),
     i = 0;
 
-    $('input').on('change', function() {
+    $('input').on('change keyup paste', function() {
         i++;
         $($inputs[i]).focus();
     });
