@@ -11,22 +11,22 @@
     with event name <code>my-event</code>.
 </p>
 {!! Form::open(['url' => 'test/index', 'method' => 'post']) !!}
-{!! Form::text('sn', null, ['class' => 'sn', 'maxlength' => 10]) !!}<br />
-{!! Form::text('sn', null, ['class' => 'sn', 'maxlength' => 10]) !!}<br />
-{!! Form::text('sn', null, ['class' => 'sn', 'maxlength' => 10]) !!}<br />
-{!! Form::text('sn', null, ['class' => 'sn', 'maxlength' => 10]) !!}<br />
+{!! Form::text('sn_0', null, ['class' => 'sn', 'maxlength' => 10]) !!}<br />
+{!! Form::text('sn_1', null, ['class' => 'sn', 'maxlength' => 10]) !!}<br />
+{!! Form::text('sn_2', null, ['class' => 'sn', 'maxlength' => 10]) !!}<br />
+{!! Form::text('sn_3', null, ['class' => 'sn', 'maxlength' => 10]) !!}<br />
 {{--{!! Form::submit() !!}--}}
 {!! Form::close() !!}
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 {{--<script src="https://js.pusher.com/4.3/pusher.min.js"></script>--}}
 {{--<script src="https://js.pusher.com/4.3/pusher.min.js"></script>--}}
 <script>
-    var $inputs = $('.sn'),
-    i = 0;
-
-    $('input').on('change paste', function() {
-        i++;
-        $($inputs[i]).focus();
+    $('input').on('keyup', function() {
+        var paths = $(this).attr('name').split('_'),
+            i = paths[1];
+        if ($(this).val().length === parseInt($(this).attr('maxlength'))) {
+            $('input[name=sn_' + (i+1)).focus();
+        }
     });
 </script>
 </body>
