@@ -32,7 +32,7 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td colspan="3" class="text-center">
+                            <td colspan="4" class="text-center">
                                 - 请选择班级批量发卡 -
                             </td>
                         </tr>
