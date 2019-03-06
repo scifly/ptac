@@ -2,7 +2,6 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use App\Http\Requests\CardRequest;
@@ -61,22 +60,25 @@ class Card extends Model {
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'Card.sn', 'dt' => 2],
-            ['db' => 'Card.created_at', 'dt' => 3, 'dr' => true],
-            ['db' => 'Card.updated_at', 'dt' => 4, 'dr' => true],
+            ['db' => 'Group.name', 'dt' => 2],
+            ['db' => 'User.username', 'dt' => 3],
+            ['db' => 'Card.sn', 'dt' => 4],
+            ['db' => 'Card.created_at', 'dt' => 5, 'dr' => true],
+            ['db' => 'Card.updated_at', 'dt' => 6, 'dr' => true],
             [
-                'db' => 'Card.status', 'dt' => 5,
+                'db' => 'Card.status', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     $colors = [
                         ['text-gray', '待发'],
                         ['text-green', '正常'],
                         ['text-red', '挂失'],
                     ];
-                    
-                    return sprintf(
+                    $status = sprintf(
                         Snippet::BADGE,
                         $colors[$d][0], $colors[$d][1]
                     );
+                    
+                    return Datatable::status($status, $row, false);
                 }
             ]
         ];
@@ -88,9 +90,18 @@ class Card extends Model {
                 'conditions' => [
                     'Card.id' => 'User.card_id'
                 ]
+            ],
+            [
+                'table' => 'groups',
+                'alias' => 'Group',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Group.id' => 'User.group_id'
+                ]
             ]
         ];
-        $condition = 'User.id IN (' . $this->visibleUserIds() . ')';
+        $sGId = Group::whereName('学生')->first()->id;
+        $condition = 'User.id IN (' . $this->visibleUserIds() . ') AND User.group_id <> ' . $sGId;
         
         return Datatable::simple(new User, $columns, $joins, $condition);
         
@@ -136,7 +147,7 @@ class Card extends Model {
                         }
                     }
                 } else {
-                    foreach (Request::input('data') as $userId => $sn) {
+                    foreach (Request::input('sns') as $userId => $sn) {
                         $records[] = ['sn' => $sn, 'user_id' => $userId, 'status' => 1];
                         $userIds[] = $userId;
                     }

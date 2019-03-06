@@ -19,7 +19,7 @@ class CardIndexComposer {
         
         $view->with([
             'titles' => [
-                '#', '姓名', '卡号',
+                '#', '姓名', '角色', '员工编号/用户名', '卡号',
                 [
                     'title' => '发卡时间',
                     'html'  => $this->inputDateTimeRange('发卡时间')
