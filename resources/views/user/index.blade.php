@@ -22,9 +22,11 @@
 {{--<script src="https://js.pusher.com/4.3/pusher.min.js"></script>--}}
 <script>
     $('input').on('keyup', function() {
-        var paths = $(this).attr('name').split('_'),
-            i = paths[1];
+
         if ($(this).val().length === parseInt($(this).attr('maxlength'))) {
+            var paths = $(this).attr('name').split('_'),
+                i = paths[1];
+            console.log(i);
             console.log('return');
             $('input[name=sn_' + (i+1) + ']').focus();
         }
