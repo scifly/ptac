@@ -4,7 +4,7 @@ var $classId = $('#class_id'),
 
 // 选择班级
 $classId.on('change', function () {
-    if ($classId.val() === 0) {
+    if ($classId.val() === '0') {
         $list.html(empty);
         return false;
     }
