@@ -79,6 +79,10 @@ Route::group(['prefix' => 'students'], function () {
     Route::get('issue', $c . '@issue');
     Route::post('issue', $c . '@issue');
 });
+Route::group(['prefix' => 'cards'], function () {
+    $c = 'CardController';
+    Route::get('index', $c . '@index');
+});
 # 标签
 Route::group(['prefix' => 'tags'], routes('TagController'));
 Route::post('tags/create', 'TagController@create');
