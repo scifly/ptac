@@ -427,15 +427,22 @@ class Student extends Model {
             $students = Student::whereClassId(Request::input('classId'))->get();
             $snHtml = Form::text('sn', '%s', [
                 'class' => 'form-control text-blue',
-                ''
+                'data-uid' => '%s',
+                'data-seq' => '%s'
             ])->toHtml();
             $record = '<tr><td>%s</td><td class="text-center">%s</td><td>' . $snHtml . '</td></tr>';
             $list = '';
+            $i = 0;
             foreach ($students as $student) {
-                $card = $student->user->card;
+                $user = $student->user;
+                $card = $user->card;
                 $sn = $card ? $card->sn : null;
                 $list .= sprintf(
-                    $record, $student->user_id, $student->user->realname, $sn
+                    $record,
+                    $user->id,
+                    $user->realname,
+                    $user->id,
+                    $i, $sn
                 );
             }
             return $list;

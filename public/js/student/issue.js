@@ -41,8 +41,7 @@ $form.parsley().on('form:validated', function () {
 });
 $('input').on('keyup', function() {
     if ($(this).val().length === parseInt($(this).attr('maxlength'))) {
-        var paths = $(this).attr('name').split('_'),
-            i = parseInt(paths[1]) + 1;
-        $('input[name=sn_' + i + ']').focus();
+        var i = parseInt($(this).data('seq')) + 1;
+        $('input[data-seq=' + i + ']').focus();
     }
 });
