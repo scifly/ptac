@@ -512,14 +512,13 @@ var page = {
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
 
         this.unbindEvents();
-        // 记录列表
+        // 列表
         this.initDatatable(table, options);
-        // $('div.dataTables_length select').addClass('form-control');
-        // $('div.dataTables_filter label').addClass('control-label');
-        // 新增记录
+        // 新增
         $('#add-record').on('click', function () {
             page.getTabContent($activeTabPane, table + '/create');
         });
+        // 编辑、充值、详情
         $.map(
             ['.fa-pencil', '.fa-money', '.fa-bars'],
             function (icon) {
