@@ -2,6 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
+use App\Models\Department;
 use App\Models\Squad;
 use Illuminate\Contracts\View\View;
 
@@ -18,7 +19,7 @@ class EducatorIssueComposer {
      */
     public function compose(View $view) {
 
-        $classes = Squad::whereIn('id', $this->classIds())
+        $departments = Department::whereIn('id', $this->departmentIds())
             ->get()->pluck('name', 'id')->toArray();
         $titles = <<<HTML
 <th>#</th>
@@ -30,7 +31,7 @@ HTML;
         $view->with([
             'prompt' => '教师列表',
             'formId' => 'formEducator',
-            'classes' => [0 => '(请选择一个部门)'] + $classes,
+            'classes' => [0 => '(请选择一个部门)'] + $departments,
             'titles' => $titles,
             'columns' => 4
         ]);
