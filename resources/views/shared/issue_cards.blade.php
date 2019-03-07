@@ -16,7 +16,7 @@
                 'icon' => 'fa fa-users'
             ])
             <div class="form-group">
-                {!! Form::label('name', $label, [
+                {!! Form::label('name', $prompt, [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">

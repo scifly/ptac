@@ -28,7 +28,7 @@ class StudentIssueComposer {
 HTML;
 
         $view->with([
-            'label' => '学生列表',
+            'prompt' => '学生列表',
             'formId' => 'formStudent',
             'classes' => [0 => '(请选择一个班级)'] + $classes,
             'titles' => $titles,
