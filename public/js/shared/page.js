@@ -475,11 +475,10 @@ var page = {
             };
 
         $tbody.off().on('click', 'tr', function () {
-            var id = parseInt($(this).find('td').eq(0).text());
+            var id = parseInt($(this).find('td').eq(0).text()),
+                index = $.inArray(id, selected);
 
-            $.inArray(id, selected) === -1
-                ? selected.push(id)
-                : selected.splice(index, 1);
+            index === -1 ? selected.push(id) : selected.splice(index, 1);
             $(this).toggleClass('selected');
         });
         $selectAll.off().on('click', function () {
