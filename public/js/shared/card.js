@@ -9,7 +9,7 @@
 
                 card.onClassChange($classId, empty);
                 card.onSave(formId);
-                page.initBackBtn('students');
+                page.initBackBtn(table);
                 page.initSelect2();
                 card.onInput();
             },
