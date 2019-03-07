@@ -29,6 +29,7 @@ class CustodianIssueComposer {
 HTML;
 
         $view->with([
+            'label' => '家长列表',
             'formId' => 'formCustodian',
             'classes' => [0 => '(请选择一个班级)'] + $classes,
             'titles' => $titles,
