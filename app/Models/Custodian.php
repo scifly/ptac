@@ -336,18 +336,14 @@ class Custodian extends Model {
      */
     function issue() {
     
-        if (Request::has('classId')) {
-            $class = Squad::find(Request::input('classId'));
+        $card = new Card;
+        if (Request::has('sectionId')) {
+            $class = Squad::find(Request::input('sectionId'));
             $userIds = DepartmentUser::whereDepartmentId($class->department_id)->pluck('user_id')->toArray();
             $contacts = User::whereIn('id', $userIds)->get()->filter(
                 function (User $user) { return $user->group->name == '监护人'; }
             );
-            $snHtml = Form::text('sn', '%s', [
-                'class' => 'form-control text-blue input-sm',
-                'maxlength' => 10,
-                'data-uid' => '%s',
-                'data-seq' => '%s',
-            ])->toHtml();
+            $snHtml = $card->input();
             $record = <<<HTML
 <tr>
     <td class="valign">%s</td>
@@ -385,24 +381,8 @@ HTML;
             }
             return $list;
         }
-        try {
-            DB::transaction(function () {
-                foreach (Request::input('sns') as $userId => $sn) {
-                    $card = Card::updateOrCreate(
-                        ['user_id' => $userId],
-                        ['sn' => $sn, 'status' => 1]
-                    );
-                    $card->user->update(['card_id' => $card->id]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-    
-        return response()->json([
-            'title' => '批量发卡',
-            'message' => __('messages.ok'),
-        ]);
+        
+        return $card->issue();
         
     }
     

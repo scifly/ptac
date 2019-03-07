@@ -172,6 +172,8 @@ Route::group(['prefix' => 'educator_attendances'], function () {
     Route::post('stat', $c . '@stat');
     Route::post('detail', $c . '@detail');
     Route::get('export', $c . '@export');
+    Route::get('issue', $c . '@issue');
+    Route::post('issue', $c . '@issue');
 });
 
 /** 课程表管理 */

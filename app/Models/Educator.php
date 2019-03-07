@@ -8,6 +8,7 @@ use App\Jobs\ImportEducator;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Form;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
@@ -407,6 +408,51 @@ class Educator extends Model {
         ImportEducator::dispatch($records, Auth::id());
         
         return true;
+        
+    }
+    
+    /**
+     * 批量发卡
+     *
+     * @return \Illuminate\Http\JsonResponse|string
+     * @throws Throwable
+     */
+    function issue() {
+    
+        $card = new Card;
+        if (Request::has('sectionId')) {
+            $userIds = DepartmentUser::whereDepartmentId(Request::input('sectionId'))->pluck('user_id')->toArray();
+            $users = User::whereIn('id', $userIds)->get()->filter(
+                function (User $user) { return !in_array($user->group->name, ['监护人', '学生']); }
+            );
+            $snHtml = $card->input();
+            $record = <<<HTML
+<tr>
+    <td class="valign">%s</td>
+    <td class="text-center valign">%s</td>
+    <td class="text-center valign">%s</td>
+    <td>$snHtml</td>
+</tr>
+HTML;
+            $list = '';
+            $i = 0;
+            foreach ($users as $user) {
+                $card = $user->card;
+                $sn = $card ? $card->sn : null;
+                $list .= sprintf(
+                    $record,
+                    $user->id,
+                    $user->realname,
+                    $user->username,
+                    $user->id,
+                    $i,
+                    $sn
+                );
+            }
+            return $list;
+        }
+        
+        return $card->issue();
         
     }
     

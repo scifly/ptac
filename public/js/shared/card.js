@@ -3,20 +3,20 @@
         var card = {
             options: $.extend({}, options),
             init: function (table, formId) {
-                var $classId = $('#class_id'),
+                var $sectionId = $('#section_id'),
                     $list = $('tbody'),
                     empty = $list.html();
 
-                card.onClassChange($classId, empty);
+                card.onClassChange($sectionId, empty);
                 card.onSave(formId);
                 page.initBackBtn(table);
                 page.initSelect2();
                 card.onInput();
             },
-            onClassChange: function ($classId, empty) {
+            onClassChange: function ($sectionId, empty) {
                 // 选择班级
-                $classId.on('change', function () {
-                    if ($classId.val() === '0') {
+                $sectionId.on('change', function () {
+                    if ($sectionId.val() === '0') {
                         $list.html(empty);
                         return false;
                     }
@@ -27,7 +27,7 @@
                         url: 'issue',
                         data: {
                             _token: page.token(),
-                            classId: $classId.val()
+                            sedctionId: $sectionId.val()
                         },
                         success: function (result) {
                             $('.overlay').hide();

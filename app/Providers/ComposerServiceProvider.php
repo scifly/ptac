@@ -111,6 +111,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('educator.create', $ns . 'EducatorComposer');
         View::composer('educator.edit', $ns . 'EducatorComposer');
         View::composer('educator.recharge', $ns . 'EducatorRechargeComposer');
+        View::composer('educator.issue', $ns . 'EducatorIssueComposer');
     
         # 日历 - Event
         View::composer('event.index', $ns . 'EventIndexComposer');

@@ -10,8 +10,8 @@
     <div class="box-body">
         <div class="form-horizontal">
             @include('shared.single_select', [
-                'label' => '班级',
-                'id' => 'class_id',
+                'label' => '部门',
+                'id' => 'section_id',
                 'items' => $classes,
                 'icon' => 'fa fa-users'
             ])
@@ -30,7 +30,7 @@
                         <tbody>
                         <tr>
                             <td colspan="{!! $columns !!}" class="text-center">
-                                - 请选择班级批量发卡 -
+                                - 请选择一个部门进行批量发卡 -
                             </td>
                         </tr>
                         </tbody>

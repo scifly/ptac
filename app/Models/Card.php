@@ -7,6 +7,7 @@ use App\Helpers\Snippet;
 use App\Http\Requests\CardRequest;
 use Eloquent;
 use Exception;
+use Form;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -231,6 +232,51 @@ class Card extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 返回卡号输入框html
+     *
+     * @return mixed
+     */
+    function input() {
+        
+        return Form::text('sn', '%s', [
+            'class' => 'form-control text-blue input-sm',
+            'maxlength' => 10,
+            'data-uid' => '%s',
+            'data-seq' => '%s'
+        ])->toHtml();
+        
+    }
+    
+    /**
+     * 通讯录批量发卡
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws Throwable
+     */
+    function issue() {
+    
+        try {
+            DB::transaction(function () {
+                foreach (Request::input('sns') as $userId => $sn) {
+                    $card = Card::updateOrCreate(
+                        ['user_id' => $userId],
+                        ['sn' => $sn, 'status' => 1]
+                    );
+                    $card->user->update(['card_id' => $card->id]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return response()->json([
+            'title' => '批量发卡',
+            'message' => __('messages.ok')
+        ]);
         
     }
     

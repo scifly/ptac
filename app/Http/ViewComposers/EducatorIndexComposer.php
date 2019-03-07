@@ -33,6 +33,11 @@ class EducatorIndexComposer {
                     'label' => '批量导出',
                     'icon'  => 'fa fa-download',
                 ],
+                'issue' => [
+                    'id'    => 'issue',
+                    'label' => '批量发卡',
+                    'icon'  => 'fa fa-asterisk',
+                ],
             ],
             'batch'          => true,
             'filter'         => true,

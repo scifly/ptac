@@ -423,14 +423,10 @@ class Student extends Model {
      */
     function issue() {
     
-        if (Request::has('classId')) {
-            $students = Student::whereClassId(Request::input('classId'))->get();
-            $snHtml = Form::text('sn', '%s', [
-                'class' => 'form-control text-blue input-sm',
-                'maxlength' => 10,
-                'data-uid' => '%s',
-                'data-seq' => '%s'
-            ])->toHtml();
+        $card = new Card;
+        if (Request::has('sectionId')) {
+            $students = Student::whereClassId(Request::input('sectionId'))->get();
+            $snHtml = $card->input();
             $record = <<<HTML
 <tr>
     <td class="valign">%s</td>
@@ -457,24 +453,8 @@ HTML;
             }
             return $list;
         }
-        try {
-            DB::transaction(function () {
-                foreach (Request::input('sns') as $userId => $sn) {
-                    $card = Card::updateOrCreate(
-                        ['user_id' => $userId],
-                        ['sn' => $sn, 'status' => 1]
-                    );
-                    $card->user->update(['card_id' => $card->id]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
         
-        return response()->json([
-            'title' => '批量发卡',
-            'message' => __('messages.ok')
-        ]);
+        return $card->issue();
     
     }
     
