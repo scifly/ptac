@@ -59,6 +59,8 @@ Route::group(['prefix' => 'educators'], function () {
     Route::get('export', $c . '@export');
     Route::post('export', $c . '@export');
     Route::post('import', $c . '@import');
+    Route::get('issue', $c . '@issue');
+    Route::post('issue', $c . '@issue');
 });
 # 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));
@@ -172,8 +174,6 @@ Route::group(['prefix' => 'educator_attendances'], function () {
     Route::post('stat', $c . '@stat');
     Route::post('detail', $c . '@detail');
     Route::get('export', $c . '@export');
-    Route::get('issue', $c . '@issue');
-    Route::post('issue', $c . '@issue');
 });
 
 /** 课程表管理 */
