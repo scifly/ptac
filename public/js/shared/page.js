@@ -323,9 +323,6 @@ var page = {
             $tbody = $(datatable + ' tbody'),
             $selectAll = $('#select-all'),
             $deselectAll = $('#deselect-all'),
-            $batchEnable = $('#batch-enable'),
-            $batchDisable = $('#batch-disable'),
-            $batchDelete = $('#batch-delete'),
             showTable = function () {
                 var $datatable = $(datatable),
                     columns = $datatable.find('thead tr th').length,
@@ -430,31 +427,15 @@ var page = {
                 });
             },
             batch = function (action) {
-                var type = '',
-                    $batchEnable = $('#batch-enable'),
-                    $batchDisable = $('#batch-disable'),
-                    $batchDelete = $('#batch-delete'),
-                    data = {
+                var data = {
                         ids: selected,
                         action: action,
                         _token: page.token()
-                    };
+                    },
+                    type = $('#batch-' + action).attr('title');
 
-                switch (action) {
-                    case 'enable':
-                        type = $batchEnable.attr('title');
-                        break;
-                    case 'disable':
-                        type = $batchDisable.attr('title');
-                        break;
-                    case 'delete':
-                        type = $batchDelete.attr('title');
-                        break;
-                    default:
-                        break;
-                }
-                if ($.inArray(action, ['enable', 'disable']) !== -1) {
-                    data = $.extend(data, {field: $batchEnable.data('field')});
+                if (action !== 'delete') {
+                    data = $.extend(data, {field: 'enabled'});
                 }
                 if (selected.length === 0) {
                     page.inform(type, '请选择需要' + type + '的记录', page.failure);
@@ -494,13 +475,11 @@ var page = {
             };
 
         $tbody.off().on('click', 'tr', function () {
-            var id = parseInt($(this).find('td').eq(0).text()),
-                index = $.inArray(id, selected);
-            if (index === -1) {
-                selected.push(id);
-            } else {
-                selected.splice(index, 1)
-            }
+            var id = parseInt($(this).find('td').eq(0).text());
+
+            $.inArray(id, selected) === -1
+                ? selected.push(id)
+                : selected.splice(index, 1);
             $(this).toggleClass('selected');
         });
         $selectAll.off().on('click', function () {
@@ -525,22 +504,14 @@ var page = {
                 );
             }
         );
-        // $batchEnable.off().on('click', function () {
-        //     batch('enable');
-        // });
-        // $batchDisable.off().on('click', function () {
-        //     batch('disable');
-        // });
-        // $batchDelete.off().on('click', function () {
-        //     batch('delete');
-        // });
         $.getMultiScripts([plugins.datatable.js]).done(
             function () { showTable(); }
         );
     },
     index: function (table, options) {
-        this.unbindEvents();
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
+
+        this.unbindEvents();
         // 记录列表
         this.initDatatable(table, options);
         // $('div.dataTables_length select').addClass('form-control');
@@ -549,21 +520,16 @@ var page = {
         $('#add-record').on('click', function () {
             page.getTabContent($activeTabPane, table + '/create');
         });
-        var operation = function (op) {
-            var url = $(op).parents().eq(0).attr('id');
-            url = url.replace('_', '/');
-            page.getTabContent($activeTabPane, table + '/' + url);
-        };
-        // 编辑、充值、查看记录
-        $(document).on('click', '.fa-pencil', function () {
-            operation(this);
-        });
-        $(document).on('click', '.fa-money', function () {
-            operation(this);
-        });
-        $(document).on('click', '.fa-bars', function () {
-            operation(this);
-        });
+        $.map(
+            ['.fa-pencil', '.fa-money', '.fa-bars'],
+            function (icon) {
+                $(document).on('click', icon, function () {
+                    var url = $(this).parents().eq(0).attr('id');
+                    url = url.replace('_', '/');
+                    page.getTabContent($activeTabPane, table + '/' + url);
+                });
+            }
+        );
         // 删除记录
         this.remove(table, options);
     },

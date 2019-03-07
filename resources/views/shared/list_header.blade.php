@@ -10,9 +10,9 @@
     @if (isset($buttons))
         @foreach ($buttons as $button)
             @can('act', $uris[$button['id']])
-                <button id="{{ $button['id'] }}" type="button" class="btn btn-box-tool">
-                    <i class="{{ $button['icon'] }} {{ $button['color'] ?? 'text-blue' }}">
-                        &nbsp;{{ $button['label'] }}
+                <button id="{!! $button['id'] !!}" type="button" class="btn btn-box-tool">
+                    <i class="{!! $button['icon'] !!} {!! $button['color'] ?? 'text-blue' !!}">
+                        &nbsp;{!! $button['label'] !!}
                     </i>
                 </button>
             @endcan
@@ -33,12 +33,10 @@
             @endif
             @if (isset($uris['update']))
                 @can ('act', $uris['update'])
-                    <button id="batch-enable" type="button" class="btn btn-default"
-                            title="{{ '批量启用' }}" data-field="enabled">
+                    <button id="batch-enable" type="button" class="btn btn-default" title="批量启用">
                         <i class="fa fa-circle text-green"></i>
                     </button>
-                    <button id="batch-disable" type="button" class="btn btn-default"
-                            title="{{ '批量禁用' }}" data-field="enabled">
+                    <button id="batch-disable" type="button" class="btn btn-default" title="批量禁用">
                         <i class="fa fa-circle text-gray"></i>
                     </button>
                 @endcan
