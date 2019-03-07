@@ -519,7 +519,7 @@ var page = {
         });
         $.map(
             $.makeArray({enable: $batchEnable, disable: $batchDisable, delete: $batchDelete}),
-            function ($obj, action) { $obj.off().on('click', function () { batch(action); })}
+            function (val, i) { val.off().on('click', function () { batch(i); })}
         );
         // $batchEnable.off().on('click', function () {
         //     batch('enable');
