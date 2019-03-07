@@ -494,8 +494,8 @@ var page = {
             };
 
         $tbody.off().on('click', 'tr', function () {
-            var id = parseInt($(this).find('td').eq(0).text());
-            var index = $.inArray(id, selected);
+            var id = parseInt($(this).find('td').eq(0).text()),
+                index = $.inArray(id, selected);
             if (index === -1) {
                 selected.push(id);
             } else {
@@ -517,19 +517,21 @@ var page = {
                 $(this).removeClass('selected');
             });
         });
-        $batchEnable.off().on('click', function () {
-            batch('enable');
-        });
-        $batchDisable.off().on('click', function () {
-            batch('disable');
-        });
-        $batchDelete.off().on('click', function () {
-            batch('delete');
-        });
+        $.map(
+            $.makeArray({enable: $batchEnable, disable: $batchDisable, delete: $batchDelete}),
+            function ($obj, action) { $obj.off().on('click', function () { batch(action); })}
+        );
+        // $batchEnable.off().on('click', function () {
+        //     batch('enable');
+        // });
+        // $batchDisable.off().on('click', function () {
+        //     batch('disable');
+        // });
+        // $batchDelete.off().on('click', function () {
+        //     batch('delete');
+        // });
         $.getMultiScripts([plugins.datatable.js]).done(
-            function () {
-                showTable();
-            }
+            function () { showTable(); }
         );
     },
     index: function (table, options) {

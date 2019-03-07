@@ -52,7 +52,9 @@ class CardController extends Controller {
      */
     public function edit() {
         
-        return $this->output();
+        return Request::method() == 'POST'
+            ? $this->card->store()
+            : $this->output();
         
     }
     
