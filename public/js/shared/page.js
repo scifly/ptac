@@ -518,8 +518,12 @@ var page = {
             });
         });
         $.map(
-            $.makeArray({enable: $batchEnable, disable: $batchDisable, delete: $batchDelete}),
-            function (val, i) { val.off().on('click', function () { batch(i); })}
+            ['enable', 'disable', 'delete'],
+            function (action) {
+                $('#batch-' + action).off().on(
+                    'click', function () { batch(action); }
+                );
+            }
         );
         // $batchEnable.off().on('click', function () {
         //     batch('enable');
