@@ -12,3 +12,10 @@ $.getMultiScripts(['js/shared/dtrange.js']).done(
 $.getMultiScripts(['js/shared/contact.js']).done(
     function () { $.contact().index('custodians'); }
 );
+/** 批量发卡 */
+$('#issue').on('click', function () {
+    page.getTabContent(
+        $('#tab_' + page.getActiveTabId()),
+        'custodians/issue'
+    );
+});
