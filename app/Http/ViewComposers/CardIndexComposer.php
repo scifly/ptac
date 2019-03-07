@@ -19,16 +19,6 @@ class CardIndexComposer {
         
         $view->with([
             'buttons'        => [
-                // 'import' => [
-                //     'id'    => 'import',
-                //     'label' => '批量导入',
-                //     'icon'  => 'fa fa-upload',
-                // ],
-                // 'export' => [
-                //     'id'    => 'export',
-                //     'label' => '批量导出',
-                //     'icon'  => 'fa fa-download',
-                // ],
                 'edit' => [
                     'id' => 'edit',
                     'label' => '批量发卡',

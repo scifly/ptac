@@ -433,9 +433,9 @@ class Student extends Model {
             ])->toHtml();
             $record = <<<HTML
 <tr>
-    <td style="vertical-align: middle">%s</td>
-    <td style="vertical-align: middle" class="text-center">%s</td>
-    <td style="vertical-align: middle" class="text-center">%s</td>
+    <td class="valign">%s</td>
+    <td class="text-center valign">%s</td>
+    <td class="text-center valign">%s</td>
     <td>$snHtml</td>
 </tr>
 HTML;

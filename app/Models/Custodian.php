@@ -6,6 +6,7 @@ use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Form;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Auth, DB, Request};
@@ -291,7 +292,7 @@ class Custodian extends Model {
                         }
                         return array_map('array_unique', [
                             $sIds ?? [], $cIds ?? [], $dIds ?? [],
-                            $rUIds ?? [], $uUIds ?? []
+                            $rUIds ?? [], $uUIds ?? [],
                         ]);
                     }
                 );
@@ -300,11 +301,11 @@ class Custodian extends Model {
                 if (!empty($uUIds)) {
                     (new DepartmentUser)->where([
                         ['user_id', 'in', $uUIds],
-                        ['department_id', 'in', $dIds]
+                        ['department_id', 'in', $dIds],
                     ])->delete();
                     (new CustodianStudent)->where([
                         ['custodian_id', 'in', $cIds],
-                        ['student_id', 'in', $sIds]
+                        ['student_id', 'in', $sIds],
                     ])->delete();
                     Request::replace(['ids' => $uUIds]);
                     $user->modify(['position' => '教职员工']);
@@ -314,7 +315,7 @@ class Custodian extends Model {
                     Request::replace(['ids' => $rUIds]);
                     $user->remove();
                     Request::replace([
-                        'ids' => $this->whereIn('user_id', $rUIds)->pluck('id')->toArray()
+                        'ids' => $this->whereIn('user_id', $rUIds)->pluck('id')->toArray(),
                     ]);
                     $this->purge([class_basename($this), 'CustodianStudent'], 'custodian_id');
                 }
@@ -324,6 +325,84 @@ class Custodian extends Model {
         }
     
         return true;
+        
+    }
+    
+    /**
+     * 批量发卡
+     *
+     * @return JsonResponse|string
+     * @throws Throwable
+     */
+    function issue() {
+    
+        if (Request::has('classId')) {
+            $class = Squad::find(Request::input('classId'));
+            $userIds = DepartmentUser::whereDepartmentId($class->department_id)->pluck('user_id')->toArray();
+            $contacts = User::whereIn('id', $userIds)->get()->filter(
+                function (User $user) { return $user->group->name == '监护人'; }
+            );
+            $snHtml = Form::text('sn', '%s', [
+                'class' => 'form-control text-blue input-sm',
+                'maxlength' => 10,
+                'data-uid' => '%s',
+                'data-seq' => '%s',
+            ])->toHtml();
+            $record = <<<HTML
+<tr>
+    <td class="valign">%s</td>
+    <td class="text-center valign">%s</td>
+    <td class="text-center valign">%s</td>
+    <td class="text-center valign">%s</td>
+    <td>$snHtml</td>
+</tr>
+HTML;
+            $list = '';
+            $i = 0;
+            /** @var User $contact */
+            foreach ($contacts as $contact) {
+                $students = $contact->custodian->students;
+                if ($students->count() > 1) {
+                    $students = $students->filter(
+                        function (Student $student) use ($class) {
+                            return $student->class_id == $class->id;
+                        }
+                    );
+                }
+                $student = $students->first();
+                $card = $contact->card;
+                $sn = $card ? $card->sn : null;
+                $list .= sprintf(
+                    $record,
+                    $contact->id,
+                    $contact->realname,
+                    $student->user->realname,
+                    $student->sn,
+                    $contact->id,
+                    $i,
+                    $sn
+                );
+            }
+            return $list;
+        }
+        try {
+            DB::transaction(function () {
+                foreach (Request::input('sns') as $userId => $sn) {
+                    $card = Card::updateOrCreate(
+                        ['user_id' => $userId],
+                        ['sn' => $sn, 'status' => 1]
+                    );
+                    $card->user->update(['card_id' => $card->id]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return response()->json([
+            'title' => '批量发卡',
+            'message' => __('messages.ok'),
+        ]);
         
     }
     

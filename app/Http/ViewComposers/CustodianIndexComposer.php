@@ -29,6 +29,13 @@ class CustodianIndexComposer {
             ->pluck('name', 'id')
             ->toArray();
         $view->with([
+            'buttons'        => [
+                'issue' => [
+                    'id' => 'issue',
+                    'label' => '批量发卡',
+                    'icon' => 'fa fa-asterisk'
+                ]
+            ],
             'batch'   => true,
             'filter'  => true,
             'titles'  => [

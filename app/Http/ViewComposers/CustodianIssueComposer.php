@@ -6,10 +6,10 @@ use App\Models\Squad;
 use Illuminate\Contracts\View\View;
 
 /**
- * Class StudentIssueComposer
+ * Class CustodianIssueComposer
  * @package App\Http\ViewComposers
  */
-class StudentIssueComposer {
+class CustodianIssueComposer {
     
     use ModelTrait;
     
@@ -22,16 +22,17 @@ class StudentIssueComposer {
             ->get()->pluck('name', 'id')->toArray();
         $titles = <<<HTML
 <th>#</th>
-<th class="text-center">姓名</th>
+<th class="text-center">家长</th>
+<th class="text-center">学生</th>
 <th class="text-center">学号</th>
 <th>卡号</th>
 HTML;
 
         $view->with([
-            'formId' => 'formStudent',
+            'formId' => 'formCustodian',
             'classes' => [0 => '(请选择一个班级)'] + $classes,
             'titles' => $titles,
-            'columns' => 4
+            'columns' => 5
         ]);
         
     }

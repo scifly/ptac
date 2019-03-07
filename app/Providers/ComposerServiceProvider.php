@@ -88,6 +88,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('custodian.create', $ns . 'CustodianComposer');
         View::composer('custodian.edit', $ns . 'CustodianComposer');
         View::composer('custodian.relationship', $ns . 'CustodianRelationshipComposer');
+        View::composer('custodian.issue', $ns . 'CustodianIssueComposer');
     
         # 部门 - Department
         View::composer('department.index', $ns . 'DepartmentIndexComposer');

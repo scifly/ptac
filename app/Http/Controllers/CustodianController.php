@@ -123,4 +123,18 @@ class CustodianController extends Controller {
         
     }
     
+    /**
+     * 批量发卡
+     *
+     * @return bool|JsonResponse|string
+     * @throws Throwable
+     */
+    public function issue() {
+        
+        return Request::method() == 'POST'
+            ? $this->custodian->issue()
+            : $this->output();
+        
+    }
+    
 }

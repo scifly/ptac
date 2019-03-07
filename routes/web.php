@@ -66,6 +66,8 @@ Route::group(['prefix' => 'custodians'], function () {
     $c = 'CustodianController';
     Route::post('edit/{id}', $c . '@edit');
     Route::post('create', $c . '@create');
+    Route::get('issue', $c . '@issue');
+    Route::post('issue', $c . '@issue');
 });
 # 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));
