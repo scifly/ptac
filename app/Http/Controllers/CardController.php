@@ -45,16 +45,40 @@ class CardController extends Controller {
     }
     
     /**
-     * 编辑一卡通
+     * 批量发卡
+     *
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    public function create() {
+        
+        return $this->output();
+        
+    }
+    
+    /**
+     * 保存发卡结果
+     *
+     * @return JsonResponse|string
+     * @throws Throwable
+     */
+    public function store() {
+        
+        return $this->result(
+            $this->card->store()
+        );
+        
+    }
+    
+    /**
+     * 修改一卡通
      *
      * @return bool|JsonResponse
      * @throws Throwable
      */
     public function edit() {
         
-        return Request::method() == 'POST'
-            ? $this->card->store()
-            : $this->output();
+        return $this->output();
         
     }
     

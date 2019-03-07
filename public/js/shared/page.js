@@ -242,7 +242,7 @@ var page = {
             }
         });
     },
-    getTabContent: function ($tabPane, url) {
+    getTabContent: function ($tabPane, url, extra) {
         if ($tabPane.length === 0) {
             page.getWrapperContent(page.getActiveMenuId(), page.siteRoot() + url);
             return false;
@@ -250,8 +250,13 @@ var page = {
         if (url.indexOf('http://') > -1) {
             url = url.replace(page.siteRoot(), '');
         }
-        var tabId = page.getActiveTabId();
-        var menuId = page.getActiveMenuId();
+        var tabId = page.getActiveTabId(),
+            menuId = page.getActiveMenuId(),
+            data = {tabId: tabId, menuId: menuId};
+
+        if (typeof extra !== 'undefined') {
+            data = $.extend(data, { extra: extra });
+        }
         $('a[href="#tab_' + tabId + '"]').attr('data-uri', url);
         $tabPane.html(page.ajaxLoader);
         $('.overlay').show();
@@ -259,7 +264,7 @@ var page = {
             type: 'GET',
             dataType: 'json',
             url: page.siteRoot() + url,
-            data: {tabId: tabId, menuId: menuId},
+            data: data,
             success: function (result) {
                 // 在当前已激活卡片中加载服务器返回的HTML
                 $tabPane.html(result.html);
@@ -318,6 +323,7 @@ var page = {
     },
     initDatatable: function (table, options, method, dtId, extra) {
         var datatable = (typeof dtId === 'undefined' ? '#data-table' : '#' + dtId),
+            actions = ['enable', 'disable', 'delete'],
             rowIds = [],
             selected = [],
             $tbody = $(datatable + ' tbody'),
@@ -441,6 +447,12 @@ var page = {
                     page.inform(type, '请选择需要' + type + '的记录', page.failure);
                     return false;
                 }
+                if ($.inArray(action, ['enable', 'disable', 'delete']) === -1) {
+                    page.getTabContent(
+                        $('#tab_' + page.getActiveTabId()),
+                        table + '/' + action, selected
+                    )
+                }
                 $('.overlay').show();
                 $.ajax({
                     type: action !== 'delete' ? 'PUT' : 'DELETE',
@@ -495,8 +507,12 @@ var page = {
                 $(this).removeClass('selected');
             });
         });
+
+        if (typeof options[0] === 'string') {
+            actions = actions.concat(options[0].split(','));
+        }
         $.map(
-            ['enable', 'disable', 'delete'],
+            actions,
             function (action) {
                 $('#batch-' + action).off().on(
                     'click', function () { batch(action); }
