@@ -425,7 +425,8 @@ class Student extends Model {
     
         $card = new Card;
         if (Request::has('sectionId')) {
-            $students = Student::whereClassId(Request::input('sectionId'))->get();
+            $classId = Request::input('sectionId');
+            $students = Student::whereClassId($classId)->get();
             $snHtml = $card->input();
             $record = <<<HTML
 <tr>
