@@ -36,7 +36,7 @@
                             $('.overlay').hide();
                             $('tbody').html(
                                 result !== '' ? result
-                                    : '<tr><td class="text-center" colspan="4">- 暂无数据 -</td></tr>'
+                                    : '<tr><td class="text-center" colspan="5">- 暂无数据 -</td></tr>'
                             );
                         },
                         error: function (e) { page.errorHandler(e); }
