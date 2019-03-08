@@ -86,8 +86,9 @@ Route::group(['prefix' => 'students'], function () {
 Route::group(['prefix' => 'cards'], function () {
     $c = 'CardController';
     Route::get('index', $c . '@index');
-    Route::get('edit/{id?}', $c . '@edit');
+    Route::get('create', $c . '@index');
     Route::post('store', $c . '@store');
+    Route::get('edit/{id?}', $c . '@edit');
     Route::put('update/{id?}', $c . '@update');
     Route::delete('delete/{id?}', $c . '@destroy');
 });
