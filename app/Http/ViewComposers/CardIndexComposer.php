@@ -22,7 +22,7 @@ class CardIndexComposer {
                 'create' => [
                     'id' => 'batch-create',
                     'label' => '批量发卡',
-                    'icon' => 'fa fa-asterisk'
+                    'icon' => 'fa fa-card'
                 ],
                 'edit' => [
                     'id' => 'batch-edit',
@@ -47,6 +47,7 @@ class CardIndexComposer {
                     )
                 ],
             ],
+            'batch' => true,
             'filter' => true
         ]);
         
