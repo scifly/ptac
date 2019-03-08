@@ -1,3 +1,4 @@
+//#sourceURL=card.js
 (function ($) {
     $.card = function (options) {
         var card = {
