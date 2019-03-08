@@ -32,8 +32,8 @@ class CustodianIndexComposer {
             'buttons'        => [
                 'issue' => [
                     'id' => 'issue',
-                    'label' => '批量发卡',
-                    'icon' => 'fa fa-asterisk'
+                    'label' => '发卡',
+                    'icon' => 'fa fa-credit-card'
                 ]
             ],
             'batch'   => true,
