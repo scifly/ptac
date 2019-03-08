@@ -2,15 +2,15 @@
     $.card = function (options) {
         var card = {
             options: $.extend({}, options),
-            init: function (table, formId, card) {
+            init: function (table, formId, action) {
                 var $sectionId = $('#section_id'),
                     $list = $('tbody'),
                     empty = $list.html();
 
-                if (typeof card === 'undefined') {
+                if (typeof action === 'undefined') {
                     card.onSectionChange($sectionId, empty);
                 }
-                card.onSave(formId, card);
+                card.onSave(formId, action);
                 page.initBackBtn(table);
                 page.initSelect2();
                 card.onInput();
@@ -42,12 +42,12 @@
                     });
                 });
             },
-            onSave: function (formId, card) {
+            onSave: function (formId, action) {
                 $('#' + formId).parsley().on('form:validated', function () {
                     var data = {}, type = 'POST', url = 'issue';
                     $('input[name=sn]').each(function () {
                         var sn = $(this).val();
-                        if (typeof card === 'undefined' || card === 'create') {
+                        if (typeof action === 'undefined' || action === 'create') {
                             data[$(this).data('uid')] = sn;
                         } else {
                             var $parents = $(this).parents(),
@@ -55,9 +55,9 @@
                             data[$(this).data('uid')] = {sn: sn, status: status}
                         }
                     });
-                    if (typeof card !== 'undefined') {
-                        url = card === 'create' ? 'store' : 'update';
-                        if (card === 'edit') { type = 'PUT'; }
+                    if (typeof action !== 'undefined') {
+                        url = action === 'create' ? 'store' : 'update';
+                        if (action === 'edit') { type = 'PUT'; }
                     }
                     $('.overlay').show();
                     $.ajax({
