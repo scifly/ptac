@@ -94,9 +94,10 @@ class Card extends Model {
                         $colors[$d ?? 0][0], $colors[$d ?? 0][1]
                     );
                     
-                    return Datatable::status($status, $row, false);
+                    return $row['card_id'] ? Datatable::status($status, $row, false) : $status;
                 },
             ],
+            ['db' => 'User.card_id', 'dt' => 8]
         ];
         $joins = [
             [
