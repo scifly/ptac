@@ -21,13 +21,13 @@ class CardIndexComposer {
             'buttons'        => [
                 'create' => [
                     'id' => 'batch-create',
-                    'label' => '批量发卡',
+                    'label' => '发卡',
                     'icon' => 'fa fa-credit-card',
-                    'title' => '批量发卡'
+                    'title' => '发卡'
                 ],
                 'edit' => [
                     'id' => 'batch-edit',
-                    'label' => '批量更新',
+                    'label' => '更新(挂失/解挂)',
                     'icon' => 'fa fa-asterisk',
                     'title' => '批量更新'
                 ]
