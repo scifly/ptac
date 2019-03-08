@@ -28,11 +28,11 @@ class CardComposer {
         $sn = $card->input();
         $row = <<<HTML
 <tr>
-<td class="valign">%s</td>
-<td class="text-center valign">%s</td>
-<td class="text-center valign">%s</td>
-<td class="text-center valign">%s</td>
-<td class="valign">$sn</td>%s
+<td>%s</td>
+<td class="text-center">%s</td>
+<td class="text-center">%s</td>
+<td class="text-center">%s</td>
+<td>$sn</td>%s
 </tr>
 HTML;
         $status = $action == 'create' ? '' : '<td>' . $card->status() . '</td>';

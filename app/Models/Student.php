@@ -430,9 +430,9 @@ class Student extends Model {
             $snHtml = $card->input();
             $record = <<<HTML
 <tr>
-    <td class="valign">%s</td>
-    <td class="text-center valign">%s</td>
-    <td class="text-center valign">%s</td>
+    <td>%s</td>
+    <td class="text-center">%s</td>
+    <td class="text-center">%s</td>
     <td>$snHtml</td>
 </tr>
 HTML;
