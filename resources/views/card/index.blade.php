@@ -2,8 +2,8 @@
     <div class="box-header with-border">
         <span id="breadcrumb" style="color: #999; font-size: 13px;">{!! $breadcrumb !!}</span>
         <div class="box-tools pull-right">
-            @if (isset($btns))
-                @foreach ($btns as $key => $btn)
+            @if (isset($buttons))
+                @foreach ($buttons as $key => $btn)
                     @can('act', $uris[$key])
                         <button id="{!! $btn['id'] !!}" type="button" class="btn btn-box-tool" title="{!! $btn['title'] !!}">
                             <i class="{!! $btn['icon'] !!} {!! $btn['color'] ?? 'text-blue' !!}">
