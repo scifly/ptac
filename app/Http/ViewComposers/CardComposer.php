@@ -58,6 +58,7 @@ HTML;
             $list .= $record;
             $i++;
         }
+        !empty($list) ?: $list = '<tr><td colspan="6">- 请先发卡 -</td></tr>';
         $view->with([
             'list' => $list,
             'edit' => $action == 'edit' ? true : null
