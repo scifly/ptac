@@ -29,7 +29,7 @@ class CardIndexComposer {
                     'id' => 'batch-edit',
                     'label' => '更新(挂失/解挂)',
                     'icon' => 'fa fa-asterisk',
-                    'title' => '批量更新'
+                    'title' => '更新'
                 ]
             ],
             'titles' => [
