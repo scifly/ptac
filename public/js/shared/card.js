@@ -29,7 +29,7 @@
                         url: 'issue',
                         data: {
                             _token: page.token(),
-                            sedctionId: $sectionId.val()
+                            sectionId: $sectionId.val()
                         },
                         success: function (result) {
                             $('.overlay').hide();
