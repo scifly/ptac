@@ -34,7 +34,7 @@
                         },
                         success: function (result) {
                             $('.overlay').hide();
-                            $list.html(
+                            $('tbody').html(
                                 result !== '' ? result
                                     : '<tr><td class="text-center" colspan="4">- 暂无数据 -</td></tr>'
                             );
