@@ -13,7 +13,11 @@
                            class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead>
                         <tr>
-                            <th>#</th><th>姓名</th><th>角色</th><th>手机号码</th><th>卡号</th>
+                            <th>#</th>
+                            <th class="text-center">姓名</th>
+                            <th class="text-center">角色</th>
+                            <th class="text-center">手机号码</th>
+                            <th>卡号</th>
                             @if (isset($edit)) <th>状态</th> @endif
                         </tr>
                         </thead>
