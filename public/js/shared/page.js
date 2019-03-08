@@ -242,7 +242,7 @@ var page = {
             }
         });
     },
-    getTabContent: function ($tabPane, url, extra) {
+    getTabContent: function ($tabPane, url, ids) {
         if ($tabPane.length === 0) {
             page.getWrapperContent(page.getActiveMenuId(), page.siteRoot() + url);
             return false;
@@ -254,8 +254,8 @@ var page = {
             menuId = page.getActiveMenuId(),
             data = {tabId: tabId, menuId: menuId};
 
-        if (typeof extra !== 'undefined') {
-            data = $.extend(data, { extra: extra });
+        if (typeof ids !== 'undefined') {
+            data = $.extend(data, { ids: ids });
         }
         $('a[href="#tab_' + tabId + '"]').attr('data-uri', url);
         $tabPane.html(page.ajaxLoader);
@@ -452,38 +452,39 @@ var page = {
                         $('#tab_' + page.getActiveTabId()),
                         table + '/' + action, selected
                     )
-                }
-                $('.overlay').show();
-                $.ajax({
-                    type: action !== 'delete' ? 'PUT' : 'DELETE',
-                    dataType: 'json',
-                    url: page.siteRoot() + table + (action !== 'delete' ? '/update' : '/delete'),
-                    data: data,
-                    success: function (result) {
-                        $('.overlay').hide();
-                        switch (action) {
-                            case 'enable':
-                            case 'disable':
-                                $(datatable + ' tbody tr.selected td:last-child >:first-child').each(function () {
-                                    $(this).removeClass().addClass(
-                                        'fa fa-circle ' + (action === 'enable' ? 'text-green' : 'text-gray')
-                                    );
-                                });
-                                break;
-                            case 'delete':
-                                $(datatable + ' tbody tr.selected').each(function () {
-                                    $(this).addClass('text-gray');
-                                });
-                                break;
-                            default:
-                                break;
+                } else {
+                    $('.overlay').show();
+                    $.ajax({
+                        type: action !== 'delete' ? 'PUT' : 'DELETE',
+                        dataType: 'json',
+                        url: page.siteRoot() + table + (action !== 'delete' ? '/update' : '/delete'),
+                        data: data,
+                        success: function (result) {
+                            $('.overlay').hide();
+                            switch (action) {
+                                case 'enable':
+                                case 'disable':
+                                    $(datatable + ' tbody tr.selected td:last-child >:first-child').each(function () {
+                                        $(this).removeClass().addClass(
+                                            'fa fa-circle ' + (action === 'enable' ? 'text-green' : 'text-gray')
+                                        );
+                                    });
+                                    break;
+                                case 'delete':
+                                    $(datatable + ' tbody tr.selected').each(function () {
+                                        $(this).addClass('text-gray');
+                                    });
+                                    break;
+                                default:
+                                    break;
+                            }
+                            page.inform('批量' + type, result.message, page.success);
+                        },
+                        error: function (e) {
+                            page.errorHandler(e);
                         }
-                        page.inform('批量' + type, result.message, page.success);
-                    },
-                    error: function (e) {
-                        page.errorHandler(e);
-                    }
-                });
+                    });
+                }
             };
 
         $tbody.off().on('click', 'tr', function () {

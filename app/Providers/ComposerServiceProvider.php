@@ -50,8 +50,7 @@ class ComposerServiceProvider extends ServiceProvider {
     
         # 一卡通 - Card
         View::composer('card.index', $ns . 'CardIndexComposer');
-        View::composer('card.create', $ns . 'CardCreateComposer');
-        // View::composer('card.edit', $ns . 'CardEditComposer');
+        View::composer('card.create_edit', $ns . 'CardComposer');
         
         # 通信类型 - CommType
         View::composer('comm_type.index', $ns . 'CommTypeIndexComposer');

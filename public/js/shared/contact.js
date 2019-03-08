@@ -161,7 +161,7 @@
                     });
                 });
             },
-            onClassChange: function (table, action, id) {
+            onSectionChange: function (table, action, id) {
                 $(document).off('change', '#' + contact.options.classId);
                 $(document).on('change', '#' + contact.options.classId, function () {
                     var classId = $('#' + contact.options.classId).val(),
@@ -377,7 +377,7 @@
                         // contact.onSingularChange(table);
                         contact.onRelationshipDelete();
                         contact.onGradeChange(table, type, true, id);
-                        contact.onClassChange(table, type, id);
+                        contact.onSectionChange(table, type, id);
                         contact.onConfirmClick(table, true);
                         formId = table === 'custodians' ? 'formCustodian' : 'formEducator';
                         if (table === 'educators') {

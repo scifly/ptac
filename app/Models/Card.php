@@ -62,7 +62,12 @@ class Card extends Model {
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'Groups.name', 'dt' => 2],
-            ['db' => 'User.username', 'dt' => 3],
+            [
+                'db' => 'User.id as userId', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return User::find($d)->mobiles->where('isdefault', 1)->first()->mobile;
+                }
+            ],
             [
                 'db' => 'Card.sn', 'dt' => 4,
                 'formatter' => function ($d) { return $d ?? '[n/a]'; }
@@ -181,25 +186,23 @@ class Card extends Model {
     /**
      * 更新一卡通(挂失、解挂、换卡)
      *
-     * @param CardRequest $request
      * @return bool
      * @throws Throwable
      */
-    function modify(CardRequest $request) {
+    function modify() {
         
         try {
-            DB::transaction(function () use ($request) {
-                if ($request->route('id')) {
-                    $this->find($request->route('id'))->update(
-                        $request->all()
-                    );
-                } else {
-                    $this->whereIn('user_id', array_values($request->input('ids')))
-                        ->update([
-                            'status' => $request->input('action') == 'enable' ? 1 : 0,
-                        ]);
+            DB::transaction(function () {
+                foreach (Request::input('sns') as $userId => $card) {
+                    $user = User::find($userId);
+                    $sn = $card->sn; $status = $card->status;
+                    if ($sn) {
+                        $user->card->update(['sn' => $sn, 'status' => $status]);
+                    } else {
+                        $user->card->delete();
+                        $user->update(['card_id' => null]);
+                    }
                 }
-                
             });
         } catch (Exception $e) {
             throw $e;
@@ -247,6 +250,25 @@ class Card extends Model {
             'maxlength' => 10,
             'data-uid' => '%s',
             'data-seq' => '%s'
+        ])->toHtml();
+        
+    }
+    
+    /**
+     * 返回一卡通状态下拉列表html
+     *
+     * @return string
+     */
+    function status() {
+        
+        $items = [
+            1 => '正常',
+            2 => '挂失'
+        ];
+        return Form::select('status', $items, '%s', [
+            'class' => 'form-control select2',
+            'style' => 'width: 100%;',
+            'disabled' => sizeof($items) <= 1
         ])->toHtml();
         
     }

@@ -85,14 +85,13 @@ class CardController extends Controller {
     /**
      * 更新一卡通
      *
-     * @param CardRequest $request
      * @return JsonResponse
      * @throws Throwable
      */
-    public function update(CardRequest $request) {
+    public function update() {
         
         return $this->result(
-            $this->card->modify($request)
+            $this->card->modify()
         );
         
     }

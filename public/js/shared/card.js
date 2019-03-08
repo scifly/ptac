@@ -2,18 +2,20 @@
     $.card = function (options) {
         var card = {
             options: $.extend({}, options),
-            init: function (table, formId) {
+            init: function (table, formId, card) {
                 var $sectionId = $('#section_id'),
                     $list = $('tbody'),
                     empty = $list.html();
 
-                card.onClassChange($sectionId, empty);
-                card.onSave(formId);
+                if (typeof card === 'undefined') {
+                    card.onSectionChange($sectionId, empty);
+                }
+                card.onSave(formId, card);
                 page.initBackBtn(table);
                 page.initSelect2();
                 card.onInput();
             },
-            onClassChange: function ($sectionId, empty) {
+            onSectionChange: function ($sectionId, empty) {
                 // 选择班级
                 $sectionId.on('change', function () {
                     if ($sectionId.val() === '0') {
@@ -40,17 +42,28 @@
                     });
                 });
             },
-            onSave: function (formId) {
+            onSave: function (formId, card) {
                 $('#' + formId).parsley().on('form:validated', function () {
-                    var data = {};
+                    var data = {}, type = 'POST', url = 'issue';
                     $('input[name=sn]').each(function () {
-                        data[$(this).data('uid')] = $(this).val();
+                        var sn = $(this).val();
+                        if (typeof card === 'undefined' || card === 'create') {
+                            data[$(this).data('uid')] = sn;
+                        } else {
+                            var $parents = $(this).parents(),
+                                status = $($parents.eq($parents.length - 1).text()).val();
+                            data[$(this).data('uid')] = {sn: sn, status: status}
+                        }
                     });
+                    if (typeof card !== 'undefined') {
+                        url = card === 'create' ? 'store' : 'update';
+                        if (card === 'edit') { type = 'PUT'; }
+                    }
                     $('.overlay').show();
                     $.ajax({
-                        type: 'POST',
+                        type: type,
                         dataType: 'json',
-                        url: 'issue',
+                        url: url,
                         data: {
                             _token: page.token(),
                             sns: data

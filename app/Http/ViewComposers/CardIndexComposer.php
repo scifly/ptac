@@ -19,14 +19,19 @@ class CardIndexComposer {
         
         $view->with([
             'buttons'        => [
-                'edit' => [
-                    'id' => 'edit',
+                'create' => [
+                    'id' => 'batch-create',
                     'label' => '批量发卡',
+                    'icon' => 'fa fa-asterisk'
+                ],
+                'edit' => [
+                    'id' => 'batch-edit',
+                    'label' => '批量更新',
                     'icon' => 'fa fa-asterisk'
                 ]
             ],
             'titles' => [
-                '#', '姓名', '角色', '员工编号/用户名', '卡号',
+                '#', '姓名', '角色', '手机号码', '卡号',
                 [
                     'title' => '发卡时间',
                     'html'  => $this->inputDateTimeRange('发卡时间')
@@ -42,7 +47,6 @@ class CardIndexComposer {
                     )
                 ],
             ],
-            'batch' => true,
             'filter' => true
         ]);
         
