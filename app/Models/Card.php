@@ -60,17 +60,17 @@ class Card extends Model {
         
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
-            ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'Groups.name', 'dt' => 2],
             [
-                'db' => 'User.id as userId', 'dt' => 3,
+                'db' => 'Card.sn', 'dt' => 1,
+                'formatter' => function ($d) { return $d ?? '[n/a]'; }
+            ],
+            ['db' => 'User.realname', 'dt' => 2],
+            ['db' => 'Groups.name', 'dt' => 3],
+            [
+                'db' => 'User.id as userId', 'dt' => 4,
                 'formatter' => function ($d) {
                     return User::find($d)->mobiles->where('isdefault', 1)->first()->mobile;
                 }
-            ],
-            [
-                'db' => 'Card.sn', 'dt' => 4,
-                'formatter' => function ($d) { return $d ?? '[n/a]'; }
             ],
             [
                 'db' => 'Card.created_at', 'dt' => 5, 'dr' => true,
