@@ -21,7 +21,13 @@ class CardComposer {
     public function compose(View $view) {
 
         $action = Request::route()->getActionMethod();
-        $userIds = Request::route('id') ? [Request::route('id')] : array_values(Request::get('ids'));
+        $ids = Request::get('ids');
+        if ($ids) {
+            session(['ids' => $ids]);
+        } else {
+            $ids = session('ids');
+        }
+        $userIds = Request::route('id') ? [Request::route('id')] : array_values($ids);
         $operator = $action == 'create' ? '=' : '<>';
         $users = User::whereIn('id', $userIds)->where('card_id', $operator, 0)->get();
         $card = new Card;
