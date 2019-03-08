@@ -27,10 +27,8 @@ class CardComposer {
         } else {
             $ids = session('ids');
         }
-        $users = User::whereIn('id', array_values($ids))->get();
-        if ($action == 'create') {
-            $users = $users->filter(function (User $user) { return !$user->card; });
-        }
+        $operator = $action == 'create' ? '=' : '<>';
+        $users = User::whereIn('id', $ids)->where('card_id', $operator, 0)->get();
         $card = new Card;
         $sn = $card->input();
         $row = <<<HTML
