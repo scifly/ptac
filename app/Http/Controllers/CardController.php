@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CardRequest;
 use App\Models\Card;
 use Exception;
 use Illuminate\Http\JsonResponse;

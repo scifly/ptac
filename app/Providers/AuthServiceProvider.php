@@ -3,6 +3,7 @@ namespace App\Providers;
 
 use App\Models\{Action,
     App,
+    Card,
     Company,
     ConferenceParticipant,
     ConferenceQueue,
@@ -41,6 +42,7 @@ use App\Models\{Action,
     WsmArticle};
 use App\Policies\{ActionPolicy,
     AppPolicy,
+    CardPolicy,
     CommonPolicy,
     CompanyPolicy,
     ConferenceParticipantPolicy,
@@ -102,6 +104,7 @@ class AuthServiceProvider extends ServiceProvider {
         Route::class => MethodPolicy::class,
         Action::class                         => ActionPolicy::class,
         App::class                            => AppPolicy::class,
+        Card::class                           => CardPolicy::class,
         Company::class                        => CompanyPolicy::class,
         ConferenceParticipant::class          => ConferenceParticipantPolicy::class,
         ConferenceQueue::class                => ConferenceQueuePolicy::class,
