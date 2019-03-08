@@ -59,7 +59,7 @@ HTML;
             $i++;
         }
         !empty($list)
-            ?: $list = '<tr><td colspan="6" class="text-center">- 请先发卡 -</td></tr>';
+            ?: $list = '<tr><td colspan="6" class="text-center text-red">- 请先发卡 -</td></tr>';
         $view->with([
             'list' => $list,
             'edit' => $action == 'edit' ? true : null
