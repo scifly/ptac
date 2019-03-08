@@ -264,10 +264,7 @@ class Card extends Model {
      */
     function status() {
         
-        $items = [
-            1 => '正常',
-            2 => '挂失'
-        ];
+        $items = [1 => '正常', 2 => '挂失'];
         return Form::select('status', $items, '%s', [
             'class' => 'form-control select2',
             'style' => 'width: 100%;',
