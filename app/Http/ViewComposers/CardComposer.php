@@ -23,7 +23,7 @@ class CardComposer {
         $action = Request::route()->getActionMethod();
         $userIds = Request::route('id') ? [Request::route('id')] : array_values(Request::get('ids'));
         $operator = $action == 'create' ? '=' : '<>';
-        $users = User::whereIn('id', $userIds)->where('card_id', $operator, null)->get();
+        $users = User::whereIn('id', $userIds)->where('card_id', $operator, 0)->get();
         $card = new Card;
         $sn = $card->input();
         $row = <<<HTML
