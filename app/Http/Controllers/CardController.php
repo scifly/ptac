@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Card;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -25,7 +26,7 @@ class CardController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->card = $card;
-        $this->approve($card);
+        $this->approve(new User);
         
     }
     
