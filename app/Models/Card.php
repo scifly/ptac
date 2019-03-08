@@ -62,7 +62,9 @@ class Card extends Model {
             ['db' => 'User.id', 'dt' => 0],
             [
                 'db' => 'Card.sn', 'dt' => 1,
-                'formatter' => function ($d) { return $d ?? '[尚未发卡]'; }
+                'formatter' => function ($d) {
+                    return $d ?? sprintf(Snippet::BADGE, 'text-gray', '[尚未发卡]');
+                }
             ],
             ['db' => 'User.realname', 'dt' => 2],
             ['db' => 'Groups.name', 'dt' => 3],
