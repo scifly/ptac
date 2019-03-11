@@ -47,8 +47,8 @@
                 $('#' + formId).on('submit', function () {
                     return false;
                 });
-                $('#issue').on('keypress', function () {return false})
-                    .on('click', function () {
+                $('#issue').on('keyup', function () {alert('key pressed');});
+                $('#issue').on('click', function () {
                     var data = {}, type = 'POST', url = 'issue';
                     $('input[name=sn]').each(function () {
                         var sn = $(this).val();
