@@ -44,8 +44,10 @@
                 });
             },
             onSave: function (formId, action) {
-                $('#' + formId).parsley().on('form:validated', function () {
-                    alert('cde');
+                $('#' + formId).on('form:submit', function () {
+                    return false;
+                });
+                $('input[type=submit]').on('click', function () {
                     var data = {}, type = 'POST', url = 'issue';
                     $('input[name=sn]').each(function () {
                         var sn = $(this).val();
@@ -76,13 +78,10 @@
                         },
                         error: function (e) { page.errorHandler(e); }
                     });
-                }).on('form:submit', function () {
-                    return false;
                 });
             },
             onInput: function () {
                 $('input').on('keyup', function() {
-                    alert('abc');
                     if ($(this).val().length === parseInt($(this).attr('maxlength'))) {
                         var i = parseInt($(this).data('seq')) + 1;
                         $('input[data-seq=' + i + ']').focus();
