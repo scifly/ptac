@@ -162,7 +162,7 @@ class Card extends Model {
                                 $user->update(['card_id' => $card->id]);
                             }
                         } else {
-                            $user->card->delete();
+                            !$user->card ?: $user->card->delete();
                         }
                     }
                 } else {
