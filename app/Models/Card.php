@@ -282,19 +282,20 @@ class Card extends Model {
      */
     function issue() {
     
-        $sns = Request::input('sns');
-        $ns = array_count_values(array_map('strval', array_values($sns)));
-        foreach ($ns as $n => $count) {
-            if (!empty($n) && $count > 1) $ds[] = $n;
+        if ($sns = Request::input('sns')) {
+            $ns = array_count_values(array_map('strval', array_values($sns)));
+            foreach ($ns as $n => $count) {
+                if (!empty($n) && $count > 1) $ds[] = $n;
+            }
+            abort_if(
+                !empty($ds ?? []),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                implode('', [
+                    (!empty($sns) ? ('卡号: ' . implode(',', $ds ?? [])) : ''),
+                    '有重复，请检查后重试'
+                ])
+            );
         }
-        abort_if(
-            !empty($ds ?? []),
-            HttpStatusCode::NOT_ACCEPTABLE,
-            implode('', [
-                (!empty($sns) ? ('卡号: ' . implode(',', $ds ?? [])) : ''),
-                '有重复，请检查后重试'
-            ])
-        );
         try {
             DB::transaction(function () use ($sns) {
                 foreach ($sns as $userId => $sn) {
