@@ -44,10 +44,9 @@
                 });
             },
             onSave: function (formId, action) {
-                $('#' + formId).on('submit', function () {
+                $('form').on('submit', function () {
                     return false;
                 });
-                $('#issue').on('keyup', function () {alert('key pressed');});
                 $('#issue').on('click', function () {
                     var data = {}, type = 'POST', url = 'issue';
                     $('input[name=sn]').each(function () {
