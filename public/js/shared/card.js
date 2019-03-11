@@ -45,6 +45,7 @@
             },
             onSave: function (formId, action) {
                 $('#' + formId).parsley().on('form:validated', function () {
+                    alert('cde');
                     var data = {}, type = 'POST', url = 'issue';
                     $('input[name=sn]').each(function () {
                         var sn = $(this).val();
