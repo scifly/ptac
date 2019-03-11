@@ -81,7 +81,7 @@
                 });
             },
             onInput: function () {
-                $('input').on('keyup', function() {
+                $('input').on('keypress', function() {
                     alert('abc');
                     if ($(this).val().length === parseInt($(this).attr('maxlength'))) {
                         var i = parseInt($(this).data('seq')) + 1;
