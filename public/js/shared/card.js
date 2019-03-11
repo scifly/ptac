@@ -83,7 +83,9 @@
             onInput: function () {
                 $(document).on('keyup', 'input', function() {
                     if ($(this).val().length === parseInt($(this).attr('maxlength'))) {
+
                         var i = parseInt($(this).data('seq')) + 1;
+                        alert(i);
                         $('input[data-seq=' + i + ']').focus();
                     }
                 });
