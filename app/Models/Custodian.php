@@ -307,7 +307,7 @@ class Custodian extends Model {
                         ['student_id', 'in', $sIds],
                     ])->delete();
                     Request::replace(['ids' => $uUIds]);
-                    $user->modify(['position' => '教职员工']);
+                    $user->update(['position' => '教职员工']);
                 }
                 # 删除用户 & 监护人
                 if (!empty($rUIds)) {
