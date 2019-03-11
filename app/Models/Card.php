@@ -283,6 +283,7 @@ class Card extends Model {
      */
     function issue() {
     
+        Log::info('data', Request::all());
         if ($sns = Request::input('sns')) {
             $ns = array_count_values(array_map('strval', array_values($sns)));
             foreach ($ns as $n => $count) {
