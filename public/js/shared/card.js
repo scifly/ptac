@@ -44,7 +44,7 @@
                 });
             },
             onSave: function (formId, action) {
-                $('#' + formId).on('form:submit', function () {
+                $('#' + formId).on('submit', function () {
                     return false;
                 });
                 $('input[type=submit]').on('click', function () {
