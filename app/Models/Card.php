@@ -295,27 +295,27 @@ class Card extends Model {
                     '有重复，请检查后重试'
                 ])
             );
-            try {
-                DB::transaction(function () use ($sns) {
-                    foreach ($sns as $userId => $sn) {
-                        if (!empty($sn)) {
-                            $card = Card::updateOrCreate(
-                                ['user_id' => $userId],
-                                ['sn' => $sn, 'status' => 1]
-                            );
-                            $card->user->update(['card_id' => $card->id]);
-                        } else {
-                            $user = User::find($userId);
-                            if ($user->card) {
-                                $user->card->delete();
-                                $user->update(['card_id' => 0]);
-                            }
+        }
+        try {
+            DB::transaction(function () use ($sns) {
+                foreach ($sns as $userId => $sn) {
+                    if (!empty($sn)) {
+                        $card = Card::updateOrCreate(
+                            ['user_id' => $userId],
+                            ['sn' => $sn, 'status' => 1]
+                        );
+                        $card->user->update(['card_id' => $card->id]);
+                    } else {
+                        $user = User::find($userId);
+                        if ($user->card) {
+                            $user->card->delete();
+                            $user->update(['card_id' => 0]);
                         }
                     }
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
     
         return response()->json([
