@@ -284,6 +284,7 @@ class Card extends Model {
     
         if ($sns = Request::input('sns')) {
             $ns = array_count_values(array_map('strval', array_values($sns)));
+            dd($ns);
             foreach ($ns as $n => $count) {
                 if (!empty($n) && $count > 1) $ds[] = $n;
             }
