@@ -48,6 +48,7 @@
                     return false;
                 });
                 $('#issue').on('click', function () {
+                    alert('triggered');
                     var data = {}, type = 'POST', url = 'issue';
                     $('input[name=sn]').each(function () {
                         var sn = $(this).val();
