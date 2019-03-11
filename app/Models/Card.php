@@ -283,7 +283,6 @@ class Card extends Model {
      */
     function issue() {
     
-        Log::info('data', Request::all());
         if ($sns = Request::input('sns')) {
             $ns = array_count_values(array_map('strval', array_values($sns)));
             foreach ($ns as $n => $count) {
@@ -298,7 +297,6 @@ class Card extends Model {
                 ])
             );
         }
-        Log::info('sns: ', $sns);
         try {
             DB::transaction(function () use ($sns) {
                 foreach ($sns as $userId => $sn) {
