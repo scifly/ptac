@@ -12,6 +12,7 @@ use Form;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -284,7 +285,6 @@ class Card extends Model {
     
         if ($sns = Request::input('sns')) {
             $ns = array_count_values(array_map('strval', array_values($sns)));
-            dd($ns);
             foreach ($ns as $n => $count) {
                 if (!empty($n) && $count > 1) $ds[] = $n;
             }
@@ -297,6 +297,7 @@ class Card extends Model {
                 ])
             );
         }
+        Log::info('sns: ', $sns);
         try {
             DB::transaction(function () use ($sns) {
                 foreach ($sns as $userId => $sn) {
