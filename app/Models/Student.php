@@ -8,7 +8,6 @@ use App\Jobs\ImportStudent;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Form;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
@@ -426,7 +425,7 @@ class Student extends Model {
         $card = new Card;
         if (Request::has('sectionId')) {
             $classId = Request::input('sectionId');
-            $students = Student::whereClassId($classId)->get();
+            $students = Student::whereClassId($classId)->orderBy('sn')->get();
             $snHtml = $card->input();
             $record = <<<HTML
 <tr>
