@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use App\Http\Requests\CardRequest;
@@ -283,7 +284,20 @@ class Card extends Model {
     
         try {
             DB::transaction(function () {
-                foreach (Request::input('sns') as $userId => $sn) {
+                $sns = Request::input('sns');
+                $ns = array_count_values(array_map('strval', array_values($sns)));
+                foreach ($ns as $n => $count) {
+                    if (!empty($n) && $count > 1) $ds[] = $n;
+                }
+                abort_if(
+                    !empty($ds ?? []),
+                    HttpStatusCode::NOT_ACCEPTABLE,
+                    implode('', [
+                        (!empty($sns) ? ('卡号: ' . implode(',', $ds ?? [])) : ''),
+                        '有重复，请检查后重试'
+                    ])
+                );
+                foreach ($sns as $userId => $sn) {
                     if (!empty($sn)) {
                         $card = Card::updateOrCreate(
                             ['user_id' => $userId],
