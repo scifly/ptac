@@ -39,6 +39,6 @@
             </div>
         </div>
     </div>
-    @include('shared.form_buttons', ['id' => 'issue'])
+    @include('shared.form_buttons', ['id' => 'wtf'])
     {!! Form::close() !!}
 </div>
