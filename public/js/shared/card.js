@@ -85,7 +85,7 @@
                     if ($(this).val().length === parseInt($(this).attr('maxlength'))) {
 
                         var i = parseInt($(this).data('seq')) + 1;
-                        alert(i);
+                        console.log(i);
                         $('input[data-seq=' + i + ']').focus();
                     }
                 });
