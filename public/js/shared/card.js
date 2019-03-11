@@ -47,7 +47,7 @@
                 $('#' + formId).on('submit', function () {
                     return false;
                 });
-                $('input[type=submit]').on('click', function () {
+                $('#issue').on('click', function () {
                     var data = {}, type = 'POST', url = 'issue';
                     $('input[name=sn]').each(function () {
                         var sn = $(this).val();
