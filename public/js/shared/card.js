@@ -45,12 +45,8 @@
             },
             onSave: function (formId, action) {
                 var $issue = $('#issue');
-                $('#' + formId).on('submit', function () {
-                    return false;
-                });
-                $issue.on('keyup', function (e) {
-                    if (e.keyCode === 13) return false;
-                });
+                $('#' + formId).on('submit', function () { return false; });
+                $issue.on('keyup', function () { return false; });
                 $issue.on('click', function () {
                     var data = {}, type = 'POST', url = 'issue';
                     $('input[name=sn]').each(function () {
