@@ -199,11 +199,10 @@ class Card extends Model {
         
         try {
             DB::transaction(function () {
-                Log::debug(json_encode(Request::input('sns')));
                 foreach (Request::input('sns') as $userId => $card) {
                     $user = User::find($userId);
-                    $sn = $card->sn;
-                    $status = $card->status;
+                    $sn = $card['sn'];
+                    $status = $card['status'];
                     if ($sn) {
                         $user->card->update(['sn' => $sn, 'status' => $status]);
                     } else {
