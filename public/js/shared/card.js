@@ -47,10 +47,7 @@
                 var $issue = $('#issue');
                 $('#' + formId).on('submit', function () { return false; });
                 $(document).keypress(function (e) {
-                    if (e.which === 13) {
-                        console.log(e.which);
-                        return false;
-                    }
+                    if (e.which === 13)  return false;
                 });
                 $issue.on('click', function () {
                     var data = {}, type = 'POST', url = 'issue';

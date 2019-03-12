@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Validator;
 use Throwable;
 
 /**
@@ -301,10 +302,29 @@ class Card extends Model {
             DB::transaction(function () use ($sns) {
                 foreach ($sns as $userId => $sn) {
                     if (!empty($sn)) {
-                        $card = Card::updateOrCreate(
-                            ['user_id' => $userId],
-                            ['sn' => $sn, 'status' => 1]
-                        );
+                        $card = Card::whereUserId($userId)->first();
+                        $_sn = Card::whereSn($sn)->first();
+                        if (!$card) {
+                            abort_if(
+                                $_sn ? true : false,
+                                HttpStatusCode::NOT_ACCEPTABLE,
+                                __('卡号已被使用')
+                            );
+                            $card = Card::create([
+                                'user_id' => $userId,
+                                'sn' => $sn,
+                                'status' => 1
+                            ]);
+                        } else {
+                            if ($card->sn != $sn) {
+                                abort_if(
+                                    Card::whereSn($sn)->first() ? true : false,
+                                    HttpStatusCode::NOT_ACCEPTABLE,
+                                    __('卡号已被使用')
+                                );
+                                $card->update(['sn' => $sn]);
+                            }
+                        }
                         $card->user->update(['card_id' => $card->id]);
                     } else {
                         $user = User::find($userId);
