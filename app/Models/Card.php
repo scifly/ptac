@@ -197,15 +197,24 @@ class Card extends Model {
      */
     function modify() {
         
+        $this->validate($sns = Request::input('sns'));
         try {
-            DB::transaction(function () {
-                foreach (Request::input('sns') as $userId => $card) {
+            DB::transaction(function () use ($sns) {
+                foreach ($sns as $userId => $card) {
                     $user = User::find($userId);
                     $sn = $card['sn'];
                     $status = $card['status'];
-                    Log::debug($status);
                     if ($sn) {
-                        $user->card->update(['sn' => $sn, 'status' => $status]);
+                        if ($user->card->sn == $sn) {
+                            $user->card->update(['status' => $status]);
+                        } else {
+                            abort_if(
+                                Card::whereSn($sn)->first() ? true : false,
+                                HttpStatusCode::NOT_ACCEPTABLE,
+                                __('卡号已被使用')
+                            );
+                            $user->card->update(['sn' => $sn, 'status' => $status]);
+                        }
                     } else {
                         $user->card->delete();
                         $user->update(['card_id' => null]);
@@ -287,20 +296,7 @@ class Card extends Model {
      */
     function issue() {
     
-        if ($sns = Request::input('sns')) {
-            $ns = array_count_values(array_map('strval', array_values($sns)));
-            foreach ($ns as $n => $count) {
-                if (!empty($n) && $count > 1) $ds[] = $n;
-            }
-            abort_if(
-                !empty($ds ?? []),
-                HttpStatusCode::NOT_ACCEPTABLE,
-                implode('', [
-                    (!empty($sns) ? ('卡号: ' . implode(',', $ds ?? [])) : ''),
-                    '有重复，请检查后重试'
-                ])
-            );
-        }
+        $this->validate($sns = Request::input('sns'));
         try {
             DB::transaction(function () use ($sns) {
                 foreach ($sns as $userId => $sn) {
@@ -346,6 +342,32 @@ class Card extends Model {
             'title' => '批量发卡',
             'message' => __('messages.ok')
         ]);
+        
+    }
+    
+    /**
+     * 检查卡号是否有重复
+     *
+     * @param array $cards
+     */
+    private function validate(array $cards) {
+    
+        $sns = array_values($cards);
+        if (is_array($sns[0])) {
+            $sns = array_pluck($sns, 'sn');
+        }
+        $ns = array_count_values(array_map('strval', $sns));
+        foreach ($ns as $n => $count) {
+            if (!empty($n) && $count > 1) $ds[] = $n;
+        }
+        abort_if(
+            !empty($ds ?? []),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            implode('', [
+                (!empty($sns) ? ('卡号: ' . implode(',', $ds ?? [])) : ''),
+                '有重复，请检查后重试'
+            ])
+        );
         
     }
     
