@@ -27,5 +27,5 @@
             </div>
         </div>
     </div>
-    @include('shared.form_buttons')
+    @include('shared.form_buttons', ['id' => 'issue'])
 </div>
