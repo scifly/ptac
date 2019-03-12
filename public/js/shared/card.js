@@ -57,8 +57,9 @@
                             data[$(this).data('uid')] = sn;
                         } else {
                             var next = $(this).parent().next().html(),
-                                status = $($(next)[0]).val();
-                            data[$(this).data('uid')] = {sn: sn, status: status}
+                                $status = $($(next)[0]);
+                            console.log($status);
+                            data[$(this).data('uid')] = { sn: sn, status: $status.val() }
                         }
                     });
                     if (typeof action !== 'undefined') {
