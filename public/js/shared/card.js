@@ -56,8 +56,8 @@
                         if (typeof action === 'undefined' || action === 'create') {
                             data[$(this).data('uid')] = sn;
                         } else {
-                            var $parents = $(this).parents(),
-                                status = $($parents.eq($parents.length - 1).text()).val();
+                            var next = $(this).parent().next().html(),
+                                status = $($(next)[0]).val();
                             data[$(this).data('uid')] = {sn: sn, status: status}
                         }
                     });
