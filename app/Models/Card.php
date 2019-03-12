@@ -265,12 +265,13 @@ class Card extends Model {
     /**
      * 返回一卡通状态下拉列表html
      *
+     * @param $selected
      * @return string
      */
-    function status() {
+    function status($selected) {
         
         $items = [1 => '正常', 2 => '挂失'];
-        return Form::select('status', $items, '%s', [
+        return Form::select('status', $items, $selected, [
             'class' => 'form-control select2 input-sm',
             'style' => 'width: 100%;',
             'disabled' => sizeof($items) <= 1

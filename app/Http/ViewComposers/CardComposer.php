@@ -41,11 +41,11 @@ class CardComposer {
 <td>$sn</td>%s
 </tr>
 HTML;
-        $status = $action == 'create' ? '' : '<td>' . $card->status() . '</td>';
-        Log::debug($status);
         $list = ''; $i = 0;
         /** @var User $user */
         foreach ($users as $user) {
+            $status = $action == 'create' ? ''
+                : '<td>' . $card->status($user->card->status) . '</td>';
             $record = sprintf(
                 $row,
                 $user->id,
@@ -56,7 +56,6 @@ HTML;
                 $user->card ? $user->card->sn : '',
                 $status
             );
-            $action == 'create' ?: $record = sprintf($record, $user->card->status);
             
             $list .= $record;
             $i++;
