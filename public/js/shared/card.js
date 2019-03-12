@@ -69,7 +69,7 @@
                     $.ajax({
                         type: type,
                         dataType: 'json',
-                        url: url,
+                        url: '../' + url,
                         data: {
                             _token: page.token(),
                             sns: data
