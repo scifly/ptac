@@ -56,9 +56,10 @@
                         if (typeof action === 'undefined' || action === 'create') {
                             data[$(this).data('uid')] = sn;
                         } else {
-                            var $status = $($(this).parent().next().children()[0]);
-
-                            data[$(this).data('uid')] = { sn: sn, status: $status.val() }
+                            data[$(this).data('uid')] = {
+                                sn: sn,
+                                status: $($(this).parent().next().children()[0]).val()
+                            }
                         }
                     });
                     if (typeof action !== 'undefined') {
