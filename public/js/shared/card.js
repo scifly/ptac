@@ -63,14 +63,14 @@
                         }
                     });
                     if (typeof action !== 'undefined') {
-                        url = action === 'create' ? 'store' : 'update';
+                        url = action === 'create' ? '../store' : '../update';
                         if (action === 'edit') { type = 'PUT'; }
                     }
                     $('.overlay').show();
                     $.ajax({
                         type: type,
                         dataType: 'json',
-                        url: '../' + url,
+                        url: url,
                         data: {
                             _token: page.token(),
                             sns: data
