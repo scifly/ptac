@@ -44,12 +44,12 @@
                 });
             },
             onSave: function (formId, action) {
-                $('form').on('submit', function () {
+                $('#' + formId).on('submit', function () {
                     return false;
                 });
-                $('#wtf').on('click', function () {
-                    alert('triggered');
+                $('#issue').on('click', function (e) {
                     var data = {}, type = 'POST', url = 'issue';
+                    if (e.keyCode === 13) return false;
                     $('input[name=sn]').each(function () {
                         var sn = $(this).val();
                         if (typeof action === 'undefined' || action === 'create') {
