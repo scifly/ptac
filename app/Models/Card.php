@@ -12,9 +12,7 @@ use Form;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Validator;
 use Throwable;
 
 /**
