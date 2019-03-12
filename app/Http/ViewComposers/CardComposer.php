@@ -5,6 +5,7 @@ use App\Helpers\ModelTrait;
 use App\Models\Card;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -41,6 +42,7 @@ class CardComposer {
 </tr>
 HTML;
         $status = $action == 'create' ? '' : '<td>' . $card->status() . '</td>';
+        Log::debug($status);
         $list = ''; $i = 0;
         /** @var User $user */
         foreach ($users as $user) {
@@ -55,6 +57,7 @@ HTML;
                 $status
             );
             $action == 'create' ?: $record = sprintf($record, $user->card->status);
+            
             $list .= $record;
             $i++;
         }

@@ -271,7 +271,7 @@ class Card extends Model {
         
         $items = [1 => '正常', 2 => '挂失'];
         return Form::select('status', $items, '%s', [
-            'class' => 'form-control select2',
+            'class' => 'form-control select2 input-sm',
             'style' => 'width: 100%;',
             'disabled' => sizeof($items) <= 1
         ])->toHtml();
