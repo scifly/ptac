@@ -63,7 +63,7 @@
                         }
                     });
                     if (typeof action !== 'undefined') {
-                        url = action === 'create' ? '../store' : '../update';
+                        url = page.siteRoot() + 'cards/' + (action === 'create' ? 'store' : 'update');
                         if (action === 'edit') { type = 'PUT'; }
                     }
                     $('.overlay').show();
