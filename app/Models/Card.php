@@ -203,6 +203,7 @@ class Card extends Model {
                     $user = User::find($userId);
                     $sn = $card['sn'];
                     $status = $card['status'];
+                    Log::debug($status);
                     if ($sn) {
                         $user->card->update(['sn' => $sn, 'status' => $status]);
                     } else {
