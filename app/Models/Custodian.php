@@ -365,8 +365,7 @@ HTML;
                     );
                 }
                 $student = $students->first();
-                $card = $contact->card;
-                $sn = $card ? $card->sn : null;
+                $sn = $contact->card ? $contact->card->sn : null;
                 $list .= sprintf(
                     $record,
                     $contact->id,
