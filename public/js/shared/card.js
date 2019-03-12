@@ -47,7 +47,7 @@
                 $('#' + formId).on('submit', function () {
                     return false;
                 });
-                $('#issue').on('click keyup', function (e) {
+                $('#issue').on('keyup', function (e) {
                     var data = {}, type = 'POST', url = 'issue';
                     if (e.keyCode === 13) {
                         alert(13);
