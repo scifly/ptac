@@ -197,24 +197,24 @@ class Card extends Model {
      */
     function modify() {
         
-        $this->validate($sns = Request::input('sns'));
+        $this->validate($cards = Request::input('sns'));
         try {
-            DB::transaction(function () use ($sns) {
-                foreach ($sns as $userId => $card) {
+            DB::transaction(function () use ($cards) {
+                foreach ($cards as $userId => $card) {
                     $user = User::find($userId);
                     $sn = $card['sn'];
                     $status = $card['status'];
                     if ($sn) {
-                        if ($user->card->sn == $sn) {
-                            $user->card->update(['status' => $status]);
-                        } else {
+                        $data = ['status' => $status];
+                        if ($user->card->sn != $sn) {
                             abort_if(
                                 Card::whereSn($sn)->first() ? true : false,
                                 HttpStatusCode::NOT_ACCEPTABLE,
                                 __('卡号已被使用')
                             );
-                            $user->card->update(['sn' => $sn, 'status' => $status]);
+                            $data = array_merge($data, ['sn' => $sn]);
                         }
+                        $user->card->update($data);
                     } else {
                         $user->card->delete();
                         $user->update(['card_id' => null]);
