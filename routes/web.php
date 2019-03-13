@@ -321,7 +321,6 @@ Route::group(['prefix' => 'apps'], function () {
 });
 # 图标管理 - 图标设置.图标类型管理
 Route::group(['prefix' => 'icons'], routes('IconController'));
-Route::group(['prefix' => 'icon_types'], routes('IconTypeController'));
 # 运营者设置 - 企业设置
 
 # 部门管理

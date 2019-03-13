@@ -52,15 +52,11 @@
                 $issue.on('click', function () {
                     var data = {}, type = 'POST', url = 'issue';
                     $('input[name=sn]').each(function () {
-                        var sn = $(this).val();
-                        if (typeof action === 'undefined' || action === 'create') {
-                            data[$(this).data('uid')] = sn;
-                        } else {
-                            data[$(this).data('uid')] = {
-                                sn: sn,
-                                status: $($(this).parent().next().children()[0]).val()
-                            }
-                        }
+                        var sn = $(this).val(),
+                            uid = $(this).data('uid');
+
+                        data[uid] = (typeof action === 'undefined' || action === 'create') ? sn
+                            : { sn: sn, status: $($(this).parent().next().children()[0]).val() }
                     });
                     if (typeof action !== 'undefined') {
                         url = page.siteRoot() + 'cards/' + (action === 'create' ? 'store' : 'update');
