@@ -44,9 +44,9 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('attachment_type.index', $ns . 'AttachmentTypeIndexComposer');
         View::composer('attachment_type.create_edit', $ns . 'AttachmentTypeComposer');
 
-        # 考勤机 - AttendanceMachine
-        View::composer('attendance_machine.index', $ns . 'AttendanceMachineIndexComposer');
-        View::composer('attendance_machine.create_edit', $ns . 'AttendanceMachineComposer');
+        # 门禁设备 - Turnstile
+        View::composer('turnstile.index', $ns . 'TurnstileIndexComposer');
+        View::composer('turn.create_edit', $ns . 'TurnstileComposer');
     
         # 一卡通 - Card
         View::composer('card.index', $ns . 'CardIndexComposer');

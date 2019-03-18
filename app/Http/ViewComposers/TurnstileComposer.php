@@ -4,10 +4,10 @@ namespace App\Http\ViewComposers;
 use Illuminate\Contracts\View\View;
 
 /**
- * Class AttendanceMachineComposer
+ * Class TurnstileComposer
  * @package App\Http\ViewComposers
  */
-class AttendanceMachineComposer {
+class TurnstileComposer {
     
     /**
      * @param View $view

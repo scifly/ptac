@@ -27,19 +27,19 @@ use Validator;
  * @property int $sas_id 关联规则id
  * @property string $clocked_at 打卡时间
  * @property int $direction 进或出
- * @property int $attendance_machine_id 考勤机ID
+ * @property int $turnstile_id 门禁ID
  * @property int $media_id 考勤照片多媒体ID
  * @property int $status 考勤状态
  * @property float $longitude 打卡时所处经度
  * @property float $latitude 打卡时所处纬度
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read AttendanceMachine $attendanceMachine
+ * @property-read Turnstile $turnstile
  * @property-read Media $medias
  * @property-read Student $student
  * @property-read StudentAttendanceSetting $studentAttendanceSetting
  * @property-read Media $media
- * @method static Builder|StudentAttendance whereAttendanceMachineId($value)
+ * @method static Builder|StudentAttendance whereTurnstileId($value)
  * @method static Builder|StudentAttendance whereCreatedAt($value)
  * @method static Builder|StudentAttendance whereId($value)
  * @method static Builder|StudentAttendance whereDirection($value)
@@ -68,7 +68,7 @@ class StudentAttendance extends Model {
     protected $table = 'student_attendances';
     protected $fillable = [
         'id', 'student_id', 'clocked_at', 'sas_id',
-        'direction', 'attendance_machine_id', 'media_id',
+        'direction', 'turnstile_id', 'media_id',
         'status', 'longitude', 'latitude', 'created_at',
         'updated_at',
     ];
@@ -78,7 +78,7 @@ class StudentAttendance extends Model {
      *
      * @return BelongsTo
      */
-    function attendanceMachine() { return $this->belongsTo('App\Models\AttendanceMachine'); }
+    function turnstile() { return $this->belongsTo('App\Models\Turnstile'); }
     
     /**
      * 返回对应的学生对象
@@ -118,7 +118,7 @@ class StudentAttendance extends Model {
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'StudentAttendance.clocked_at', 'dt' => 2, 'dr' => true],
             ['db' => 'StudentAttendanceSetting.name as sasname', 'dt' => 3],
-            ['db' => 'AttendanceMachine.name as machinename', 'dt' => 4],
+            ['db' => 'Turnstile.name as turnstile', 'dt' => 4],
             [
                 'db'        => 'StudentAttendance.direction', 'dt' => 5,
                 'formatter' => function ($d) {
@@ -143,11 +143,11 @@ class StudentAttendance extends Model {
                 ],
             ],
             [
-                'table'      => 'attendance_machines',
-                'alias'      => 'AttendanceMachine',
+                'table'      => 'turnstiles',
+                'alias'      => 'Turnstile',
                 'type'       => 'INNER',
                 'conditions' => [
-                    'AttendanceMachine.id = StudentAttendance.attendance_machine_id',
+                    'Turnstile.id = StudentAttendance.turnstile_id',
                 ],
             ],
             [
@@ -203,7 +203,7 @@ class StudentAttendance extends Model {
                     $datum['direction'] = $datum['direction'] ?? 2;
                     $datum['longitude'] = $datum['longitude'] ?? 0;
                     $datum['latitude'] = $datum['latitude'] ?? 0;
-                    $datum['machineid'] = $datum['attendid'];
+                    $datum['deviceid'] = $datum['attendid'];
                     $datum['media_id'] = 0;
                     abort_if(
                         !Validator::make($datum, (new StudentAttendanceRequest)->rules()),
@@ -231,14 +231,14 @@ class StudentAttendance extends Model {
                         HttpStatusCode::NOT_FOUND,
                         __('messages.semester.not_found')
                     );
-                    $machine = AttendanceMachine::where([
-                        'machineid' => $datum['machineid'],
+                    $turnstile = Turnstile::where([
+                        'deviceid' => $datum['deviceid'],
                         'school_id' => $school->id,
                     ])->first();
                     abort_if(
-                        !$machine,
+                        !$turnstile,
                         HttpStatusCode::NOT_FOUND,
-                        __('messages.attendance_machine.not_found')
+                        __('messages.turnstile.not_found')
                     );
                     $sases = StudentAttendanceSetting::where([
                         'grade_id'    => $student->squad->grade_id,
@@ -264,7 +264,7 @@ class StudentAttendance extends Model {
                     $sa = $this->create(
                         array_combine(Constant::SA_FIELDS, [
                             $student->id, $sasId, $clockedAt, $datum['direction'],
-                            $machine->id, $datum['media_id'], $status,
+                            $turnstile->id, $datum['media_id'], $status,
                             $datum['longitude'], $datum['latitude'],
                         ])
                     );

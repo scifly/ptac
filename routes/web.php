@@ -153,8 +153,14 @@ Route::group(['prefix' => 'score_ranges'], function () {
 });
 
 /** 考勤管理 */
-# 考勤设置 - 考勤时段设置.考勤机设置
-Route::group(['prefix' => 'attendance_machines'], routes('AttendanceMachineController'));
+# 考勤设置 - 考勤时段设置.门禁设置
+Route::group(['prefix' => 'turnstiles'], function () {
+    $c = 'TurnstileController';
+    Route::get('index', $c . '@index');
+    Route::post('store', $c . '@store');
+    Route::get('edit/{id}', $c . '@edit');
+    Route::put('update/{id}', $c . '@update');
+});
 Route::group(['prefix' => 'educator_attendance_settings'], routes('EducatorAttendanceSettingController'));
 Route::group(['prefix' => 'student_attendance_settings'], routes('StudentAttendanceSettingController'));
 # 学生考勤记录

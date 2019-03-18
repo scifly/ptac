@@ -146,6 +146,7 @@ class TestController extends Controller {
                     ],
                 ]
             );
+            $response->getHeader('status');
             dd(json_decode($response->getBody(), true));
         } catch (ClientException $e) {
             echo $e->getResponse()->getStatusCode();

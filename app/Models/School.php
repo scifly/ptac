@@ -36,7 +36,7 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property int $department_id 对应的部门ID
- * @property-read Collection|AttendanceMachine[] $attendanceMachines
+ * @property-read Collection|Turnstile[] $turnstiles
  * @property-read Collection|Squad[] $classes
  * @property-read Collection|SubjectModule[] $subjectModules
  * @property-read Collection|ConferenceRoom[] $conferenceRooms
@@ -127,7 +127,7 @@ class School extends Model {
      *
      * @return HasMany
      */
-    function attendanceMachines() { return $this->hasMany('App\Models\AttendanceMachine'); }
+    function turnstiles() { return $this->hasMany('App\Models\Turnstile'); }
     
     /**
      * 获取所有的会议室对象
@@ -416,7 +416,7 @@ class School extends Model {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
                 session(['schoolId' => $id]);
                 $classes = [
-                    'Department', 'Menu', 'AttendanceMachine',
+                    'Department', 'Menu', 'Turnstile',
                     'ConferenceRoom', 'ComboType', 'ExamType',
                     'EducatorAttendanceSetting', 'Grade', 'Group',
                     'Major', 'Module', 'PollQuestionnaire',

@@ -12,7 +12,7 @@ class AttendanceMachineSeeder extends Seeder
     public function run()
     {
         //
-        factory(App\Models\AttendanceMachine::class, 5)->create()->each(function ($attendanceMachine) {
+        factory(App\Models\Turnstile::class, 5)->create()->each(function ($attendanceMachine) {
             $attendanceMachine->save();
         });
 

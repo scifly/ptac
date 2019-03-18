@@ -17,7 +17,7 @@ use Throwable;
 
 /**
  * 一卡通
- *
+ * 
  * Class Card
  *
  * @package App\Models

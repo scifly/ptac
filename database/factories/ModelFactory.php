@@ -89,7 +89,7 @@ $factory->define(App\Models\Company::class, function (Faker\Generator $faker) {
 
 });
 
-$factory->define(App\Models\AttendanceMachine::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\Turnstile::class, function (Faker\Generator $faker) {
 
     return [
         'name' => $faker->name,

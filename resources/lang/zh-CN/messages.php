@@ -43,9 +43,9 @@ return [
         'configured' => '应用设置成功',
         'not_found'  => '找不到指定的应用',
     ],
-    'attendance_machine'       => [
-        'title'     => '考勤机管理',
-        'not_found' => '该考勤机没有注册',
+    'turnstile'       => [
+        'title'     => '门禁管理',
+        'not_found' => '该门禁没有注册',
     ],
     'class'                    => [
         'title'              => '班级管理',

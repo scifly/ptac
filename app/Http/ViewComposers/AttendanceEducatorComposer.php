@@ -8,7 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Class AttendanceMachineComposer
+ * Class TurnstileComposer
  * @package App\Http\ViewComposers
  */
 class AttendanceEducatorComposer {

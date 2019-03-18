@@ -1,1 +1,0 @@
-page.edit('formAttendanceMachine', 'attendance_machines');

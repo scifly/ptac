@@ -14,36 +14,42 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
- * App\Models\AttendanceMachine 考勤机
+ * App\Models\Turnstile 门禁设备
  *
  * @property int $id
- * @property string $name 考勤机名称
- * @property string $location 考勤机位置
+ * @property string $sn 门禁设备名称
+ * @property string $doors 门数
+ * @property string $ip ip地址
+ * @property string $port 端口号
+ * @property string $location 门禁设备安装地点
  * @property int $school_id 所属学校ID
- * @property string $machineid 考勤机id
+ * @property string $deviceid 门禁设备id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property int $enabled
+ * @property int $enabled 门禁状态
  * @property-read School $school
  * @property-read StudentAttendance[] $studentAttendances
- * @method static Builder|AttendanceMachine whereCreatedAt($value)
- * @method static Builder|AttendanceMachine whereEnabled($value)
- * @method static Builder|AttendanceMachine whereId($value)
- * @method static Builder|AttendanceMachine whereLocation($value)
- * @method static Builder|AttendanceMachine whereMachineid($value)
- * @method static Builder|AttendanceMachine whereName($value)
- * @method static Builder|AttendanceMachine whereSchoolId($value)
- * @method static Builder|AttendanceMachine whereUpdatedAt($value)
- * @method static Builder|AttendanceMachine newModelQuery()
- * @method static Builder|AttendanceMachine newQuery()
- * @method static Builder|AttendanceMachine query()
+ * @method static Builder|Turnstile whereCreatedAt($value)
+ * @method static Builder|Turnstile whereEnabled($value)
+ * @method static Builder|Turnstile whereId($value)
+ * @method static Builder|Turnstile whereIp($value)
+ * @method static Builder|Turnstile wherePort($value)
+ * @method static Builder|Turnstile whereLocation($value)
+ * @method static Builder|Turnstile whereDeviceid($value)
+ * @method static Builder|Turnstile whereSn($value)
+ * @method static Builder|Turnstile whereSchoolId($value)
+ * @method static Builder|Turnstile whereUpdatedAt($value)
+ * @method static Builder|Turnstile newModelQuery()
+ * @method static Builder|Turnstile newQuery()
+ * @method static Builder|Turnstile query()
+ * @method static Builder|Turnstile whereDoors($value)
  * @mixin Eloquent
  */
-class AttendanceMachine extends Model {
+class Turnstile extends Model {
     
     use ModelTrait;
     
-    protected $table = 'attendance_machines';
+    protected $table = 'turnstiles';
     
     protected $fillable = [
         'name', 'location', 'school_id',
@@ -51,41 +57,42 @@ class AttendanceMachine extends Model {
     ];
     
     /**
-     * 返回考勤机所属的学校对象
+     * 返回门禁设备所属的学校对象
      *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
-     * 获取指定考勤机的学生考勤记录对象
+     * 获取指定门禁设备的学生考勤记录对象
      *
      * @return HasMany
      */
     function studentAttendances() { return $this->hasMany('App\Models\StudentAttendance'); }
     
     /**
-     * 考勤机列表
+     * 门禁设备列表
      *
      * @return array
      */
     function index() {
         
         $columns = [
-            ['db' => 'AttendanceMachine.id', 'dt' => 0],
-            ['db' => 'AttendanceMachine.name', 'dt' => 1],
-            ['db' => 'AttendanceMachine.location', 'dt' => 2],
-            ['db' => 'AttendanceMachine.machineid', 'dt' => 3],
-            ['db' => 'AttendanceMachine.created_at', 'dt' => 4],
-            ['db' => 'AttendanceMachine.updated_at', 'dt' => 5],
+            ['db' => 'Turnstile.id', 'dt' => 0],
+            ['db' => 'Turnstile.sn', 'dt' => 1],
+            ['db' => 'Turnstile.location', 'dt' => 2],
+            ['db' => 'Turnstile.doors', 'dt' => 3],
+            ['db' => 'Turnstile.deviceid', 'dt' => 4],
+            ['db' => 'Turnstile.created_at', 'dt' => 5],
+            ['db' => 'Turnstile.updated_at', 'dt' => 6],
             [
-                'db'        => 'AttendanceMachine.enabled', 'dt' => 6,
+                'db'        => 'Turnstile.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::status($d, $row, false);
+                    return Datatable::status($d, $row, false, true, false);
                 },
             ],
         ];
-        $condition = 'AttendanceMachine.school_id = ' . $this->schoolId();
+        $condition = 'Turnstile.school_id = ' . $this->schoolId();
         
         return Datatable::simple(
             $this->getModel(), $columns, null, $condition
@@ -94,19 +101,7 @@ class AttendanceMachine extends Model {
     }
     
     /**
-     * 保存考勤机
-     *
-     * @param array $data
-     * @return bool
-     */
-    function store(array $data) {
-        
-        return $this->create($data) ? true : false;
-        
-    }
-    
-    /**
-     * 更新考勤机
+     * 更新门禁设备
      *
      * @param array $data
      * @param $id
@@ -122,7 +117,7 @@ class AttendanceMachine extends Model {
     }
     
     /**
-     * 移除考勤机
+     * 移除门禁设备
      *
      * @param $id
      * @return bool|null
@@ -134,7 +129,7 @@ class AttendanceMachine extends Model {
             DB::transaction(function () use ($id) {
                 $this->purge(
                     [class_basename($this), 'StudentAttendance'],
-                    'attendance_machine_id', 'purge', $id
+                    'turnstile_id', 'purge', $id
                 );
             });
         } catch (Exception $e) {

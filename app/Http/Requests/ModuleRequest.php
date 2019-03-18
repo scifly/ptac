@@ -5,7 +5,7 @@ use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Class AttendanceMachineRequest
+ * Class TurnstileRequest
  * @package App\Http\Requests
  */
 class ModuleRequest extends FormRequest {

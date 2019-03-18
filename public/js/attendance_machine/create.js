@@ -1,1 +1,0 @@
-page.create('formAttendanceMachine', 'attendance_machines');
