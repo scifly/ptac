@@ -158,8 +158,6 @@ Route::group(['prefix' => 'turnstiles'], function () {
     $c = 'TurnstileController';
     Route::get('index', $c . '@index');
     Route::post('store', $c . '@store');
-    Route::get('edit/{id}', $c . '@edit');
-    Route::put('update/{id}', $c . '@update');
 });
 # 门禁通行记录
 Route::group(['prefix' => 'passage_logs'], function () {

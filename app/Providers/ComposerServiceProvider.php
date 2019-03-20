@@ -46,7 +46,6 @@ class ComposerServiceProvider extends ServiceProvider {
 
         # 门禁设备 - Turnstile
         View::composer('turnstile.index', $ns . 'TurnstileIndexComposer');
-        View::composer('turn.create_edit', $ns . 'TurnstileComposer');
     
         # 一卡通 - Card
         View::composer('card.index', $ns . 'CardIndexComposer');

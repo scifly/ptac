@@ -1,11 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\TurnstileRequest;
 use App\Models\Turnstile;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 门禁设备
@@ -33,7 +32,7 @@ class TurnstileController extends Controller {
      * 门禁设备列表
      *
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function index() {
         
@@ -43,43 +42,17 @@ class TurnstileController extends Controller {
         
     }
     
-    public function store() {
-    
-    
-    
-    }
-    
-    /**
-     * 编辑门禁设备
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws \Throwable
-     */
-    public function edit($id) {
-        
-        return $this->output([
-            'turnstile' => $this->turnstile->find($id),
-        ]);
-        
-    }
-    
     /**
      * 更新门禁设备
      *
-     * @param TurnstileRequest $request
-     * @param $id
-     * @return JsonResponse
-     * @throws Exception
+     * @return JsonResponse|string
      */
-    public function update(TurnstileRequest $request, $id = null) {
-        
+    public function store() {
+    
         return $this->result(
-            $this->turnstile->modify(
-                $request->all(), $id
-            )
+            $this->turnstile->store()
         );
-        
+    
     }
     
 }

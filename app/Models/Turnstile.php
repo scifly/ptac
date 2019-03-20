@@ -5,15 +5,12 @@ use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
     Relations\BelongsTo,
     Relations\BelongsToMany,
     Relations\HasMany};
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 /**
  * App\Models\Turnstile 门禁设备
@@ -120,41 +117,12 @@ class Turnstile extends Model {
     }
     
     /**
-     * 更新门禁设备
+     * 更新门禁设备列表
      *
-     * @param array $data
-     * @param $id
      * @return bool
-     * @throws Exception
      */
-    function modify(array $data, $id = null) {
+    function store() {
         
-        return $id
-            ? $this->find($id)->update($data)
-            : $this->batch($this);
-        
-    }
-    
-    /**
-     * 移除门禁设备
-     *
-     * @param $id
-     * @return bool|null
-     * @throws Throwable
-     */
-    function remove($id = null) {
-    
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge(
-                    [class_basename($this), 'StudentAttendance'],
-                    'turnstile_id', 'purge', $id
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-    
         return true;
         
     }
