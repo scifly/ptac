@@ -102,14 +102,14 @@
                                 <td style="vertical-align: middle" class="text-center">{!! $key + 1 !!}</td>
                                 <td class="text-center">
                                     {!! Form::text('trs[' . $key . '][]', $tr[0], [
-                                        'class' => 'form-control start-time timepicker',
+                                        'class' => 'form-control start-time timepicker text-center',
                                         'required' => 'true',
                                         'data-parsley-start' => '.end-time'
                                     ]) !!}
                                 </td>
                                 <td class="text-center">
                                     {!! Form::text('trs[' . $key . '][]', $tr[1], [
-                                        'class' => 'form-control end-time timepicker',
+                                        'class' => 'form-control end-time timepicker text-center',
                                         'required' => 'true',
                                         'data-parsley-start' => '.start-time'
                                     ]) !!}
