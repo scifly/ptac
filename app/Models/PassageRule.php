@@ -124,7 +124,7 @@ class PassageRule extends Model {
                 }
             ],
         ];
-        $condition = 'Turnstile.school_id = ' . $this->schoolId();
+        $condition = 'PassageRule.school_id = ' . $this->schoolId();
         
         return Datatable::simple(
             $this->getModel(), $columns, null, $condition
