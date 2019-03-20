@@ -92,7 +92,7 @@
             </div>
             <!-- 时段 -->
             <div class="form-group">
-                {!! Form::label('trs[][]', '时段', [
+                {!! Form::label('trs[][]', '生效时段', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
@@ -144,7 +144,7 @@
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         <div class="input-group-addon" style="width: 45px;">
-                            <strong>_ID</strong>
+                            <strong>ID</strong>
                         </div>
                         {!! Form::text('related_ruleid', null, [
                             'class' => 'form-control text-blue',
