@@ -90,7 +90,7 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    <table style="display: block; overflow-x: auto; clear: both; width: 100%;">
+                    <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead><tr><th>时段</th><th>起</th><th>止</th></tr></thead>
                         <tbody>
                             @foreach ($trs as $key => $tr)
