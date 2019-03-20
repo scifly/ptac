@@ -3,7 +3,7 @@ page.initDatatable('student_attendances',[
 ]);
 $.getMultiScripts(['js/shared/dtrange.js']).done(
     function () {
-        $.dtrange().init('.dtrange');
+        $.dtrange().dRange('.dtrange');
         page.initSelect2();
     }
 );

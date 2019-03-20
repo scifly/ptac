@@ -28,7 +28,7 @@ class PassageRuleRequest extends FormRequest {
         
         return [
             'school_id'      => 'required|integer',
-            'name'           => 'required|string|between:6,255|unique:passage_rules,name,' .
+            'name'           => 'required|string|between:2,60|unique:passage_rules,name,' .
                 $this->input('id') . ',id' .
                 'school_id,' . $this->input('id'),
             'ruleid'         => 'required|integer|between:1,254|unique:passage_rules,ruleid,' .
@@ -50,6 +50,17 @@ class PassageRuleRequest extends FormRequest {
         
         $input = $this->all();
         $input['school_id'] = $this->schoolId();
+        $dates = explode(' - ', $input['daterange']);
+        $input['start_date'] = $dates[0];
+        $input['end_date'] = $dates[1];
+        $statuses = '';
+        for ($i = 0; $i < 7; $i++) {
+            $statuses .= array_search($i, $input['weekdays']) !== false ? '1' : '0';
+        }
+        $input['statuses'] = $statuses;
+        foreach ($input['trs'] as $key => $tr) {
+            $input['tr' . ($key + 1)] = implode(' - ', $tr);
+        }
         $this->replace($input);
         
     }

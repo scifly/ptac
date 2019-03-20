@@ -6,7 +6,7 @@ page.index('custodians', [
     {orderable: false, targets: [2, 4]}
 ]);
 $.getMultiScripts(['js/shared/dtrange.js']).done(
-    function () { $.dtrange().init('.dtrange'); }
+    function () { $.dtrange().dRange('.dtrange'); }
 );
 /** 初始化监护人首页功能 */
 $.getMultiScripts(['js/shared/contact.js']).done(

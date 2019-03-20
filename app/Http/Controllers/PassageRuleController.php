@@ -65,7 +65,9 @@ class PassageRuleController extends Controller {
     public function store(PassageRuleRequest $request) {
         
         return $this->result(
-            $this->pr->store($request->all())
+            $this->pr->store(
+                $request->all()
+            )
         );
         
     }

@@ -7,8 +7,8 @@ page.index('students', [
 ]);
 $.getMultiScripts(['js/shared/dtrange.js']).done(
     function () {
-        $.dtrange().init('.dtrange');
-        $.dtrange().init('.drange');
+        $.dtrange().dRange('.dtrange');
+        $.dtrange().dRange('.drange');
     }
 );
 /** 初始化学籍首页功能 */

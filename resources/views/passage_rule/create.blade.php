@@ -1,7 +1,7 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: scifly
- * Date: 2019-3-20
- * Time: 9:47
- */
+{!! Form::open([
+    'method' => 'post',
+    'id' => 'formPassageRule',
+    'data-parsley-validate' => 'true'
+]) !!}
+@include('passage_rule.create_edit')
+{!! Form::close() !!}

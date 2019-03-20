@@ -80,26 +80,19 @@ class CreateSchool implements ShouldQueue {
             'icon'      => 'fa fa-credit-card',
             'tabs'      => null,
         ],
-        '考勤设置'     => [
+        '通行规则管理'     => [
             'id'        => 0,
             'parent_id' => '考勤管理',
             'uri'       => null,
             'icon'      => 'fa fa-credit-card',
-            'tabs'      => ['教职员工考勤设置', '学生考勤设置', '考勤机'],
+            'tabs'      => ['门禁通行规则', '门禁设备'],
         ],
-        '学生考勤查询统计' => [
+        '通行记录' => [
             'id'        => 0,
             'parent_id' => '考勤管理',
             'uri'       => null,
             'icon'      => 'fa fa-commenting',
-            'tabs'      => ['学生考勤记录'],
-        ],
-        '教职员工考勤管理' => [
-            'id'        => 0,
-            'parent_id' => '考勤管理',
-            'uri'       => null,
-            'icon'      => 'fa fa-commenting',
-            'tabs'      => ['教职员工考勤'],
+            'tabs'      => ['门禁通行记录'],
         ],
         '学生消费管理'   => [
             'id'        => 0,
@@ -245,12 +238,12 @@ class CreateSchool implements ShouldQueue {
     
     protected $educatorMenus = [
         '首页', '消息中心', '通讯录', '学生', '教职员工', '监护人', '标签',
-        '考勤管理', '学生考勤查询统计', '学生消费管理', '成绩中心', '考试设置',
+        '考勤管理', '通行记录', '学生消费管理', '成绩中心', '考试设置',
         '成绩管理', '用户中心', '个人信息', '重置密码', '我的消息', '待办事项',
     ];
     
     protected $educatorTabs = [
-        '消息中心', '学生', '班级', '教职员工', '监护人', '学生考勤记录',
+        '消息中心', '学生', '班级', '教职员工', '监护人', '门禁通行记录',
         '消费记录', '考试', '成绩', '成绩统计项', '总成绩', '标签管理',
     ];
     

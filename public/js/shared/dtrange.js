@@ -3,7 +3,7 @@
     $.dtrange = function (options) {
         var dtrange = {
             options: $.extend({}, options),
-            init: function (selector) {
+            dRange: function (selector) {
                 $.getScript(
                     page.siteRoot() + plugins.daterangepicker.moment,
                     function () {
@@ -53,8 +53,24 @@
                     }
                 );
             },
+            tRange: function () {
+                page.initParsleyRules();
+                page.loadCss(plugins.timepicker.css);
+                $.getMultiScripts([plugins.timepicker.js]).done(
+                    function () {
+                        $('.timepicker').timepicker({
+                            showInputs: false,
+                            showMeridian: false,
+                            minuteStep: 1
+                        });
+                    }
+                );
+            }
         };
 
-        return { init: dtrange.init };
+        return {
+            dRange: dtrange.dRange,
+            tRange: dtrange.tRange
+        };
     }
 })(jQuery);

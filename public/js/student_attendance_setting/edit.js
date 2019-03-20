@@ -1,9 +1,7 @@
-$.getMultiScripts(['js/shared/atsettings.js']).done(
-    function () {
-        $.atsettings().init(
-            'edit',
-            'student_attendance_settings',
-            'formStudentAttendanceSetting'
-        )
-    }
+page.edit(
+    'formStudentAttendanceSetting',
+    'student_attendance_settings'
+);
+$.getMultiScripts(['js/shared/dtrange.js']).done(
+    function () { $.dtrange().tRange(); }
 );

@@ -51,14 +51,6 @@
                                 'data-parsley-start' => '.end-time',
                                 'placeholder' => '(不得大于等于结束时间)'
                             ]) !!}
-                            {{--@include('shared.icon_addon', ['class' => 'fa-clock-o'])--}}
-                             -
-                            {!! Form::text('end', null, [
-                                'class' => 'form-control end-time timepicker',
-                                'required' => 'true',
-                                'data-parsley-end' => '.start-time',
-                                'placeholder' => '(不得小于等于开始时间)'
-                            ]) !!}
                         </div>
                     </div>
                 </div>

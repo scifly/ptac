@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasMany};
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Request;
 
 /**
  * 门禁通行规则
@@ -166,6 +167,33 @@ class PassageRule extends Model {
     function remove($id) {
         
         return $this->find($id)->delete();
+        
+    }
+    
+    /**
+     * 返回create/edit view所需数据
+     *
+     * @return array
+     */
+    function compose() {
+    
+        if (Request::route('id')) {
+            $pr = PassageRule::find(Request::route('id'));
+            $weekdays = str_split($pr->statuses);
+            $trs = array_map(
+                function ($field) use ($pr) {
+                    return explode(' - ', $pr->{$field});
+                }, ['tr1', 'tr2', 'tr3']
+            );
+        }
+    
+        return [
+            $pr ?? null,
+            $weekdays ?? str_split('0000000'),
+            $trs ?? array_fill(
+                0, 3, array_fill(0, 2, '00:00')
+            )
+        ];
         
     }
     

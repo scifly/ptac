@@ -337,7 +337,7 @@
                 $tabReceived.on('click', function () {message.loadDt('data-table-r');});
                 $.getMultiScripts(['js/shared/dtrange.js']).done(
                     function () {
-                        $.dtrange().init('.dtrange');
+                        $.dtrange().dRange('.dtrange');
                         page.initSelect2();
                     }
                 );

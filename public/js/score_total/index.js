@@ -4,7 +4,7 @@ page.index('score_totals', [
 ]);
 $.getMultiScripts(['js/shared/dtrange.js']).done(
     function () {
-        $.dtrange().init('.dtrange');
+        $.dtrange().dRange('.dtrange');
         page.initSelect2();
     }
 );

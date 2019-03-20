@@ -4,8 +4,8 @@ page.index('exams', [
 ]);
 $.getMultiScripts(['js/shared/dtrange.js']).done(
     function () {
-        $.dtrange().init('.dtrange');
-        $.dtrange().init('.drange');
+        $.dtrange().dRange('.dtrange');
+        $.dtrange().dRange('.drange');
         page.initSelect2();
     }
 );

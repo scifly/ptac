@@ -3,5 +3,5 @@ page.index('tabs', [
 ]);
 page.initSelect2();
 $.getMultiScripts(['js/shared/dtrange.js']).done(
-    function () { $.dtrange().init('.dtrange'); }
+    function () { $.dtrange().dRange('.dtrange'); }
 );
