@@ -103,24 +103,24 @@
                                 <td class="text-center">
                                     <div class="bootstrap-timepicker">
                                         <div class="input-group">
-                                            @include('shared.icon_addon', ['class' => 'fa-clock-o'])
                                             {!! Form::text('trs[' . $key . '][]', $tr[0], [
                                                 'class' => 'form-control start-time timepicker text-center',
                                                 'required' => 'true',
                                                 'data-parsley-start' => '.end-time'
                                             ]) !!}
+                                            @include('shared.icon_addon', ['class' => 'fa-clock-o'])
                                         </div>
                                     </div>
                                 </td>
                                 <td class="text-center">
                                     <div class="bootstrap-timepicker">
                                         <div class="input-group">
-                                            @include('shared.icon_addon', ['class' => 'fa-clock-o'])
                                             {!! Form::text('trs[' . $key . '][]', $tr[1], [
                                                 'class' => 'form-control end-time timepicker text-center',
                                                 'required' => 'true',
                                                 'data-parsley-end' => '.start-time'
                                             ]) !!}
+                                            @include('shared.icon_addon', ['class' => 'fa-clock-o'])
                                         </div>
                                     </div>
                                 </td>
