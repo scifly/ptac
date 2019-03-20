@@ -91,19 +91,23 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
-                        <thead><tr><th>时段</th><th>起</th><th>止</th></tr></thead>
+                        <thead><tr>
+                            <th class="text-center">时段</th>
+                            <th class="text-center">起</th>
+                            <th class="text-center">止</th>
+                        </tr></thead>
                         <tbody>
                             @foreach ($trs as $key => $tr)
                             <tr>
-                                <td>{!! $key + 1 !!}</td>
-                                <td>
+                                <td style="vertical-align: middle" class="text-center">{!! $key + 1 !!}</td>
+                                <td class="text-center">
                                     {!! Form::text('trs[' . $key . '][]', $tr[0], [
                                         'class' => 'form-control start-time timepicker',
                                         'required' => 'true',
                                         'data-parsley-start' => '.end-time'
                                     ]) !!}
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     {!! Form::text('trs[' . $key . '][]', $tr[1], [
                                         'class' => 'form-control end-time timepicker',
                                         'required' => 'true',
