@@ -101,18 +101,22 @@
                             <tr>
                                 <td style="vertical-align: middle" class="text-center">{!! $key + 1 !!}</td>
                                 <td class="text-center">
+                                    <div class="bootstrap-timepicker">
                                     {!! Form::text('trs[' . $key . '][]', $tr[0], [
                                         'class' => 'form-control start-time timepicker text-center',
                                         'required' => 'true',
                                         'data-parsley-start' => '.end-time'
                                     ]) !!}
+                                    </div>
                                 </td>
                                 <td class="text-center">
+                                    <div class="bootstrap-timepicker">
                                     {!! Form::text('trs[' . $key . '][]', $tr[1], [
                                         'class' => 'form-control end-time timepicker text-center',
                                         'required' => 'true',
                                         'data-parsley-end' => '.start-time'
                                     ]) !!}
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach
