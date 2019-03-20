@@ -16,8 +16,8 @@ class TurnstileIndexComposer {
         
         $view->with([
             'buttons'        => [
-                'issue' => [
-                    'id' => 'refresh',
+                'store' => [
+                    'id' => 'store',
                     'label' => '刷新',
                     'icon' => 'fa fa-refresh'
                 ]

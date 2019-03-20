@@ -6,10 +6,12 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\BelongsToMany,
+    Relations\HasMany};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -29,6 +31,7 @@ use Throwable;
  * @property int $enabled 门禁状态
  * @property-read School $school
  * @property-read StudentAttendance[] $studentAttendances
+ * @property-read Collection|PassageRule[] $passageRules
  * @method static Builder|Turnstile whereCreatedAt($value)
  * @method static Builder|Turnstile whereEnabled($value)
  * @method static Builder|Turnstile whereId($value)
@@ -62,6 +65,22 @@ class Turnstile extends Model {
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
+    
+    /**
+     * 获取指定门禁包含的所有通行规则对象
+     *
+     * @return BelongsToMany
+     */
+    function passageRules() {
+        
+        return $this->belongsToMany(
+            'App\Models\PassageRule',
+            'rules_turnstiles',
+            'turnstile_id',
+            'passage_rule_id'
+        );
+        
+    }
     
     /**
      * 获取指定门禁设备的学生考勤记录对象

@@ -1,0 +1,1 @@
+page.edit('formPassageRule', 'passage_rules');

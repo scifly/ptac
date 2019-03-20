@@ -219,7 +219,7 @@ class Datatable {
             foreach ($_data as $name => $value) {
                 if (
                     isset($value) && $this->validateDate($value) &&
-                    !in_array($name, ['birthday', 'clocked_at'])
+                    !in_array($name, ['birthday', 'clocked_at', 'start_date', 'end_date'])
                 ) {
                     $value = $this->humanDate($value);
                 }

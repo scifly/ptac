@@ -161,27 +161,15 @@ Route::group(['prefix' => 'turnstiles'], function () {
     Route::get('edit/{id}', $c . '@edit');
     Route::put('update/{id}', $c . '@update');
 });
-Route::group(['prefix' => 'educator_attendance_settings'], routes('EducatorAttendanceSettingController'));
-Route::group(['prefix' => 'student_attendance_settings'], routes('StudentAttendanceSettingController'));
-# 学生考勤记录
-Route::group(['prefix' => 'student_attendances'], function () {
-    $c = 'StudentAttendanceController';
+# 门禁通行记录
+Route::group(['prefix' => 'passage_logs'], function () {
+    $c = 'PassageLogController';
     Route::get('index', $c . '@index');
-    Route::get('stat', $c . '@stat');
-    Route::post('stat', $c . '@stat');
-    Route::get('detail', $c . '@detail');
-    Route::post('detail', $c . '@detail');
-    Route::get('export', $c . '@export');
+    Route::post('store', $c . '@store');
+    Route::post('export', $c . '@export');
 });
-# 教职员工考勤记录
-Route::group(['prefix' => 'educator_attendances'], function () {
-    $c = 'EducatorAttendanceController';
-    Route::get('index', $c . '@index');
-    Route::get('stat', $c . '@stat');
-    Route::post('stat', $c . '@stat');
-    Route::post('detail', $c . '@detail');
-    Route::get('export', $c . '@export');
-});
+# 门禁通行规则
+Route::group(['prefix' => 'passage_rules'], routes('PassageRuleController'));
 
 /** 课程表管理 */
 # 课程表设置

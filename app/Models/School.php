@@ -77,6 +77,8 @@ use Throwable;
  * @method static Builder|School newQuery()
  * @method static Builder|School query()
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PassageLog[] $passageLogs
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PassageRule[] $passageRules
  */
 class School extends Model {
     
@@ -241,6 +243,20 @@ class School extends Model {
         );
         
     }
+    
+    /**
+     * 获取指定学校的门禁通行记录
+     *
+     * @return HasMany
+     */
+    function passageLogs() { return $this->hasMany('App\Models\PassageLog'); }
+    
+    /**
+     * 获取指定学校的门禁通行规则
+     *
+     * @return HasMany
+     */
+    function passageRules() { return $this->hasMany('App\Models\PassageRule'); }
     
     /**
      * 通过Subject中间对象获取所有的科目次分类对象

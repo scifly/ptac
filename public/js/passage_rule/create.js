@@ -1,0 +1,1 @@
+page.create('formPassageRule', 'passage_rules');

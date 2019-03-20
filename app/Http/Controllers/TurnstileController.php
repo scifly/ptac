@@ -6,7 +6,6 @@ use App\Models\Turnstile;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
-use Throwable;
 
 /**
  * 门禁设备
@@ -60,7 +59,7 @@ class TurnstileController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'am' => $this->turnstile->find($id),
+            'turnstile' => $this->turnstile->find($id),
         ]);
         
     }

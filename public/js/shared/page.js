@@ -438,26 +438,34 @@ var page = {
                         action: action,
                         _token: page.token()
                     },
+                    uri = '/' + action,
                     type = $('#batch-' + action).attr('title');
 
-                if (action !== 'delete') {
-                    data = $.extend(data, {field: 'enabled'});
-                }
                 if (selected.length === 0) {
                     page.inform(type, '请选择需要' + type + '的记录', page.failure);
                     return false;
                 }
-                if ($.inArray(action, ['enable', 'disable', 'delete']) === -1) {
+                if ($.inArray(action, ['enable', 'disable']) !== -1) {
+                    data = $.extend(data, {field: 'enabled'});
+                    uri = '/update';
+                }
+                if ($.inArray(action, ['enable', 'disable', 'delete', 'export']) === -1) {
                     page.getTabContent(
                         $('#tab_' + page.getActiveTabId()),
                         table + '/' + action, selected
                     )
                 } else {
+                    var types = {
+                        'export': 'POST',
+                        'enable': 'PUT',
+                        'disable': 'PUT',
+                        'delete': 'DELETE'
+                    };
                     $('.overlay').show();
                     $.ajax({
-                        type: action !== 'delete' ? 'PUT' : 'DELETE',
+                        type: types[action],
                         dataType: 'json',
-                        url: page.siteRoot() + table + (action !== 'delete' ? '/update' : '/delete'),
+                        url: page.siteRoot() + table + uri,
                         data: data,
                         success: function (result) {
                             $('.overlay').hide();
@@ -474,6 +482,9 @@ var page = {
                                     $(datatable + ' tbody tr.selected').each(function () {
                                         $(this).addClass('text-gray');
                                     });
+                                    break;
+                                case 'export':
+                                    window.location = page.siteRoot + result['url'];
                                     break;
                                 default:
                                     break;

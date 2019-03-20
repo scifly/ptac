@@ -177,6 +177,13 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('operator.index', $ns . 'OperatorIndexComposer');
         View::composer('operator.create_edit', $ns . 'OperatorComposer');
     
+        # 通行记录 - PassageLog
+        View::composer('passage_log.index', $ns . 'PassageLogIndexComposer');
+        
+        # 通行规则 - PassageRule
+        View::composer('passage_rule.index', $ns . 'PassageRuleIndexComposer');
+        View::composer('passage_rule.create_edit', $ns . 'PassageRuleComposer');
+        
         # 合作伙伴 - Partner
         View::composer('partner.index', $ns . 'PartnerIndexComposer');
     
