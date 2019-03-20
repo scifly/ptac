@@ -60,19 +60,19 @@
                     <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead>
                             <tr>
-                                <th>周一</th>
-                                <th>周二</th>
-                                <th>周三</th>
-                                <th>周四</th>
-                                <th>周五</th>
-                                <th>周六</th>
-                                <th>周日</th>
+                                <th class="text-center">周一</th>
+                                <th class="text-center">周二</th>
+                                <th class="text-center">周三</th>
+                                <th class="text-center">周四</th>
+                                <th class="text-center">周五</th>
+                                <th class="text-center">周六</th>
+                                <th class="text-center">周日</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 @foreach ($weekdays as $weekday => $enabled)
-                                    <td>
+                                    <td class="text-center">
                                         {!! Form::checkbox(
                                             'weekdays[]', $weekday, $enabled,
                                             ['class' => 'minimal']
