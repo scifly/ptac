@@ -111,7 +111,7 @@
                                     {!! Form::text('trs[' . $key . '][]', $tr[1], [
                                         'class' => 'form-control end-time timepicker text-center',
                                         'required' => 'true',
-                                        'data-parsley-start' => '.start-time'
+                                        'data-parsley-end' => '.start-time'
                                     ]) !!}
                                 </td>
                             </tr>
