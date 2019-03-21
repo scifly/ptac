@@ -41,6 +41,23 @@
                     </div>
                 </div>
             </div>
+            <!-- 关联规则id -->
+            <div class="form-group">
+                {!! Form::label('name', '关联规则id', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="input-group" style="width: 100%;">
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>ID</strong>
+                        </div>
+                        {!! Form::text('related_ruleid', null, [
+                            'class' => 'form-control text-blue',
+                            'required' => 'true',
+                        ]) !!}
+                    </div>
+                </div>
+            </div>
             <!-- 起止日期 -->
             <div class="form-group">
                 {!! Form::label('daterange', '起止日期', [
@@ -134,23 +151,6 @@
                             @endforeach
                         </tbody>
                     </table>
-                </div>
-            </div>
-            <!-- 关联规则id -->
-            <div class="form-group">
-                {!! Form::label('name', '关联规则id', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group" style="width: 100%;">
-                        <div class="input-group-addon" style="width: 45px;">
-                            <strong>ID</strong>
-                        </div>
-                        {!! Form::text('related_ruleid', null, [
-                            'class' => 'form-control text-blue',
-                            'required' => 'true',
-                        ]) !!}
-                    </div>
                 </div>
             </div>
             <!-- 状态 -->
