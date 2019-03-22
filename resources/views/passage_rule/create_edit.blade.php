@@ -41,6 +41,7 @@
                         {!! Form::number('ruleid', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
+                            'placeholder' => '请输入1-254范围内的整数',
                             'min' => 1,
                             'max' => 254
                         ]) !!}
@@ -48,23 +49,12 @@
                 </div>
             </div>
             <!-- 关联规则id -->
-            <div class="form-group">
-                {!! Form::label('name', '关联规则id', [
-                    'class' => 'col-sm-3 control-label',
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group" style="width: 100%;">
-                        <div class="input-group-addon" style="width: 45px;">
-                            <strong>ID</strong>
-                        </div>
-                        {!! Form::number('related_ruleid', null, [
-                            'class' => 'form-control text-blue',
-                            'min' => 1,
-                            'max' => 254
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
+            @include('shared.single_select', [
+                'label' => '关联规则',
+                'id' => 'related_ruleid',
+                'items' => $ruleids,
+                'icon' => 'fa fa-reorder'
+            ])
             <!-- 关联门禁 -->
             @include('shared.multiple_select', [
                 'label' => '关联门禁',

@@ -215,6 +215,7 @@ class PassageRule extends Model {
     function compose() {
     
         $doors = (new Turnstile)->doors();
+        $ruleids = $this->whereSchoolId($this->schoolId())->pluck('name', 'ruleid')->toArray();
         if (Request::route('id')) {
             $pr = PassageRule::find(Request::route('id'));
             $weekdays = str_split($pr->statuses);
@@ -230,6 +231,9 @@ class PassageRule extends Model {
                 $door = implode('.', [$t->sn, $rt->door, $t->location]);
                 $selectedDoors[array_search($door, $doors)] = $door;
             }
+            if ($pr->ruleid) {
+                unset($ruleids[$pr->ruleid]);
+            }
         }
     
         return [
@@ -238,7 +242,8 @@ class PassageRule extends Model {
             $trs ?? array_fill(
                 0, 3, array_fill(0, 2, '00:00')
             ),
-            $doors, $selectedDoors ?? null
+            $doors, $selectedDoors ?? null,
+            $ruleids
         ];
         
     }
