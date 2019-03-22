@@ -57,7 +57,7 @@
             ])
             <!-- 关联门禁 -->
             @include('shared.multiple_select', [
-                'label' => '关联门禁',
+                'label' => '适用门禁',
                 'id' => 'door_ids',
                 'icon' => 'fa fa-minus-circle',
                 'items' => $doors,
@@ -79,9 +79,9 @@
                     </div>
                 </div>
             </div>
-            <!-- 生效日 -->
+            <!-- 生效工作日 -->
             <div class="form-group">
-                {!! Form::label('weekdays[]', '生效日', [
+                {!! Form::label('weekdays[]', '生效工作日', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
