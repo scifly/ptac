@@ -38,10 +38,9 @@
                         <div class="input-group-addon" style="width: 45px;">
                             <strong>ID</strong>
                         </div>
-                        {!! Form::text('ruleid', null, [
+                        {!! Form::number('ruleid', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
-                            'type' => 'number',
                             'min' => 1,
                             'max' => 254
                         ]) !!}
@@ -58,9 +57,8 @@
                         <div class="input-group-addon" style="width: 45px;">
                             <strong>ID</strong>
                         </div>
-                        {!! Form::text('related_ruleid', null, [
+                        {!! Form::number('related_ruleid', null, [
                             'class' => 'form-control text-blue',
-                            'type' => 'number',
                             'min' => 1,
                             'max' => 254
                         ]) !!}
