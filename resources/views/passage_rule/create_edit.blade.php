@@ -79,9 +79,9 @@
                     </div>
                 </div>
             </div>
-            <!-- 通行工作日 -->
+            <!-- 通行日 -->
             <div class="form-group">
-                {!! Form::label('weekdays[]', '通行工作日', [
+                {!! Form::label('weekdays[]', '通行日', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
