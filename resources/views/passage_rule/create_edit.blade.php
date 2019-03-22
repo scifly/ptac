@@ -41,6 +41,9 @@
                         {!! Form::text('ruleid', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
+                            'type' => 'number',
+                            'min' => 1,
+                            'max' => 254
                         ]) !!}
                     </div>
                 </div>
@@ -48,7 +51,7 @@
             <!-- 关联规则id -->
             <div class="form-group">
                 {!! Form::label('name', '关联规则id', [
-                    'class' => 'col-sm-3 control-label'
+                    'class' => 'col-sm-3 control-label',
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
@@ -57,7 +60,9 @@
                         </div>
                         {!! Form::text('related_ruleid', null, [
                             'class' => 'form-control text-blue',
-                            'required' => 'true',
+                            'type' => 'number',
+                            'min' => 1,
+                            'max' => 254
                         ]) !!}
                     </div>
                 </div>
