@@ -18,7 +18,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-credit-card'])
+                        @include('shared.icon_addon', ['class' => 'fa-reorder'])
                         {!! Form::text('name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '不能超过60个汉字',
@@ -66,7 +66,7 @@
             @include('shared.multiple_select', [
                 'label' => '关联门禁',
                 'id' => 'door_ids',
-                'icon' => 'fa fa-calendar-check-o',
+                'icon' => 'fa fa-minus-circle',
                 'items' => $doors,
                 'selectedItems' => $selectedDoors ?? null
             ])
