@@ -3,7 +3,11 @@
         @include('shared.form_header')
     </div>
     <div class="box-body">
-        <div class="form-horizontal">
+        @include('shared.tree', [
+            'title' => '规则作用范围',
+            'selectedTitle' => '已选择的对象'
+        ])
+        <div class="form-horizontal main-form">
             @if (!empty($pr['id']))
                 {!! Form::hidden('id', $pr['id'], ['id' => 'id']) !!}
             @endif
@@ -58,6 +62,14 @@
                     </div>
                 </div>
             </div>
+            <!-- 关联门禁 -->
+            @include('shared.multiple_select', [
+                'label' => '关联门禁',
+                'id' => 'door_ids',
+                'icon' => 'fa fa-calendar-check-o',
+                'items' => $doors,
+                'selectedItems' => $selectedDoors ?? null
+            ])
             <!-- 起止日期 -->
             <div class="form-group">
                 {!! Form::label('daterange', '起止日期', [
@@ -81,17 +93,11 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
-                        <thead>
-                            <tr>
-                                <th class="text-center">周一</th>
-                                <th class="text-center">周二</th>
-                                <th class="text-center">周三</th>
-                                <th class="text-center">周四</th>
-                                <th class="text-center">周五</th>
-                                <th class="text-center">周六</th>
-                                <th class="text-center">周日</th>
-                            </tr>
-                        </thead>
+                        <thead><tr>
+                            @foreach (['一', '二', '三', '四', '五', '六', '日'] as $title)
+                                <th class="text-center">{!! '周' . $title !!}</th>
+                            @endforeach
+                        </tr></thead>
                         <tbody>
                             <tr>
                                 @foreach ($weekdays as $weekday => $enabled)
@@ -115,9 +121,9 @@
                 <div class="col-sm-6">
                     <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead><tr>
-                            <th class="text-center">No.</th>
-                            <th class="text-center">起</th>
-                            <th class="text-center">止</th>
+                            @foreach (['No.', '起', '止'] as $title)
+                                <th class="text-center">{!! $title !!}</th>
+                            @endforeach
                         </tr></thead>
                         <tbody>
                             @foreach ($trs as $key => $tr)

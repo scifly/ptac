@@ -17,7 +17,7 @@ class PassageRuleComposer {
         
         $view->with(
             array_combine(
-                ['pr', 'weekdays', 'trs'],
+                ['pr', 'weekdays', 'trs', 'doors', 'selectedDoors'],
                 (new PassageRule)->compose()
             )
         );

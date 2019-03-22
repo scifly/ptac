@@ -12,7 +12,9 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasMany};
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 门禁通行规则
@@ -30,6 +32,7 @@ use Illuminate\Support\Facades\Request;
  * @property string $tr1 时段1：00:00 - 13:33
  * @property string $tr2 时段2
  * @property string $tr3 时段3
+ * @property string $targets 作用范围
  * @property int $related_ruleid 关联的通行规则id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -53,6 +56,7 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|PassageRule whereTr1($value)
  * @method static Builder|PassageRule whereTr2($value)
  * @method static Builder|PassageRule whereTr3($value)
+ * @method static Builder|PassageRule whereTargets($value)
  * @method static Builder|PassageRule whereUpdatedAt($value)
  * @mixin Eloquent
  */
@@ -65,7 +69,7 @@ class PassageRule extends Model {
     protected $fillable = [
         'school_id', 'name', 'ruleid',
         'start_date', 'end_date', 'statuses',
-        'tr1', 'tr2', 'tr3',
+        'tr1', 'tr2', 'tr3', 'targets',
         'related_ruleid', 'enabled'
     ];
     
@@ -137,10 +141,22 @@ class PassageRule extends Model {
      *
      * @param array $data
      * @return bool
+     * @throws Throwable
      */
     function store(array $data) {
         
-        return $this->create($data) ? true : false;
+        try {
+            DB::transaction(function () use ($data) {
+                $pr = $this->create($data);
+                (new RuleTurnstile)->store(
+                    $pr->id, $data['door_ids'] ?? []
+                );
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     
@@ -150,10 +166,22 @@ class PassageRule extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Throwable
      */
     function modify(array $data, $id) {
         
-        return $this->find($id)->update($data);
+        try {
+            DB::transaction(function () use ($data, $id) {
+                $this->find($id)->update($data);
+                (new RuleTurnstile)->store(
+                    $id, $data['door_ids'] ?? []
+                );
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     
@@ -162,11 +190,20 @@ class PassageRule extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id) {
         
-        return $this->find($id)->delete();
+        try {
+            DB::transaction(function () use ($id) {
+                $this->find($id)->delete();
+                (new RuleTurnstile)->wherePassageRuleId($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     
@@ -177,6 +214,7 @@ class PassageRule extends Model {
      */
     function compose() {
     
+        $doors = (new Turnstile)->doors();
         if (Request::route('id')) {
             $pr = PassageRule::find(Request::route('id'));
             $weekdays = str_split($pr->statuses);
@@ -185,6 +223,13 @@ class PassageRule extends Model {
                     return explode(' - ', $pr->{$field});
                 }, ['tr1', 'tr2', 'tr3']
             );
+            $rts = (new RuleTurnstile)->wherePassageRuleId($pr->id)->get();
+            $selectedDoors = [];
+            foreach ($rts as $rt) {
+                $t = $rt->turnstile;
+                $door = implode('.', [$t->sn, $rt->door, $t->location]);
+                $selectedDoors[array_search($door, $doors)] = $door;
+            }
         }
     
         return [
@@ -192,7 +237,8 @@ class PassageRule extends Model {
             $weekdays ?? str_split('0000000'),
             $trs ?? array_fill(
                 0, 3, array_fill(0, 2, '00:00')
-            )
+            ),
+            $doors, $selectedDoors ?? null
         ];
         
     }

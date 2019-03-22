@@ -127,4 +127,23 @@ class Turnstile extends Model {
         
     }
     
+    /**
+     * 返回门列表
+     *
+     * @return array
+     */
+    function doors() {
+        
+        $i = 0;
+        foreach ($this->whereSchoolId($this->schoolId())->get() as $t) {
+            $door = $t->sn . '.%s.' . $t->location;
+            for ($j = 1; $j <= $t->doors; $j++) {
+                $doors[$i++] = sprintf($door, $j);
+            }
+        }
+        
+        return $doors ?? [];
+        
+    }
+    
 }

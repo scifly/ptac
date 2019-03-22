@@ -40,9 +40,7 @@ class MenuRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (!isset($input['position'])) {
-            $input['position'] = 0;
-        }
+        $input['position'] = $input['position'] ?? 0;
         $input['menu_type_id'] = MenuType::whereName('其他')->first()->id;
         $this->replace($input);
         

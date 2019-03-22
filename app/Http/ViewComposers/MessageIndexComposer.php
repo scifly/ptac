@@ -2,9 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\App;
 use App\Models\MessageType;
-use App\Models\School;
 use Illuminate\Contracts\View\View;
 
 /**

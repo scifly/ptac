@@ -38,16 +38,13 @@ use Throwable;
  * @method static Builder|Card whereUserId($value)
  * @method static Builder|Card whereSn($value)
  * @mixin Eloquent
- * @property int|null $passage_rule_id 通行规则id
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Card wherePassageRuleId($value)
  */
 class Card extends Model {
     
     use ModelTrait;
     
     protected $fillable = [
-        'sn', 'user_id',
-        'passage_rule_id', 'status'
+        'sn', 'user_id', 'status'
     ];
     
     /**

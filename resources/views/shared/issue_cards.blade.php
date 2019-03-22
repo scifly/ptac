@@ -22,11 +22,7 @@
                 <div class="col-sm-6">
                     <table id="simple-table" style="width: 100%"
                            class="display nowrap table table-striped table-bordered table-hover table-condensed">
-                        <thead>
-                        <tr>
-                            {!! $titles !!}
-                        </tr>
-                        </thead>
+                        <thead><tr>{!! $titles !!}</tr></thead>
                         <tbody>
                         <tr>
                             <td colspan="{!! $columns !!}" class="text-center">

@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * 通行记录
- *
+ * 
  * Class PassageLog
  *
  * @package App\Models
