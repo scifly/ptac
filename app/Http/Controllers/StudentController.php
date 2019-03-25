@@ -177,7 +177,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 批量发卡
+     * 批量授权
      *
      * @return bool|JsonResponse|string
      * @throws Throwable
