@@ -1,1 +1,1 @@
-@include('shared.issue_cards')
+@include('shared.card.issue')

@@ -45,7 +45,12 @@ class StudentIndexComposer {
                     'id' => 'issue',
                     'label' => '发卡',
                     'icon' => 'fa fa-credit-card'
-                ]
+                ],
+                'permit' => [
+                    'id'    => 'permit',
+                    'label' => '一卡通授权',
+                    'icon'  => 'fa fa-credit-card',
+                ],
             ],
             'titles'         => [
                 '#', '姓名', '头像',

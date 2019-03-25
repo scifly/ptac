@@ -386,6 +386,19 @@ HTML;
     }
     
     /**
+     *
+     * 批量授权
+     *
+     * @return JsonResponse|string
+     * @throws Throwable
+     */
+    function permit() {
+        
+        return (new Card)->permit('Custodian');
+        
+    }
+    
+    /**
      * 返回指定年级和班级对应的学生列表
      *
      * @return JsonResponse

@@ -8,6 +8,7 @@ use App\Jobs\ImportStudent;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Form;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
@@ -458,6 +459,19 @@ HTML;
         return $card->issue();
     
     }
+    
+    /**
+     * 批量授权
+     *
+     * @return string
+     * @throws Throwable
+     */
+    function permit() {
+    
+        return (new Card)->permit('Student');
+        
+    }
+    
     
     /**
      * 获取指定年级对应的班级列表

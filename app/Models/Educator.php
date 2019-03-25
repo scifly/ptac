@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\BelongsToMany,
     Relations\HasMany};
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use ReflectionException;
 use Throwable;
@@ -453,6 +454,19 @@ HTML;
         }
         
         return $card->issue();
+        
+    }
+    
+    /**
+     *
+     * 批量授权
+     *
+     * @return JsonResponse|string
+     * @throws Throwable
+     */
+    function permit() {
+    
+        return (new Card)->permit('Educator');
         
     }
     

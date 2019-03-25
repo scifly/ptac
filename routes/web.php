@@ -61,6 +61,8 @@ Route::group(['prefix' => 'educators'], function () {
     Route::post('import', $c . '@import');
     Route::get('issue', $c . '@issue');
     Route::post('issue', $c . '@issue');
+    Route::get('permit', $c . '@permit');
+    Route::post('permit', $c . '@permit');
 });
 # 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));
@@ -70,6 +72,8 @@ Route::group(['prefix' => 'custodians'], function () {
     Route::post('create', $c . '@create');
     Route::get('issue', $c . '@issue');
     Route::post('issue', $c . '@issue');
+    Route::get('permit', $c . '@permit');
+    Route::post('permit', $c . '@permit');
 });
 # 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));
@@ -82,6 +86,8 @@ Route::group(['prefix' => 'students'], function () {
     Route::post('export', $c . '@export');
     Route::get('issue', $c . '@issue');
     Route::post('issue', $c . '@issue');
+    Route::get('permit', $c . '@permit');
+    Route::post('permit', $c . '@permit');
 });
 Route::group(['prefix' => 'cards'], function () {
     $c = 'CardController';

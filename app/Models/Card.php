@@ -9,7 +9,7 @@ use App\Http\Requests\CardRequest;
 use Eloquent;
 use Exception;
 use Form;
-use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -272,6 +272,17 @@ class Card extends Model {
     }
     
     /**
+     * 返回授权选择输入html
+     *
+     * @return string
+     */
+    function checkbox() {
+    
+        return Form::checkbox('auths[]', '%s', null, ['class' => 'minimal'])->toHtml();
+        
+    }
+    
+    /**
      * 返回一卡通状态下拉列表html
      *
      * @param $selected
@@ -340,6 +351,67 @@ class Card extends Model {
     
         return response()->json([
             'title' => '批量发卡',
+            'message' => __('messages.ok')
+        ]);
+        
+    }
+    
+    /**
+     * 批量授权
+     *
+     * @param string $type
+     * @return \Illuminate\Http\JsonResponse|string
+     * @throws Throwable
+     */
+    function permit($type) {
+    
+        if (Request::has('change')) {
+        
+            if ($type == 'Educator') {
+                $deptId = Request::input('section_id');
+                $users = Department::find($deptId)->users->filter(
+                    function (User $user) { return !in_array($user->group->name, ['监护人', '学生']); }
+                );
+            } else {
+                $users = Department::find(Squad::find(Request::input('section_id'))->department_id)
+                    ->users->filter(
+                        function (User $user) use ($type) {
+                            return $user->group->name == ($type == 'Custodian' ? '监护人' : '学生');
+                        }
+                    );
+            }
+            $authHtml = $this->checkbox();
+            $row = '<tr>%s</tr>';
+            $td = '<td class="text-center" style="vertical-align: middle;">%s</td>';
+            $list = '';
+            foreach ($users as $user) {
+                if (!$user->card) continue;
+                $list .= sprintf(
+                    $row, implode('', array_map(
+                        function ($value) use ($td) {return sprintf($td, $value); },
+                        [$user->realname, $user->card->sn, sprintf($authHtml, $user->id)]
+                    ))
+                );
+            }
+        
+            return $list;
+        }
+        
+        try {
+           DB::transaction(function () {
+               $userIds = Request::input('user_ids');
+               (new CardTurnstile)->store(
+                   Card::whereIn('user_id', $userIds)->get()->pluck('id')->toArray(),
+                   Request::input('turnstile_ids')
+               );
+               # todo: call api here
+           });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return response()->json([
+            'title' => '批量授权',
             'message' => __('messages.ok')
         ]);
         
