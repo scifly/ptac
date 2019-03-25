@@ -136,5 +136,19 @@ class CustodianController extends Controller {
             : $this->output();
         
     }
+
+    /**
+     * 批量授权
+     *
+     * @return bool|JsonResponse|string
+     * @throws Throwable
+     */
+    public function permit() {
+        
+        return Request::method() == 'POST'
+            ? $this->custodian->permit()
+            : $this->output();
+        
+    }
     
 }

@@ -22,7 +22,7 @@
                 'items' => $turnstiles
             ])
             <div class="form-group">
-                {!! Form::label('name', '一卡通列表', [
+                {!! Form::label('userids', '一卡通列表', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
@@ -39,8 +39,8 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td colspan="{!! $columns !!}" class="text-center">
-                                - 请选择一个部门进行批量一卡通授权 -
+                            <td colspan="3" class="text-center">
+                                - 请选择一个部门进行一卡通批量授权 -
                             </td>
                         </tr>
                         </tbody>
@@ -49,6 +49,6 @@
             </div>
         </div>
     </div>
-    @include('shared.form_buttons', ['id' => 'issue'])
+    @include('shared.form_buttons', ['id' => 'permit'])
     {!! Form::close() !!}
 </div>

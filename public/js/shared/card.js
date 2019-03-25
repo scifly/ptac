@@ -3,7 +3,7 @@
     $.card = function (options) {
         var card = {
             options: $.extend({}, options),
-            init: function (table, formId, action) {
+            issue: function (table, formId, action) {
                 var $sectionId = $('#section_id'),
                     $list = $('tbody'),
                     empty = $list.html();
@@ -11,10 +11,20 @@
                 if (typeof action === 'undefined') {
                     card.onSectionChange($sectionId, empty);
                 }
-                card.onSave(formId, action);
+                card.onIssue(formId, action);
                 page.initBackBtn(table);
                 page.initSelect2();
                 card.onInput();
+            },
+            permit: function (table, formId) {
+                var $sectionId = $('#section_id'),
+                    $list = $('tbody'),
+                    empty = $list.html();
+
+                card.onSectionChange($sectionId, empty);
+                card.onPermit(formId);
+                page.initSelect2();
+                page.initBackBtn(table);
             },
             onSectionChange: function ($sectionId, empty) {
                 // 选择班级
@@ -43,7 +53,7 @@
                     });
                 });
             },
-            onSave: function (formId, action) {
+            onIssue: function (formId, action) {
                 var $issue = $('#issue');
                 $('#' + formId).on('submit', function () { return false; });
                 $(document).keypress(function (e) {
@@ -79,6 +89,28 @@
                     });
                 });
             },
+            onPermit: function (formId) {
+                var $permit = $('#permit');
+
+                $('#' + formId).on('submit', function () { return false; });
+                $permit.on('click', function () {
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        url: 'permit',
+                        data: {
+                            userIds: $('input[name=user_ids]').val(),
+                            turnstileIds: $('#turnstile_ids').val(),
+                            _token: page.token()
+                        },
+                        success: function (result) {
+                            $('.overlay').hide();
+                            page.inform(result['title'], result['message'], page.success);
+                        },
+                        error: function (e) { page.errorHandler(e); }
+                    });
+                });
+            },
             onInput: function () {
                 $(document).on('keyup', 'input', function() {
                     if ($(this).val().length === parseInt($(this).attr('maxlength'))) {
@@ -89,6 +121,6 @@
             }
         };
 
-        return { init: card.init };
+        return { issue: card.issue };
     }
 })(jQuery);

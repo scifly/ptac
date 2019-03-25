@@ -365,8 +365,7 @@ class Card extends Model {
      */
     function permit($type) {
     
-        if (Request::has('change')) {
-        
+        if (Request::has('sectionId')) {
             if ($type == 'Educator') {
                 $deptId = Request::input('section_id');
                 $users = Department::find($deptId)->users->filter(
@@ -399,10 +398,10 @@ class Card extends Model {
         
         try {
            DB::transaction(function () {
-               $userIds = Request::input('user_ids');
+               $userIds = Request::input('userIds');
                (new CardTurnstile)->store(
                    Card::whereIn('user_id', $userIds)->get()->pluck('id')->toArray(),
-                   Request::input('turnstile_ids')
+                   Request::input('turnstileIds')
                );
                # todo: call api here
            });

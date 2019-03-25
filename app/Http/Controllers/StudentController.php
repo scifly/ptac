@@ -176,4 +176,18 @@ class StudentController extends Controller {
     
     }
     
+    /**
+     * 批量发卡
+     *
+     * @return bool|JsonResponse|string
+     * @throws Throwable
+     */
+    public function permit() {
+    
+        return Request::method() == 'POST'
+            ? $this->student->permit()
+            : $this->output();
+    
+    }
+    
 }
