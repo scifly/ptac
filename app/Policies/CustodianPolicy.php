@@ -59,6 +59,8 @@ class CustodianPolicy {
             case 'index':
             case 'create':
             case 'export':
+            case 'issue':
+            case 'permit':
                 return $isSuperRole ? true : $this->action($user);
             case 'store':
                 return $isSuperRole ? $isStudentAllowed : ($isStudentAllowed && $this->action($user));
