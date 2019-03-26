@@ -126,7 +126,7 @@ class PassageLog extends Model {
                 'table'     => 'users',
                 'alias'     => 'User',
                 'type'      => 'INNER',
-                'condtions' => [
+                'conditions' => [
                     'User.id = PassageLog.user_id',
                 ],
             ],
