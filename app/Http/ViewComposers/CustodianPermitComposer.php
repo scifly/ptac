@@ -6,10 +6,10 @@ use App\Models\Card;
 use Illuminate\Contracts\View\View;
 
 /**
- * Class StudentPermitComposer
+ * Class CustodianPermitComposer
  * @package App\Http\ViewComposers
  */
-class StudentPermitComposer {
+class CustodianPermitComposer {
     
     use ModelTrait;
     
@@ -17,11 +17,11 @@ class StudentPermitComposer {
      * @param View $view
      */
     public function compose(View $view) {
-
+    
         $view->with(
-            (new Card)->compose('Student')
+            (new Card)->compose('Custodian')
         );
-        
+    
     }
     
 }

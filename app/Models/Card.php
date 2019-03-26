@@ -419,6 +419,31 @@ class Card extends Model {
     }
     
     /**
+     * 返回一卡通批量授权页面所需数据
+     *
+     * @param $type
+     * @return array
+     */
+    function compose($type) {
+    
+        $builder = $type == 'Educator'
+            ? Department::whereIn('id', $this->departmentIds())
+            : Squad::whereIn('id', $this->classIds());
+        $turnstiles = Turnstile::whereSchoolId($this->schoolId())->get();
+        $tList = [];
+        foreach ($turnstiles as $t) {
+            $tList[$t->id] = implode('.', [$t->sn, $t->location]);
+        }
+    
+        return [
+            'formId' => 'form' . $type,
+            'sections' => $builder->get()->pluck('name', 'id')->toArray(),
+            'turnstiles' => $tList
+        ];
+        
+    }
+    
+    /**
      * 检查卡号是否有重复
      *
      * @param array $cards
