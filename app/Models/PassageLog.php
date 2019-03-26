@@ -146,6 +146,14 @@ class PassageLog extends Model {
                     'Turnstile.id = PassageLog.turnstile_id',
                 ],
             ],
+            [
+                'table' => 'passage_rules',
+                'alias' => 'PassageRule',
+                'type' => 'INNER',
+                'conditions' => [
+                    'PassageRule.id = PassageLog.passage_rule_id'
+                ]
+            ]
         ];
         $condition = 'PassageLog.school_id = ' . $this->schoolId();
         
