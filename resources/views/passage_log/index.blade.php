@@ -4,7 +4,7 @@
         <div class="box-tools pull-right">
             @foreach ($buttons as $key => $btn)
                 @can('act', $uris[$key])
-                    <button id="{!! $btn['id'] !!}" type="button" class="btn btn-box-tool" title="{!! $btn['title'] !!}">
+                    <button id="{!! $btn['id'] !!}" type="button" class="btn btn-box-tool" title="{!! $btn['label'] !!}">
                         <i class="{!! $btn['icon'] !!} {!! $btn['color'] ?? 'text-blue' !!}">
                             &nbsp;{!! $btn['label'] !!}
                         </i>
