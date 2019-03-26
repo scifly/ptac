@@ -9,7 +9,7 @@ use App\Http\Requests\CardRequest;
 use Eloquent;
 use Exception;
 use Form;
-use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo};
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -374,7 +374,7 @@ class Card extends Model {
                     function (User $user) { return !in_array($user->group->name, ['监护人', '学生']); }
                 );
             } else {
-                $users = Department::find(Squad::find(Request::input('section_id'))->department_id)
+                $users = Department::find(Squad::find(Request::input('sectionId'))->department_id)
                     ->users->filter(
                     function (User $user) use ($type) {
                         return $user->group->name == ($type == 'Custodian' ? '监护人' : '学生');
