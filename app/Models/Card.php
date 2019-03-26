@@ -437,7 +437,7 @@ class Card extends Model {
     
         return [
             'formId' => 'form' . $type,
-            'sections' => $builder->get()->pluck('name', 'id')->toArray(),
+            'sections' => [0 => '(请选择一个部门)'] + $builder->get()->pluck('name', 'id')->toArray(),
             'turnstiles' => $tList
         ];
         

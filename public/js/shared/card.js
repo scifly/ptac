@@ -22,7 +22,7 @@
                     empty = $list.html();
 
                 if (typeof action === 'undefined') {
-                    card.onSectionChange($sectionId, empty);
+                    card.onSectionChange($sectionId, empty, 'issue');
                 }
                 card.onIssue(formId, action);
                 page.initBackBtn(table);
@@ -34,12 +34,12 @@
                     $list = $('tbody'),
                     empty = $list.html();
 
-                card.onSectionChange($sectionId, empty);
+                card.onSectionChange($sectionId, empty, 'permit');
                 card.onPermit(formId);
                 page.initSelect2();
                 page.initBackBtn(table);
             },
-            onSectionChange: function ($sectionId, empty) {
+            onSectionChange: function ($sectionId, empty, action) {
                 // 选择班级
                 $sectionId.on('change', function () {
                     if ($sectionId.val() === '0') {
@@ -50,7 +50,7 @@
                     $.ajax({
                         type: 'POST',
                         dataType: 'html',
-                        url: 'issue',
+                        url: action,
                         data: {
                             _token: page.token(),
                             sectionId: $sectionId.val()
