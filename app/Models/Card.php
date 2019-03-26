@@ -278,7 +278,10 @@ class Card extends Model {
      */
     function checkbox() {
     
-        return Form::checkbox('auths[]', '%s', null, ['class' => 'minimal'])->toHtml();
+        return Form::checkbox(
+            'auths[]', '%s', true,
+            ['class' => 'minimal']
+        )->toHtml();
         
     }
     
@@ -367,17 +370,16 @@ class Card extends Model {
     
         if (Request::has('sectionId')) {
             if ($type == 'Educator') {
-                $deptId = Request::input('section_id');
-                $users = Department::find($deptId)->users->filter(
+                $users = Department::find(Request::input('section_id'))->users->filter(
                     function (User $user) { return !in_array($user->group->name, ['监护人', '学生']); }
                 );
             } else {
                 $users = Department::find(Squad::find(Request::input('section_id'))->department_id)
                     ->users->filter(
-                        function (User $user) use ($type) {
-                            return $user->group->name == ($type == 'Custodian' ? '监护人' : '学生');
-                        }
-                    );
+                    function (User $user) use ($type) {
+                        return $user->group->name == ($type == 'Custodian' ? '监护人' : '学生');
+                    }
+                );
             }
             $authHtml = $this->checkbox();
             $row = '<tr>%s</tr>';

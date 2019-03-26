@@ -3,6 +3,19 @@
     $.card = function (options) {
         var card = {
             options: $.extend({}, options),
+            index: function (table) {
+                $.map(
+                    ['issue', 'permit'],
+                    function (action) {
+                        $('#' + action).off().on('click', function () {
+                            page.getTabContent(
+                                $('#tab_' + page.getActiveTabId()),
+                                table + '/' + action
+                            );
+                        });
+                    }
+                );
+            },
             issue: function (table, formId, action) {
                 var $sectionId = $('#section_id'),
                     $list = $('tbody'),
@@ -121,6 +134,10 @@
             }
         };
 
-        return { issue: card.issue };
+        return {
+            index: card.index,
+            issue: card.issue,
+            permit: card.permit
+        };
     }
 })(jQuery);

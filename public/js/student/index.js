@@ -5,20 +5,15 @@ page.index('students', [
     {searchable: false, targets: [2]},
     {orderable: false, targets: [2]}
 ]);
-$.getMultiScripts(['js/shared/dtrange.js']).done(
+$.getMultiScripts([
+    'js/shared/dtrange.js',
+    'js/shared/contact.js',
+    'js/shared/card.js'
+]).done(
     function () {
         $.dtrange().dRange('.dtrange');
         $.dtrange().dRange('.drange');
+        $.contact().index('students');
+        $.card().index('students');
     }
 );
-/** 初始化学籍首页功能 */
-$.getMultiScripts(['js/shared/contact.js']).done(
-    function () { $.contact().index('students'); }
-);
-/** 批量发卡 */
-$('#issue').on('click', function () {
-    page.getTabContent(
-        $('#tab_' + page.getActiveTabId()),
-        'students/issue'
-    );
-});

@@ -5,17 +5,14 @@ page.index('educators', [
     {searchable: false, targets: [2]},
     {orderable: false, targets: [2]}
 ]);
-$.getMultiScripts(['js/shared/dtrange.js']).done(
-    function () { $.dtrange().dRange('.dtrange'); }
+$.getMultiScripts([
+    'js/shared/dtrange.js',
+    'js/shared/contact.js',
+    'js/shared/card.js'
+]).done(
+    function () {
+        $.dtrange().dRange('.dtrange');
+        $.contact().index('educators');
+        $.card().index('educators');
+    }
 );
-/** 初始化教职员工首页功能 */
-$.getMultiScripts(['js/shared/contact.js']).done(
-    function () { $.contact().index('educators'); }
-);
-/** 批量发卡 */
-$('#issue').on('click', function () {
-    page.getTabContent(
-        $('#tab_' + page.getActiveTabId()),
-        'educators/issue'
-    );
-});

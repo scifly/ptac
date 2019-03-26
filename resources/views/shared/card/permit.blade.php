@@ -22,7 +22,7 @@
                 'items' => $turnstiles
             ])
             <div class="form-group">
-                {!! Form::label('userids', '一卡通列表', [
+                {!! Form::label('user_ids', '一卡通列表', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
