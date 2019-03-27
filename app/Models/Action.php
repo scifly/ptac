@@ -543,7 +543,7 @@ class Action extends Model {
         return $modelName === 'Squad'
             ? 'classes'
             : Inflector::pluralize(Inflector::tableize($modelName));
-        
+            
     }
     
     /**

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
 use App\Models\{Corp, Department};
+use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -48,6 +49,7 @@ class TestController extends Controller {
      */
     public function index() {
     
+        dd(Inflector::camelize('attachment_type'));
         // return view('user.index');
         // $server = "120.78.55.152";
         // $port = 9933;
