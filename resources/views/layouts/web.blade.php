@@ -42,7 +42,7 @@
     </div>
     <!-- 页面尾部 -->
     @include('shared.site_footer')
-    @include('home.profile')
+    {{--@include('home.profile')--}}
 </div>
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
