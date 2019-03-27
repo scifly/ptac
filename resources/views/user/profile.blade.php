@@ -10,7 +10,6 @@
                 </div>
                 <div class="box-body">
                     <div class="form-horizontal">
-
                         {{ Form::hidden('id', Auth::user()->id, ['id' => 'id']) }}
                         <div class="form-group">
                             {!! Form::label('avatar_url', '头像', [
@@ -20,9 +19,9 @@
                             <div class="col-sm-6">
                                 <div class="input-group">
                                     @if (Auth::user()->avatar_url && file_exists(Auth::user()->avatar_url))
-                                        <img src="{!! Auth::user()->avatar_url !!}" style="height: 80px;border-radius: 40px;">
+                                        <img src="{!! Auth::user()->avatar_url !!}" style="height: 80px;border-radius: 40px;" alt="">
                                     @else
-                                        <img src="{!! asset('img/user2-160x160.jpg') !!}" style="height: 80px;border-radius: 40px;">
+                                        <img src="{!! asset('img/user2-160x160.jpg') !!}" style="height: 80px;border-radius: 40px;" alt="">
                                     @endif
                                 </div>
                             </div>
