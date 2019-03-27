@@ -49,7 +49,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(ucfirst(Inflector::camelize('attachment_type')));
+        dd(ucfirst(Inflector::camelize('passage_rule')));
         // return view('user.index');
         // $server = "120.78.55.152";
         // $port = 9933;
