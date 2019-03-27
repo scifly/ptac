@@ -51,13 +51,12 @@ function app_routes($acronym) {
     Route::delete($p . 'delete/{id}', $c . '@destroy');
     Route::post($p . 'send', $c . '@send');
     
-    /** 考勤中心 */
-    $c = 'Wechat\AttendanceController';
-    $p = $acronym . '/attendances/';
-    Route::get($p, $c . '@index');
-    Route::get($p . 'detail/{id}', $c . '@detail');
-    Route::post($p . 'detail/{id?}', $c . '@detail');
-    Route::post($p . 'chart', $c . '@chart');
+    /** 微网站 */
+    $c = 'Wechat\MobileSiteController';
+    $p = $acronym . '/mobile_sites/';
+    Route::get($p . 'index', $c . '@index');
+    Route::get($p . 'module', $c . '@module');
+    Route::get($p . 'article', $c . '@article');
     
     /** 成绩中心 */
     $c = 'Wechat\ScoreCenterController';
@@ -75,11 +74,4 @@ function app_routes($acronym) {
     $c = 'Wechat\HomeWorkController';
     $p = $acronym . '/home_works/';
     Route::get($p, $c . '@index');
-    
-    /** 微网站 */
-    $c = 'Wechat\MobileSiteController';
-    $p = $acronym . '/mobile_sites/';
-    Route::get($p, $c . '@index');
-    Route::get($p . 'module', $c . '@module');
-    Route::get($p . 'article', $c . '@article');
 }

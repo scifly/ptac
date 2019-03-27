@@ -35,44 +35,55 @@ class SchoolComposer {
      * @param View $view
      */
     public function compose(View $view) {
-        
-        $corps = Corp::whereEnabled(1)->pluck('name', 'id');
-        $schoolTypes = SchoolType::whereEnabled(1)->pluck('name', 'id');
-        $apis = User::where([
-            'group_id' => Group::whereName('api')->first()->id,
-            'enabled' => 1
-        ])->pluck('realname', 'id')->toArray();
-        $params = [
-            'schoolTypes' => $schoolTypes,
-            'corps'       => $corps,
-            'uris'        => $this->uris(),
-            'disabled'    => null,   # disabled - 是否显示'返回列表'和'取消'按钮
-            'apis'        => $apis,
-            'selectedApis' => null
-        ];
-        if ($this->menu->menuId(session('menuId'))) {
+    
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            $data = [
+                'titles' => ['#', '名称', '地址', '类型', '所属企业', '创建于', '更新于', '同步状态', '状态 . 操作'],
+                'batch'  => true,
+            ];
+        } else {
+    
+            $corps = Corp::whereEnabled(1)->pluck('name', 'id');
+            $schoolTypes = SchoolType::whereEnabled(1)->pluck('name', 'id');
+            $apis = User::where([
+                'group_id' => Group::whereName('api')->first()->id,
+                'enabled' => 1
+            ])->pluck('realname', 'id')->toArray();
+            $params = [
+                'schoolTypes' => $schoolTypes,
+                'corps'       => $corps,
+                'uris'        => $this->uris(),
+                'disabled'    => null,   # disabled - 是否显示'返回列表'和'取消'按钮
+                'apis'        => $apis,
+                'selectedApis' => null
+            ];
+            if ($this->menu->menuId(session('menuId'))) {
+                if (Request::route('id')) {
+                    $school = School::find(Request::route('id'));
+                    $params['corps'] = [
+                        $school->corp_id => $school->corp->name,
+                    ];
+                    $params['schoolTypes'] = [
+                        $school->school_type_id => $school->schoolType->name,
+                    ];
+                    $params['disabled'] = true;
+                }
+            } elseif ($menuId = $this->menu->menuId(session('menuId'), '企业')) {
+                $corp = Corp::whereMenuId($menuId)->first();
+                $params['corps'] = [$corp->id => $corp->name];
+            }
             if (Request::route('id')) {
                 $school = School::find(Request::route('id'));
-                $params['corps'] = [
-                    $school->corp_id => $school->corp->name,
-                ];
-                $params['schoolTypes'] = [
-                    $school->school_type_id => $school->schoolType->name,
-                ];
-                $params['disabled'] = true;
+                if ($school->user_ids) {
+                    $params['selectedApis'] = User::whereIn('id', explode(',', $school->user_ids))
+                        ->get()->pluck('realname', 'id')->toArray();
+                }
             }
-        } elseif ($menuId = $this->menu->menuId(session('menuId'), '企业')) {
-            $corp = Corp::whereMenuId($menuId)->first();
-            $params['corps'] = [$corp->id => $corp->name];
+            $data = $params;
         }
-        if (Request::route('id')) {
-            $school = School::find(Request::route('id'));
-            if ($school->user_ids) {
-                $params['selectedApis'] = User::whereIn('id', explode(',', $school->user_ids))
-                    ->get()->pluck('realname', 'id')->toArray();
-            }
-        }
-        $view->with($params);
+    
+        $view->with($data);
         
     }
     

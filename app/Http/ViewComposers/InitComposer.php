@@ -32,7 +32,6 @@ class InitComposer {
      */
     public function compose(View $view) {
         
-        
         $view->with(
             array_combine(
                 ['params', 'list'],

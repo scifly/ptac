@@ -19,14 +19,23 @@ class WapSiteModuleComposer {
      * @param View $view
      */
     public function compose(View $view) {
-        
-        if (Request::route('id')) {
-            $media = WapSiteModule::find(Request::route('id'))->media;
+    
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            $data = [
+                'titles' => ['#', '栏目名称', '所属网站', '创建于', '更新于', '状态 . 操作'],
+            ];
+        } else {
+            if (Request::route('id')) {
+                $media = WapSiteModule::find(Request::route('id'))->media;
+            }
+            $data = [
+                'wapSites' => WapSite::whereSchoolId($this->schoolId())->pluck('site_title', 'id'),
+                'media'    => $media ?? null,
+            ];
         }
-        $view->with([
-            'wapSites' => WapSite::whereSchoolId($this->schoolId())->pluck('site_title', 'id'),
-            'media'    => $media ?? null,
-        ]);
+        
+        $view->with($data);
         
     }
     

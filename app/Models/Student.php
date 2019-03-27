@@ -8,7 +8,6 @@ use App\Jobs\ImportStudent;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Form;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
@@ -336,8 +335,8 @@ class Student extends Model {
                 }
                 Request::replace(['ids' => $ids]);
                 $this->purge([
-                    class_basename($this), 'Consumption', 'CustodianStudent',
-                    'ScoreTotal', 'Score', 'StudentAttendance'
+                    class_basename($this), 'Consumption',
+                    'CustodianStudent', 'ScoreTotal', 'Score'
                 ], 'student_id');
             });
         } catch (Exception $e) {

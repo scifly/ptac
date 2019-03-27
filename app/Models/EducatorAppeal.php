@@ -24,7 +24,6 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $status 审批状态 0 - 通过 1 - 拒绝 2 - 待审
  * @property-read Educator $educator
- * @property-read Educator $educatorAttendance
  * @property-read ProcedureLog $procedureLog
  * @method static Builder|EducatorAppeal whereAppealContent($value)
  * @method static Builder|EducatorAppeal whereApproverEducatorIds($value)

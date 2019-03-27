@@ -48,15 +48,10 @@ class ScoreAnalysisComposer {
                 $students[$stu->id] = $stu->sn . '-' . $stu->user->realname;
             }
         }
-        if (empty($examarr)) {
-            $examarr[] = '';
-        }
-        if (empty($classes)) {
-            $classes[] = '';
-        }
-        if (empty($students)) {
-            $students[] = '';
-        }
+        !empty($examarr) ?: $examarr[] = '';
+        !empty($classes) ?: $classes[] = '';
+        !empty($students) ?: $students[] = '';
+        
         $view->with([
             'classes'  => $classes,
             'examarr'  => $examarr,

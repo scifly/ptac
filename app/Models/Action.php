@@ -61,8 +61,7 @@ class Action extends Model {
     const ACTIONS_WITHOUT_VIEW_AND_JS = [
         'destroy', 'store', 'update', 'sync', 'export',
         'move', 'rankTabs', 'sanction', 'import', 'rank',
-        'studentAttendance', 'educatorAttendance', 'detail',
-        'studentConsumption', 'sendMsg'
+        'detail', 'studentConsumption', 'sendMsg'
     ];
     protected $fillable = [
         'name', 'method', 'remark',

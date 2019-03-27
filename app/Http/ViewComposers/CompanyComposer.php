@@ -2,6 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Class CompanyComposer
@@ -13,7 +14,14 @@ class CompanyComposer {
      * @param View $view
      */
     public function compose(View $view) {
-        
+    
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            $view->with([
+                'titles' => ['#', '名称', '备注', '创建于', '更新于', '状态 . 操作'],
+            ]);
+        }
+    
     }
     
 }

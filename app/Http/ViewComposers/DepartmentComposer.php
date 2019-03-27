@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Models\DepartmentType;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Class DepartmentComposer
@@ -15,9 +16,14 @@ class DepartmentComposer {
      */
     public function compose(View $view) {
         
-        $view->with([
-            'departmentTypes' => DepartmentType::pluck('name', 'id'),
-        ]);
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            //
+        } else {
+            $view->with([
+                'departmentTypes' => DepartmentType::pluck('name', 'id'),
+            ]);
+        }
         
     }
     

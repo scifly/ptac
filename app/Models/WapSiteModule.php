@@ -6,10 +6,8 @@ use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model};
 use Illuminate\Support\Facades\Request;
-use Illuminate\View\View;
 use Throwable;
 
 /**
@@ -149,28 +147,6 @@ class WapSiteModule extends Model {
     }
     
     /** 微信端 ------------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回微网站栏目列表（微信）
-     *
-     * @return Factory|View
-     */
-    function wIndex() {
-        
-        $id = Request::input('id');
-        $articles = WsmArticle::whereWsmId($id)
-            ->where('enabled', 1)
-            ->orderByDesc("created_at")
-            ->get();
-        $module = $this->find($id);
-        
-        return view('wechat.mobile_site.module', [
-            'articles' => $articles,
-            'module'   => $module,
-            'ws'       => true,
-        ]);
-        
-    }
-    
     /**
      * 上传微网站栏目图片
      *

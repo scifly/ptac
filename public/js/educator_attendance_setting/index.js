@@ -1,1 +1,0 @@
-page.index('educator_attendance_settings');

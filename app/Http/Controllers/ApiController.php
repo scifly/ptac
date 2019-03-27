@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 use App\{Helpers\HttpStatusCode,
     Jobs\SendMessageApi,
     Models\Consumption,
-    Models\EducatorAttendance,
     Models\Group,
     Models\Message,
-    Models\StudentAttendance,
     Models\User};
 use Exception;
 use Illuminate\{Http\JsonResponse, Support\Facades\Auth, Support\Facades\Request};
@@ -21,25 +19,19 @@ use Throwable;
  */
 class ApiController extends Controller {
     
-    protected $consumption, $sa, $ea, $message, $reaction;
+    protected $consumption, $message, $reaction;
     
     /**
      * ApiController constructor.
      * @param Consumption $consumption
-     * @param StudentAttendance $sa
-     * @param EducatorAttendance $ea
      * @param Message $message
      */
     function __construct(
         Consumption $consumption,
-        StudentAttendance $sa,
-        EducatorAttendance $ea,
         Message $message
     ) {
         
         $this->consumption = $consumption;
-        $this->sa = $sa;
-        $this->ea = $ea;
         $this->message = $message;
         $this->reaction = [
             'statusCode' => HttpStatusCode::OK,
@@ -88,30 +80,6 @@ class ApiController extends Controller {
     public function studentConsumption() {
 
         return $this->consumption->store();
-        
-    }
-    
-    /**
-     * 学生考勤记录
-     *
-     * @return JsonResponse
-     * @throws Throwable
-     */
-    public function studentAttendance() {
-
-        return $this->sa->store();
-        
-    }
-    
-    /**
-     * 教职员工考勤记录
-     *
-     * @return JsonResponse|string
-     * @throws Throwable
-     */
-    public function educatorAttendance() {
-        
-        return $this->ea->store();
         
     }
     

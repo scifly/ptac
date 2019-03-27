@@ -17,9 +17,7 @@ class ScoreCenterComposer {
      */
     public function compose(View $view) {
         
-        $view->with([
-            'acronym' => session('acronym')
-        ]);
+        $view->with(['acronym' => session('acronym')]);
         
     }
     

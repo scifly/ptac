@@ -9,8 +9,7 @@ use Illuminate\{Bus\Queueable,
     Database\Eloquent\Collection,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
-    Queue\SerializesModels,
-    Support\Facades\Log};
+    Queue\SerializesModels};
 use Pusher\PusherException;
 use Throwable;
 

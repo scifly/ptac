@@ -11,7 +11,6 @@ use Illuminate\{Bus\Queueable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
     Support\Facades\DB,
-    Support\Facades\Log,
     Validation\Rule};
 use Pusher\PusherException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

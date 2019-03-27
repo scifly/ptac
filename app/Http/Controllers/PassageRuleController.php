@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PassageRuleRequest;
 use App\Models\PassageRule;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -61,6 +60,7 @@ class PassageRuleController extends Controller {
      *
      * @param PassageRuleRequest $request
      * @return JsonResponse|string
+     * @throws Throwable
      */
     public function store(PassageRuleRequest $request) {
         
@@ -93,6 +93,7 @@ class PassageRuleController extends Controller {
      * @param PassageRuleRequest $request
      * @param $id
      * @return JsonResponse|string
+     * @throws Throwable
      */
     public function update(PassageRuleRequest $request, $id) {
         
@@ -109,7 +110,7 @@ class PassageRuleController extends Controller {
      *
      * @param $id
      * @return JsonResponse|string
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         

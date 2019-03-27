@@ -2,9 +2,6 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Http\Controllers\Controller;
-use App\Models\WapSite;
-use App\Models\WapSiteModule;
-use App\Models\WsmArticle;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
@@ -20,22 +17,8 @@ class MobileSiteController extends Controller {
     
     static $category = 1; # 微信端控制器
     
-    protected $ws, $wsm, $wsma;
-    
-    /**
-     * MobileSiteController constructor.
-     * @param WapSite $ws
-     * @param WapSiteModule $wsm
-     * @param WsmArticle $wsma
-     */
-    function __construct(WapSite $ws, WapSiteModule $wsm, WsmArticle $wsma) {
-        
-        $this->middleware(['corp.auth', 'corp.role']);
-        $this->ws = $ws;
-        $this->wsm = $wsm;
-        $this->wsma = $wsma;
-        
-    }
+    /** MobileSiteController constructor. */
+    function __construct() { }
     
     /**
      * 微网站首页
@@ -44,7 +27,7 @@ class MobileSiteController extends Controller {
      */
     public function index() {
         
-        return $this->ws->wIndex();
+        return view('wechat.mobile_site.index');
         
     }
     
@@ -55,7 +38,7 @@ class MobileSiteController extends Controller {
      */
     public function module() {
         
-        return $this->wsm->wIndex();
+        return view('wechat.mobile_site.module');
         
     }
     
@@ -66,7 +49,7 @@ class MobileSiteController extends Controller {
      */
     public function article() {
         
-        return $this->wsma->wIndex();
+        return view('wechat.mobile_site.article');
         
     }
     

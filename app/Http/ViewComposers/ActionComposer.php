@@ -2,9 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\Action;
-use App\Models\ActionType;
-use App\Models\Tab;
+use App\Models\{Action, ActionType, Tab};
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 

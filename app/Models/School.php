@@ -434,10 +434,9 @@ class School extends Model {
                 $classes = [
                     'Department', 'Menu', 'Turnstile',
                     'ConferenceRoom', 'ComboType', 'ExamType',
-                    'EducatorAttendanceSetting', 'Grade', 'Group',
-                    'Major', 'Module', 'PollQuestionnaire',
-                    'Procedure', 'Semester', 'Subject',
-                    'Tag', 'WapSite', 'Educator'
+                    'Grade', 'Group', 'Major', 'Module',
+                    'PollQuestionnaire', 'Procedure', 'Semester',
+                    'Subject', 'Tag', 'WapSite', 'Educator'
                 ];
                 array_map(
                     function ($class) use ($ids) {

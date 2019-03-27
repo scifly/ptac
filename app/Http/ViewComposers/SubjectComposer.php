@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Models\Major;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
@@ -29,12 +28,15 @@ class SubjectComposer {
      */
     public function compose(View $view) {
     
-        $view->with(
-            array_combine(
+        $action = explode('/', Request::path())[1];
+        $data = $action == 'index'
+            ? ['titles' => ['#', '名称', '副科', '满分', '及格线', '创建于', '更新于', '状态 . 操作']]
+            : array_combine(
                 ['grades', 'majors', 'selectedGrades', 'selectedMajors'],
                 $this->subject->compose()
-            )
-        );
+            );
+        
+        $view->with($data);
         
     }
     

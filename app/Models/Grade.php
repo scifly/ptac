@@ -29,7 +29,6 @@ use Throwable;
  * @property-read Collection|Squad[] $classes
  * @property-read Department $department
  * @property-read School $school
- * @property-read Collection|StudentAttendanceSetting[] $studentAttendanceSetting
  * @property-read Collection|Student[] $students
  * @method static Builder|Grade whereCreatedAt($value)
  * @method static Builder|Grade whereDepartmentId($value)
@@ -73,13 +72,6 @@ class Grade extends Model {
      * @return HasMany
      */
     function classes() { return $this->hasMany('App\Models\Squad'); }
-    
-    /**
-     * 获取指定年级包含的学生考勤设置对象
-     *
-     * @return HasMany
-     */
-    function studentAttendanceSetting() { return $this->hasMany('App\Models\StudentAttendanceSetting'); }
     
     /**
      * 通过Squad中间对象获取指定年级包含的所有学生对象
@@ -256,7 +248,7 @@ class Grade extends Model {
                 Request::replace(['ids' => $departmentIds]);
                 (new Department)->remove();
                 Request::replace(['ids' => $ids]);
-                $this->purge(['Grade', 'StudentAttendanceSetting', 'Squad'], 'grade_id');
+                $this->purge(['Grade', 'Squad'], 'grade_id');
             });
         } catch (Exception $e) {
             throw $e;

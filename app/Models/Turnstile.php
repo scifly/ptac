@@ -9,8 +9,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
     Relations\BelongsTo,
-    Relations\BelongsToMany,
-    Relations\HasMany};
+    Relations\BelongsToMany};
 
 /**
  * App\Models\Turnstile 门禁设备
@@ -27,7 +26,6 @@ use Illuminate\Database\Eloquent\{Builder,
  * @property Carbon|null $updated_at
  * @property int $enabled 门禁状态
  * @property-read School $school
- * @property-read StudentAttendance[] $studentAttendances
  * @property-read Collection|PassageRule[] $passageRules
  * @method static Builder|Turnstile whereCreatedAt($value)
  * @method static Builder|Turnstile whereEnabled($value)
@@ -78,13 +76,6 @@ class Turnstile extends Model {
         );
         
     }
-    
-    /**
-     * 获取指定门禁设备的学生考勤记录对象
-     *
-     * @return HasMany
-     */
-    function studentAttendances() { return $this->hasMany('App\Models\StudentAttendance'); }
     
     /**
      * 门禁设备列表

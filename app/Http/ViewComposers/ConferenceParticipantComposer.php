@@ -1,15 +1,14 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Models\IconType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
 /**
- * Class IconComposer
+ * Class ConferenceParticipantComposer
  * @package App\Http\ViewComposers
  */
-class IconComposer {
+class ConferenceParticipantComposer {
     
     /**
      * @param View $view
@@ -17,11 +16,11 @@ class IconComposer {
     public function compose(View $view) {
     
         $action = explode('/', Request::path())[1];
-        $data = $action == 'index'
-            ? ['titles' => ['#', '名称', '图标类型', '创建于', '更新于', '状态 . 操作']]
-            : ['iconTypes' => IconType::pluck('name', 'id')];
-        
-        $view->with($data);
+        if ($action == 'index') {
+            $view->with([
+                'titles' => ['#', '与会者', '会议名称', '签到时间', '创建于', '更新于', '状态 . 操作'],
+            ]);
+        }
         
     }
     

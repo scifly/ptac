@@ -31,7 +31,7 @@ use Validator;
  * @property string $merchant 消费内容
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read \App\Models\Student $student
+ * @property-read Student $student
  * @method static Builder|Consumption whereAmount($value)
  * @method static Builder|Consumption whereCreatedAt($value)
  * @method static Builder|Consumption whereCtime($value)
@@ -68,11 +68,7 @@ class Consumption extends Model {
      *
      * @return BelongsTo
      */
-    function student() {
-        
-        return $this->belongsTo('App\Models\Student');
-        
-    }
+    function student() { return $this->belongsTo('App\Models\Student'); }
     
     /**
      * 消费记录列表

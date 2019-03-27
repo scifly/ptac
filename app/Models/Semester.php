@@ -7,10 +7,8 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -28,7 +26,6 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read School $school
- * @property-read Collection|StudentAttendanceSetting[] $studentAttendanceSettings
  * @method static Builder|Semester whereCreatedAt($value)
  * @method static Builder|Semester whereEnabled($value)
  * @method static Builder|Semester whereEndDate($value)
@@ -58,17 +55,6 @@ class Semester extends Model {
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
-    
-    /**
-     * 返回学期记录包含的所有学生考勤设置对象
-     *
-     * @return HasMany
-     */
-    function studentAttendanceSettings() {
-        
-        return $this->hasMany('App\Models\StudentAttendanceSetting');
-        
-    }
     
     /**
      * 学期列表
@@ -136,10 +122,6 @@ class Semester extends Model {
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $sasIds = StudentAttendanceSetting::whereIn('semester_id', $ids)
-                    ->pluck('id')->toArray();
-                Request::replace(['ids' => $sasIds]);
-                (new StudentAttendanceSetting)->remove();
                 Request::replace(['ids' => $ids]);
                 $this->purge(['Semester'], 'id');
             });

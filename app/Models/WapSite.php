@@ -6,11 +6,9 @@ use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\{Auth, DB, Request};
-use Illuminate\View\View;
+use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**
@@ -196,35 +194,6 @@ class WapSite extends Model {
         }
     
         return true;
-        
-    }
-    
-    /**
-     * 微信端
-     *
-     * @return Factory|View|string
-     */
-    function wIndex() {
-        
-        $user = Auth::user();
-        # 禁止学生访问微网站
-        abort_if(
-            !$user || $user->role() == '学生',
-            HttpStatusCode::UNAUTHORIZED,
-            __('messages.unauthorized')
-        );
-        $wapSite = WapSite::whereSchoolId(session('schoolId'))->first();
-        $medias = Media::whereIn('id', explode(',', $wapSite->media_ids))->get();
-        abort_if(
-            !$wapSite,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
-        
-        return view('wechat.mobile_site.home', [
-            'wapsite' => $wapSite,
-            'medias'  => $medias,
-        ]);
         
     }
     

@@ -5,10 +5,8 @@ use App\Facades\Datatable;
 use App\Helpers\{HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Facades\{Request};
-use Illuminate\View\View;
 use Throwable;
 
 /**
@@ -205,26 +203,6 @@ class WsmArticle extends Model {
         }
         
         return response()->json($uploadedFiles);
-        
-    }
-    
-
-    /**
-     * 返回指定栏目文章
-     *
-     * @return Factory|View
-     */
-    function wIndex() {
-        
-        $id = Request::input('id');
-        $article = $this->find($id);
-        
-        return view('wechat.mobile_site.article', [
-            'article' => $article,
-            'medias'  => $this->media->whereIn(
-                'id', explode(',', $article->media_ids)
-            ),
-        ]);
         
     }
     

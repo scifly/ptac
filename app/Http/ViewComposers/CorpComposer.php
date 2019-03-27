@@ -29,24 +29,36 @@ class CorpComposer {
      * @param View $view
      */
     public function compose(View $view) {
-        
-        $companies = Company::pluck('name', 'id');
-        if ($this->menu->menuId(session('menuId'), '企业')) {
-            # disabled - 是否显示'返回列表'和'取消'按钮
-            if (Request::route('id')) {
-                $corp = Corp::find(Request::route('id'));
-                $companies = [$corp->company_id => $corp->company->name];
-                $disabled = true;
-            }
-            $view->with([
-                'companies' => $companies,
-                'disabled'  => $disabled ?? null,
-            ]);
+    
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            $data = [
+                'titles' => [
+                    '#', '名称', '缩写', '所属运营', '企业号ID', '通讯录同步Secret',
+                    '创建于', '更新于', '状态 . 操作',
+                ],
+            ];
         } else {
-            $view->with([
-                'companies' => $companies,
-            ]);
+            $companies = Company::pluck('name', 'id');
+            if ($this->menu->menuId(session('menuId'), '企业')) {
+                # disabled - 是否显示'返回列表'和'取消'按钮
+                if (Request::route('id')) {
+                    $corp = Corp::find(Request::route('id'));
+                    $companies = [$corp->company_id => $corp->company->name];
+                    $disabled = true;
+                }
+                $data = [
+                    'companies' => $companies,
+                    'disabled'  => $disabled ?? null,
+                ];
+            } else {
+                $data = [
+                    'companies' => $companies,
+                ];
+            }
         }
+        
+        $view->with($data);
         
     }
     

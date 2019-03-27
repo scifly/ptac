@@ -2,12 +2,8 @@
 namespace App\Rules;
 
 use App\Helpers\ModelTrait;
-use App\Models\EducatorAttendanceSetting;
-use App\Models\Grade;
 use App\Models\Semester;
-use App\Models\StudentAttendanceSetting;
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class Overlaid
@@ -38,55 +34,17 @@ class Overlaid implements Rule {
         $start = $value[0];
         $end = $value[1];
         $schoolId = $this->schoolId();
-        switch ($value[2]) {
-            case 'educator':
-                if ($value[3]) {
-                    $settings = EducatorAttendanceSetting::where('id', '<>', $value[3])
-                        ->where('enabled', '1')
-                        ->where('school_id', $schoolId)
-                        ->pluck('end', 'start')->toArray();
-                } else {
-                    $settings = EducatorAttendanceSetting::pluck('end', 'start')
-                        ->where('enabled', '1')
-                        ->where('school_id', $schoolId)
-                        ->toArray();
-                }
-                break;
-            case 'student':
-                $gradeIds = [];
-                $grade = Grade::whereSchoolId($schoolId)->get();
-                foreach ($grade as $g) {
-                    $gradeIds[] = $g->id;
-                }
-                if ($value[3]) {
-                    $settings = StudentAttendanceSetting::where('id', '<>', $value[3])
-                        ->whereIn('grade_id', $gradeIds)
-                        ->where('day', $value[4])
-                        ->where('semester_id', Request::input('semester_id'))
-                        ->pluck('end', 'start')->toArray();
-                } else {
-                    $settings = StudentAttendanceSetting::whereIn('grade_id', $gradeIds)
-                        ->where('day', $value[4])
-                        ->where('semester_id', Request::input('semester_id'))
-                        ->pluck('end', 'start')->toArray();
-                }
-                break;
-            case 'semester':
-                if ($value[3]) {
-                    $settings = Semester::whereSchoolId($schoolId)
-                        ->where('id', '<>', $value[3])
-                        ->where('enabled', 1)
-                        ->pluck('end_date', 'start_date')->toArray();
-                } else {
-                    $settings = Semester::whereSchoolId($schoolId)
-                        ->where('start_date', '!=', $start)
-                        ->Where('end_date', '!=', $end)
-                        ->where('enabled', 1)
-                        ->pluck('end_date', 'start_date')->toArray();
-                }
-                break;
-            default :
-                return false;
+        if ($value[3]) {
+            $settings = Semester::whereSchoolId($schoolId)
+                ->where('id', '<>', $value[3])
+                ->where('enabled', 1)
+                ->pluck('end_date', 'start_date')->toArray();
+        } else {
+            $settings = Semester::whereSchoolId($schoolId)
+                ->where('start_date', '!=', $start)
+                ->Where('end_date', '!=', $end)
+                ->where('enabled', 1)
+                ->pluck('end_date', 'start_date')->toArray();
         }
         $count = sizeof($settings);
         $starts = array_keys($settings);

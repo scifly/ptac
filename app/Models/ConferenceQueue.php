@@ -4,7 +4,6 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;

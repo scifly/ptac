@@ -368,8 +368,8 @@ class Educator extends Model {
                 # 删除教职员工
                 Request::replace(['ids' => $ids]);
                 $this->purge([
-                    class_basename($this), 'ConferenceParticipant', 'EducatorAppeal',
-                    'EducatorAttendance', 'EducatorClass', 'Event', 'SmsEducator'
+                    class_basename($this), 'ConferenceParticipant',
+                    'EducatorAppeal', 'EducatorClass', 'Event', 'SmsEducator'
                 ], 'educator_id');
             });
         } catch (Exception $e) {

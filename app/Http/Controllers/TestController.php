@@ -9,7 +9,7 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
-use Illuminate\Support\Facades\{DB, Request};
+use Illuminate\Support\Facades\{DB};
 use Pusher\Pusher;
 use ReflectionClass;
 use ReflectionMethod;

@@ -34,9 +34,7 @@ class WapSiteComposer {
             $medias = $this->media->whereIn('id', explode(',', $ws->media_ids))->get();
         }
         
-        $view->with([
-            'medias' => $medias ?? null,
-        ]);
+        $view->with(['medias' => $medias ?? null]);
         
     }
     
