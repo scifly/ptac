@@ -21,8 +21,11 @@ class UserComposer {
      */
     public function compose(View $view) {
         
-        $paths = explode('/', Request::path());
-        $action = sizeof($paths) > 1 ? $paths[1] : 'edit';
+        if (Request::path() == '/' || stripos(Request::path(), 'pages') !== false) {
+            $action = 'edit';
+        } else {
+            $action = explode('/', Request::path())[1];
+        }
         switch ($action) {
             case 'edit':
                 $user = Auth::user();
