@@ -86,7 +86,7 @@ class ComposerServiceProvider extends ServiceProvider {
                             return implode('.', $path);
                         }, $views
                     );
-                    $dir != 'class' ? Inflector::camelize($dir) : $dir = 'Squad';
+                    $dir = $dir != 'class' ? Inflector::camelize($dir) : 'Squad';
                     View::composer(
                         $paths, 'App\Http\ViewComposers\\' . ucfirst($dir) . 'Composer'
                     );
