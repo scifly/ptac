@@ -29,8 +29,8 @@ class GroupComposer {
      */
     public function compose(View $view) {
     
-        $method = explode('/', Request::path())[1];
-        if ($method == 'index') {
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
             $data = [
                 'titles' => ['#', '名称', '所属学校', '所属企业', '备注', '创建于', '更新于', '状态 . 操作'],
             ];
@@ -82,7 +82,7 @@ class GroupComposer {
                 'tabActions' => $tabActions,
                 'schools'    => $schools,
             ];
-            if ($method == 'create') {
+            if ($action == 'create') {
                 $menu = new Menu();
                 $currentMenuId = session('menuId');
                 if ($this->schoolId()) {
