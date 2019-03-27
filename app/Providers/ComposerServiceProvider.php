@@ -21,7 +21,7 @@ class ComposerServiceProvider extends ServiceProvider {
             # 系统参数
             'init.index'                              => 'Init',
             # 功能 - Action
-            'action' => ['index', 'create_edit'],
+            // 'action' => ['index', 'create_edit'],
             'action.index'                            => 'ActionIndex',
             'action.create_edit'                      => 'Action',
             # 功能类型 - ActionType
