@@ -1,9 +1,7 @@
 <?php
 namespace App\Http\Requests;
 
-
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class AppRequest
@@ -25,7 +23,7 @@ class AppRequest extends FormRequest {
      */
     public function rules() {
         
-        if (in_array(Request::method(), ['POST', 'PUT'])) {
+        if (in_array($this->method(), ['POST', 'PUT'])) {
             return [
                 'name'                 => 'required|string|max:36|unique:apps,name,' .
                     $this->input('id') . ',id,' .
@@ -54,7 +52,7 @@ class AppRequest extends FormRequest {
     
     protected function prepareForValidation() {
         
-        if (Request::method() === 'POST') {
+        if ($this->method() === 'POST') {
             $input = $this->all();
             $input['name'] = $input['name'] ?? uniqid('app');
             $input['description'] = $input['description'] ?? '0';

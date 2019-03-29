@@ -20,7 +20,7 @@
                             page.siteRoot() + plugins.daterangepicker.js,
                             function () {
                                 $daterange.daterangepicker(
-                                    { locale: page.dateRangeLocale() },
+                                    { locale: page.drLocale() },
                                     function (start, end) {
                                         $daterange.find('span').html(
                                             start.format('YYYY年MM月DD日') + ' - ' +

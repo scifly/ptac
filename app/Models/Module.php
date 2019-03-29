@@ -60,14 +60,14 @@ use Throwable;
  * @mixin Eloquent
  */
 class Module extends Model {
-
+    
     use ModelTrait;
     
     protected $fillable = [
         'name', 'remark', 'tab_id',
         'media_id', 'group_id', 'uri',
         'isfree', 'school_id', 'order',
-        'enabled'
+        'enabled',
     ];
     
     /**
@@ -116,54 +116,54 @@ class Module extends Model {
             ['db' => 'Module.id', 'dt' => 0],
             ['db' => 'Module.name', 'dt' => 1],
             [
-                'db' => 'Module.school_id', 'dt' => 2,
+                'db'        => 'Module.school_id', 'dt' => 2,
                 'formatter' => function ($d) {
                     return Snippet::icon(School::find($d)->name, 'school');
-                }
+                },
             ],
             [
-                'db' => 'Module.tab_id', 'dt' => 3,
+                'db'        => 'Module.tab_id', 'dt' => 3,
                 'formatter' => function ($d) {
                     return $d ? Tab::find($d)->comment : '-';
-                }
+                },
             ],
             [
-                'db' => 'Module.uri', 'dt' => 4,
+                'db'        => 'Module.uri', 'dt' => 4,
                 'formatter' => function ($d) {
                     return $d ?? '-';
-                }
+                },
             ],
             [
-                'db' => 'Module.group_id', 'dt' => 5,
+                'db'        => 'Module.group_id', 'dt' => 5,
                 'formatter' => function ($d) {
                     return !empty($d) ? Group::find($d)->name : '公用';
-                }
+                },
             ],
             [
-                'db' => 'Module.isfree', 'dt' => 6,
+                'db'        => 'Module.isfree', 'dt' => 6,
                 'formatter' => function ($d) {
                     return $d ? '基本' : '增值';
-                }
+                },
             ],
             ['db' => 'Module.created_at', 'dt' => 7, 'dr' => true],
             ['db' => 'Module.updated_at', 'dt' => 8, 'dr' => true],
             ['db' => 'Module.order', 'dt' => 9],
             [
-                'db' => 'Module.enabled', 'dt' => 10,
+                'db'        => 'Module.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'medias',
-                'alias' => 'Media',
-                'type' => 'INNER',
+                'table'      => 'medias',
+                'alias'      => 'Media',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Media.id = Module.media_id'
-                ]
-            ]
+                    'Media.id = Module.media_id',
+                ],
+            ],
         ];
         $condition = 'Module.school_id IN (' . implode(',', $this->schoolIds()) . ')';
         
@@ -243,7 +243,7 @@ class Module extends Model {
      * @return Factory|View
      */
     function wIndex() {
-    
+        
         $role = Auth::user()->role();
         $part = session('part');
         $schools = session('schools');
@@ -262,6 +262,7 @@ class Module extends Model {
                     $gId = Group::where([
                         'enabled' => 1, 'school_id' => $schoolId, 'name' => $role,
                     ])->first()->id;
+                    
                     return in_array($mGId, [0, $gId]);
                 }
             }
@@ -287,9 +288,9 @@ class Module extends Model {
         
         return view('wechat.wechat.index', [
             'modules' => $modules,
-            'school' => School::find($schoolId)->name,
-            'role' => !isset($part) ? null : ($part == 'educator' ? Auth::user()->group->name : '监护人'),
-            'choice' => $choice ?? null,
+            'school'  => School::find($schoolId)->name,
+            'role'    => !isset($part) ? null : ($part == 'educator' ? Auth::user()->group->name : '监护人'),
+            'choice'  => $choice ?? null,
         ]);
         
     }
@@ -300,12 +301,12 @@ class Module extends Model {
      * @return Factory|View
      */
     function schools() {
-    
+        
         $user = Auth::user();
         $schoolIds = $user->schoolIds($user->id, session('corpId'));
-    
+        
         return view('wechat.schools', [
-            'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id')
+            'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
         ]);
         
     }
@@ -316,22 +317,21 @@ class Module extends Model {
      * @return array
      */
     function compose() {
-    
+        
         switch (Auth::user()->role()) {
             case '运营':
-                $schools = School::whereEnabled(1)->get();
+                $builder = School::whereEnabled(1)->get();
                 break;
             case '企业':
-                $schools = School::where(['corp_id' => (new Corp)->corpId(), 'enabled' => 1])->get();
+                $builder = School::where(['corp_id' => (new Corp)->corpId(), 'enabled' => 1])->get();
                 break;
             default:
-                $schools = School::find($this->schoolId());
+                $builder = School::find($this->schoolId());
                 break;
         }
-        $schoolList = $schools->pluck('name', 'id')->toArray();
+        $schoolList = $builder->pluck('name', 'id')->toArray();
         ksort($schoolList);
         $groups = $this->groupList(key($schoolList));
-        
         $tabs = Tab::where(['enabled' => 1, 'category' => 1])->get();
         if (Request::route('id')) {
             $media = $this->find(Request::route('id'))->media;
@@ -340,7 +340,7 @@ class Module extends Model {
         return [
             $schoolList, $groups,
             [null => ''] + $tabs->pluck('comment', 'id')->toArray(),
-            $media ?? null
+            $media ?? null,
         ];
         
     }
@@ -353,18 +353,16 @@ class Module extends Model {
      * @return array|string
      */
     function groupList($schoolId, $html = false) {
-    
-        $groups = [
-            0 => '公用',
-            Group::whereName('监护人')->first()->id => '监护人',
-        ];
-        $superGroups = [
-            Group::whereName('运营')->first()->id => '运营',
-            Group::whereName('企业')->first()->id => '企业',
-            Group::whereName('学校')->first()->id => '学校',
-        ];
-        $groups += Group::where(['enabled' => 1, 'school_id' => $schoolId])
-            ->pluck('name', 'id')->toArray() + $superGroups;
+        
+        $roles = ['运营', '企业', '学校', '监护人'];
+        $groups = [0 => '公用'] +
+            array_combine(
+                array_map(function ($role) {
+                    return Group::whereName($role)->first()->id;
+                }, $roles), $roles
+            ) +
+            Group::where(['enabled' => 1, 'school_id' => $schoolId])
+                ->pluck('name', 'id')->toArray();
         
         return $html ? $this->singleSelectList($groups, 'group_id') : $groups;
         

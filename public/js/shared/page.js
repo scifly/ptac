@@ -6,7 +6,7 @@ var page = {
     success: 'img/confirm.png',
     failure: 'img/error.png',
     info: 'img/info.png',
-    dateRangeLocale: function () {
+    drLocale: function () {
         return {
             format: "YYYY年MM月DD日",
             separator: " 至 ",
@@ -25,7 +25,7 @@ var page = {
             firstDay: 1
         };
     },
-    dateRangeRanges: function () {
+    dRanges: function () {
         return {
             '今天': [
                 moment(),
@@ -754,8 +754,8 @@ var page = {
         page.loadCss(plugins.daterangepicker.css);
         $('#' + selector).daterangepicker(
             {
-                locale: page.dateRangeLocale(),
-                ranges: page.dateRangeRanges(),
+                locale: page.drLocale(),
+                ranges: page.dRanges(),
                 startDate: moment().subtract(29, 'days'),
                 endDate: moment()
             },
