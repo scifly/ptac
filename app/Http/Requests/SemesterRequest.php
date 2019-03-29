@@ -2,8 +2,7 @@
 namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
-use App\Rules\Overlaid;
-use App\Rules\StartEnd;
+use App\Models\Semester;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -36,7 +35,9 @@ class SemesterRequest extends FormRequest {
             'end_date'   => 'required|date|after:start_date',
             'enabled'    => 'required|boolean',
             'startend'   => [
-                'required', new StartEnd(), new Overlaid(),
+                'required', function ($attribute, $value, $fail) {
+                    if (!$this->dRange($value)) $fail($attribute . ': 日期范围无效');
+                },
             ],
         ];
         
@@ -49,11 +50,50 @@ class SemesterRequest extends FormRequest {
         $input['startend'] = [
             $input['start_date'],
             $input['end_date'],
-            'semester',
             $input['id'] ?? null,
         ];
         
         $this->replace($input);
+        
+    }
+    
+    /**
+     * 检查学期日期范围的有效性
+     *
+     * @param $value
+     * @return bool
+     */
+    private function dRange($value) {
+        
+        list($start, $end, $id) = $value;
+        $conditions = array_merge(
+            [
+                ['school_id', '=', $this->schoolId()],
+                ['enabled', '=', 1],
+            ], $id
+            ? [
+                ['id', '<>', $id],
+            ]
+            : [
+                ['start_date', '<>', $start],
+                ['end_date', '<>', $end],
+            ]
+        );
+        $settings = Semester::where($conditions)->get()
+            ->pluck('end_date', 'start_date')
+            ->toArray();
+        $count = sizeof($settings);
+        $starts = array_keys($settings);
+        $ends = array_values($settings);
+        for ($i = 0; $i < $count; $i++) {
+            if (
+                ($start >= $starts[$i] && $start <= $ends[$i]) ||
+                ($end >= $starts[$i] && $end <= $ends[$i]) ||
+                ($start <= $starts[$i] && $end >= $ends[$i])
+            ) return false;
+        }
+        
+        return true;
         
     }
     

@@ -42,6 +42,11 @@ class PassageRuleRequest extends FormRequest {
             'tr3'            => 'required|string',
             'related_ruleid' => 'nullable|integer|between:1,254|different:ruleid',
             'enabled'        => 'required|boolean',
+            'trs' => [
+                'required', function ($attribute, $value, $fail) {
+                    if (!$this->tRange($value)) $fail($attribute . ': 通行时段设置无效');
+                }
+            ]
         ];
         
     }
@@ -62,6 +67,27 @@ class PassageRuleRequest extends FormRequest {
             $input['tr' . ($key + 1)] = implode(' - ', $tr);
         }
         $this->replace($input);
+        
+    }
+    
+    /**
+     * 检查通行时段设置的有效性
+     *
+     * @param $trs
+     * @return bool
+     */
+    private function tRange($trs) {
+        
+        for ($i = 0; $i < sizeof($trs); $i++) {
+            # 通行时段起始时间不得晚于结束时间
+            if ($trs[$i][0] >= $trs[$i][1]) return false;
+            for ($j = $i + 1; $j < sizeof($trs); $j++) {
+                # 当前通行时段不得与其他通行时段重叠
+                if ($trs[$i][1] >= $trs[$j][0]) return false;
+            }
+        }
+
+        return true;
         
     }
     
