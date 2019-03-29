@@ -5,8 +5,6 @@ use App\Helpers\ModelTrait;
 use App\Models\Corp;
 use App\Models\School;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class SchoolRequest
@@ -50,10 +48,10 @@ class SchoolRequest extends FormRequest {
     
     protected function prepareForValidation() {
         
-        if (!Request::has('ids')) {
+        if (!$this->has('ids')) {
             $input = $this->all();
             # 保存 - store
-            if (Request::method() == 'POST') {
+            if ($this->method() == 'POST') {
                 if (!isset($input['department_id'])) {
                     $input['department_id'] = 0;
                 }
@@ -62,8 +60,8 @@ class SchoolRequest extends FormRequest {
                 }
                 # 更新 - update
             } else {
-                if (Request::has('id')) {
-                    $school = School::find(Request::input('id'));
+                if ($this->has('id')) {
+                    $school = School::find($this->input('id'));
                     $input['department_id'] = $school->department_id;
                     $input['menu_id'] = $school->menu_id;
                 }
@@ -76,7 +74,7 @@ class SchoolRequest extends FormRequest {
             }
             if (!isset($input['corp_id'])) {
                 $departmentId = $this->topDeptId();
-                $input['corp_id'] = Auth::user()->role() == '企业'
+                $input['corp_id'] = $this->user()->role() == '企业'
                     ? Corp::whereDepartmentId($departmentId)->first()->id
                     : School::whereDepartmentId($departmentId)->first()->corp_id;
             }

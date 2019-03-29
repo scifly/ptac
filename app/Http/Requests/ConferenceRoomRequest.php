@@ -3,7 +3,6 @@ namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class ConferenceRoomRequest
@@ -43,7 +42,7 @@ class ConferenceRoomRequest extends FormRequest {
     
     protected function prepareForValidation() {
         
-        if (!Request::has('ids')) {
+        if (!$this->has('ids')) {
             $input = $this->all();
             $input['school_id'] = $this->schoolId();
             $this->replace($input);

@@ -3,8 +3,6 @@ namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class TabRequest
@@ -21,7 +19,7 @@ class TabRequest extends FormRequest {
      */
     public function authorize() {
         
-        return Auth::user()->role() == '运营';
+        return $this->user()->role() == '运营';
         
     }
     
@@ -49,7 +47,7 @@ class TabRequest extends FormRequest {
     
     protected function prepareForValidation() {
         
-        if (!Request::has('ids')) {
+        if (!$this->has('ids')) {
             $input = $this->all();
             if (!isset($input['menu_ids'])) {
                 $input['menu_ids'] = [];

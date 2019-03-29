@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 use App\Helpers\{Constant, ModelTrait};
 use App\Models\{CommType, MediaType, School, User};
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\{Auth, Request};
 
 /**
  * Class MessageRequest
@@ -49,7 +48,7 @@ class MessageRequest extends FormRequest {
     
     protected function prepareForValidation() {
         
-        if (!($this->method() == 'update' && !Request::route('id'))) {
+        if (!($this->method() == 'update' && !$this->route('id'))) {
             $schoolId = $this->schoolId() ?? session('schoolId');
             $corp = School::find($schoolId)->corp;
             $app = $this->app($corp->id);
@@ -59,7 +58,7 @@ class MessageRequest extends FormRequest {
                 CommType::whereName($type == 'sms' ? '短信' : '微信')->first()->id,
                 MediaType::whereName($type == 'sms' ? 'text' : $type)->first()->id,
                 $app->id, 0, $this->title($type), '', '0', 0,
-                'http://', '0', Auth::id() ?? 0, 0, $msgTypeId, 0, 0,
+                'http://', '0', $this->user()->id ?? 0, 0, $msgTypeId, 0, 0,
             ]);
             $targetIds = $this->input('targetIds') ?? [];
             foreach (explode(',', $targetIds) as $targetId) {

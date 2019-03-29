@@ -5,7 +5,6 @@ use App\Helpers\{Constant, ModelTrait};
 use App\Models\Group;
 use App\Rules\{Email, Mobile};
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\{Auth, Request};
 use ReflectionException;
 
 /**
@@ -23,9 +22,9 @@ class OperatorRequest extends FormRequest {
      */
     public function authorize() {
         
-        $role = Auth::user()->role();
+        $role = $this->user()->role();
         if (in_array($role, Constant::SUPER_ROLES)) {
-            $groupId = Request::input('user.group_id');
+            $groupId = $this->input('user.group_id');
             switch ($role) {
                 case '运营':
                     return true;
@@ -76,7 +75,7 @@ class OperatorRequest extends FormRequest {
      */
     protected function prepareForValidation() {
         
-        if (!Request::has('ids')) {
+        if (!$this->has('ids')) {
             $this->replace(
                 $this->contactInput($this, 'operator')
             );

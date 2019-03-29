@@ -4,8 +4,6 @@ namespace App\Http\Requests;
 use App\Rules\Email;
 use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class UserRequest
@@ -27,7 +25,7 @@ class UserRequest extends FormRequest {
      */
     public function rules() {
         
-        $paths = explode('/', Request::path());
+        $paths = explode('/', $this->path());
         if ($paths[1] == 'reset') {
             return [
                 'old_password' => 'required|string',
@@ -37,19 +35,13 @@ class UserRequest extends FormRequest {
         }
         
         return [
-            'username'     => 'required|string|unique:users,username,' . Auth::id() . ',id',
+            'username'     => 'required|string|unique:users,username,' . $this->user()->id . ',id',
             'realname'     => 'required|string|between:2,10',
             'english_name' => 'nullable|string|between:2,20',
             'mobile'       => ['required', new Mobile],
             'email'        => ['nullable', 'email', new Email],
             'gender'       => 'required|boolean',
         ];
-        
-    }
-    
-    protected function prepareForValidation() {
-        
-        
         
     }
     

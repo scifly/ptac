@@ -2,7 +2,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class ConferenceQueueRequest
@@ -47,7 +46,7 @@ class ConferenceQueueRequest extends FormRequest {
             $input['attended_educator_ids'] = '';
         }
         if (!isset($input['user_id'])) {
-            $input['user_id'] = Auth::id();
+            $input['user_id'] = $this->user()->id;
         }
         $this->replace($input);
         

@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 use App\Helpers\ModelTrait;
 use App\Models\Corp;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class CorpRequest
@@ -58,7 +57,7 @@ class CorpRequest extends FormRequest {
             $input['menu_id'] = 0;
         }
         if (!isset($input['company_id'])) {
-            $input['company_id'] = Corp::whereDepartmentId($this->topDeptId(Auth::user()))->first()->company_id;
+            $input['company_id'] = Corp::whereDepartmentId($this->topDeptId($this->user()))->first()->company_id;
         }
         if (empty($input['encoding_aes_key'])) {
             $input['encoding_aes_key'] = '0';

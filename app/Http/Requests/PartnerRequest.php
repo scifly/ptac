@@ -4,8 +4,6 @@ namespace App\Http\Requests;
 use App\Helpers\ModelTrait;
 use App\Models\Group;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class OperatorRequest
@@ -22,7 +20,7 @@ class PartnerRequest extends FormRequest {
      */
     public function authorize() {
         
-        return Auth::user()->role() == '运营';
+        return $this->user()->role() == '运营';
         
     }
     
@@ -54,7 +52,7 @@ class PartnerRequest extends FormRequest {
     
     protected function prepareForValidation() {
     
-        if (!Request::has('ids')) {
+        if (!$this->has('ids')) {
             $input = $this->all();
             $input['group_id'] = Group::whereName('api')->first()->id;
             # english_name - 接口密码明文

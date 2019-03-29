@@ -3,7 +3,6 @@ namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class ScoreRequest
@@ -44,7 +43,7 @@ class ScoreRequest extends FormRequest {
     
     protected function prepareForValidation() {
         
-        if (!Request::has('ids')) {
+        if (!$this->has('ids')) {
             $input = $this->all();
             $input['class_rank'] = 0;
             $input['grade_rank'] = 0;

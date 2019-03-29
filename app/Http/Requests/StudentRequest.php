@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 use App\Helpers\ModelTrait;
 use App\Rules\{Email, Mobile};
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Request;
 use ReflectionException;
 
 /**
@@ -58,7 +57,7 @@ class StudentRequest extends FormRequest {
      */
     protected function prepareForValidation() {
         
-        Request::has('ids') ?: $this->replace($this->contactInput($this, 'student'));
+        $this->has('ids') ?: $this->replace($this->contactInput($this, 'student'));
         
     }
     

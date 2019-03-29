@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 use App\Helpers\ModelTrait;
 use App\Rules\{Email, Mobile};
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Request;
 use ReflectionException;
 
 /**
@@ -57,7 +56,7 @@ class EducatorRequest extends FormRequest {
      */
     protected function prepareForValidation() {
         
-        if (!Request::has('ids')) {
+        if (!$this->has('ids')) {
             $this->replace(
                 $this->contactInput($this, 'educator')
             );
