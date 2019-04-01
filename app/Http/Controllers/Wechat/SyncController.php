@@ -9,6 +9,7 @@ use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model};
 use Illuminate\Support\Facades\{DB, Request};
+use SimpleXMLElement;
 use Throwable;
 
 /**
@@ -245,7 +246,7 @@ class SyncController extends Controller {
     /**
      * 返回企业微信推送的事件对象
      *
-     * @return int|\SimpleXMLElement
+     * @return int|SimpleXMLElement
      */
     private function event() {
         

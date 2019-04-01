@@ -6,6 +6,7 @@ use App\Helpers\{HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Request};
 use Throwable;
 
@@ -178,7 +179,7 @@ class WsmArticle extends Model {
     /**
      * 上传微网站文章轮播图
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     function import() {
         

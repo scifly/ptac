@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Throwable;
 
 /**
@@ -39,7 +40,7 @@ class MessageReply extends Model {
     /**
      * 返回所属的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function user() { return $this->belongsTo('App\Models\User', 'user_id', 'id'); }
     

@@ -6,7 +6,8 @@ use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\{Builder, Collection, Model};
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -47,7 +48,7 @@ class WapSiteModule extends Model {
     ];
     
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     function wsmArticles() {
         
@@ -58,14 +59,14 @@ class WapSiteModule extends Model {
     /**
      * 返回所属的媒体对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function media() { return $this->belongsTo('App\Models\Media'); }
     
     /**
      * 返回所属的微网站对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function wapsite() { return $this->belongsTo('App\Models\WapSite', 'wap_site_id'); }
     
@@ -150,7 +151,7 @@ class WapSiteModule extends Model {
     /**
      * 上传微网站栏目图片
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     function import() {
         

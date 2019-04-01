@@ -1,6 +1,7 @@
 <?php
 namespace App\Helpers;
 use Pusher\Pusher;
+use Pusher\PusherException;
 
 /**
  * Class Broadcaster
@@ -12,7 +13,7 @@ class Broadcaster {
     
     /**
      * Broadcaster constructor.
-     * @throws \Pusher\PusherException
+     * @throws PusherException
      */
     function __construct() {
         
@@ -31,7 +32,7 @@ class Broadcaster {
     
     /**
      * @param array $response
-     * @throws \Pusher\PusherException
+     * @throws PusherException
      */
     function broadcast(array $response) {
         

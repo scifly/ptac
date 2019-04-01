@@ -42,7 +42,7 @@ class ImportEducator implements ShouldQueue, MassImport {
      *
      * @param array $data
      * @param $userId
-     * @throws \Pusher\PusherException
+     * @throws PusherException
      */
     function __construct(array $data, $userId) {
         
@@ -59,7 +59,7 @@ class ImportEducator implements ShouldQueue, MassImport {
     /**
      * @return bool
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function handle() {
         

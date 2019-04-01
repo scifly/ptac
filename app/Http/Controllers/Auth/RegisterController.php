@@ -6,6 +6,8 @@ use App\Http\Requests\RegisterUser;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 
 /**
  * 注册
@@ -49,7 +51,7 @@ class RegisterController extends Controller {
     
     /**
      * @param RegisterUser $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return RedirectResponse|Redirector
      */
     public function register(RegisterUser $request) {
         event(new Registered($user = $this->create($request->all())));

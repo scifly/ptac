@@ -10,9 +10,9 @@ use Eloquent;
 use Exception;
 use Form;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**
@@ -305,7 +305,7 @@ class Card extends Model {
     /**
      * 通讯录批量发卡
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      * @throws Throwable
      */
     function issue() {
@@ -363,7 +363,7 @@ class Card extends Model {
      * 批量授权
      *
      * @param string $type
-     * @return \Illuminate\Http\JsonResponse|string
+     * @return JsonResponse|string
      * @throws Throwable
      */
     function permit($type) {

@@ -8,6 +8,7 @@ use App\Models\PollQuestionnaireParticipant;
 use App\Models\PollQuestionnaireSubject;
 use App\Models\PollQuestionnaireSubjectChoice;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Illuminate\View\View;
@@ -73,7 +74,7 @@ class PollQuestionnaireParticipantController extends Controller {
     
     /**
      * @param Request $q
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(Request $q) {
         

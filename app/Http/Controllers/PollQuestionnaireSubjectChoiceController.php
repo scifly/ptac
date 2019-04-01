@@ -51,7 +51,7 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      * 创建选项
      *
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function create() {
         

@@ -22,7 +22,7 @@ class Datatable {
      * in response to an SSP request, or can be modified if needed before
      * sending back to the client.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param Model $model
      * @param array $columns Column information array
      * @param array $joins
      * @param string $condition
@@ -115,7 +115,7 @@ class Datatable {
      *   used in conditions where you don't want the user to ever have access to
      *   particular records (for example, restricting by a login id).
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param Model $model
      * @param  array $columns Column information array
      * @param  string $whereResult WHERE condition to apply to the result set
      * @param  string $whereAll WHERE condition to apply to all queries

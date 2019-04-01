@@ -12,9 +12,11 @@ use App\Http\Controllers\Controller;
 use App\Models\App;
 use App\Models\Corp;
 use Exception;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
+use Illuminate\View\View;
 use SimpleXMLElement;
 
 /**
@@ -127,7 +129,7 @@ class HomeWorkController extends Controller {
     }
     
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      * @throws Exception
      */
     private function html5pay() {

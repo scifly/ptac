@@ -129,7 +129,6 @@ class AuthServiceProvider extends ServiceProvider {
         SubjectModule::class                  => SubjectModulePolicy::class,
         Subject::class                        => SubjectPolicy::class,
         Tab::class                            => TabPolicy::class,
-        Student::class                        => StudentPolicy::class,
         User::class                           => OperatorPolicy::class,
         WapSite::class                        => WapSitePolicy::class,
         WapSiteModule::class                  => WapSiteModulePolicy::class,

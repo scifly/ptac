@@ -159,6 +159,7 @@ return [
         'excerpt'               => '摘要',
         'date'                  => '日期',
         'time'                  => '时间',
+        'trs'                   => '通行时段',
         'available'             => '可用的',
         'size'                  => '大小',
         'enabled'               => '状态',

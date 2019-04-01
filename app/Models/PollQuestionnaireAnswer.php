@@ -23,7 +23,7 @@ use Throwable;
  * @property-read PollQuestionnaireSubjectChoice $pollquestionnaireChoice
  * @property-read PollQuestionnaireSubject $pollquestionnaireSubject
  * @property-read User $user
- * @property-read \App\Models\PollQuestionnaireSubject $pqSubject
+ * @property-read PollQuestionnaireSubject $pqSubject
  * @method static Builder|PollQuestionnaireAnswer whereAnswer($value)
  * @method static Builder|PollQuestionnaireAnswer whereCreatedAt($value)
  * @method static Builder|PollQuestionnaireAnswer whereId($value)

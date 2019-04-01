@@ -5,6 +5,7 @@ use App\Facades\Datatable;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -35,7 +36,7 @@ use Throwable;
  * @property int $status 会议状态
  * @property-read Collection|ConferenceParticipant[] $conferenceParticipants
  * @property-read ConferenceRoom $conferenceRoom
- * @property-read \App\Models\User $user
+ * @property-read User $user
  * @method static Builder|ConferenceQueue whereAttendanceQrcodeUrl($value)
  * @method static Builder|ConferenceQueue whereAttendedEducatorIds($value)
  * @method static Builder|ConferenceQueue whereConferenceRoomId($value)
@@ -54,7 +55,7 @@ use Throwable;
  * @method static Builder|ConferenceQueue newModelQuery()
  * @method static Builder|ConferenceQueue newQuery()
  * @method static Builder|ConferenceQueue query()
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class ConferenceQueue extends Model {
     

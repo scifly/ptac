@@ -9,10 +9,14 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\{DB};
+use Illuminate\View\View;
 use Pusher\Pusher;
+use Pusher\PusherException;
 use ReflectionClass;
 use ReflectionMethod;
+use Throwable;
 
 /**
  * Class TestController
@@ -32,7 +36,7 @@ class TestController extends Controller {
     
     /**
      * TestController constructor.
-     * @throws \Pusher\PusherException
+     * @throws PusherException
      */
     function __construct() {
         
@@ -44,8 +48,8 @@ class TestController extends Controller {
     }
     
     /**
-     * @throws \Exception
-     * @throws \Throwable
+     * @throws Exception
+     * @throws Throwable
      */
     public function index() {
     
@@ -158,7 +162,7 @@ class TestController extends Controller {
     }
     
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function listen() {
         
@@ -262,8 +266,8 @@ class TestController extends Controller {
     }
     
     /**
-     * @throws \Pusher\PusherException
-     * @throws \Throwable
+     * @throws PusherException
+     * @throws Throwable
      */
     private function msSync() {
     
@@ -322,7 +326,7 @@ class TestController extends Controller {
      * 发送广播消息
      *
      * @param $message
-     * @throws \Pusher\PusherException
+     * @throws PusherException
      */
     private function inform($message) {
     

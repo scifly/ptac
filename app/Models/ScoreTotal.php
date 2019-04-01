@@ -31,7 +31,7 @@ use Throwable;
  * @property int $enabled
  * @property-read Exam $exam
  * @property-read Student $student
- * @property-read \App\Models\Subject $subject
+ * @property-read Subject $subject
  * @method static Builder|ScoreTotal whereClassRank($value)
  * @method static Builder|ScoreTotal whereCreatedAt($value)
  * @method static Builder|ScoreTotal whereEnabled($value)

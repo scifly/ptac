@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
+use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
 
@@ -42,7 +43,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|PassageLog whereTurnstileId($value)
  * @method static Builder|PassageLog whereUpdatedAt($value)
  * @method static Builder|PassageLog whereUserId($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class PassageLog extends Model {
     

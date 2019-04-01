@@ -22,7 +22,7 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read School $school
- * @property-read Collection|\App\Models\WapSiteModule[] $wapSiteModules
+ * @property-read Collection|WapSiteModule[] $wapSiteModules
  * @method static Builder|WapSite whereCreatedAt($value)
  * @method static Builder|WapSite whereEnabled($value)
  * @method static Builder|WapSite whereId($value)

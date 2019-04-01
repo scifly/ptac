@@ -10,6 +10,7 @@ use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
+use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
 /**
  * Class ScoreComposer
@@ -22,7 +23,7 @@ class ScoreComposer {
     /**
      * @param View $view
      * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws Exception
      */
     public function compose(View $view) {
     

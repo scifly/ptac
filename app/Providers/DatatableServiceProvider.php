@@ -1,6 +1,7 @@
 <?php
 namespace App\Providers;
 
+use App\Helpers\Datatable;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,7 +26,7 @@ class DatatableServiceProvider extends ServiceProvider {
     public function register() {
         
         App::bind('datatable', function () {
-            return new \App\Helpers\Datatable;
+            return new Datatable;
         });
         
     }

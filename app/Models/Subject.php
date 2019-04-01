@@ -252,7 +252,7 @@ class Subject extends Model {
      * @param $id
      * @return bool|mixed
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function remove($id = null) {
     

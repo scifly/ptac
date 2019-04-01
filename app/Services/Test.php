@@ -1,5 +1,7 @@
 <?php
 namespace App\Services;
+use Illuminate\Http\JsonResponse;
+
 /**
  * Class Test
  * @package App\Services
@@ -18,7 +20,7 @@ class Test {
     
     /**
      * @param array $headers
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function respond($headers = []) {
         return response()->json($this->data, '200', $headers);

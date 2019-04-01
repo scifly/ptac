@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -242,7 +243,7 @@ class Group extends Model {
     /**
      * 返回指定学校的菜单树
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     function menuTree() {
         

@@ -35,7 +35,7 @@ class EventController extends Controller {
     /**
      * 事件列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
      * @throws Throwable
      */
     public function index() {
@@ -57,7 +57,7 @@ class EventController extends Controller {
      * 显示日历事件
      *
      * @param $userId
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function calendarEvents($userId) {
         

@@ -1,6 +1,7 @@
 <?php
 namespace App\Providers;
 
+use App\Helpers\Wechat;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,7 +26,7 @@ class WechatServiceProvider extends ServiceProvider {
     public function register() {
 
         App::bind('wechat', function () {
-            return new \App\Helpers\Wechat;
+            return new Wechat;
         });
         
     }

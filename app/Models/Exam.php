@@ -6,7 +6,7 @@ use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo};
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Support\Facades\{Auth, DB};
 use Throwable;
 
@@ -70,7 +70,7 @@ class Exam extends Model {
     /**
      * 返回考试
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     function scores() { return $this->hasMany('App\Models\Score'); }
     

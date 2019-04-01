@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,7 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|SmsEducator newModelQuery()
  * @method static Builder|SmsEducator newQuery()
  * @method static Builder|SmsEducator query()
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class SmsEducator extends Model {
     

@@ -77,8 +77,8 @@ use Throwable;
  * @method static Builder|School newQuery()
  * @method static Builder|School query()
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PassageLog[] $passageLogs
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PassageRule[] $passageRules
+ * @property-read Collection|PassageLog[] $passageLogs
+ * @property-read Collection|PassageRule[] $passageRules
  */
 class School extends Model {
     

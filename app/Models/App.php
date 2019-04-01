@@ -8,7 +8,7 @@ use App\Jobs\SyncApp;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo};
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Auth, DB};
 use Throwable;
@@ -86,7 +86,7 @@ class App extends Model {
     /**
      * 返回通过指定应用发送/收到的消息
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     function messages() { return $this->hasMany('App\Models\Message'); }
     

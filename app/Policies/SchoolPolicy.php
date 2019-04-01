@@ -1,11 +1,8 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Models\School;
-use App\Models\User;
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
+use App\Models\{School, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
@@ -22,9 +19,7 @@ class SchoolPolicy {
      *
      * @return void
      */
-    public function __construct() {
-        //
-    }
+    public function __construct() { }
     
     /**
      * 权限判断

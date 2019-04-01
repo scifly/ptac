@@ -22,7 +22,7 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read PollQuestionnaireSubject $pollQuestionnaireSubject
- * @property-read \App\Models\PollQuestionnaireSubject $pqSubject
+ * @property-read PollQuestionnaireSubject $pqSubject
  * @method static Builder|PollQuestionnaireSubjectChoice whereChoice($value)
  * @method static Builder|PollQuestionnaireSubjectChoice whereCreatedAt($value)
  * @method static Builder|PollQuestionnaireSubjectChoice whereId($value)

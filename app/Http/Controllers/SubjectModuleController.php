@@ -76,7 +76,7 @@ class SubjectModuleController extends Controller {
      *
      * @param $id
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function edit($id) {
         

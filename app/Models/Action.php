@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionMethod;
 use Throwable;
 
@@ -491,7 +492,7 @@ class Action extends Model {
      * @param ReflectionClass $controllerObj
      * @param ReflectionMethod $method
      * @return mixed|string
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function methodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
         

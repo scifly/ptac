@@ -3,7 +3,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\{Builder, Model};
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 
 /**
  * App\Models\GroupMenu
@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\{Builder, Model};
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int|null $enabled
- * @property-read \App\Models\Menu $menu
+ * @property-read Menu $menu
  * @method static Builder|GroupMenu whereCreatedAt($value)
  * @method static Builder|GroupMenu whereEnabled($value)
  * @method static Builder|GroupMenu whereGroupId($value)
@@ -35,7 +35,7 @@ class GroupMenu extends Model {
     /**
      * 返回指定记录所属的菜单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function menu() { return $this->belongsTo('App\Models\Menu'); }
     

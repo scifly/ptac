@@ -2,14 +2,19 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
+use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
     Relations\BelongsTo,
     Relations\BelongsToMany};
+use Illuminate\Support\Facades\DB;
+use mysql_xdevapi\Exception;
+use Throwable;
 
 /**
  * App\Models\Turnstile 门禁设备
@@ -46,6 +51,10 @@ use Illuminate\Database\Eloquent\{Builder,
 class Turnstile extends Model {
     
     use ModelTrait;
+    
+    const USER = 'test@qq.com';
+    const PWD = '12345678';
+    const URL = 'http://api.ddd:8080/api/';
     
     protected $table = 'turnstiles';
     
@@ -111,8 +120,21 @@ class Turnstile extends Model {
      * 更新门禁设备列表
      *
      * @return bool
+     * @throws Throwable
      */
     function store() {
+        
+        try {
+            DB::transaction(function () {
+                $devices = $this->invoke('devlist');
+                foreach ($devices as $device) {
+                    !($turnstile = $this->whereDeviceId($device['deviceid'])->first())
+                        ? $this->create($device) : $turnstile->update($device);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
         return true;
         
@@ -134,6 +156,50 @@ class Turnstile extends Model {
         }
         
         return $doors ?? [];
+        
+    }
+    
+    /**
+     * 调用接口
+     *
+     * @param string $api - 接口名称
+     * @param array $params - 调用参数
+     * @return mixed
+     * @throws Throwable
+     */
+    private function invoke($api, array $params = []) {
+        
+        try {
+            $client = new Client;
+            $token = session('token');
+            if (!$token) {
+                $response = $client->post(
+                    self::URL . 'login', [
+                        'form_params' => [
+                            'username' => self::USER,
+                            'password' => self::PWD
+                        ]
+                    ]
+                )->getBody()->getContents();
+                $token = json_decode($response, true)['token'];
+                session(['token' => $token]);
+            }
+            $response = $client->post(
+                self::URL . $api, [
+                    'headers' => ['Authorization' => 'Bearer' . $token],
+                    'form-params' => $params
+                ]
+            );
+            $body = $response->getBody();
+            $status = $response->getHeader('status');
+            throw_if(
+                $status == HttpStatusCode::INTERNAL_SERVER_ERROR,
+                new Exception($body['msg'])
+            );
+            return json_decode($body, true)['data'];
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     

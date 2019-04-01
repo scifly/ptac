@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Throwable;
 
 /**
@@ -40,14 +41,14 @@ class PollQuestionnaireParticipant extends Model {
     /**
      * 返回所属的调查问卷对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function pollQuestionnaire() { return $this->belongsTo('App\Models\PollQuestionnaire'); }
     
     /**
      * 返回所属的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function user() { return $this->belongsTo('App\Models\User'); }
     

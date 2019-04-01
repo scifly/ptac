@@ -28,7 +28,7 @@ class TagComposer {
         } else {
             if (Request::route('id')) {
                 $tag = Tag::find(Request::route('id'));
-                $targetIds = $tag->depts()->pluck('id')->toArray();
+                $targetIds = $tag->departments->pluck('id')->toArray();
                 $targetsHtml = (new Message)->targetsHtml($tag->users, $targetIds);
             }
             $data = [

@@ -298,7 +298,7 @@ class Educator extends Model {
      *
      * @param $id
      * @param array $data
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     function recharge($id, array $data) {
         
@@ -414,7 +414,7 @@ class Educator extends Model {
     /**
      * 批量发卡
      *
-     * @return \Illuminate\Http\JsonResponse|string
+     * @return JsonResponse|string
      * @throws Throwable
      */
     function issue() {

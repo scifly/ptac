@@ -7,6 +7,7 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -55,7 +56,7 @@ class ApiMessage extends Model {
     /**
      * 返回所属的消息类型对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function messageType() {
         
@@ -66,7 +67,7 @@ class ApiMessage extends Model {
     /**
      * 返回所属的消息发送批次对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function messageSendingLog() {
         

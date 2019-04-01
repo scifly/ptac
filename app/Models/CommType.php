@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -43,7 +44,7 @@ class CommType extends Model {
     /**
      * 返回指定通信方式包含的所有消息对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     function messages() { return $this->hasMany('App\Models\Message'); }
     

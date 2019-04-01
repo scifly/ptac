@@ -41,7 +41,7 @@ use Throwable;
  * @property-read MenuType $menuType
  * @property-read Menu|null $parent
  * @property-read School $school
- * @property-read Collection|\App\Models\Tab[] $tabs
+ * @property-read Collection|Tab[] $tabs
  * @property-read Collection|GroupMenu[] $groupMenus
  * @method static Builder|Menu whereCreatedAt($value)
  * @method static Builder|Menu whereEnabled($value)

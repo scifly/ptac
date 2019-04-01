@@ -44,7 +44,7 @@ class PassageRuleRequest extends FormRequest {
             'enabled'        => 'required|boolean',
             'trs' => [
                 'required', function ($attribute, $value, $fail) {
-                    if (!$this->tRange($value)) $fail($attribute . ': 通行时段设置无效');
+                    if (!$this->tRange($value)) $fail($attribute . ': 设置无效');
                 }
             ]
         ];
