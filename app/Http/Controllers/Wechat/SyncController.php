@@ -40,8 +40,9 @@ class SyncController extends Controller {
         
         $paths = explode('/', Request::path());
         $this->corp = Corp::whereAcronym($paths[0])->first();
-        $this->schools = $this->corp->schools;
-        $this->schoolDepartmentIds = $this->schools->pluck('department_id')->toArray();
+        $this->schools = $this->corp ? $this->corp->schools : null;
+        $this->schoolDepartmentIds = !$this->schools ? []
+            : $this->schools->pluck('department_id')->toArray();
         
     }
     

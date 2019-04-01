@@ -74,4 +74,5 @@ function app_routes($acronym) {
     $c = 'Wechat\HomeWorkController';
     $p = $acronym . '/home_works/';
     Route::get($p, $c . '@index');
+    
 }

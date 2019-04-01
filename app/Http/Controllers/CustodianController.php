@@ -136,7 +136,7 @@ class CustodianController extends Controller {
             : $this->output();
         
     }
-
+    
     /**
      * 批量授权
      *

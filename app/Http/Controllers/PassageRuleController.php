@@ -120,4 +120,18 @@ class PassageRuleController extends Controller {
         
     }
     
+    /**
+     * 下发通行规则
+     *
+     * @return JsonResponse|string
+     * @throws Throwable
+     */
+    public function issue() {
+        
+        return $this->result(
+            $this->pr->issue()
+        );
+        
+    }
+    
 }

@@ -22,6 +22,13 @@ class PassageRuleComposer {
         $action = explode('/', Request::path())[1];
         if ($action == 'index') {
             $data = [
+                'buttons'        => [
+                    'issue' => [
+                        'id' => 'issue',
+                        'label' => '下发规则',
+                        'icon' => 'fa fa-minus-circle'
+                    ],
+                ],
                 'titles' => [
                     '#', '名称', '规则id',
                     [

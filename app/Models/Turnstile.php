@@ -160,6 +160,24 @@ class Turnstile extends Model {
     }
     
     /**
+     * 返回门禁设备ID
+     *
+     * @param $doorIds
+     * @return array
+     */
+    function deviceIds(array $doorIds) {
+        
+        $doors = $this->doors();
+        foreach ($doorIds as $doorId) {
+            $paths = explode('.', $doors[$doorId]);
+            $deviceIds[] = $this->whereSn($paths[0])->first()->deviceid;
+        }
+        
+        return array_unique($deviceIds ?? []);
+        
+    }
+    
+    /**
      * 调用接口
      *
      * @param string $api - 接口名称
@@ -167,7 +185,7 @@ class Turnstile extends Model {
      * @return mixed
      * @throws Throwable
      */
-    private function invoke($api, array $params = []) {
+    function invoke($api, array $params = []) {
         
         try {
             $client = new Client;
@@ -190,13 +208,13 @@ class Turnstile extends Model {
                     'form-params' => $params
                 ]
             );
-            $body = $response->getBody();
+            $body = json_decode($response->getBody(), true);
             $status = $response->getHeader('status');
             throw_if(
                 $status == HttpStatusCode::INTERNAL_SERVER_ERROR,
                 new Exception($body['msg'])
             );
-            return json_decode($body, true)['data'];
+            return $body['data'];
         } catch (Exception $e) {
             throw $e;
         }

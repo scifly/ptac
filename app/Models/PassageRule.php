@@ -18,7 +18,7 @@ use Throwable;
 
 /**
  * 门禁通行规则
- * 
+ *
  * Class PassageRule
  *
  * @package App\Models
@@ -70,7 +70,7 @@ class PassageRule extends Model {
         'school_id', 'name', 'ruleid',
         'start_date', 'end_date', 'statuses',
         'tr1', 'tr2', 'tr3', 'targets',
-        'related_ruleid', 'enabled'
+        'related_ruleid', 'enabled',
     ];
     
     /**
@@ -122,10 +122,10 @@ class PassageRule extends Model {
             ['db' => 'PassageRule.tr3', 'dt' => 8],
             ['db' => 'PassageRule.related_ruleid', 'dt' => 9],
             [
-                'db' => 'PassageRule.enabled', 'dt' => 10,
+                'db'        => 'PassageRule.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
-                }
+                },
             ],
         ];
         $condition = 'PassageRule.school_id = ' . $this->schoolId();
@@ -148,9 +148,9 @@ class PassageRule extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $pr = $this->create($data);
-                (new RuleTurnstile)->store(
-                    $pr->id, $data['door_ids'] ?? []
-                );
+                $doorIds = $data['door_ids'] ?? [];
+                (new RuleTurnstile)->store($pr->id, $doorIds);
+                
             });
         } catch (Exception $e) {
             throw $e;
@@ -213,7 +213,7 @@ class PassageRule extends Model {
      * @return array
      */
     function compose() {
-    
+        
         $doors = (new Turnstile)->doors();
         $ruleids = $this->whereSchoolId($this->schoolId())->pluck('name', 'ruleid')->toArray();
         if (Request::route('id')) {
@@ -235,7 +235,7 @@ class PassageRule extends Model {
                 unset($ruleids[$pr->ruleid]);
             }
         }
-    
+        
         return [
             $pr ?? null,
             $weekdays ?? str_split('0000000'),
@@ -243,9 +243,62 @@ class PassageRule extends Model {
                 0, 3, array_fill(0, 2, '00:00')
             ),
             $doors, $selectedDoors ?? null,
-            $ruleids
+            $ruleids,
         ];
         
+    }
+    
+    /**
+     * 下发通行规则
+     *
+     * @throws Throwable
+     */
+    function issue() {
+    
+        try {
+            $devices = Turnstile::whereSchoolId($this->schoolId())->get();
+            $rules = [];
+            foreach ($devices as $device) {
+                foreach ($device->passageRules as $pr) {
+                    $index = $device->ruleid;
+                    list($s_date, $e_date) = array_map(
+                        function ($field) use ($pr) {
+                            return date('Ymd', strtotime($pr->{$field}));
+                        }, ['start_date', 'end_date']
+                    );
+                    $week = implode('',
+                        array_map(
+                            function ($chr) { return '0' . $chr; },
+                            str_split($pr->statuses)
+                        )
+                    );
+                    $tzones = array_map(
+                        function ($field) use ($pr) {
+                            return implode('', array_map(
+                                    function ($time) {
+                                        return date('Hi', strtotime($time));
+                                    }, explode(' - ', $pr->{$field})
+                                )
+                            );
+                        }, ['tr1', 'tr2', 'tr3']
+                    );
+                    $rules[$device->deviceid][] = array_combine(
+                        ['index', 's_date', 'e_date', 'week', 'tzones', 'time_frame'],
+                        [$index, $s_date, $e_date, $week, $tzones, $pr->related_ruleid]
+                    );
+                }
+            }
+            array_map(
+                function ($api, $data) { (new Turnstile)->invoke($api, $data); },
+                ['clrtimeframes', 'settimeframes'],
+                [$devices->pluck('deviceid')->toArray(), $rules]
+            );
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+    
     }
     
 }
