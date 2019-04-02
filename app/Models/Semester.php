@@ -80,7 +80,7 @@ class Semester extends Model {
         $condition = 'Semester.school_id = ' . $this->schoolId();
         
         return Datatable::simple(
-            $this->getModel(), $columns, null, $condition
+            $this, $columns, null, $condition
         );
         
     }

@@ -341,7 +341,7 @@ class School extends Model {
         $condition = 'Corp.id = ' . Corp::whereMenuId($rootMenuId)->first()->id;
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this, $columns, $joins, $condition
         );
         
     }

@@ -81,7 +81,7 @@ class MessageType extends Model {
         ];
         
         return Datatable::simple(
-            $this->getModel(), $columns
+            $this, $columns
         );
         
     }

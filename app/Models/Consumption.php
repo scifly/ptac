@@ -124,7 +124,7 @@ class Consumption extends Model {
         $condition = 'Student.id IN (' . implode(',', $this->contactIds('student')) . ')';
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this, $columns, $joins, $condition
         );
         
     }

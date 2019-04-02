@@ -116,7 +116,7 @@ class Icon extends Model {
             ],
         ];
         
-        return Datatable::simple($this->getModel(), $columns, $joins);
+        return Datatable::simple($this, $columns, $joins);
         
     }
     

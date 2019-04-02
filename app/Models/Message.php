@@ -310,7 +310,7 @@ class Message extends Model {
             : 'Message.r_user_id = ' . Auth::id();
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this, $columns, $joins, $condition
         );
         
     }

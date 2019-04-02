@@ -69,7 +69,7 @@ class SchoolType extends Model {
             ],
         ];
         
-        return Datatable::simple($this->getModel(), $columns);
+        return Datatable::simple($this, $columns);
         
     }
     

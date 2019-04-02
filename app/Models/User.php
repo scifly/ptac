@@ -335,7 +335,7 @@ class User extends Authenticatable {
         }
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition ?? ''
+            $this, $columns, $joins, $condition ?? ''
         );
         
     }
@@ -376,7 +376,7 @@ class User extends Authenticatable {
         $condition = 'Groups.name = \'api\'';
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this, $columns, $joins, $condition
         );
         
     }

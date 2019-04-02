@@ -167,7 +167,7 @@ class Event extends Model {
         $condition = 'Event.enabled = 1';
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this, $columns, $joins, $condition
         );
         
     }

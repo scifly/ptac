@@ -147,7 +147,7 @@ class Custodian extends Model {
         ];
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins,
+            $this, $columns, $joins,
             'Custodian.user_id IN (' . $this->visibleUserIds() . ')'
         );
         

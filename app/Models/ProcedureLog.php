@@ -168,7 +168,7 @@ class ProcedureLog extends Model {
             ],
         ];
         
-        return Datatable::simple($this->getModel(), $columns, self::JOINS, $where);
+        return Datatable::simple($this, $columns, self::JOINS, $where);
     }
     
     /**

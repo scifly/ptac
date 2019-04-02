@@ -70,7 +70,7 @@ class AttachmentType extends Model {
         ];
         
         return Datatable::simple(
-            $this->getModel(), $columns
+            $this, $columns
         );
         
     }

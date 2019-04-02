@@ -117,7 +117,7 @@ class ConferenceParticipant extends Model {
             $condition .= ' AND ConferenceQueue.user_id = ' . $user->id;
         }
         
-        return Datatable::simple($this->getModel(), $columns, $joins, $condition);
+        return Datatable::simple($this, $columns, $joins, $condition);
         
     }
     

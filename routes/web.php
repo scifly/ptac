@@ -289,6 +289,7 @@ foreach (Corp::pluck('acronym')->toArray() as $acronym) {
     );
     routes($routes, $acronym, 'Wechat');
 }
+/** Helper functions ------------------------------------------------------------------------------------------------ */
 /**
  * @param array $routes
  * @param null $prefix

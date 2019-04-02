@@ -217,7 +217,7 @@ class Score extends Model {
             : 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this, $columns, $joins, $condition
         );
         
     }

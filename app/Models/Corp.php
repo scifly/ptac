@@ -181,7 +181,7 @@ class Corp extends Model {
         ];
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins
+            $this, $columns, $joins
         );
         
     }

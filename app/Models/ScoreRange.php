@@ -83,7 +83,7 @@ class ScoreRange extends Model {
         $condition = 'ScoreRange.school_id = ' . $this->schoolId();
         
         return Datatable::simple(
-            $this->getModel(), $columns, null, $condition
+            $this, $columns, null, $condition
         );
         
     }

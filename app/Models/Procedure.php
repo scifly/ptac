@@ -116,7 +116,7 @@ class Procedure extends Model {
         $condition = 'School.id = ' . $this->schoolId();
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this, $columns, $joins, $condition
         );
         
     }
