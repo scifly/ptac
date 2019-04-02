@@ -1,18 +1,20 @@
 <?php
-include_once 'common.php';
 
 use App\Helpers\Broadcaster;
 use App\Helpers\HttpStatusCode;
 use App\Models\Corp;
 use Doctrine\Common\Inflector\Inflector;
 
+/** 后台路由 ---------------------------------------------------------------------------------------------------------- */
 Route::auth();
 Route::any('register', function () { return redirect('login'); });
 Route::get('logout', 'Auth\LoginController@logout');
-Route::get('/', 'HomeController@index');
-Route::get('/home', 'HomeController@index')->name('home');
-Route::any('test/index', 'TestController@index');
-Route::get('listen', 'TestController@listen');
+# 测试及维护用路由
+Route::group(['prefix' => ''], function () {
+    $c = 'TestController';
+    Route::any('test/index', $c . '@index');
+    Route::get('listen', $c . '@listen');
+});
 Route::get('event', function () {
     (new Broadcaster)->broadcast([
         'userId'     => Auth::id() ?? 1,
@@ -21,27 +23,29 @@ Route::get('event', function () {
         'message'    => '工作正常',
     ]);
 });
-/** 菜单入口路由 */
+// Route::group(['prefix' => ''])
+Route::get('/', 'HomeController@index');
+Route::get('home', 'HomeController@index')->name('home');
 Route::get('pages/{id}', 'HomeController@menu');
 $default = [
     'index'   => ['get'],
     'create'  => ['get'],
     'store'   => ['post'],
-    'edit'    => ['get' => '{id?}'],
-    'update'  => ['get' => '{id?}'],
-    'destroy' => ['delete' => '{id?}'],
+    'edit'    => ['{id?}' => 'get'],
+    'update'  => ['{id?}' => 'get'],
+    'destroy' => ['{id?}' => 'delete'],
 ];
 $routes = [
     'action'                 => [
         'index'  => ['get'],
-        'edit'   => ['get' => '{id}'],
-        'update' => ['put' => '{id}'],
+        'edit'   => ['{id}' => 'get'],
+        'update' => ['{id}' => 'put'],
     ],
     'app'                    => [
         'index'   => ['get', 'post'],
-        'edit'    => ['get' => '{id}'],
-        'update'  => ['put' => '{id}'],
-        'destroy' => ['delete' => '{id}'],
+        'edit'    => ['{id}' => 'get'],
+        'update'  => ['{id}' => 'put'],
+        'destroy' => ['{id}' => 'delete'],
     ],
     'card'                   => $default,
     'class'                  => $default,
@@ -58,35 +62,35 @@ $routes = [
     'conference_participant' => [
         'index' => ['get'],
         'store' => ['post'],
-        'show'  => ['get' => '{id}'],
+        'show'  => ['{id}' => 'get'],
     ],
     'corp'                   => $default,
     'custodian'              => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
-        'edit'    => ['get' => '{id}', 'post' => '{id}'],
-        'update'  => ['put' => '{id?}'],
-        'destroy' => ['delete' => '{id?}'],
+        'edit'    => ['{id}' => ['get', 'post']],
+        'update'  => ['{id?}' => 'put'],
+        'destroy' => ['{id?}' => 'delete'],
         'issue'   => ['get', 'post'],
         'permit'  => ['get', 'post'],
     ],
     'department'             => [
         'index'   => ['get', 'post'],
-        'create'  => ['get' => '{parentId}'],
+        'create'  => ['{parentId}' => 'get'],
         'store'   => ['post'],
-        'edit'    => ['get' => '{id}'],
-        'update'  => ['put' => '{id}'],
-        'destroy' => ['delete' => '{id}'],
+        'edit'    => ['{id}' => 'get'],
+        'update'  => ['{id}' => 'put'],
+        'destroy' => ['{id}' => 'delete'],
     ],
     'educator'               => [
         'index'    => ['get'],
         'create'   => ['get', 'post'],
         'store'    => ['post'],
-        'edit'     => ['get' => '{id}', 'post' => '{id}'],
-        'update'   => ['put' => '{id?}'],
-        'recharge' => ['get' => '{id}', 'put' => '{id}'],
-        'destroy'  => ['delete' => 'id?'],
+        'edit'     => ['{id}' => ['get', 'post']],
+        'update'   => ['{id?}' => 'put'],
+        'recharge' => ['{id}' => ['get', 'put']],
+        'destroy'  => ['{id?}' => 'delete'],
         'import'   => ['post'],
         'export'   => ['get', 'post'],
         'issue'    => ['get', 'post'],
@@ -99,7 +103,7 @@ $routes = [
     'group'                  => [
         'index'  => ['get'],
         'create' => ['get', 'post'],
-        'edit'   => ['get' => '{id}', 'post' => '{id}'],
+        'edit'   => ['{id}' => ['get', 'post']],
     ],
     'icon'                   => $default,
     'init'                   => [
@@ -108,37 +112,37 @@ $routes = [
     'major'                  => $default,
     'menu'                   => [
         'index'   => ['get', 'post'],
-        'create'  => ['get' => '{parentId}'],
+        'create'  => ['{parentId}' => 'get'],
         'store'   => ['post'],
-        'edit'    => ['get' => '{id}'],
-        'update'  => ['put' => '{id}'],
-        'destroy' => ['delete' => '{id}'],
-        'sort'    => ['get' => '{id}', 'post' => '{id}'],
+        'edit'    => ['{id}' => 'get'],
+        'update'  => ['{id}' => 'put'],
+        'destroy' => ['{id}' => 'delete'],
+        'sort'    => ['{id}' => ['get', 'post']],
     ],
     'message'                => [
         'index'   => ['get', 'post'],
         'store'   => ['post'],
-        'edit'    => ['get' => '{id}'],
-        'update'  => ['put' => '{id?}'],
-        'show'    => ['get' => '{id}'],
+        'edit'    => ['{id}' => 'get'],
+        'update'  => ['{id}' => 'put'],
+        'show'    => ['{id}' => 'get'],
         'send'    => ['post'],
-        'destroy' => ['delete' => '{id?}'],
+        'destroy' => ['{id?}' => 'delete'],
     ],
     'module'                 => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
-        'edit'    => ['get' => '{id}', 'post' => '{id}'],
-        'update'  => ['get' => '{id?}'],
-        'destroy' => ['delete' => '{id?}'],
+        'edit'    => ['{id}' => ['get', 'post']],
+        'update'  => ['{id?}' => 'get'],
+        'destroy' => ['{id?}' => 'delete'],
     ],
     'operator'               => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
-        'edit'    => ['get' => '{id}', 'post' => '{id}'],
-        'update'  => ['get' => '{id?}'],
-        'destroy' => ['delete' => '{id?}'],
+        'edit'    => ['{id}' => ['get', 'post']],
+        'update'  => ['{id?}' => 'get'],
+        'destroy' => ['{id?}' => 'delete'],
     ],
     'partner'                => $default,
     'passage_log'            => [
@@ -153,15 +157,15 @@ $routes = [
     'school'                 => $default,
     'score'                  => [
         'index'   => ['get'],
-        'create'  => ['get' => '{examId?}'],
-        'edit'    => ['get' => '{id}/{examId?}'],
+        'create'  => ['{examId?}' => 'get'],
+        'edit'    => ['{id}/{examId?}' => 'get'],
         'store'   => ['post'],
-        'update'  => ['put' => '{id?}'],
-        'destroy' => ['delete' => '{id?}'],
-        'rank'    => ['get' => '{examId}'],
+        'update'  => ['{id?}' => 'put'],
+        'destroy' => ['{id?}' => 'delete'],
+        'rank'    => ['{examId}' => 'get'],
         'stat'    => ['get', 'post'],
-        'import'  => ['get' => '{examId?}', 'post' => '{examId?}'],
-        'export'  => ['get' => '{examId?}', 'post' => '{examId?}'],
+        'import'  => ['{examId?}' => ['get', 'post']],
+        'export'  => ['{examId?}' => ['get', 'post']],
         'send'    => ['post'],
     ],
     'score_range'            => array_merge(
@@ -170,16 +174,16 @@ $routes = [
     ),
     'score_total'            => [
         'index' => ['get'],
-        'stat'  => ['get' => '{examId}'],
+        'stat'  => ['{examId}' => 'get'],
     ],
     'semester'               => $default,
     'student'                => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
-        'edit'    => ['get' => '{id}', 'post' => '{id}'],
-        'update'  => ['put' => '{id?}'],
-        'destroy' => ['delete' => '{id?}'],
+        'edit'    => ['{id}' => ['get', 'post']],
+        'update'  => ['{id?}' => 'put'],
+        'destroy' => ['{id?}' => 'delete'],
         'import'  => ['post'],
         'export'  => ['get', 'post'],
         'issue'   => ['get', 'post'],
@@ -189,16 +193,16 @@ $routes = [
     'subject_module'         => $default,
     'tab'                    => [
         'index'  => ['get'],
-        'edit'   => ['get' => '{id}'],
-        'update' => ['put' => '{id}'],
+        'edit'   => ['{id}' => 'get'],
+        'update' => ['{id}' => 'put'],
     ],
     'tag'                    => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
-        'edit'    => ['get' => '{id?}', 'post'],
-        'update'  => ['get' => '{id?}'],
-        'destroy' => ['delete' => '{id?}'],
+        'edit'    => ['{id?}' => ['get', 'post']],
+        'update'  => ['{id?}' => 'get'],
+        'destroy' => ['{id?}' => 'delete'],
     ],
     'turnstile'              => [
         'index' => ['get'],
@@ -213,24 +217,24 @@ $routes = [
     ],
     'wap_site'               => [
         'index'  => ['get'],
-        'edit'   => ['get' => '{id}', 'post' => '{id}'],
-        'update' => ['put' => '{id}'],
+        'edit'   => ['{id}' => ['get', 'post']],
+        'update' => ['{id}' => 'put'],
     ],
     'wap_site_module'        => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
-        'edit'    => ['get' => '{id}', 'post' => '{id}'],
-        'update'  => ['put' => '{id}'],
-        'destroy' => ['delete' => '{id}'],
+        'edit'    => ['{id}' => ['get', 'post']],
+        'update'  => ['{id}' => 'put'],
+        'destroy' => ['{id}' => 'delete'],
     ],
     'wsm_article'            => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
-        'edit'    => ['get' => '{id}', 'post' => '{id}'],
-        'update'  => ['put' => '{id}'],
-        'destroy' => ['delete' => '{id}'],
+        'edit'    => ['{id}' => ['get', 'post']],
+        'update'  => ['{id}' => 'put'],
+        'destroy' => ['{id}' => 'delete'],
     ],
     # 演示(微信端)
     'demo'                   => [
@@ -241,25 +245,71 @@ $routes = [
         'info'      => ['get'],
     ],
 ];
-foreach ($routes as $model => $methods) {
-    $table = Inflector::pluralize($model);
-    $model = $model == 'class' ? 'squad' : $model;
-    $controller = ucfirst(Inflector::camelize($model)) . 'Controller';
-    foreach ($methods as $method => $actions) {
-        foreach ($actions as $key => $value) {
+routes($routes);
+/** 微信端路由 -------------------------------------------------------------------------------------------------------- */
+# 未关注的用户查看微信消息详情的链接
+Route::get('sms/{urlcode}', 'Wechat\WechatSmsController@show');
+$routes = [
+    'message_center' => [
+        'index'   => ['get', 'post'],
+        'create'  => ['get', 'post'],
+        'edit'    => ['{id?}' => ['get', 'post']],
+        'update'  => ['{id?}' => 'put'],
+        'show'    => ['{id}' => ['get', 'post', 'delete']],
+        'destroy' => ['{id}' => 'delete'],
+        'send'    => ['post'],
+    ],
+    'mobile_site'    => [
+        'index'   => ['get'],
+        'module'  => ['get'],
+        'article' => ['get'],
+    ],
+    'score_center'   => [
+        'index'   => ['get', 'post'],
+        'detail'  => ['get', 'post'],
+        'graph'   => ['get', 'post'],
+        'analyze' => ['get'],
+        'stat'    => ['get'],
+    ],
+    'home_work'      => [
+        'index' => ['get'],
+    ],
+];
+foreach (Corp::pluck('acronym')->toArray() as $acronym) {
+    /** 应用入口 */
+    Route::group(['prefix' => $acronym . '/wechat'], function () {
+        $c = 'Wechat\WechatController';
+        Route::get('/', $c . '@index');
+        Route::get('schools', $c . '@schools');
+        Route::get('roles', $c . '@roles');
+    });
+    Route::match(
+        ['get', 'post'], $acronym . '/sync',
+        'Wechat\SyncController@sync'
+    );
+    routes($routes, $acronym, 'Wechat');
+}
+/**
+ * @param array $routes
+ * @param null $prefix
+ * @param null $dir
+ */
+function routes(array $routes, $prefix = null, $dir = null) {
+    foreach ($routes as $model => $methods) {
+        $table = Inflector::pluralize($model);
+        $model = $model == 'class' ? 'squad' : $model;
+        $controller = ucfirst(Inflector::camelize($model)) . 'Controller';
+        !$dir ?: $controller = ucfirst($dir) . '\\' . $controller;
+        foreach ($methods as $method => $reqs) {
             $paths = [$table, $method == 'destroy' ? 'delete' : $method];
-            $action = is_numeric($key) ? $value : $key;
-            is_numeric($key) ?: $paths = array_merge($paths, [$value]);
-            Route::$action(
-                implode('/', $paths),
+            !$prefix ?: $paths = array_merge([$prefix], $paths);
+            $phrases = is_numeric($param = array_keys($reqs)[0]) ? $reqs : $reqs[$param];
+            is_array($phrases) ?: $phrases = [$phrases];
+            is_numeric($param) ?: $paths = array_merge($paths, [$param]);
+            Route::match(
+                $phrases, implode('/', $paths),
                 implode('@', [$controller, $method])
             );
         }
     }
-}
-/** 微信端路由 -------------------------------------------------------------------------------------------------------- */
-Route::get('sms/{urlcode}', 'Wechat\WechatSmsController@show');    # 未关注的用户查看微信消息详情的链接
-$acronyms = Corp::pluck('acronym')->toArray();
-foreach ($acronyms as $acronym) {
-    app_routes($acronym);
 }
