@@ -274,13 +274,16 @@ class Card extends Model {
     /**
      * 返回授权选择输入html
      *
+     * @param $name
+     * @param $class
+     * @param bool $checked
      * @return string
      */
-    function checkbox() {
+    function checkbox($name, $class, $checked = true) {
     
         return Form::checkbox(
-            'auths[]', '%s', true,
-            ['class' => 'minimal']
+            $name, '%s', $checked,
+            ['class' => 'minimal ' . $class]
         )->toHtml();
         
     }
@@ -381,7 +384,7 @@ class Card extends Model {
                     }
                 );
             }
-            $authHtml = $this->checkbox();
+            $authHtml = $this->checkbox('auths[]', 'contact');
             $row = '<tr>%s</tr>';
             $td = '<td class="text-center" style="vertical-align: middle;">%s</td>';
             $list = '';
@@ -435,7 +438,7 @@ class Card extends Model {
         $td = '<td class="text-center" style="vertical-align: middle;">%s</td>';
         foreach ($turnstiles as $t) {
             $id = sprintf(
-                $td, Form::checkbox('ids[]', $t->id, null, ['class' => 'minimal'])->toHtml()
+                $td, sprintf($this->checkbox('gates[]', 'gate', false), $t->id)
             );
             $name = sprintf($td, $t->location);
             $doors = '';

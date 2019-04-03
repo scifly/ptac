@@ -39,6 +39,21 @@
                 page.initSelect2();
                 page.initICheck();
                 page.initBackBtn(table);
+                $.map(
+                    {check: 'ifChecked', uncheck: 'ifUnhecked'},
+                    function (event, action) {
+                        $.map(
+                            {contacts: 'contact', gates: 'gate'},
+                            function (target, i) {
+                                $(document).on(event, '.' + i, function () {
+                                    $('.' + target).each(function () {
+                                        $(this).iCheck(action);
+                                    })
+                                });
+                            }
+                        )
+                    }
+                );
             },
             onSectionChange: function ($sectionId, empty, action) {
                 // 选择班级
