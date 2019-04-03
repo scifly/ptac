@@ -11,18 +11,18 @@
         <div class="row">
             <div class="col-md-3">
                 <div>
-                    @include('shared.single_select', [
-                        'label' => '部门',
-                        'id' => 'section_id',
-                        'items' => $sections,
-                        'icon' => 'fa fa-sitemap'
-                    ])
                     <div class="form-group">
-                        {!! Form::label('user_ids', '一卡通列表', [
-                            'class' => 'col-sm-3 control-label'
+                        {!! Form::label('section_id', '部门') !!}
+                        {!! Form::select('section_id', $sections, null, [
+                            'class' => 'form-control select2',
+                            'style' => 'width: 100%;',
+                            'disabled' => sizeof($sections) <= 1
                         ]) !!}
-                        <div class="col-sm-6">
-                            <table id="simple-table" style="width: 100%"
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('user_ids', '一卡通列表') !!}
+                        <div>
+                            <table style="width: 100%"
                                    class="display nowrap table table-striped table-bordered table-hover table-condensed">
                                 <thead>
                                 <tr>
