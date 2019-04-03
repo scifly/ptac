@@ -57,7 +57,7 @@
             ])
             <!-- 关联门禁 -->
             @include('shared.multiple_select', [
-                'label' => '适用门禁',
+                'label' => '适用门禁通道',
                 'id' => 'door_ids',
                 'icon' => 'fa fa-minus-circle',
                 'items' => $doors,
