@@ -65,7 +65,17 @@
                                 @endforeach
                             </tr>
                             </thead>
-                            <tbody>{!! $turnstiles !!}</tbody>
+                            <tbody>
+                                @if (!empty($turnstiles))
+                                    {!! $turnstiles !!}
+                                @else
+                                    <tr>
+                                        <td class="text-center" colspan="6">
+                                            - 请勾选适用门禁通道 -
+                                        </td>
+                                    </tr>
+                                @endif
+                            </tbody>
                         </table>
                     </div>
                 </div>
