@@ -37,6 +37,7 @@
                 card.onSectionChange($sectionId, empty, 'permit');
                 card.onPermit(formId);
                 page.initSelect2();
+                page.initICheck();
                 page.initBackBtn(table);
             },
             onSectionChange: function ($sectionId, empty, action) {

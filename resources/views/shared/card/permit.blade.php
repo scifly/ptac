@@ -40,7 +40,7 @@
                             <tbody>
                             <tr>
                                 <td colspan="3" class="text-center">
-                                    - 请选择一个部门进行一卡通批量授权 -
+                                    - 请勾选需要授权的卡号 -
                                 </td>
                             </tr>
                             </tbody>
@@ -81,7 +81,7 @@
                                 @else
                                     <tr>
                                         <td class="text-center" colspan="6">
-                                            - 请勾选适用门禁通道 -
+                                            - 请勾选适用的门禁通道 -
                                         </td>
                                     </tr>
                                 @endif
