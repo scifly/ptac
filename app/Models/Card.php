@@ -438,7 +438,7 @@ class Card extends Model {
         $td = '<td class="text-center" style="vertical-align: middle;">%s</td>';
         foreach ($turnstiles as $t) {
             $id = sprintf(
-                $td, sprintf($this->checkbox('gates[]', 'gate', false), $t->id)
+                $td, sprintf($this->checkbox('turnstile_ids[]', 'gate', false), $t->id)
             );
             $name = sprintf($td, $t->location);
             $doors = '';

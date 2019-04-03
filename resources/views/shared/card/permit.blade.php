@@ -80,7 +80,7 @@
                                 </th>
                                 @foreach (['门禁', '1', '2', '3', '4'] as $title)
                                     <th class="text-center" style="vertical-align: middle">
-                                        {!! $title == '门禁' ? $title : '<span class="label bg-blue">' . $title . '</span>'!!}
+                                        {!! $title == '门禁' ? $title : '<span class="label bg-gray">' . $title . '</span>'!!}
                                     </th>
                                 @endforeach
                             </tr>

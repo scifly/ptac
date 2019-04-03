@@ -132,7 +132,8 @@
                         url: 'permit',
                         data: {
                             userIds: $('input[name=user_ids]').val(),
-                            turnstileIds: $('#turnstile_ids').val(),
+                            turnstileIds: $('input[name=turnstile_ids]').val(),
+                            ruleids: $('input[name=ruleids]').val(),
                             _token: page.token()
                         },
                         success: function (result) {
