@@ -54,7 +54,7 @@
                 </div>
             </div>
             <div class="col-md-9">
-                <div class="form-group">
+                <div class="form-group bg">
                     {!! Form::label('daterange', '起止日期') !!}
                     <div class="input-group">
                         @include('shared.icon_addon', [
@@ -78,9 +78,9 @@
                                         'class' => 'minimal gates'
                                     ]) !!}
                                 </th>
-                                @foreach (['门禁', 'No.1', 'No.2', 'No.3', 'No.4'] as $title)
+                                @foreach (['门禁', '1', '2', '3', '4'] as $title)
                                     <th class="text-center" style="vertical-align: middle">
-                                        {!! $title !!}
+                                        {!! $title == '门禁' ? $title : '<span class="label bg-maroon">' . $title . '</span>'!!}
                                     </th>
                                 @endforeach
                             </tr>
