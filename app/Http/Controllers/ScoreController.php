@@ -6,6 +6,9 @@ use App\Models\{Exam, Score};
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use PhpOffice\PhpSpreadsheet\Exception as SpreadsheetException;
+use PhpOffice\PhpSpreadsheet\Reader\Exception as ReaderException;
+use PhpOffice\PhpSpreadsheet\Writer\Exception as WriterException;
 use Throwable;
 
 /**
@@ -183,9 +186,9 @@ class ScoreController extends Controller {
      *
      * @param null $examId
      * @return JsonResponse
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws SpreadsheetException
+     * @throws ReaderException
+     * @throws WriterException
      */
     public function import($examId = null) {
         
@@ -214,8 +217,8 @@ class ScoreController extends Controller {
      *
      * @param null $examId
      * @return mixed
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws SpreadsheetException
+     * @throws WriterException
      */
     public function export($examId = null) {
         

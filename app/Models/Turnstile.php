@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\BelongsToMany};
 use Illuminate\Support\Facades\DB;
-use mysql_xdevapi\Exception;
+use Exception;
 use Throwable;
 
 /**

@@ -40,7 +40,8 @@ class CardTurnstile extends Model {
     protected $table = 'cards_turnstiles';
     
     protected $fillable = [
-        'card_id', 'turnstile_id', 'enabled'
+        'card_id', 'turnstile_id', 'start_date',
+        'end_date', 'pr_ids', 'enabled'
     ];
     
     /**

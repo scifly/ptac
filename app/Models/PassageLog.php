@@ -5,8 +5,11 @@ use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * 通行记录
@@ -17,7 +20,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $school_id 学校id
  * @property int $user_id 用户id
- * @property int $passage_rule_id 通行规则id
+ * @property int $category 记录类型
  * @property int $direction 进出方向
  * @property int $turnstile_id 门禁id
  * @property int $door 通行门编号: 1 - 4
@@ -25,7 +28,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $status 通行状态
- * @property-read PassageRule $passageRule
  * @property-read School $school
  * @property-read Turnstile $turnstile
  * @property-read User $user
@@ -37,7 +39,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|PassageLog whereDirection($value)
  * @method static Builder|PassageLog whereDoor($value)
  * @method static Builder|PassageLog whereId($value)
- * @method static Builder|PassageLog wherePassageRuleId($value)
+ * @method static Builder|PassageLog whereCategory($value)
  * @method static Builder|PassageLog whereSchoolId($value)
  * @method static Builder|PassageLog whereStatus($value)
  * @method static Builder|PassageLog whereTurnstileId($value)
@@ -52,7 +54,7 @@ class PassageLog extends Model {
     protected $table = 'passage_logs';
     
     protected $fillable = [
-        'school_id', 'user_id', 'passage_rule_id',
+        'school_id', 'user_id', 'category',
         'direction', 'turnsitle_id', 'door',
         'clocked_at', 'status',
     ];
@@ -72,13 +74,6 @@ class PassageLog extends Model {
     function user() { return $this->belongsTo('App\Models\User'); }
     
     /**
-     * 返回通行记录所属的通行规则对象
-     *
-     * @return BelongsTo
-     */
-    function passageRule() { return $this->belongsTo('App\Models\PassageRule'); }
-    
-    /**
      * 返回通行记录所属的门禁对象
      *
      * @return BelongsTo
@@ -96,7 +91,7 @@ class PassageLog extends Model {
             ['db' => 'PassageLog.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'Groups.name as role', 'dt' => 2],
-            ['db' => 'PassageRule.name as permission', 'dt' => 3],
+            ['db' => 'PassageLog.category', 'dt' => 3],
             [
                 'db'        => 'PassageLog.direction', 'dt' => 4,
                 'formatter' => function ($d) {
@@ -146,14 +141,6 @@ class PassageLog extends Model {
                 'conditions' => [
                     'Turnstile.id = PassageLog.turnstile_id',
                 ],
-            ],
-            [
-                'table' => 'passage_rules',
-                'alias' => 'PassageRule',
-                'type' => 'INNER',
-                'conditions' => [
-                    'PassageRule.id = PassageLog.passage_rule_id'
-                ]
             ]
         ];
         $condition = 'PassageLog.school_id = ' . $this->schoolId();
@@ -165,10 +152,42 @@ class PassageLog extends Model {
     }
     
     /**
-     * 采集通行门禁记录
+     * 采集门禁通行记录
+     *
+     * @return bool
+     * @throws Throwable
      */
     function store() {
     
+        try {
+            DB::transaction(function () {
+                $records = (new Turnstile)->invoke(
+                    'getlogs', ['ids' => []]
+                );
+                $fields = [
+                    'school_id', 'user_id', 'category', 'direction', 'turnstile_id',
+                    'door', 'clocked_at', 'created_at', 'updated_at', 'status'
+                ];
+                $logs = [];
+                $schoolId = $this->schoolId();
+                foreach ($records as $record) {
+                    $card = Card::whereSn($record['card_num'])->first();
+                    $turnstile = Turnstile::whereSn($record['sn'])->first();
+                    $createdAt = $updatedAt = now()->toDateTimeString();
+                    $logs[] = array_combine($fields, [
+                        $schoolId, $card ? $card->user_id : 0, $record['type'],
+                        $record['direction'], $turnstile ? $turnstile->id : 0, $record['door'],
+                        date('Y-m-d H:i:s', strtotime($record['time'])),
+                        $createdAt, $updatedAt, $record['valid']
+                    ]);
+                }
+                $this->insert($logs);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
     
     }
     

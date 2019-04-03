@@ -405,6 +405,7 @@ class Card extends Model {
                    Card::whereIn('user_id', $userIds)->get()->pluck('id')->toArray(),
                    Request::input('turnstileIds')
                );
+               
                # todo: call api here
            });
         } catch (Exception $e) {
@@ -431,14 +432,37 @@ class Card extends Model {
             : Squad::whereIn('id', $this->classIds());
         $turnstiles = Turnstile::whereSchoolId($this->schoolId())->get();
         $tList = [];
+        $td = '<td class="text-center" style="vertical-align: middle;">%s</td>';
         foreach ($turnstiles as $t) {
-            $tList[$t->id] = implode('.', [$t->sn, $t->location]);
+            $id = sprintf(
+                $td, Form::checkbox('ids[]', $t->id, null, ['class' => 'minimal'])->toHtml()
+            );
+            $name = sprintf($td, $t->location);
+            $doors = '';
+            $prs = [0 => '(禁止通行)', 1 => '无限制'];
+            for ($i = 1; $i <= 4; $i++) {
+                if ($i <= $t->doors) {
+                    $prIds = RuleTurnstile::where(['turnstile_id' => $t->id, 'door' => $i])
+                        ->get()->pluck('passage_rule_id')->toArray();
+                    $prs = array_merge($prs,
+                        PassageRule::whereIn('id', $prIds)
+                        ->pluck('name', 'ruleid')->toArray()
+                    );
+                }
+                $doors .= sprintf(
+                    $td, Form::select('ruleids[' . $t->id . '][]', $prs, null, [
+                    'class' => 'form-control select2',
+                    'style' => 'width: 100%;',
+                    'disabled' => sizeof($prs) <= 1
+                ])->toHtml());
+            }
+            $tList[] = '<tr>' . $id . $name . $doors . '</tr>';
         }
     
         return [
             'formId' => 'form' . $type,
             'sections' => [0 => '(请选择一个部门)'] + $builder->get()->pluck('name', 'id')->toArray(),
-            'turnstiles' => $tList
+            'turnstiles' => implode('', $tList)
         ];
         
     }
