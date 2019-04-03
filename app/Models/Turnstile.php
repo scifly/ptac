@@ -52,9 +52,9 @@ class Turnstile extends Model {
     
     use ModelTrait;
     
-    const USER = 'test@qq.com';
+    const USER = 'test1@qq.com';
     const PWD = '12345678';
-    const URL = 'http://api.ddd:8080/api/';
+    const URL = 'http://api.ddd/api/';
     
     protected $table = 'turnstiles';
     
