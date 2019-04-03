@@ -12,11 +12,16 @@
             <div class="col-md-3">
                 <div class="form-group">
                     {!! Form::label('section_id', '部门') !!}
-                    {!! Form::select('section_id', $sections, null, [
-                        'class' => 'form-control select2',
-                        'style' => 'width: 100%;',
-                        'disabled' => sizeof($sections) <= 1
-                    ]) !!}
+                    <div class="input-group">
+                        @include('shared.icon_addon', [
+                            'class' => 'fa-sitemap'
+                        ])
+                        {!! Form::select('section_id', $sections, null, [
+                            'class' => 'form-control select2',
+                            'style' => 'width: 100%;',
+                            'disabled' => sizeof($sections) <= 1
+                        ]) !!}
+                    </div>
                 </div>
                 <div class="form-group">
                     {!! Form::label('user_ids', '一卡通列表') !!}
@@ -28,7 +33,6 @@
                                 <th style="vertical-align: middle;" class="text-center">
                                     {!! Form::checkbox('contacts', 1, null, [
                                         'class' => 'minimal contacts',
-                                        'title' => '全选/取消全选'
                                     ]) !!}
                                 </th>
                                 @foreach (['姓名', '卡号'] as $title)
@@ -66,8 +70,7 @@
                             <tr>
                                 <th style="vertical-align: middle;" class="text-center">
                                     {!! Form::checkbox('gates', 2, null, [
-                                        'class' => 'minimal gates',
-                                        'title' => '全选/取消全选'
+                                        'class' => 'minimal gates'
                                     ]) !!}
                                 </th>
                                 @foreach (['门禁', 'No.1', 'No.2', 'No.3', 'No.4'] as $title)
