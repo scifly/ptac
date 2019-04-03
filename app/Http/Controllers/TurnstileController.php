@@ -46,6 +46,7 @@ class TurnstileController extends Controller {
      * 更新门禁设备
      *
      * @return JsonResponse|string
+     * @throws Throwable
      */
     public function store() {
     
