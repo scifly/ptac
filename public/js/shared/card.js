@@ -134,6 +134,7 @@
                             userIds: $('input[name=user_ids]').val(),
                             turnstileIds: $('input[name=turnstile_ids]').val(),
                             ruleids: $('input[name=ruleids]').val(),
+                            dateRange: $('input[name=daterange]').val(),
                             _token: page.token()
                         },
                         success: function (result) {

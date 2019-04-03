@@ -17,7 +17,7 @@ use Throwable;
 
 /**
  * 一卡通
- * 
+ *
  * Class Card
  *
  * @package App\Models
@@ -44,7 +44,7 @@ class Card extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'sn', 'user_id', 'status'
+        'sn', 'user_id', 'status',
     ];
     
     /**
@@ -64,26 +64,26 @@ class Card extends Model {
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
             [
-                'db' => 'Card.sn', 'dt' => 1,
+                'db'        => 'Card.sn', 'dt' => 1,
                 'formatter' => function ($d) {
                     return $d ?? sprintf(Snippet::BADGE, 'text-gray', '[尚未发卡]');
-                }
+                },
             ],
             ['db' => 'User.realname', 'dt' => 2],
             ['db' => 'Groups.name', 'dt' => 3],
             [
-                'db' => 'User.id as userId', 'dt' => 4,
+                'db'        => 'User.id as userId', 'dt' => 4,
                 'formatter' => function ($d) {
                     return User::find($d)->mobiles->where('isdefault', 1)->first()->mobile;
-                }
+                },
             ],
             [
-                'db' => 'Card.created_at', 'dt' => 5, 'dr' => true,
-                'formatter' => function ($d) { return $d ?? ' - '; }
+                'db'        => 'Card.created_at', 'dt' => 5, 'dr' => true,
+                'formatter' => function ($d) { return $d ?? ' - '; },
             ],
             [
-                'db' => 'Card.updated_at', 'dt' => 6, 'dr' => true,
-                'formatter' => function ($d) { return $d ?? ' - '; }
+                'db'        => 'Card.updated_at', 'dt' => 6, 'dr' => true,
+                'formatter' => function ($d) { return $d ?? ' - '; },
             ],
             [
                 'db'        => 'Card.status', 'dt' => 7,
@@ -102,7 +102,7 @@ class Card extends Model {
                     return $row['card_id'] ? Datatable::status($status, $row, false) : $status;
                 },
             ],
-            ['db' => 'User.card_id', 'dt' => 8]
+            ['db' => 'User.card_id', 'dt' => 8],
         ];
         $joins = [
             [
@@ -263,10 +263,10 @@ class Card extends Model {
     function input() {
         
         return Form::text('sn', '%s', [
-            'class' => 'form-control text-blue input-sm',
+            'class'     => 'form-control text-blue input-sm',
             'maxlength' => 10,
-            'data-uid' => '%s',
-            'data-seq' => '%s'
+            'data-uid'  => '%s',
+            'data-seq'  => '%s',
         ])->toHtml();
         
     }
@@ -280,7 +280,7 @@ class Card extends Model {
      * @return string
      */
     function checkbox($name, $class, $checked = true) {
-    
+        
         return Form::checkbox(
             $name, '%s', $checked,
             ['class' => 'minimal ' . $class]
@@ -297,10 +297,11 @@ class Card extends Model {
     function status($selected) {
         
         $items = [1 => '正常', 2 => '挂失'];
+        
         return Form::select('status', $items, $selected, [
-            'class' => 'form-control select2 input-sm',
-            'style' => 'width: 100%;',
-            'disabled' => sizeof($items) <= 1
+            'class'    => 'form-control select2 input-sm',
+            'style'    => 'width: 100%;',
+            'disabled' => sizeof($items) <= 1,
         ])->toHtml();
         
     }
@@ -312,7 +313,7 @@ class Card extends Model {
      * @throws Throwable
      */
     function issue() {
-    
+        
         $this->validate($sns = Request::input('sns'));
         try {
             DB::transaction(function () use ($sns) {
@@ -328,8 +329,8 @@ class Card extends Model {
                             );
                             $card = Card::create([
                                 'user_id' => $userId,
-                                'sn' => $sn,
-                                'status' => 1
+                                'sn'      => $sn,
+                                'status'  => 1,
                             ]);
                         } else {
                             if ($card->sn != $sn) {
@@ -354,10 +355,10 @@ class Card extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return response()->json([
-            'title' => '批量发卡',
-            'message' => __('messages.ok')
+            'title'   => '批量发卡',
+            'message' => __('messages.ok'),
         ]);
         
     }
@@ -370,7 +371,7 @@ class Card extends Model {
      * @throws Throwable
      */
     function permit($type) {
-    
+        
         if (Request::has('sectionId')) {
             if ($type == 'Educator') {
                 $users = Department::find(Request::input('section_id'))->users->filter(
@@ -379,12 +380,12 @@ class Card extends Model {
             } else {
                 $users = Department::find(Squad::find(Request::input('sectionId'))->department_id)
                     ->users->filter(
-                    function (User $user) use ($type) {
-                        return $user->group->name == ($type == 'Custodian' ? '监护人' : '学生');
-                    }
-                );
+                        function (User $user) use ($type) {
+                            return $user->group->name == ($type == 'Custodian' ? '监护人' : '学生');
+                        }
+                    );
             }
-            $authHtml = $this->checkbox('auths[]', 'contact');
+            $authHtml = $this->checkbox('user_ids[]', 'contact');
             $row = '<tr>%s</tr>';
             $td = '<td class="text-center" style="vertical-align: middle;">%s</td>';
             $list = '';
@@ -392,32 +393,48 @@ class Card extends Model {
                 if (!$user->card) continue;
                 $list .= sprintf(
                     $row, implode('', array_map(
-                        function ($value) use ($td) {return sprintf($td, $value); },
+                        function ($value) use ($td) { return sprintf($td, $value); },
                         [$user->realname, $user->card->sn, sprintf($authHtml, $user->id)]
                     ))
                 );
             }
-        
+            
             return $list;
         }
-        
         try {
-           DB::transaction(function () {
-               $userIds = Request::input('userIds');
-               (new CardTurnstile)->store(
-                   Card::whereIn('user_id', $userIds)->get()->pluck('id')->toArray(),
-                   Request::input('turnstileIds')
-               );
-               
-               # todo: call api here
-           });
+            DB::transaction(function () {
+                $input = Request::all();
+                $userIds = $input['userIds'];
+                $turnstileIds = $input['turnstileIds'];
+                $ruleids = $input['ruleids'];
+                list($start, $end) = explode(' - ', $input['dateRange']);
+                (new CardTurnstile)->store(
+                    Card::whereIn('user_id', $userIds)->get()->pluck('id')->toArray(),
+                    $turnstileIds, $start, $end, $ruleids
+                );
+                $data = [];
+                foreach ($turnstileIds as $turnstileId) {
+                    $deviceid = Turnstile::find($turnstileId)->deviceid;
+                    foreach ($userIds as $userId) {
+                        $user = User::find($userId);
+                        if (!$user->card) continue;
+                        $data[$deviceid] = [
+                            'card' => $user->card->sn,
+                            's_date' => $start,
+                            'e_date' => $end,
+                            'time_frames' => $ruleids[$turnstileId]
+                        ];
+                    }
+                }
+                (new Turnstile)->invoke('adddevperms', $data);
+            });
         } catch (Exception $e) {
             throw $e;
         }
         
         return response()->json([
-            'title' => '批量授权',
-            'message' => __('messages.ok')
+            'title'   => '批量授权',
+            'message' => __('messages.ok'),
         ]);
         
     }
@@ -429,10 +446,7 @@ class Card extends Model {
      * @return array
      */
     function compose($type) {
-    
-        $builder = $type == 'Educator'
-            ? Department::whereIn('id', $this->departmentIds())
-            : Squad::whereIn('id', $this->classIds());
+        
         $turnstiles = Turnstile::whereSchoolId($this->schoolId())->get();
         $tList = [];
         $td = '<td class="text-center" style="vertical-align: middle;">%s</td>';
@@ -449,23 +463,26 @@ class Card extends Model {
                         ->get()->pluck('passage_rule_id')->toArray();
                     $prs = array_merge($prs,
                         PassageRule::whereIn('id', $prIds)
-                        ->pluck('name', 'ruleid')->toArray()
+                            ->pluck('name', 'ruleid')->toArray()
                     );
                 }
                 $doors .= sprintf(
                     $td, Form::select('ruleids[' . $t->id . '][]', $prs, null, [
-                    'class' => 'form-control select2',
-                    'style' => 'width: 100%;',
-                    'disabled' => sizeof($prs) <= 1
+                    'class'    => 'form-control select2',
+                    'style'    => 'width: 100%;',
+                    'disabled' => sizeof($prs) <= 1,
                 ])->toHtml());
             }
             $tList[] = '<tr>' . $id . $name . $doors . '</tr>';
         }
-    
+        $builder = $type == 'Educator'
+            ? Department::whereIn('id', $this->departmentIds())
+            : Squad::whereIn('id', $this->classIds());
+        
         return [
-            'formId' => 'form' . $type,
-            'sections' => [0 => '(请选择一个部门)'] + $builder->get()->pluck('name', 'id')->toArray(),
-            'turnstiles' => implode('', $tList)
+            'formId'     => 'form' . $type,
+            'sections'   => [0 => '(请选择一个部门)'] + $builder->get()->pluck('name', 'id')->toArray(),
+            'turnstiles' => implode('', $tList),
         ];
         
     }
@@ -476,7 +493,7 @@ class Card extends Model {
      * @param array $cards
      */
     private function validate(array $cards) {
-    
+        
         $sns = array_values($cards);
         if (is_array($sns[0])) {
             $sns = array_pluck($sns, 'sn');
@@ -490,7 +507,7 @@ class Card extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             implode('', [
                 (!empty($sns) ? ('卡号: ' . implode(',', $ds ?? [])) : ''),
-                '有重复，请检查后重试'
+                '有重复，请检查后重试',
             ])
         );
         

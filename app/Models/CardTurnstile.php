@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -19,6 +20,9 @@ use Throwable;
  * @property int $id
  * @property int $card_id
  * @property int $turnstile_id
+ * @property Carbon $start_date
+ * @property Carbon $end_date
+ * @property string $ruleids
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
@@ -32,6 +36,9 @@ use Throwable;
  * @method static Builder|CardTurnstile whereEnabled($value)
  * @method static Builder|CardTurnstile whereId($value)
  * @method static Builder|CardTurnstile whereTurnstileId($value)
+ * @method static Builder|CardTurnstile whereStartDate($value)
+ * @method static Builder|CardTurnstile whereEndDate($value)
+ * @method static Builder|CardTurnstile whereRuleids($value)
  * @method static Builder|CardTurnstile whereUpdatedAt($value)
  * @mixin Eloquent
  */
@@ -41,7 +48,7 @@ class CardTurnstile extends Model {
     
     protected $fillable = [
         'card_id', 'turnstile_id', 'start_date',
-        'end_date', 'pr_ids', 'enabled'
+        'end_date', 'ruleids', 'enabled'
     ];
     
     /**
@@ -61,21 +68,27 @@ class CardTurnstile extends Model {
     /**
      * @param $cardIds
      * @param $turnstileIds
+     * @param $start
+     * @param $end
+     * @param $ruleids
      * @return bool
      * @throws Throwable
      */
-    function store($cardIds, $turnstileIds) {
+    function store($cardIds, $turnstileIds, $start, $end, $ruleids) {
         
         try {
-            DB::transaction(function () use ($cardIds, $turnstileIds) {
-                $this->whereIn('card_id', $cardIds)->delete();
+            DB::transaction(function () use ($cardIds, $turnstileIds, $start, $end, $ruleids) {
+                $timestamp = now()->toDateTimeString();
                 foreach ($cardIds as $cardId) {
                     foreach ($turnstileIds as $turnstileId) {
                         $records[] = [
                             'card_id' => $cardId,
                             'turnstile_id' => $turnstileId,
-                            'created_at' => now()->toDateTimeString(),
-                            'updated_at' => now()->toDateTimeString(),
+                            'start_date' => $start,
+                            'end_date' => $end,
+                            'ruleids' => implode(',', $ruleids[$turnstileId]),
+                            'created_at' => $timestamp,
+                            'updated_at' => $timestamp,
                             'enabled' => 1
                         ];
                     }
