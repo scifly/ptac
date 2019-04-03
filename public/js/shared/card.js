@@ -39,6 +39,9 @@
                 page.initSelect2();
                 page.initICheck();
                 page.initBackBtn(table);
+                $.getMultiScripts(['js/shared/dtrange.js']).done(
+                    function () { $.dtrange().dRange('.drange');}
+                );
                 $.map(
                     {check: 'ifChecked', uncheck: 'ifUnhecked'},
                     function (event, action) {
