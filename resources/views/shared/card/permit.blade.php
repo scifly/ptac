@@ -46,7 +46,7 @@
                 </div>
             </div>
             <div class="col-md-9">
-                <table class="table">
+                <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
                     <tbody>
                     <tr>
                         @foreach (['#', '门禁', 'No.1', 'No.2', 'No.3', 'No.4'] as $title)
