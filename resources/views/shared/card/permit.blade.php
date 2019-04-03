@@ -48,7 +48,7 @@
                     {!! Form::label('user_ids', '门禁列表') !!}
                     <div>
                         <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
-                            <tbody>
+                            <thead>
                             <tr>
                                 @foreach (['#', '门禁', 'No.1', 'No.2', 'No.3', 'No.4'] as $title)
                                     <th class="text-center" style="vertical-align: middle">
@@ -56,8 +56,8 @@
                                     </th>
                                 @endforeach
                             </tr>
-                            {!! $turnstiles !!}
-                            </tbody>
+                            </thead>
+                            <tbody>{!! $turnstiles !!}</tbody>
                         </table>
                     </div>
                 </div>
