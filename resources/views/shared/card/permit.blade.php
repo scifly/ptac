@@ -27,7 +27,8 @@
                             <tr>
                                 <th style="vertical-align: middle;" class="text-center">
                                     {!! Form::checkbox('contacts', 1, null, [
-                                        'class' => 'minimal contacts'
+                                        'class' => 'minimal contacts',
+                                        'title' => '全选/取消全选'
                                     ]) !!}
                                 </th>
                                 @foreach (['姓名', '卡号'] as $title)
@@ -65,7 +66,8 @@
                             <tr>
                                 <th style="vertical-align: middle;" class="text-center">
                                     {!! Form::checkbox('gates', 2, null, [
-                                        'class' => 'minimal gates'
+                                        'class' => 'minimal gates',
+                                        'title' => '全选/取消全选'
                                     ]) !!}
                                 </th>
                                 @foreach (['门禁', 'No.1', 'No.2', 'No.3', 'No.4'] as $title)
