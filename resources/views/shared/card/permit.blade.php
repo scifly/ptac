@@ -25,7 +25,12 @@
                                class="display nowrap table table-striped table-bordered table-hover table-condensed">
                             <thead>
                             <tr>
-                                @foreach (['姓名', '卡号', '授权'] as $title)
+                                <th style="vertical-align: middle;" class="text-center">
+                                    {!! Form::checkbox('contacts', 1, null, [
+                                        'class' => 'minimal', 'id' => 'contacts'
+                                    ]) !!}
+                                </th>
+                                @foreach (['姓名', '卡号'] as $title)
                                     <th style="vertical-align: middle;" class="text-center">
                                         {!! $title !!}
                                     </th>
@@ -58,7 +63,12 @@
                         <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
                             <thead>
                             <tr>
-                                @foreach (['#', '门禁', 'No.1', 'No.2', 'No.3', 'No.4'] as $title)
+                                <th style="vertical-align: middle;" class="text-center">
+                                    {!! Form::checkbox('gates', 2, null, [
+                                        'class' => 'minimal', 'id' => 'gates'
+                                    ]) !!}
+                                </th>
+                                @foreach (['门禁', 'No.1', 'No.2', 'No.3', 'No.4'] as $title)
                                     <th class="text-center" style="vertical-align: middle">
                                         {!! $title !!}
                                     </th>
