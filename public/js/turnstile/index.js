@@ -8,6 +8,7 @@ $('#store').on('click', function () {
         type: 'POST',
         dataType: 'json',
         url: 'store',
+        data: { _token: page.token() },
         success: function (result) {
             $('.overlay').hide();
             page.inform(result.title, result.message, page.success);
