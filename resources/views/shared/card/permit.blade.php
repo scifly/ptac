@@ -81,7 +81,7 @@
                                 @else
                                     <tr>
                                         <td class="text-center" colspan="6">
-                                            - 请勾选适用的门禁通道 -
+                                            - 请选择适用的门禁及通道规则 -
                                         </td>
                                     </tr>
                                 @endif
