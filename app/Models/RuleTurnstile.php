@@ -69,10 +69,11 @@ class RuleTurnstile extends Model {
             DB::transaction(function () use ($passageRuleId, $ids) {
                 $doors = (new Turnstile)->doors();
                 $this->wherePassageRuleId($passageRuleId)->delete();
+                $timestamp = now()->toDateTimeString();
                 $record = [
                     'passage_rule_id' => $passageRuleId,
-                    'created_at' => now()->toDateTimeString(),
-                    'updated_at' => now()->toDateTimeString(),
+                    'created_at' => $timestamp,
+                    'updated_at' => $timestamp,
                     'enabled' => 1
                 ];
                 foreach ($ids as $id) {

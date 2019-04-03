@@ -148,9 +148,10 @@ class PassageRule extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $pr = $this->create($data);
-                $doorIds = $data['door_ids'] ?? [];
-                (new RuleTurnstile)->store($pr->id, $doorIds);
-                
+                (new RuleTurnstile)->store(
+                    $pr->id, $doorIds = $data['door_ids'] ?? []
+                );
+                $this->issue($this->deviceids($doorIds));
             });
         } catch (Exception $e) {
             throw $e;
@@ -174,8 +175,9 @@ class PassageRule extends Model {
             DB::transaction(function () use ($data, $id) {
                 $this->find($id)->update($data);
                 (new RuleTurnstile)->store(
-                    $id, $data['door_ids'] ?? []
+                    $id, $doorIds = $data['door_ids'] ?? []
                 );
+                $this->issue($this->deviceids($doorIds));
             });
         } catch (Exception $e) {
             throw $e;
@@ -251,12 +253,16 @@ class PassageRule extends Model {
     /**
      * 下发通行规则
      *
-     * @throws Throwable
+     * @param array $deviceids
+     * @return bool
+     * @throws Exception
      */
-    function issue() {
+    function issue($deviceids = []) {
     
         try {
-            $devices = Turnstile::whereSchoolId($this->schoolId())->get();
+            $devices = empty($deviceids)
+                ? Turnstile::whereSchoolId($this->schoolId())->get()
+                : Turnstile::whereIn('deviceid', $deviceids)->get();
             $rules = [];
             foreach ($devices as $device) {
                 foreach ($device->passageRules as $pr) {
@@ -299,6 +305,24 @@ class PassageRule extends Model {
         
         return true;
     
+    }
+    
+    /**
+     * 返回门禁设备deviceid数组
+     *
+     * @param $doorIds
+     * @return array
+     */
+    private function deviceids($doorIds) {
+    
+        $doors = (new Turnstile)->doors();
+        foreach ($doorIds as $id) {
+            list($sn) = explode('.', $doors[$id]);
+            $deviceids[] = Turnstile::whereSn($sn)->first()->deviceid;
+        }
+        
+        return array_unique($deviceids ?? []);
+        
     }
     
 }
