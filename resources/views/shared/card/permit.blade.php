@@ -45,6 +45,14 @@
             </div>
             <div class="col-md-9">
                 <div class="form-group">
+                    {!! Form::label('daterange', '起止日期') !!}
+                    {!! Form::text('daterange', null, [
+                        'class' => 'form-control text-blue drange',
+                        'placeholder' => '(起始日期 - 结束日期)',
+                        'required' => 'true',
+                    ]) !!}
+                </div>
+                <div class="form-group">
                     {!! Form::label('user_ids', '门禁列表') !!}
                     <div>
                         <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
