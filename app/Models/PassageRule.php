@@ -153,7 +153,7 @@ class PassageRule extends Model {
                 (new RuleTurnstile)->store(
                     $pr->id, $doorIds = $data['door_ids'] ?? []
                 );
-                Log::info('info',$this->deviceids($doorIds));
+                Log::info('info',array_values($this->deviceids($doorIds)));
                 $this->issue($this->deviceids($doorIds));
             });
         } catch (Exception $e) {
