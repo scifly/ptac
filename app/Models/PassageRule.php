@@ -151,7 +151,7 @@ class PassageRule extends Model {
                 (new RuleTurnstile)->store(
                     $pr->id, $doorIds = $data['door_ids'] ?? []
                 );
-                $this->issue($this->deviceids($doorIds));
+                // $this->issue($this->deviceids($doorIds));
             });
         } catch (Exception $e) {
             throw $e;
@@ -177,7 +177,7 @@ class PassageRule extends Model {
                 (new RuleTurnstile)->store(
                     $id, $doorIds = $data['door_ids'] ?? []
                 );
-                $this->issue($this->deviceids($doorIds));
+                // $this->issue($this->deviceids($doorIds));
             });
         } catch (Exception $e) {
             throw $e;
