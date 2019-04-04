@@ -125,7 +125,7 @@ class Turnstile extends Model {
             DB::transaction(function () {
                 $devices = $this->invoke('devlist');
                 foreach ($devices as $device) {
-                    !($turnstile = $this->whereDeviceId($device['deviceid'])->first())
+                    !($turnstile = $this->whereDeviceid($device['deviceid'])->first())
                         ? $this->create($device) : $turnstile->update($device);
                 }
             });
