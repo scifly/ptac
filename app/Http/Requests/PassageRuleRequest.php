@@ -78,7 +78,8 @@ class PassageRuleRequest extends FormRequest {
      * @return bool
      */
     private function tRange($trs) {
-        
+
+        Log::info('trs', $trs);
         for ($i = 0; $i < sizeof($trs); $i++) {
             # 通行时段起始时间不得晚于结束时间
             if ($trs[$i][0] >= $trs[$i][1]) return false;
