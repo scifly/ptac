@@ -46,6 +46,7 @@ class PassageLogController extends Controller {
      * 采集数据
      *
      * @return JsonResponse|string
+     * @throws Throwable
      */
     public function store() {
         

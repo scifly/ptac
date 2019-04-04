@@ -152,7 +152,7 @@ class App extends Model {
      *
      * @param AppRequest $request
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     function sync(AppRequest $request) {
         

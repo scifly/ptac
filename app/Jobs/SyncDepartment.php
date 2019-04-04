@@ -276,6 +276,7 @@ class SyncDepartment implements ShouldQueue {
      *
      * @return mixed
      * @throws PusherException
+     * @throws Exception
      */
     private function accessToken() {
         

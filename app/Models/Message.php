@@ -8,7 +8,8 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasOne};
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo, Relations\HasOne};
+use Illuminate\Support\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use Illuminate\View\View;
@@ -713,6 +714,7 @@ class Message extends Model {
      * @param App $app - 应用详情
      * @param array $message - 消息详情
      * @return array|bool|mixed
+     * @throws Throwable
      */
     function sendWx(App $app, array $message) {
         
@@ -737,7 +739,7 @@ class Message extends Model {
      * @param $mobiles
      * @param $content
      * @return string
-     * @throws Exception
+     * @throws Throwable
      */
     function sendSms($mobiles, $content) {
         
@@ -1112,7 +1114,7 @@ class Message extends Model {
      * 上传媒体文件
      *
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     function import() {
         
@@ -1355,7 +1357,7 @@ class Message extends Model {
     /**
      * 获取消息
      *
-     * @return Message[]|Builder[]|Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection
+     * @return Message[]|Builder[]|Collection|\Illuminate\Database\Query\Builder[]|Collection
      */
     private function messages() {
     

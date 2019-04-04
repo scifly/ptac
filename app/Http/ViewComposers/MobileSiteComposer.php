@@ -6,6 +6,7 @@ use App\Models\Media;
 use App\Models\WapSite;
 use App\Models\WapSiteModule;
 use App\Models\WsmArticle;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -30,6 +31,7 @@ class MobileSiteComposer {
     
     /**
      * @param View $view
+     * @throws BindingResolutionException
      */
     public function compose(View $view) {
         

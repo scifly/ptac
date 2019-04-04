@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Request};
+use Illuminate\Support\{Arr, Facades\Auth, Facades\DB, Facades\Request};
 use ReflectionException;
 use Throwable;
 
@@ -357,7 +357,7 @@ class Student extends Model {
     
         $records = $this->upload();
         $ns = array_count_values(
-            array_map('strval', array_pluck($records, 'G'))
+            array_map('strval', Arr::pluck($records, 'G'))
         );
         foreach ($ns as $n => $count) {
             if (!empty($n) && $count > 1) $ds[] = $n;

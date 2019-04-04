@@ -245,7 +245,7 @@ class Exam extends Model {
             $classes = [];
         } else {
             $classes = Squad::whereIn('id', explode(',', $exam->class_ids))
-                ->whereEnabled(1)
+                ->where('enabled', 1)
                 ->pluck('name', 'id')
                 ->toArray();
         }

@@ -11,6 +11,7 @@ use Exception;
 use Form;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
@@ -496,7 +497,7 @@ class Card extends Model {
         
         $sns = array_values($cards);
         if (is_array($sns[0])) {
-            $sns = array_pluck($sns, 'sn');
+            $sns = Arr::pluck($sns, 'sn');
         }
         $ns = array_count_values(array_map('strval', $sns));
         foreach ($ns as $n => $count) {

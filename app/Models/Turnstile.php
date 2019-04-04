@@ -6,14 +6,10 @@ use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use GuzzleHttp\Client;
-use Illuminate\Database\Eloquent\{Builder,
-    Collection,
-    Model,
-    Relations\BelongsTo,
-    Relations\BelongsToMany};
-use Illuminate\Support\Facades\DB;
 use Exception;
+use GuzzleHttp\Client;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
@@ -194,9 +190,9 @@ class Turnstile extends Model {
                 $response = $client->post(
                     self::URL . 'login', [
                         'form_params' => [
-                            'username' => self::USER,
-                            'password' => self::PWD
-                        ]
+                            'email'    => self::USER,
+                            'password' => self::PWD,
+                        ],
                     ]
                 )->getBody()->getContents();
                 $token = json_decode($response, true)['token'];
@@ -204,8 +200,8 @@ class Turnstile extends Model {
             }
             $response = $client->post(
                 self::URL . $api, [
-                    'headers' => ['Authorization' => 'Bearer' . $token],
-                    'form-params' => $params
+                    'headers'     => ['Authorization' => 'Bearer' . $token],
+                    'form-params' => $params,
                 ]
             );
             $body = json_decode($response->getBody(), true);
@@ -214,6 +210,7 @@ class Turnstile extends Model {
                 $status == HttpStatusCode::INTERNAL_SERVER_ERROR,
                 new Exception($body['msg'])
             );
+            
             return $body['data'];
         } catch (Exception $e) {
             throw $e;

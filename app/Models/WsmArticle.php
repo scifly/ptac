@@ -5,6 +5,7 @@ use App\Facades\Datatable;
 use App\Helpers\{HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Request};
@@ -60,6 +61,7 @@ class WsmArticle extends Model {
     /**
      * WsmArticle constructor.
      * @param array $attributes
+     * @throws BindingResolutionException
      */
     function __construct(array $attributes = []) {
         

@@ -123,8 +123,9 @@ class Squad extends Model {
             [
                 'db'        => 'Squad.educator_ids', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return implode(', ', Educator::whereIn('id', explode(',', $d))
-                        ->with('user')->get()->pluck('user.realname')->toArray());
+                    return implode(', ', Educator::with('user')
+                        ->whereIn('id', explode(',', $d))
+                        ->get()->pluck('user.realname')->toArray());
                 },
             ],
             ['db' => 'Squad.created_at', 'dt' => 4],

@@ -9,6 +9,7 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
+    Support\Arr,
     Support\Facades\DB};
 use Pusher\PusherException;
 use Throwable;
@@ -51,7 +52,7 @@ class SendMessage implements ShouldQueue {
         
         try {
             DB::transaction(function () {
-                $results = array_collapse(
+                $results = Arr::collapse(
                     array_map(
                         function (Message $message) {
                             return $this->send($message, $this->response);

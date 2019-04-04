@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use SimpleXMLElement;
+use Throwable;
 
 /**
  * 布置作业
@@ -42,7 +43,8 @@ class HomeWorkController extends Controller {
     /**
      * 微信支付测试
      *
-     * @throws Exception
+     * @return Factory|View|string
+     * @throws Throwable
      */
     public function index() {
     
@@ -179,6 +181,7 @@ class HomeWorkController extends Controller {
      * 获取当前登录用户的openid
      *
      * @return mixed
+     * @throws Throwable
      */
     private function openid() {
     

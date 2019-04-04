@@ -74,9 +74,10 @@ class SquadComposer {
             $grades = Grade::whereIn('id', $this->gradeIds())
                 ->where('enabled', 1)
                 ->pluck('name', 'id');
-            $educators = Educator::whereIn('id', $this->contactIds('educator'))
-                ->where('enabled', 1)->with('user')
-                ->get()->pluck('user.realname', 'id');
+            $educators = Educator::with('user')
+                ->whereIn('id', $this->contactIds('educator'))
+                ->where('enabled', 1)->get()
+                ->pluck('user.realname', 'id');
             if (Request::route('id')) {
                 $educatorIds = Squad::find(Request::route('id'))->educator_ids;
                 $educatorIds == '0' ?: $selectedEducators = $this->educator->educatorList(

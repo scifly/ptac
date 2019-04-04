@@ -539,13 +539,13 @@ class Score extends Model {
         $exam = Exam::find($examId);
         # 指定考试对应的班级
         $classIds = Squad::whereIn('id', explode(',', $exam->class_ids))
-            ->whereEnabled(1)->pluck('id')->toArray();
+            ->where('enabled', 1)->pluck('id')->toArray();
         # 指定考试对应的科目列表
         $subjectList = Subject::whereIn('id', explode(',', $exam->subject_ids))
-            ->whereEnabled(1)->pluck('name', 'id')->toArray();
+            ->where('enabled', 1)->pluck('name', 'id')->toArray();
         # 指定考试对应的且对当前用户可见的学生列表
         $students = Student::whereIn('class_id', array_intersect($classIds, $this->classIds()))
-            ->whereEnabled(1)->get();
+            ->where('enabled', 1)->get();
         foreach ($students as $student) {
             $studentList[$student->id] = $student->sn . ' - ' . $student->user->realname;
         }
@@ -1108,11 +1108,12 @@ class Score extends Model {
         );
         # 指定学生的最近十场考试
         $exams = Exam::whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')
-            ->whereEnabled(1)->orderBy('start_date', 'desc')->take(10)->get();
+            ->where('enabled', 1)->orderBy('start_date', 'desc')->take(10)->get();
         $subjectIds = array_unique(
             explode(',', implode(',', $exams->pluck('subject_ids')->toArray()))
         );
-        $subjects = Subject::orderBy('id')->whereEnabled(1)->whereIn('id', $subjectIds)->get();
+        $subjects = Subject::orderBy('id')->where('enabled', 1)
+            ->whereIn('id', $subjectIds)->get();
         $examScores = [];
         $placehoders = array_fill(0, 3, '——');
         foreach ($exams as $exam) {

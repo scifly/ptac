@@ -2,6 +2,7 @@
 namespace App\Helpers;
 
 use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use ReflectionException;
@@ -55,7 +56,7 @@ class Configure {
      */
     function compose() {
     
-        $params = array_pluck(Constant::SYSTEM_PARAMS, 'name', 'id');
+        $params = Arr::pluck(Constant::SYSTEM_PARAMS, 'name', 'id');
 
         return [$params, $this->html(key($params))];
         
@@ -73,7 +74,7 @@ class Configure {
             DB::transaction(function () {});
             $params = Request::has('paramId')
                 ? [Request::input('paramId')]
-                : array_pluck(Constant::SYSTEM_PARAMS, 'id');
+                : Arr::pluck(Constant::SYSTEM_PARAMS, 'id');
             foreach ($params as $param) {
                 $model = $this->model($param);
                 $model->truncate();

@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasMany};
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use ReflectionException;
 use Throwable;
@@ -114,10 +115,8 @@ class Educator extends Model {
      */
     function educatorList(array $ids) {
         
-        return $this->whereIn('id', $ids)
-            ->with('user')->get()
-            ->pluck('user.realname', 'id')
-            ->toArray();
+        return $this->with('user')->whereIn('id', $ids)->get()
+            ->pluck('user.realname', 'id')->toArray();
         
     }
     
@@ -391,7 +390,7 @@ class Educator extends Model {
         
         $records = $this->upload();
         $mobiles = array_count_values(
-            array_map('strval', array_pluck($records, 'G'))
+            array_map('strval', Arr::pluck($records, 'G'))
         );
         foreach ($mobiles as $mobile => $count) {
             $count <= 1 ?: $duplicates[] = $mobile;
@@ -480,7 +479,7 @@ HTML;
         
         if (Request::input('range') == 0) {
             $userIds = $this->userIds(Request::input('id'), 'educator');
-            $educatorIds = User::whereIn('id', $userIds)->with('educator')
+            $educatorIds = User::with('educator')->whereIn('id', $userIds)
                 ->get()->pluck('educator.id')->toArray();
         } else {
             $educatorIds = $this->contactIds('educator');

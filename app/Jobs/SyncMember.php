@@ -11,6 +11,7 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
+    Support\Arr,
     Support\Facades\DB};
 use Pusher\PusherException;
 use Throwable;
@@ -74,7 +75,7 @@ class SyncMember implements ShouldQueue {
                     $this->response['message'] = __('messages.sync_failed');
                     $this->response['url'] = $this->filePath('failed_syncs') . '.xlsx';
                     $this->excel(
-                        array_flatten($results), 'failed_syncs',
+                        Arr::flatten($results), 'failed_syncs',
                         '同步失败记录', false
                     );
                 }
@@ -108,6 +109,7 @@ class SyncMember implements ShouldQueue {
      * @param mixed $params
      * @param string $action
      * @return bool|mixed
+     * @throws Throwable
      */
     private function sync(Corp $corp, $params, $action) {
         

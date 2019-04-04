@@ -277,6 +277,7 @@ class SyncController extends Controller {
      * 返回事件对应的会员对象
      *
      * @return mixed
+     * @throws Exception
      */
     private function member() {
         

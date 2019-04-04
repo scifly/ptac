@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -620,7 +621,7 @@ class Action extends Model {
             case 'create':
             case 'edit':
             case 'show':
-                $prefix = str_singular($this->tableName($controller));
+                $prefix = Str::singular($this->tableName($controller));
                 $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
                 $viewPath = $prefix . '.' . $action;
                 break;
@@ -657,7 +658,7 @@ class Action extends Model {
         ) {
             return null;
         }
-        $prefix = str_singular($this->tableName($ctlr));
+        $prefix = Str::singular($this->tableName($ctlr));
         $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
         
         return 'js/' . $prefix . '/' . $action . '.js';

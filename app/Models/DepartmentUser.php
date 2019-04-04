@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model};
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\{DB};
 use Throwable;
 
@@ -114,7 +115,7 @@ class DepartmentUser extends Model {
                 }
                 if (!empty($records)) {
                     $this->insert($records);
-                    foreach (array_pluck($records, 'user_id') as $userId) {
+                    foreach (Arr::pluck($records, 'user_id') as $userId) {
                         $contacts[] = [$userId, '', 'update'];
                     }
                     (new User)->sync($contacts ?? []);

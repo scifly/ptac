@@ -651,7 +651,7 @@ class Department extends Model {
     private function nodes($rootId = null) {
         
         if (!isset($rootId)) {
-            $nodes = $this->orderBy('order')->all();
+            $nodes = $this->orderBy('order')->get();
         } else {
             $departmentIds = array_merge(
                 [$rootId],

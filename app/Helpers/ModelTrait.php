@@ -374,7 +374,7 @@ trait ModelTrait {
         $userIds = array_unique($userIds);
 
         return (empty($userIds)) ? [0]
-            : User::whereIn('id', $userIds)->with($type)
+            : User::with($type)->whereIn('id', $userIds)
                 ->get()->pluck($type . '.id')->toArray();
         
     }

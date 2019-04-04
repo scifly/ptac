@@ -11,6 +11,7 @@ use Illuminate\{Bus\Queueable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels};
 use Pusher\PusherException;
+use Throwable;
 
 /**
  * Class SyncApp
@@ -47,7 +48,8 @@ class SyncApp implements ShouldQueue {
      * Execute the job
      *
      * @return mixed
-     * @throws Exception
+     * @throws PusherException
+     * @throws Throwable
      */
     function handle() {
         

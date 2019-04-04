@@ -4,6 +4,7 @@ use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * example目录下为简单的支付样例，仅能用于搭建快速体验微信支付使用
@@ -37,6 +38,7 @@ class JsApiPay {
      */
     public $data = null;
     protected $curl_timeout = 360;
+    
     /**
      *
      * 通过跳转获取用户的openid，跳转流程如下：
@@ -44,6 +46,7 @@ class JsApiPay {
      * 2、微信服务处理完成之后会跳转回用户redirect_uri地址，此时会带上一些参数，如：code
      *
      * @return string openid
+     * @throws Throwable
      */
     public function getOpenId() {
         
@@ -70,6 +73,7 @@ class JsApiPay {
      * @param string $code 微信跳转回来带上的code
      *
      * @return string openid
+     * @throws Throwable
      */
     public function getOpenidFromMp($code) {
     
