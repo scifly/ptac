@@ -124,7 +124,6 @@ class Turnstile extends Model {
         try {
             DB::transaction(function () {
                 $devices = $this->invoke('devlist');
-                Log::info('info', json_decode($devices, true));
                 foreach ($devices as $device) {
                     !($turnstile = $this->whereDeviceId($device['deviceid'])->first())
                         ? $this->create($device) : $turnstile->update($device);
@@ -207,6 +206,7 @@ class Turnstile extends Model {
                 ]
             );
             $body = json_decode($response->getBody(), true);
+            Log::info('body', $body);
             $status = $response->getHeader('status');
             throw_if(
                 $status == HttpStatusCode::INTERNAL_SERVER_ERROR,
