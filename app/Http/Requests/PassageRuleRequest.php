@@ -55,7 +55,7 @@ class PassageRuleRequest extends FormRequest {
         
         $input = $this->all();
         $input['school_id'] = $this->schoolId();
-        $dates = explode(' - ', $input['daterange']);
+        $dates = explode(' ~ ', $input['daterange']);
         $input['start_date'] = $dates[0];
         $input['end_date'] = $dates[1];
         $statuses = '';
