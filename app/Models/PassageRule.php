@@ -245,7 +245,7 @@ class PassageRule extends Model {
                 0, 3, array_fill(0, 2, '00:00')
             ),
             $doors, $selectedDoors ?? null,
-            $ruleids,
+            [0 => '(无关联规则)'] + $ruleids,
         ];
         
     }
