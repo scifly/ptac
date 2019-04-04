@@ -102,7 +102,7 @@ class Turnstile extends Model {
             [
                 'db'        => 'Turnstile.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::status($d, $row, false, true, false);
+                    return Datatable::status($d, $row, false, false, false);
                 },
             ],
         ];
