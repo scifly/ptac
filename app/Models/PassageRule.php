@@ -297,9 +297,9 @@ class PassageRule extends Model {
             }
             Log::info('rules', $rules);
             array_map(
-                function ($api, $data) { (new Turnstile)->invoke($api, $data); },
+                function ($api, $data) { (new Turnstile)->invoke($api, ['data' => $data]); },
                 ['clrtimeframes', 'settimeframes'],
-                [$devices->pluck('deviceid')->toArray(), ['data' => $rules]]
+                [$devices->pluck('deviceid')->toArray(), $rules]
             );
         } catch (Exception $e) {
             throw $e;
