@@ -127,8 +127,9 @@ class Turnstile extends Model {
                 $devices = $this->invoke('devlist');
                 foreach ($devices as $device) {
                     $data = array_combine($this->fillable, [
-                            $device['sn'], $device['doors'], $device['ip'], $device['port'],
-                            $device['location'], $this->schoolId(), $device['id'], $device['status'],
+                            $device['sn'], $device['doors'], $device['ip'],
+                            $device['port'], $device['location'], $this->schoolId(),
+                            $device['deviceid'], $device['status'],
                         ]
                     );
                     !($turnstile = $this->whereDeviceid($device['deviceid'])->first())
