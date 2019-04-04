@@ -64,11 +64,10 @@ class PassageRuleRequest extends FormRequest {
             $statuses .= array_search($i, $input['weekdays']) !== false ? '1' : '0';
         }
         $input['statuses'] = $statuses;
-        Log::debug($statuses);
-        Log::debug(json_encode($input['trs']));
         foreach ($input['trs'] as $key => $tr) {
             $input['tr' . ($key + 1)] = implode(' - ', $tr);
         }
+        Log::debug(json_encode($input));
         $this->replace($input);
         
     }
