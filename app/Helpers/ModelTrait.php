@@ -681,7 +681,7 @@ trait ModelTrait {
         Carbon::setLocale('zh');
         
         return isset($date)
-            ? Carbon::createFromFormat('Y-m-d H:i:s', $date)->diffForHumans()
+            ? Carbon::createFromDate($date)->diffForHumans()
             : '(n/a)';
         
     }
