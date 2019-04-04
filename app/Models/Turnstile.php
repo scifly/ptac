@@ -10,6 +10,7 @@ use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -123,6 +124,7 @@ class Turnstile extends Model {
         try {
             DB::transaction(function () {
                 $devices = $this->invoke('devlist');
+                Log::info('info', json_decode($devices, true));
                 foreach ($devices as $device) {
                     !($turnstile = $this->whereDeviceId($device['deviceid'])->first())
                         ? $this->create($device) : $turnstile->update($device);
