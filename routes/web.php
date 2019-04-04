@@ -32,7 +32,7 @@ $default = [
     'create'  => ['get'],
     'store'   => ['post'],
     'edit'    => ['{id?}' => 'get'],
-    'update'  => ['{id?}' => 'get'],
+    'update'  => ['{id?}' => 'put'],
     'destroy' => ['{id?}' => 'delete'],
 ];
 $routes = [
