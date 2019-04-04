@@ -84,6 +84,7 @@ class PassageRuleRequest extends FormRequest {
             # 通行时段起始时间不得晚于结束时间
             if ($trs[$i][0] >= $trs[$i][1]) return false;
             for ($j = $i + 1; $j < sizeof($trs); $j++) {
+                if ($trs[$j][0] == '00:00' && $trs[$j][1] == '00:00') continue;
                 # 当前通行时段不得与其他通行时段重叠
                 if ($trs[$i][1] >= $trs[$j][0]) return false;
             }
