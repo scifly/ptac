@@ -57,7 +57,6 @@ class PassageRuleRequest extends FormRequest {
         $input = $this->all();
         $input['school_id'] = $this->schoolId();
         $dates = explode(' ~ ', $input['daterange']);
-        Log::debug(json_encode($dates));
         $input['start_date'] = $dates[0];
         $input['end_date'] = $dates[1];
         $statuses = '';
@@ -65,6 +64,8 @@ class PassageRuleRequest extends FormRequest {
             $statuses .= array_search($i, $input['weekdays']) !== false ? '1' : '0';
         }
         $input['statuses'] = $statuses;
+        Log::debug($statuses);
+        Log::debug(json_encode($input['trs']));
         foreach ($input['trs'] as $key => $tr) {
             $input['tr' . ($key + 1)] = implode(' - ', $tr);
         }
