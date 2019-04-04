@@ -267,7 +267,7 @@ class PassageRule extends Model {
             $rules = [];
             foreach ($devices as $device) {
                 foreach ($device->passageRules as $pr) {
-                    $index = $device->ruleid;
+                    $index = $pr->ruleid;
                     list($s_date, $e_date) = array_map(
                         function ($field) use ($pr) {
                             return date('Ymd', strtotime($pr->{$field}));
