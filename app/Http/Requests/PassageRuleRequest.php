@@ -31,10 +31,10 @@ class PassageRuleRequest extends FormRequest {
             'school_id'      => 'required|integer',
             'name'           => 'required|string|between:2,60|unique:passage_rules,name,' .
                 $this->input('id') . ',id' .
-                'school_id,' . $this->input('id'),
+                'school_id,' . $this->input('school_id'),
             'ruleid'         => 'required|integer|between:1,254|unique:passage_rules,ruleid,' .
                 $this->input('id') . ',id' .
-                'school_id,' . $this->input('id'),
+                'school_id,' . $this->input('school_id'),
             'start_date'     => 'required|date|before_or_equal:end_date',
             'end_date'       => 'required|date',
             'statuses'       => 'required|string|size:7',
