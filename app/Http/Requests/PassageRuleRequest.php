@@ -45,6 +45,8 @@ class PassageRuleRequest extends FormRequest {
             'enabled'        => 'required|boolean',
             'trs' => [
                 'required', function ($attribute, $value, $fail) {
+                    Log::debug($attribute);
+                    Log::info('value', $value);
                     if (!$this->tRange($value)) $fail($attribute . ': 设置无效');
                 }
             ]
@@ -67,7 +69,6 @@ class PassageRuleRequest extends FormRequest {
         foreach ($input['trs'] as $key => $tr) {
             $input['tr' . ($key + 1)] = implode(' - ', $tr);
         }
-        Log::debug('here');
         $this->replace($input);
         
     }
@@ -80,7 +81,6 @@ class PassageRuleRequest extends FormRequest {
      */
     private function tRange($trs) {
 
-        Log::info('trs', $trs);
         for ($i = 0; $i < sizeof($trs); $i++) {
             # 通行时段起始时间不得晚于结束时间
             if ($trs[$i][0] >= $trs[$i][1]) return false;
