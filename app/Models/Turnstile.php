@@ -128,7 +128,7 @@ class Turnstile extends Model {
                     $data = array_combine($this->fillable, [
                             $device['sn'], $device['doors'], $device['ip'],
                             $device['port'], $device['location'], $this->schoolId(),
-                            $device['deviceid'], $device['status'],
+                            $device['deviceid'], $device['enabled'],
                         ]
                     );
                     !($turnstile = $this->whereDeviceid($device['deviceid'])->first())
