@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany};
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -148,6 +149,7 @@ class PassageRule extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $pr = $this->create($data);
+                Log::debug(json_encode($pr));
                 (new RuleTurnstile)->store(
                     $pr->id, $doorIds = $data['door_ids'] ?? []
                 );

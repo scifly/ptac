@@ -67,7 +67,6 @@ class PassageRuleRequest extends FormRequest {
         foreach ($input['trs'] as $key => $tr) {
             $input['tr' . ($key + 1)] = implode(' - ', $tr);
         }
-        Log::debug(json_encode($input));
         $this->replace($input);
         
     }
