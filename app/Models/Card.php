@@ -466,11 +466,15 @@ class Card extends Model {
                             ->pluck('name', 'ruleid')->toArray();
                 }
                 $doors .= sprintf(
-                    $td, Form::select('ruleids[' . $t->id . '][]', $prs, null, [
-                    'class'    => 'form-control select2 input-sm',
-                    'style'    => 'width: 100%;',
-                    'disabled' => sizeof(array_merge($prs, $_prs ?? [])) <= 1,
-                ])->toHtml());
+                    $td, Form::select(
+                        'ruleids[' . $t->id . '][]',
+                        array_merge($prs, $_prs ?? []), null, 
+                        [
+                            'class'    => 'form-control select2 input-sm',
+                            'style'    => 'width: 100%;',
+                            'disabled' => sizeof(array_merge($prs, $_prs ?? [])) <= 1
+                        ]
+                    )->toHtml());
             }
             $tList[] = '<tr>' . $id . $name . $doors . '</tr>';
         }
