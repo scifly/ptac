@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany};
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -152,7 +151,7 @@ class PassageRule extends Model {
                 (new RuleTurnstile)->store(
                     $pr->id, $doorIds = $data['door_ids'] ?? []
                 );
-                $this->issue(array_values($this->deviceids($doorIds)));
+                $this->issue($this->deviceids($doorIds));
             });
         } catch (Exception $e) {
             throw $e;
@@ -263,7 +262,7 @@ class PassageRule extends Model {
         try {
             $devices = empty($deviceids)
                 ? Turnstile::whereSchoolId($this->schoolId())->get()
-                : Turnstile::whereIn('deviceid', $deviceids)->get();
+                : Turnstile::whereIn('deviceid', array_values($deviceids))->get();
             $rules = [];
             foreach ($devices as $device) {
                 foreach ($device->passageRules as $pr) {
@@ -295,8 +294,6 @@ class PassageRule extends Model {
                     );
                 }
             }
-            Log::info('rules', $rules);
-            Log::info('deviceids',$devices->pluck('deviceid')->toArray());
             array_map(
                 function ($api, $data) { (new Turnstile)->invoke($api, ['data' => $data]); },
                 ['clrtimeframes', 'settimeframes'],

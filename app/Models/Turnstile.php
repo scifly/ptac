@@ -213,7 +213,6 @@ class Turnstile extends Model {
                     'form_params' => $params,
                 ]
             );
-            Log::debug(json_encode($response));
             $body = json_decode($response->getBody(), true);
             $status = $response->getHeader('status');
             throw_if(
