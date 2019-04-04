@@ -45,8 +45,6 @@ class PassageRuleRequest extends FormRequest {
             'enabled'        => 'required|boolean',
             'trs' => [
                 'required', function ($attribute, $value, $fail) {
-                    Log::debug($attribute);
-                    Log::info('value', $value);
                     if (!$this->tRange($value)) $fail($attribute . ': 设置无效');
                 }
             ]
