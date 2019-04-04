@@ -199,15 +199,14 @@ class Turnstile extends Model {
                 $token = json_decode($response, true)['token'];
                 session(['token' => $token]);
             }
+            Log::debug($token);
             $response = $client->post(
                 self::URL . $api, [
                     'headers'     => ['Authorization' => 'Bearer' . $token],
                     'form-params' => $params,
                 ]
             );
-            Log::debug(json_encode($response));
             $body = json_decode($response->getBody(), true);
-            Log::info('body', $body);
             $status = $response->getHeader('status');
             throw_if(
                 $status == HttpStatusCode::INTERNAL_SERVER_ERROR,
