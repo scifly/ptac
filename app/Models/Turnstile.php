@@ -10,7 +10,6 @@ use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -199,7 +198,6 @@ class Turnstile extends Model {
                 $token = json_decode($response, true)['token'];
                 session(['token' => $token]);
             }
-            Log::debug($token);
             $response = $client->post(
                 self::URL . $api, [
                     'headers'     => ['Authorization' => 'Bearer' . $token],
