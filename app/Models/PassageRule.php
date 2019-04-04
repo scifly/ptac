@@ -296,6 +296,7 @@ class PassageRule extends Model {
                 }
             }
             Log::info('rules', $rules);
+            Log::info('deviceids',$devices->pluck('deviceid')->toArray());
             array_map(
                 function ($api, $data) { (new Turnstile)->invoke($api, ['data' => $data]); },
                 ['clrtimeframes', 'settimeframes'],
