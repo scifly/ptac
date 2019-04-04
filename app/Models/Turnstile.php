@@ -56,8 +56,9 @@ class Turnstile extends Model {
     protected $table = 'turnstiles';
     
     protected $fillable = [
-        'name', 'location', 'school_id',
-        'machineid', 'enabled',
+        'sn', 'doors', 'ip', 'port',
+        'location', 'school_id',
+        'deviceid', 'enabled',
     ];
     
     /**
@@ -125,8 +126,14 @@ class Turnstile extends Model {
             DB::transaction(function () {
                 $devices = $this->invoke('devlist');
                 foreach ($devices as $device) {
+                    $data = array_combine($this->fillable, [
+                            $device['sn'], $device['doors'], $device['ip'], $device['port'],
+                            $device['location'], $this->schoolId(), $device['id'], $device['status'],
+                        ]
+                    );
                     !($turnstile = $this->whereDeviceid($device['deviceid'])->first())
-                        ? $this->create($device) : $turnstile->update($device);
+                        ? $this->create($data)
+                        : $turnstile->update($data);
                 }
             });
         } catch (Exception $e) {
@@ -162,7 +169,7 @@ class Turnstile extends Model {
      * @param $doorIds
      * @return array
      */
-    function deviceIds(array $doorIds) {
+    function deviceids(array $doorIds) {
         
         $doors = $this->doors();
         foreach ($doorIds as $doorId) {
