@@ -80,6 +80,7 @@ class PassageRuleRequest extends FormRequest {
     private function tRange($trs) {
         
         for ($i = 0; $i < sizeof($trs); $i++) {
+            if ($trs[$i][0] == '00:00' && $trs[$i][1] == '00:00') continue;
             # 通行时段起始时间不得晚于结束时间
             if ($trs[$i][0] >= $trs[$i][1]) return false;
             for ($j = $i + 1; $j < sizeof($trs); $j++) {
