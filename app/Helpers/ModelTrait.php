@@ -12,7 +12,7 @@ use Illuminate\Database\{Eloquent\Collection, Eloquent\Model, Query\Builder};
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Request, Facades\Storage};
 use Illuminate\Validation\Rule;
-use PhpOffice\PhpSpreadsheet\{Exception, IOFactory, Spreadsheet};
+use PhpOffice\PhpSpreadsheet\{Exception, IOFactory, Spreadsheet, Writer\Exception as WriterException};
 use ReflectionClass;
 use ReflectionException;
 use Throwable;
@@ -528,7 +528,7 @@ trait ModelTrait {
      * @param bool $download
      * @return bool
      * @throws Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws WriterException
      */
     function excel(array $records, $fileName = 'export', $sheetTitle = '导出数据', $download = true) {
         
