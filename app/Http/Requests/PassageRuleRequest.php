@@ -41,7 +41,7 @@ class PassageRuleRequest extends FormRequest {
             'tr1'            => 'required|string',
             'tr2'            => 'required|string',
             'tr3'            => 'required|string',
-            'related_ruleid' => 'nullable|integer|between:1,254|different:ruleid',
+            'related_ruleid' => 'nullable|integer|between:0,254|different:ruleid',
             'enabled'        => 'required|boolean',
             'trs' => [
                 'required', function ($attribute, $value, $fail) {
