@@ -148,13 +148,11 @@ class PassageRule extends Model {
         
         try {
             DB::transaction(function () use ($data) {
-                Log::debug(json_encode($data));
                 $pr = $this->create($data);
                 (new RuleTurnstile)->store(
                     $pr->id, $doorIds = $data['door_ids'] ?? []
                 );
-                Log::info('info',array_values($this->deviceids($doorIds)));
-                $this->issue($this->deviceids($doorIds));
+                $this->issue(array_values($this->deviceids($doorIds)));
             });
         } catch (Exception $e) {
             throw $e;
