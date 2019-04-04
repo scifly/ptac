@@ -263,6 +263,7 @@ class PassageRule extends Model {
             $devices = empty($deviceids)
                 ? Turnstile::whereSchoolId($this->schoolId())->get()
                 : Turnstile::whereIn('deviceid', array_values($deviceids))->get();
+            !empty($deviceids) ?: $deviceids = $devices->pluck('deviceid')->toArray();
             $rules = [];
             foreach ($devices as $device) {
                 foreach ($device->passageRules as $pr) {
@@ -297,7 +298,7 @@ class PassageRule extends Model {
             array_map(
                 function ($api, $data) { (new Turnstile)->invoke($api, ['data' => $data]); },
                 ['clrtimeframes', 'settimeframes'],
-                [$devices->pluck('deviceid')->toArray(), $rules]
+                [$deviceids, $rules]
             );
         } catch (Exception $e) {
             throw $e;
