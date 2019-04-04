@@ -3,6 +3,7 @@ namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class PassageRuleRequest
@@ -56,6 +57,7 @@ class PassageRuleRequest extends FormRequest {
         $input = $this->all();
         $input['school_id'] = $this->schoolId();
         $dates = explode(' ~ ', $input['daterange']);
+        Log::debug(json_encode($dates));
         $input['start_date'] = $dates[0];
         $input['end_date'] = $dates[1];
         $statuses = '';
