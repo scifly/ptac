@@ -468,7 +468,7 @@ class Card extends Model {
                 $doors .= sprintf(
                     $td, Form::select(
                         'ruleids[' . $t->id . '][]',
-                        array_merge($prs, $_prs ?? []), null, 
+                        array_merge($prs, $_prs ?? []), null,
                         [
                             'class'    => 'form-control select2 input-sm',
                             'style'    => 'width: 100%;',
