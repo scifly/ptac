@@ -421,7 +421,7 @@ class Card extends Model {
                     foreach ($userIds as $userId) {
                         $user = User::find($userId);
                         if (!$user->card) continue;
-                        $data[$deviceid] = [
+                        $data[$deviceid][] = [
                             'card' => $user->card->sn,
                             's_date' => $start ?? '00000000',
                             'e_date' => $end ?? '00000000',
