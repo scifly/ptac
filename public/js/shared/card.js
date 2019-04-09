@@ -80,6 +80,7 @@
                                 result !== '' ? result
                                     : '<tr><td class="text-center" colspan="5">- 暂无数据 -</td></tr>'
                             );
+                            page.initICheck();
                         },
                         error: function (e) { page.errorHandler(e); }
                     });
