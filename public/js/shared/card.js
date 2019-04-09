@@ -122,7 +122,7 @@
                     });
                 });
             },
-            onPermit: function (formId) {
+            onPermit: function (table, formId) {
                 var $permit = $('#permit');
 
                 $('#' + formId).on('submit', function () { return false; });

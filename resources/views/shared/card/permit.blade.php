@@ -62,8 +62,7 @@
                         ])
                         {!! Form::text('daterange', null, [
                             'class' => 'form-control text-blue drange',
-                            'placeholder' => '(起始日期 - 结束日期)',
-                            'required' => 'true',
+                            'placeholder' => '(起始日期 - 结束日期, 可选)'
                         ]) !!}
                     </div>
                 </div>
