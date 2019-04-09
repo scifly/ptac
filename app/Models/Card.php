@@ -395,7 +395,7 @@ class Card extends Model {
                 $list .= sprintf(
                     $row, implode('', array_map(
                         function ($value) use ($td) { return sprintf($td, $value); },
-                        [$user->realname, $user->card->sn, sprintf($authHtml, $user->id)]
+                        [sprintf($authHtml, $user->id), $user->realname, $user->card->sn]
                     ))
                 );
             }
@@ -468,7 +468,7 @@ class Card extends Model {
                 $doors .= sprintf(
                     $td, Form::select(
                         'ruleids[' . $t->id . '][]',
-                        array_merge($prs, $_prs ?? []), null, 
+                        array_merge($prs, $_prs ?? []), null,
                         [
                             'class'    => 'form-control select2 input-sm',
                             'style'    => 'width: 100%;',

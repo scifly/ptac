@@ -42,7 +42,7 @@
                                 @endforeach
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="section">
                             <tr>
                                 <td colspan="3" class="text-center">
                                     - 请勾选需要授权的卡号 -
