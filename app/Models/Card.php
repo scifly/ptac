@@ -395,7 +395,7 @@ class Card extends Model {
                 $list .= sprintf(
                     $row, implode('', array_map(
                         function ($value) use ($td) { return sprintf($td, $value); },
-                        [$user->realname, $user->card->sn, sprintf($authHtml, $user->id)]
+                        [sprintf($authHtml, $user->id), $user->realname, $user->card->sn]
                     ))
                 );
             }

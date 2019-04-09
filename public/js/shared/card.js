@@ -76,7 +76,7 @@
                         },
                         success: function (result) {
                             $('.overlay').hide();
-                            $('tbody').html(
+                            $('#section').html(
                                 result !== '' ? result
                                     : '<tr><td class="text-center" colspan="5">- 暂无数据 -</td></tr>'
                             );
