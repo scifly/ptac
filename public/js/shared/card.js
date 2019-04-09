@@ -35,7 +35,7 @@
                     empty = $list.html();
 
                 card.onSectionChange($sectionId, empty, 'permit');
-                card.onPermit(formId);
+                card.onPermit(table, formId);
                 page.initSelect2();
                 page.initICheck();
                 page.initBackBtn(table);
@@ -127,23 +127,24 @@
 
                 $('#' + formId).on('submit', function () { return false; });
                 $permit.on('click', function () {
-                    $.ajax({
-                        type: 'POST',
-                        dataType: 'json',
-                        url: 'permit',
-                        data: {
-                            userIds: $('input[name=user_ids]').val(),
-                            turnstileIds: $('input[name=turnstile_ids]').val(),
-                            ruleids: $('input[name=ruleids]').val(),
-                            dateRange: $('input[name=daterange]').val(),
-                            _token: page.token()
-                        },
-                        success: function (result) {
-                            $('.overlay').hide();
-                            page.inform(result['title'], result['message'], page.success);
-                        },
-                        error: function (e) { page.errorHandler(e); }
-                    });
+                    page.ajaxRequest('POST', table + '/permit', page.formData(formId));
+                    // $.ajax({
+                    //     type: 'POST',
+                    //     dataType: 'json',
+                    //     url: 'permit',
+                    //     data: {
+                    //         userIds: $('input[name=user_ids]').val(),
+                    //         turnstileIds: $('input[name=turnstile_ids]').val(),
+                    //         ruleids: $('input[name=ruleids]').val(),
+                    //         dateRange: $('input[name=daterange]').val(),
+                    //         _token: page.token()
+                    //     },
+                    //     success: function (result) {
+                    //         $('.overlay').hide();
+                    //         page.inform(result['title'], result['message'], page.success);
+                    //     },
+                    //     error: function (e) { page.errorHandler(e); }
+                    // });
                 });
             },
             onInput: function () {
