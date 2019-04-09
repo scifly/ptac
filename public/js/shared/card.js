@@ -127,7 +127,10 @@
 
                 $('#' + formId).on('submit', function () { return false; });
                 $permit.on('click', function () {
-                    page.ajaxRequest('POST', table + '/permit', page.formData(formId));
+                    page.ajaxRequest(
+                        'POST', table + '/permit',
+                        page.formData($('#' + formId))
+                    );
                     // $.ajax({
                     //     type: 'POST',
                     //     dataType: 'json',
