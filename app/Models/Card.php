@@ -405,10 +405,12 @@ class Card extends Model {
         try {
             DB::transaction(function () {
                 $input = Request::all();
-                $userIds = $input['userIds'];
-                $turnstileIds = $input['turnstileIds'];
+                $userIds = $input['user_ids'];
+                $turnstileIds = $input['turnstile_ids'];
                 $ruleids = $input['ruleids'];
-                list($start, $end) = explode(' - ', $input['dateRange']);
+                list($start, $end) = isset($input['daterange'])
+                    ? explode(' - ', $input['daterange'])
+                    : array_fill(0, 2, '00000000');
                 (new CardTurnstile)->store(
                     Card::whereIn('user_id', $userIds)->get()->pluck('id')->toArray(),
                     $turnstileIds, $start, $end, $ruleids
