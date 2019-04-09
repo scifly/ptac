@@ -429,7 +429,7 @@ class Card extends Model {
                         ];
                     }
                 }
-                (new Turnstile)->invoke('adddevperms', $data);
+                (new Turnstile)->invoke('addperms', $data);
             });
         } catch (Exception $e) {
             throw $e;
