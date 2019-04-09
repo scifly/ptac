@@ -313,7 +313,7 @@ var page = {
             data: data,
             success: function (result) {
                 $('.overlay').hide();
-                succeed();
+                if (typeof succeed !== 'undefined') succeed();
                 page.inform(result.title, result.message, page.success);
             },
             error: function (e) {
