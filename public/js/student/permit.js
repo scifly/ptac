@@ -1,3 +1,3 @@
 $.getMultiScripts(['js/shared/card.js']).done(
-    function () { $.card().permit('students', 'formCustodian'); }
+    function () { $.card().permit('students', 'formStudent'); }
 );
