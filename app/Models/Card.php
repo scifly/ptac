@@ -410,7 +410,7 @@ class Card extends Model {
                 $ruleids = $input['ruleids'];
                 list($start, $end) = isset($input['daterange'])
                     ? explode(' - ', $input['daterange'])
-                    : array_fill(0, 2, '00000000');
+                    : array_fill(0, 2, null);
                 (new CardTurnstile)->store(
                     Card::whereIn('user_id', $userIds)->get()->pluck('id')->toArray(),
                     $turnstileIds, $start, $end, $ruleids
@@ -423,8 +423,8 @@ class Card extends Model {
                         if (!$user->card) continue;
                         $data[$deviceid] = [
                             'card' => $user->card->sn,
-                            's_date' => $start,
-                            'e_date' => $end,
+                            's_date' => $start ?? '00000000',
+                            'e_date' => $end ?? '00000000',
                             'time_frames' => $ruleids[$turnstileId]
                         ];
                     }
