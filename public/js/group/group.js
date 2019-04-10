@@ -7,6 +7,10 @@
                 formGroup: 'formGroup',
                 schoolId: 'school_id',
                 table: 'groups',
+                create: 'store',
+                store: 'create',
+                edit: 'update',
+                update: 'edit'
             }, options),
             init: function () {
                 page.unbindEvents();
@@ -153,7 +157,7 @@
                         method = $(this).data('method');
 
                     $container.find('input').iCheck('check');
-                    $container.next().find('input[data-method="' + method + '"]').iCheck('check');
+                    $container.next().find('input[data-method="' + group.options[method] + '"]').iCheck('check');
                     if (method !== 'index') {
                         $container.next().find('input[data-method="index"]').iCheck('check');
                     }
@@ -170,7 +174,7 @@
                     !checks
                         ? $container.find('input').iCheck('uncheck')
                         : $container.next().find(
-                            'input' + (method === 'index' ? '' : '[data-method="' + method + '"]')
+                            'input' + (method === 'index' ? '' : '[data-method="' + group.options[method] + '"]')
                         ).iCheck('uncheck');
                 });
             },
