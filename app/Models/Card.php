@@ -461,13 +461,14 @@ class Card extends Model {
             $doors = '';
             $prs = [0 => '(禁止通行)', 1 => '(无限制)'];
             for ($i = 1; $i <= 4; $i++) {
+                $_prs = [];
                 if ($i <= $t->doors) {
                     $prIds = RuleTurnstile::where(['turnstile_id' => $t->id, 'door' => $i])
                         ->get()->pluck('passage_rule_id')->toArray();
                     $_prs = PassageRule::whereIn('id', $prIds)
                         ->pluck('name', 'ruleid')->toArray();
                 }
-                $rules = isset($_prs)
+                $rules = !empty($_prs)
                     ? array_merge($prs, $_prs ?? [])
                     : [0 => '(禁止通行)'];
                 $doors .= sprintf($td, Form::select('ruleids[' . $t->id . '][]', $rules, null, [
