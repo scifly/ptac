@@ -101,9 +101,12 @@ $routes = [
     'exam_type'              => $default,
     'grade'                  => $default,
     'group'                  => [
-        'index'  => ['get'],
-        'create' => ['get', 'post'],
-        'edit'   => ['{id}' => ['get', 'post']],
+        'index'   => ['get'],
+        'create'  => ['get', 'post'],
+        'edit'    => ['{id}' => ['get', 'post']],
+        'destroy' => ['{id?}' => 'delete'],
+        'update'  => ['{id}' => 'put'],
+        'store'   => ['post'],
     ],
     'icon'                   => $default,
     'init'                   => [
