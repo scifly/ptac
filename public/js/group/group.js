@@ -171,11 +171,13 @@
                     $(this).parents().eq(2).siblings().each(function() {
                         checks += $(this).find('div[aria-checked="true"]').length
                     });
-                    !checks
-                        ? $container.find('input').iCheck('uncheck')
-                        : $container.next().find(
+                    if (method === 'index') {
+                        $container.find('input').iCheck('uncheck');
+                    } else {
+                        $container.next().find(
                             'input' + (method === 'index' ? '' : '[data-method="' + group.options[method] + '"]')
                         ).iCheck('uncheck');
+                    }
                 });
             },
             container: function (selector, type) {
