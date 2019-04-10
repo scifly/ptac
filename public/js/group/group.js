@@ -7,6 +7,10 @@
                 formGroup: 'formGroup',
                 schoolId: 'school_id',
                 table: 'groups',
+                create: 'store',
+                store: 'create',
+                edit: 'update',
+                update: 'edit'
             }, options),
             init: function () {
                 page.unbindEvents();
@@ -124,17 +128,17 @@
             },
             ifTabChecked: function () {
                 $(document).on('ifChecked', '.tabs', function() {
-                    var $actionContainer = $(this).parentsUntil($('.box .box-default'), '.box-header').next(),
+                    var $container = group.container(this, 'tab'),
                         checkAll = true;
 
-                    $actionContainer.find('input').each(function() {
+                    $container.find('input').each(function() {
                         if ($(this).iCheck('update')[0].checked) {
                             checkAll = false;
                             return false;
                         }
                     });
                     if (checkAll) {
-                        $actionContainer.find('input').each(function() {
+                        $container.find('input').each(function() {
                             $(this).iCheck('check');
                         });
                     }
@@ -142,69 +146,39 @@
             },
             ifTabUnChecked: function () {
                 $(document).on('ifUnchecked', '.tabs', function() {
-                    var $actionContainer = $(this).parentsUntil($('.box .box-default'), '.box-header').next();
-                    $actionContainer.find('input').each(function() {
+                    group.container(this, 'tab').find('input').each(function() {
                         $(this).iCheck('uncheck');
                     });
                 });
             },
             ifActionChecked: function () {
                 $(document).on('ifChecked', '.actions', function() {
-                    var $tabContainer = $(this).parentsUntil($('.col-md-3'), '.box .box-default').find('.box-header');
-                    $tabContainer.find('input').iCheck('check');
-                    var method = $(this).attr('data-method');
+                    var $container = group.container(this, 'action'),
+                        method = $(this).data('method');
+
+                    $container.find('input').iCheck('check');
+                    $container.next().find('input[data-method="' + group.options[method] + '"]').iCheck('check');
                     if (method !== 'index') {
-                        $tabContainer.next().find('input[data-method="index"]').iCheck('check');
-                    }
-                    switch (method) {
-                        case 'create':
-                            $tabContainer.next().find('input[data-method="store"]').iCheck('check');
-                            break;
-                        case 'store':
-                            $tabContainer.next().find('input[data-method="create"]').iCheck('check');
-                            break;
-                        case 'edit':
-                            $tabContainer.next().find('input[data-method="update"]').iCheck('check');
-                            break;
-                        case 'update':
-                            $tabContainer.next().find('input[data-method="edit"]').iCheck('check');
-                            break;
-                        default: break;
+                        $container.next().find('input[data-method="index"]').iCheck('check');
                     }
                 });
             },
             ifActionUnChecked: function () {
                 $(document).on('ifUnchecked', '.actions', function() {
-                    var $tabContainer = $(this).parentsUntil($('.col-md-3'), '.box .box-default').find('.box-header'),
-                        checks = 0;
+                    var $container = group.container(this, 'action'),
+                        method = $(this).data('method');
 
-                    $(this).parents().eq(2).siblings().each(function() {
-                        checks += $(this).find('div[aria-checked="true"]').length
-                    });
-                    if (!checks) {
-                        $tabContainer.find('input').iCheck('uncheck');
-                    } else {
-                        var method = $(this).attr('data-method');
-                        switch (method) {
-                            case 'index':
-                                $tabContainer.next().find('input').iCheck('uncheck');
-                                break;
-                            case 'create':
-                                $tabContainer.next().find('input[data-method="store"]').iCheck('uncheck');
-                                break;
-                            case 'store':
-                                $tabContainer.next().find('input[data-method="create"]').iCheck('uncheck');
-                                break;
-                            case 'edit':
-                                $tabContainer.next().find('input[data-method="update"]').iCheck('uncheck');
-                                break;
-                            case 'update':
-                                $tabContainer.next().find('input[data-method="edit"]').iCheck('uncheck');
-                                break;
-                            default: break;
-                        }
-                    }
+                    method === 'index'
+                        ? $container.find('input').iCheck('uncheck')
+                        : $container.next().find(
+                            'input' + (method === 'index' ? '' : '[data-method="' + group.options[method] + '"]')
+                        ).iCheck('uncheck');
                 });
+            },
+            container: function (selector, type) {
+                return type === 'tab'
+                    ? $(selector).parentsUntil($('.box .box-default'), '.box-header').next()
+                    : $(selector).parentsUntil($('.col-md-3'), '.box .box-default').find('.box-header');
             }
         };
 
