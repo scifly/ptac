@@ -166,18 +166,13 @@
             ifActionUnChecked: function () {
                 $(document).on('ifUnchecked', '.actions', function() {
                     var $container = group.container(this, 'action'),
-                        checks = 0, method = $(this).data('method');
+                        method = $(this).data('method');
 
-                    $(this).parents().eq(2).siblings().each(function() {
-                        checks += $(this).find('div[aria-checked="true"]').length
-                    });
-                    if (method === 'index') {
-                        $container.find('input').iCheck('uncheck');
-                    } else {
-                        $container.next().find(
+                    method === 'index'
+                        ? $container.find('input').iCheck('uncheck')
+                        : $container.next().find(
                             'input' + (method === 'index' ? '' : '[data-method="' + group.options[method] + '"]')
                         ).iCheck('uncheck');
-                    }
                 });
             },
             container: function (selector, type) {
