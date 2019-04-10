@@ -176,7 +176,7 @@ class PassageLog extends Model {
                     $createdAt = $updatedAt = now()->toDateTimeString();
                     $logs[] = array_combine($fields, [
                         $schoolId, $card ? $card->user_id : 0, $record['type'],
-                        $record['direction'], $turnstile ? $turnstile->id : 0, $record['door'],
+                        $record['direction'], $turnstile ? $turnstile->id : 0, $record['door_num'],
                         date('Y-m-d H:i:s', strtotime($record['time'])),
                         $createdAt, $updatedAt, $record['valid']
                     ]);
