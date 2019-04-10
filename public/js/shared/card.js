@@ -40,7 +40,9 @@
                 page.initICheck();
                 page.initBackBtn(table);
                 $.getMultiScripts(['js/shared/dtrange.js']).done(
-                    function () { $.dtrange().dRange('.drange');}
+                    function () {
+                        $.dtrange().dRange('.drange');
+                    }
                 );
                 $.map(
                     {check: 'ifChecked', uncheck: 'ifUnchecked'},
@@ -61,18 +63,22 @@
                     ['contact', 'gate'],
                     function (target) {
                         $(document).on('ifChecked', '.' + target,
-                            function () { $('.' + target + 's').iCheck('check'); }
+                            function () {
+                                $('.' + target + 's').iCheck('check');
+                            }
                         );
                     }
                 );
                 $.map(
                     {contact: 'user_ids', gate: 'turnstile_ids'},
                     function (item, target) {
-                        $(document).on('ifUnchecked', '.' + target, function () {
-                            $('.' + target + 's').iCheck(
-                            $('input[name="' + item + '[]"]:checked').length > 0 ? 'check' : 'uncheck'
-                            )
-                        });
+                        $(document).on('ifUnchecked', '.' + target,
+                            function () {
+                                $('.' + target + 's').iCheck(
+                                    $('input[name="' + item + '[]"]:checked').length > 0 ? 'check' : 'uncheck'
+                                )
+                            }
+                        );
                     }
                 );
             },
@@ -100,15 +106,19 @@
                             );
                             page.initICheck();
                         },
-                        error: function (e) { page.errorHandler(e); }
+                        error: function (e) {
+                            page.errorHandler(e);
+                        }
                     });
                 });
             },
             onIssue: function (formId, action) {
                 var $issue = $('#issue');
-                $('#' + formId).on('submit', function () { return false; });
+                $('#' + formId).on('submit', function () {
+                    return false;
+                });
                 $(document).keypress(function (e) {
-                    if (e.which === 13)  return false;
+                    if (e.which === 13) return false;
                 });
                 $issue.on('click', function () {
                     var data = {}, type = 'POST', url = 'issue';
@@ -117,11 +127,13 @@
                             uid = $(this).data('uid');
 
                         data[uid] = (typeof action === 'undefined' || action === 'create') ? sn
-                            : { sn: sn, status: $($(this).parent().next().children()[0]).val() }
+                            : {sn: sn, status: $($(this).parent().next().children()[0]).val()}
                     });
                     if (typeof action !== 'undefined') {
                         url = page.siteRoot() + 'cards/' + (action === 'create' ? 'store' : 'update');
-                        if (action === 'edit') { type = 'PUT'; }
+                        if (action === 'edit') {
+                            type = 'PUT';
+                        }
                     }
                     $('.overlay').show();
                     $.ajax({
@@ -136,12 +148,16 @@
                             $('.overlay').hide();
                             page.inform(result['title'], result['message'], page.success);
                         },
-                        error: function (e) { page.errorHandler(e); }
+                        error: function (e) {
+                            page.errorHandler(e);
+                        }
                     });
                 });
             },
             onPermit: function (table, formId) {
-                $('#' + formId).on('submit', function () { return false; });
+                $('#' + formId).on('submit', function () {
+                    return false;
+                });
                 $('#permit').on('click', function () {
                     page.ajaxRequest(
                         'POST', table + '/permit',
@@ -150,7 +166,7 @@
                 });
             },
             onInput: function () {
-                $(document).on('keyup', 'input', function() {
+                $(document).on('keyup', 'input', function () {
                     if ($(this).val().length === parseInt($(this).attr('maxlength'))) {
                         var i = parseInt($(this).data('seq')) + 1;
                         $('input[data-seq=' + i + ']').focus();
