@@ -57,6 +57,24 @@
                         )
                     }
                 );
+                $.map(
+                    ['contact', 'gate'],
+                    function (target) {
+                        $(document).on('ifChecked', '.' + target,
+                            function () { $('.' + target + 's').iCheck('check'); }
+                        );
+                    }
+                );
+                $.map(
+                    {contact: 'user_ids', gate: 'turnstile_ids'},
+                    function (item, target) {
+                        $(document).on('ifUnchecked', '.' + target, function () {
+                            $('.' + target + 's').iCheck(
+                            $('input[name="' + item + '[]"]:checked').length > 0 ? 'check' : 'uncheck'
+                            )
+                        });
+                    }
+                );
             },
             onSectionChange: function ($sectionId, empty, action) {
                 // 选择班级
