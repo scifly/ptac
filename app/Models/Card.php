@@ -422,10 +422,10 @@ class Card extends Model {
                         $user = User::find($userId);
                         if (!$user->card) continue;
                         $data[$deviceid][] = [
-                            'card' => $user->card->sn,
-                            's_date' => $start ?? '00000000',
-                            'e_date' => $end ?? '00000000',
-                            'time_frames' => $ruleids[$turnstileId]
+                            'card'        => $user->card->sn,
+                            's_date'      => $start ?? '00000000',
+                            'e_date'      => $end ?? '00000000',
+                            'time_frames' => $ruleids[$turnstileId],
                         ];
                     }
                 }
@@ -465,18 +465,16 @@ class Card extends Model {
                     $prIds = RuleTurnstile::where(['turnstile_id' => $t->id, 'door' => $i])
                         ->get()->pluck('passage_rule_id')->toArray();
                     $_prs = PassageRule::whereIn('id', $prIds)
-                            ->pluck('name', 'ruleid')->toArray();
+                        ->pluck('name', 'ruleid')->toArray();
                 }
-                $doors .= sprintf(
-                    $td, Form::select(
-                        'ruleids[' . $t->id . '][]',
-                        array_merge($prs, $_prs ?? []), null,
-                        [
-                            'class'    => 'form-control select2 input-sm',
-                            'style'    => 'width: 100%;',
-                            'disabled' => sizeof(array_merge($prs, $_prs ?? [])) <= 1
-                        ]
-                    )->toHtml());
+                $rules = isset($_prs)
+                    ? array_merge($prs, $_prs ?? [])
+                    : [0 => '(禁止通行)'];
+                $doors .= sprintf($td, Form::select('ruleids[' . $t->id . '][]', $rules, null, [
+                    'class'    => 'form-control select2 input-sm',
+                    'style'    => 'width: 100%;',
+                    'disabled' => sizeof($rules) <= 1,
+                ])->toHtml());
             }
             $tList[] = '<tr>' . $id . $name . $doors . '</tr>';
         }
