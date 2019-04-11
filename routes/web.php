@@ -5,6 +5,31 @@ use App\Helpers\HttpStatusCode;
 use App\Models\Corp;
 use Doctrine\Common\Inflector\Inflector;
 
+/** Helper functions ------------------------------------------------------------------------------------------------ */
+if (!function_exists('routes')) {
+    /**
+     * @param array $routes
+     * @param null $prefix
+     * @param null $dir
+     */
+    function routes(array $routes, $prefix = null, $dir = null) {
+        foreach ($routes as $model => $methods) {
+            $table      = Inflector::pluralize($model);
+            $model      = $model == 'class' ? 'squad' : $model;
+            $controller = ucfirst(Inflector::camelize($model)) . 'Controller';
+            !$dir ?: $controller = ucfirst($dir) . '\\' . $controller;
+            foreach ($methods as $method => $reqs) {
+                $paths = [$table, $method == 'destroy' ? 'delete' : $method];
+                !$prefix ?: $paths = array_merge([$prefix], $paths);
+                $phrases = is_numeric($param = array_keys($reqs)[0]) ? $reqs : $reqs[$param];
+                is_array($phrases) ?: $phrases = [$phrases];
+                is_numeric($param) ?: $paths = array_merge($paths, [$param]);
+                Route::match($phrases, implode('/', $paths), implode('@', [$controller, $method]));
+            }
+        }
+    }
+}
+
 /** 后台路由 ---------------------------------------------------------------------------------------------------------- */
 Route::auth();
 Route::any('register', function () { return redirect('login'); });
@@ -291,29 +316,4 @@ foreach (Corp::pluck('acronym')->toArray() as $acronym) {
         'Wechat\SyncController@sync'
     );
     routes($routes, $acronym, 'Wechat');
-}
-/** Helper functions ------------------------------------------------------------------------------------------------ */
-/**
- * @param array $routes
- * @param null $prefix
- * @param null $dir
- */
-function routes(array $routes, $prefix = null, $dir = null) {
-    foreach ($routes as $model => $methods) {
-        $table = Inflector::pluralize($model);
-        $model = $model == 'class' ? 'squad' : $model;
-        $controller = ucfirst(Inflector::camelize($model)) . 'Controller';
-        !$dir ?: $controller = ucfirst($dir) . '\\' . $controller;
-        foreach ($methods as $method => $reqs) {
-            $paths = [$table, $method == 'destroy' ? 'delete' : $method];
-            !$prefix ?: $paths = array_merge([$prefix], $paths);
-            $phrases = is_numeric($param = array_keys($reqs)[0]) ? $reqs : $reqs[$param];
-            is_array($phrases) ?: $phrases = [$phrases];
-            is_numeric($param) ?: $paths = array_merge($paths, [$param]);
-            Route::match(
-                $phrases, implode('/', $paths),
-                implode('@', [$controller, $method])
-            );
-        }
-    }
 }
