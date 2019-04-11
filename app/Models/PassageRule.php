@@ -308,22 +308,4 @@ class PassageRule extends Model {
     
     }
     
-    /**
-     * 返回门禁设备deviceid数组
-     *
-     * @param $doorIds
-     * @return array
-     */
-    private function deviceids($doorIds) {
-    
-        $doors = (new Turnstile)->doors();
-        foreach ($doorIds as $id) {
-            list($sn) = explode('.', $doors[$id]);
-            $deviceids[] = Turnstile::whereSn($sn)->first()->deviceid;
-        }
-        
-        return array_unique($deviceids ?? []);
-        
-    }
-    
 }
