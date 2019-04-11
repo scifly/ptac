@@ -14,8 +14,8 @@ if (!function_exists('routes')) {
      */
     function routes(array $routes, $prefix = null, $dir = null) {
         foreach ($routes as $model => $methods) {
-            $table      = Inflector::pluralize($model);
-            $model      = $model == 'class' ? 'squad' : $model;
+            $table = Inflector::pluralize($model);
+            $model = $model == 'class' ? 'squad' : $model;
             $controller = ucfirst(Inflector::camelize($model)) . 'Controller';
             !$dir ?: $controller = ucfirst($dir) . '\\' . $controller;
             foreach ($methods as $method => $reqs) {
@@ -24,7 +24,10 @@ if (!function_exists('routes')) {
                 $phrases = is_numeric($param = array_keys($reqs)[0]) ? $reqs : $reqs[$param];
                 is_array($phrases) ?: $phrases = [$phrases];
                 is_numeric($param) ?: $paths = array_merge($paths, [$param]);
-                Route::match($phrases, implode('/', $paths), implode('@', [$controller, $method]));
+                Route::match(
+                    $phrases, implode('/', $paths),
+                    implode('@', [$controller, $method])
+                );
             }
         }
     }
