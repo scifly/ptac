@@ -3,6 +3,7 @@ namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class PassageRuleRequest
@@ -78,7 +79,7 @@ class PassageRuleRequest extends FormRequest {
      * @return bool
      */
     private function tRange($trs) {
-        
+
         for ($i = 0; $i < sizeof($trs); $i++) {
             if ($trs[$i][0] == '00:00' && $trs[$i][1] == '00:00') continue;
             # 通行时段起始时间不得晚于结束时间
