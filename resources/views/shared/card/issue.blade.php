@@ -23,7 +23,7 @@
                     <table id="simple-table" style="width: 100%"
                            class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead><tr>{!! $titles !!}</tr></thead>
-                        <tbody>
+                        <tbody id="section">
                         <tr>
                             <td colspan="{!! $columns !!}" class="text-center">
                                 - 请选择一个部门进行批量发卡 -
