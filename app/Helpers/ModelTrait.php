@@ -82,7 +82,7 @@ trait ModelTrait {
                                 break;
                             case 'clear':
                                 $records = $model->all()->filter(
-                                    function (Model $record) use ($values) {
+                                    function (Model $record) use ($values, $field) {
                                         return !empty(
                                             array_intersect(
                                                 explode(',', $record->{$field}), $values
