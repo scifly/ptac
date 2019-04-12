@@ -143,7 +143,7 @@ trait ModelTrait {
             $field = $fields[$forward ? 0 : 1];
             $model->where($field, $value)->delete();
             foreach ($ids as $id) {
-                $records[] = array_merge($fields, [
+                $records[] = array_combine($fields, [
                     $forward ? $value : $id,
                     $forward ? $id : $value,
                     Constant::ENABLED,
