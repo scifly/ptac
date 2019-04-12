@@ -1,11 +1,24 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\{
-    Action, App, CommType, Corp, Department, DepartmentUser,
-    Exam, Grade, Group, MediaType, Menu, MessageType, School,
-    Squad, Student, Tab, User
-};
+use App\Models\{Action,
+    ActionGroup,
+    App,
+    CommType,
+    Corp,
+    Department,
+    DepartmentUser,
+    Exam,
+    Grade,
+    Group,
+    MediaType,
+    Menu,
+    MessageType,
+    School,
+    Squad,
+    Student,
+    Tab,
+    User};
 use App\Policies\Route;
 use Carbon\Carbon;
 use Illuminate\Database\{Eloquent\Collection, Eloquent\Model, Query\Builder};
@@ -123,10 +136,10 @@ trait ModelTrait {
      * @throws Throwable
      */
     function retain(string $class, $value, array $ids, bool $forward = true) {
-    
+        
         DB::transaction(function () use ($class, $value, $ids, $forward) {
             $model = $this->model($class);
-            $fields = array_merge($model->fillable, ['created_at', 'updated_at']);
+            $fields = array_merge($model->getFillable(), ['created_at', 'updated_at']);
             $field = $fields[$forward ? 0 : 1];
             $model->where($field, $value)->delete();
             foreach ($ids as $id) {
