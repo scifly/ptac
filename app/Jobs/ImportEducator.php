@@ -262,6 +262,65 @@ class ImportEducator implements ShouldQueue, MassImport {
     }
     
     /**
+     * 创建/更新当前导入用户的(班级/年级主任、任教科目等)绑定关系
+     *
+     * @param array $data
+     * @param Educator $educator
+     * @throws Throwable
+     */
+    private function binding(array $data, Educator $educator) {
+    
+        try {
+            DB::transaction(function () use ($data, $educator) {
+                $school = School::find($educator->school_id);
+                list($gNames, $cNames, $cses) = array_map(
+                    function ($str) use ($data) {
+                        return explode(',', str_replace(['，', '：'], [',', ':'], $data[$str]));
+                    }, ['grades', 'classes', 'classes_subjects']
+                );
+                # 更新年级主任
+                foreach ($gNames as $gName) {
+                    $condition = ['school_id' => $school->id, 'name' => $gName];
+                    if (!($grade = Grade::where($condition)->first())) continue;
+                    $educatorIds = array_merge(
+                        explode(',', $grade->educator_ids),
+                        [$educator->id]
+                    );
+                    $grade->educator_ids = implode(',', array_unique($educatorIds));
+                    $grade->save();
+                    # 更新部门&用户绑定关系
+                    $this->refreshDu($grade->department_id, $educator->user_id);
+                }
+                # 更新班级主任
+                $gradeIds = $school->grades->pluck('id')->toArray();
+                foreach ($cNames as $cName) {
+                    if (!($class = Squad::whereName($cName)->whereIn('grade_id', $gradeIds)->first())) continue;
+                    $educatorIds = array_merge(explode(',', $class->educator_ids), [$educator->id]);
+                    $class->update(['educator_ids' => implode(',', array_unique($educatorIds))]);
+                    #
+                    $this->refreshDu($class->department_id, $educator->user_id);
+                }
+                # 更新班级科目绑定关系
+                foreach ($cses as $cs) {
+                    if (empty($cs)) continue;
+                    $paths = explode(':', $cs);
+                    $class = Squad::whereName($paths[0])->whereIn('grade_id', $gradeIds)->first();
+                    $subject = Subject::whereName($paths[1])->where('school_id', $school->id)->first();
+                    if (!isset($class, $subject)) continue;
+                    EducatorClass::firstOrCreate(
+                        array_combine(Constant::EC_FIELDS, [$educator->id, $class->id, $subject->id, 1])
+                    );
+                    # 更新部门&用户绑定关系
+                    $this->refreshDu($class->department_id, $educator->user_id);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+    }
+
+    /**
      * 创建/更新当前导入用户的部门绑定关系
      *
      * @param School $school
@@ -293,73 +352,16 @@ class ImportEducator implements ShouldQueue, MassImport {
     }
     
     /**
-     * 创建/更新当前导入用户的(班级/年级主任、任教科目等)绑定关系
+     * 更新部门 & 用户绑定关系
      *
-     * @param array $data
-     * @param Educator $educator
-     * @throws Throwable
+     * @param $departmentId
+     * @param $userId
      */
-    private function binding(array $data, Educator $educator) {
-    
-        /**
-         * 更新部门 & 用户绑定关系
-         *
-         * @param $departmentId
-         * @param $userId
-         */
-        function refreshDu($departmentId, $userId) {
-            DepartmentUser::firstOrCreate(
-                array_combine(Constant::DU_FIELDS, [$departmentId, $userId, 1])
-            );
-        }
+    function refreshDu($departmentId, $userId) {
         
-        try {
-            DB::transaction(function () use ($data, $educator) {
-                $school = School::find($educator->school_id);
-                list($gNames, $cNames, $cses) = array_map(
-                    function ($str) use ($data) {
-                        return explode(',', str_replace(['，', '：'], [',', ':'], $data[$str]));
-                    }, ['grades', 'classes', 'classes_subjects']
-                );
-                # 更新年级主任
-                foreach ($gNames as $gName) {
-                    $condition = ['school_id' => $school->id, 'name' => $gName];
-                    if (!($grade = Grade::where($condition)->first())) continue;
-                    $educatorIds = array_merge(
-                        explode(',', $grade->educator_ids),
-                        [$educator->id]
-                    );
-                    $grade->educator_ids = implode(',', array_unique($educatorIds));
-                    $grade->save();
-                    # 更新部门&用户绑定关系
-                    refreshDu($grade->department_id, $educator->user_id);
-                }
-                # 更新班级主任
-                $gradeIds = $school->grades->pluck('id')->toArray();
-                foreach ($cNames as $cName) {
-                    if (!($class = Squad::whereName($cName)->whereIn('grade_id', $gradeIds)->first())) continue;
-                    $educatorIds = array_merge(explode(',', $class->educator_ids), [$educator->id]);
-                    $class->update(['educator_ids' => implode(',', array_unique($educatorIds))]);
-                    #
-                    refreshDu($class->department_id, $educator->user_id);
-                }
-                # 更新班级科目绑定关系
-                foreach ($cses as $cs) {
-                    if (empty($cs)) continue;
-                    $paths = explode(':', $cs);
-                    $class = Squad::whereName($paths[0])->whereIn('grade_id', $gradeIds)->first();
-                    $subject = Subject::whereName($paths[1])->where('school_id', $school->id)->first();
-                    if (!isset($class, $subject)) continue;
-                    EducatorClass::firstOrCreate(
-                        array_combine(Constant::EC_FIELDS, [$educator->id, $class->id, $subject->id, 1])
-                    );
-                    # 更新部门&用户绑定关系
-                    refreshDu($class->department_id, $educator->user_id);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        DepartmentUser::firstOrCreate(
+            array_combine(Constant::DU_FIELDS, [$departmentId, $userId, 1])
+        );
         
     }
     
