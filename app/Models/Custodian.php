@@ -42,7 +42,7 @@ class Custodian extends Model {
         '手机号码', '创建于', '更新于',
     ];
     
-    protected $fillable = ['user_id', 'singular', 'enabled'];
+    protected $fillable = ['user_id', 'enabled'];
     
     /**
      * 返回对应的用户对象
