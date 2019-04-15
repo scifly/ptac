@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\{DB, Request};
+use Illuminate\Support\Facades\{DB, Log, Request};
 use Throwable;
 
 /**
@@ -429,6 +429,7 @@ class Card extends Model {
                         ];
                     }
                 }
+                Log::info('data', $data);
                 (new Turnstile)->invoke('addperms', ['data' => $data]);
             });
         } catch (Exception $e) {
