@@ -375,7 +375,7 @@ class Card extends Model {
         
         if (Request::has('sectionId')) {
             if ($type == 'Educator') {
-                $users = Department::find(Request::input('section_id'))->users->filter(
+                $users = Department::find(Request::input('sectionId'))->users->filter(
                     function (User $user) { return !in_array($user->group->name, ['监护人', '学生']); }
                 );
             } else {
