@@ -159,6 +159,13 @@
                     return false;
                 });
                 $('#permit').on('click', function () {
+                    if (
+                        $('input[name=gates]:checked').length === 0 ||
+                        $('input[name=contacts]:checked').length === 0
+                    ) {
+                        page.inform('一卡通授权', '请勾选授权对象/门禁', page.failure);
+                        return false;
+                    }
                     page.ajaxRequest(
                         'POST', table + '/permit',
                         page.formData($('#' + formId))
