@@ -416,6 +416,11 @@ class Card extends Model {
                     $turnstileIds, $start, $end, $ruleids
                 );
                 $data = [];
+                list($sDate, $eDate) = array_map(
+                    function ($date) {
+                        return $date ? date('Ymd', strtotime($date)) : '00000000';
+                    }, [$start, $end]
+                );
                 foreach ($turnstileIds as $turnstileId) {
                     $deviceid = Turnstile::find($turnstileId)->deviceid;
                     foreach ($userIds as $userId) {
@@ -423,8 +428,8 @@ class Card extends Model {
                         if (!$user->card) continue;
                         $data[$deviceid][] = [
                             'card'        => $user->card->sn,
-                            's_date'      => $start ?? '00000000',
-                            'e_date'      => $end ?? '00000000',
+                            's_date'      => $sDate,
+                            'e_date'      => $eDate,
                             'time_frames' => $ruleids[$turnstileId],
                         ];
                     }
