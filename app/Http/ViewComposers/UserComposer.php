@@ -24,7 +24,7 @@ class UserComposer {
         if (Request::path() == '/' || stripos(Request::path(), 'pages') !== false) {
             $action = 'edit';
         } else {
-            $action = explode('/', Request::path())[1];
+            $action = explode('/', Request::path())[2];
         }
         switch ($action) {
             case 'edit':
