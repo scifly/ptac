@@ -430,7 +430,7 @@ class Card extends Model {
                             'card'        => $user->card->sn,
                             's_date'      => $sDate,
                             'e_date'      => $eDate,
-                            'time_frames' => $ruleids[$turnstileId],
+                            'time_frames' => array_pad($ruleids[$turnstileId], 4, 0)
                         ];
                     }
                 }
