@@ -429,7 +429,6 @@ class Card extends Model {
                         ];
                     }
                 }
-                Log::info('data', $data);
                 (new Turnstile)->invoke('addperms', ['data' => $data]);
             });
         } catch (Exception $e) {
