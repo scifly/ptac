@@ -105,6 +105,7 @@
                                     : '<tr><td class="text-center" colspan="5">- 暂无数据 -</td></tr>'
                             );
                             page.initICheck();
+                            $('input[name=contacts]').iCheck('check');
                         },
                         error: function (e) {
                             page.errorHandler(e);
