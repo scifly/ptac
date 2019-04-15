@@ -409,7 +409,7 @@ class Card extends Model {
                 $turnstileIds = $input['turnstile_ids'];
                 $ruleids = $input['ruleids'];
                 list($start, $end) = isset($input['daterange'])
-                    ? explode(' - ', $input['daterange'])
+                    ? explode(' ~ ', $input['daterange'])
                     : array_fill(0, 2, null);
                 (new CardTurnstile)->store(
                     Card::whereIn('user_id', $userIds)->get()->pluck('id')->toArray(),
