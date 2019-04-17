@@ -112,13 +112,12 @@ class CheckRole {
                 return $next($request);
             }
         }
-        Log::debug('you are here');
-        Log::debug('abort: ' . ($abort ? 'true' : 'false'));
         abort_if(
             $abort,
             HttpStatusCode::FORBIDDEN,
             __('messages.forbidden')
         );
+        Log::debug('hi there');
         
         return $next($request);
         
