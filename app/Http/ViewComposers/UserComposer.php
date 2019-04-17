@@ -21,10 +21,14 @@ class UserComposer {
      */
     public function compose(View $view) {
         
-        if (in_array(Request::path(),  ['/', 'home']) || stripos(Request::path(), 'pages') !== false) {
+        $path = Request::path();
+        if (
+            in_array($path,  ['/', 'home']) ||
+            stripos($path, 'pages') !== false
+        ) {
             $action = 'edit';
         } else {
-            $action = explode('/', Request::path())[1];
+            $action = explode('/', $path)[1];
         }
         switch ($action) {
             case 'edit':

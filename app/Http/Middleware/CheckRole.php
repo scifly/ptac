@@ -75,16 +75,14 @@ class CheckRole {
         $corpGroupIds = array_merge([0], Group::whereIn('name', ['企业', '学校'])->pluck('id')->toArray());
         $schoolGroupIds = [0, Group::whereName('学校')->first()->id];
         if (in_array($role, ['企业', '学校'])) {
-            $tab = Tab::whereIn('group_id', $role == '企业' ? $corpGroupIds : $schoolGroupIds)
+            $abort = !Tab::whereIn('group_id', $role == '企业' ? $corpGroupIds : $schoolGroupIds)
                 ->where('name', $controller)->first();
-            $abort = !$tab ?? false;
         } else {
             # 校级以下角色 action权限判断
-            $groupAction = ActionGroup::where([
+            $abort = !ActionGroup::where([
                 'action_id' => Action::whereRoute($route)->first()->id,
                 'group_id' => $groupId
             ])->first();
-            $abort = !$groupAction ?? false;
         }
 
         # 企业级管理员可访问的运营类功能
