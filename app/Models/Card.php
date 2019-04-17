@@ -470,7 +470,7 @@ class Card extends Model {
                 if ($i <= $t->doors) {
                     $prIds = RuleTurnstile::where(['turnstile_id' => $t->id, 'door' => $i])
                         ->get()->pluck('passage_rule_id')->toArray();
-                    $_prs = PassageRule::whereIn('id', $prIds)
+                    $_prs = PassageRule::orderBy('ruleid')->whereIn('id', $prIds)
                         ->pluck('name', 'ruleid')->toArray();
                 }
                 $rules = !empty($_prs)
