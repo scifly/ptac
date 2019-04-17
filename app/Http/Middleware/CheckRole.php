@@ -113,6 +113,7 @@ class CheckRole {
                 return $next($request);
             }
         }
+        Log::debug('you are here');
         abort_if(
             $abort,
             HttpStatusCode::FORBIDDEN,
