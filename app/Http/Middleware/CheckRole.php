@@ -70,7 +70,6 @@ class CheckRole {
             
             return $next($request);
         }
-        Log::debug('hi');
         # 功能权限判断
         $controller = Action::whereRoute($route)->first()->tab->name;
         $corpGroupIds = array_merge([0], Group::whereIn('name', ['企业', '学校'])->pluck('id')->toArray());
@@ -78,11 +77,7 @@ class CheckRole {
         if (in_array($role, ['企业', '学校'])) {
             $tab = Tab::whereIn('group_id', $role == '企业' ? $corpGroupIds : $schoolGroupIds)
                 ->where('name', $controller)->first();
-            Log::debug($controller);
-            Log::debug($role);
-            Log::info('gids', $corpGroupIds);
             $abort = !$tab ?? false;
-            Log::debug('abort: ' . $abort);
         } else {
             # 校级以下角色 action权限判断
             $groupAction = ActionGroup::where([
