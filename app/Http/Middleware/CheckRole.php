@@ -7,6 +7,7 @@ use App\Models\{Action, ActionGroup, Corp, Department, Group, GroupMenu, Menu, S
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class CheckRole
@@ -69,7 +70,7 @@ class CheckRole {
             
             return $next($request);
         }
-        
+        Log::debug('hi');
         # 功能权限判断
         $controller = Action::whereRoute($route)->first()->tab->name;
         $corpGroupIds = array_merge([0], Group::whereIn('name', ['企业', '学校'])->pluck('id')->toArray());
@@ -78,6 +79,7 @@ class CheckRole {
             $tab = Tab::whereIn('group_id', $role == '企业' ? $corpGroupIds : $schoolGroupIds)
                 ->where('name', $controller)->first();
             $abort = !$tab ?? false;
+            Log::debug('abort: ' . $abort);
         } else {
             # 校级以下角色 action权限判断
             $groupAction = ActionGroup::where([
