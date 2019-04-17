@@ -77,7 +77,6 @@ class CheckRole {
         if (in_array($role, ['企业', '学校'])) {
             $abort = !Tab::whereIn('group_id', $role == '企业' ? $corpGroupIds : $schoolGroupIds)
                 ->where('name', $controller)->first();
-            Log::debug(!$abort ? 'false' : 'true');
         } else {
             # 校级以下角色 action权限判断
             $abort = !ActionGroup::where([
@@ -114,6 +113,7 @@ class CheckRole {
             }
         }
         Log::debug('you are here');
+        Log::debug('abort: ', $abort ? 'true' : 'false');
         abort_if(
             $abort,
             HttpStatusCode::FORBIDDEN,
