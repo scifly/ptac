@@ -7,7 +7,6 @@ use App\Models\{Action, ActionGroup, Corp, Department, Group, GroupMenu, Menu, S
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class CheckRole
@@ -117,7 +116,6 @@ class CheckRole {
             HttpStatusCode::FORBIDDEN,
             __('messages.forbidden')
         );
-        Log::debug('hi there');
         
         return $next($request);
         
