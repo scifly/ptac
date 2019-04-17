@@ -473,9 +473,7 @@ class Card extends Model {
                     $_prs = PassageRule::orderBy('ruleid')->whereIn('id', $prIds)
                         ->pluck('name', 'ruleid')->toArray();
                 }
-                $rules = !empty($_prs)
-                    ? array_merge($prs, $_prs ?? [])
-                    : [0 => '(禁止通行)'];
+                $rules = !empty($_prs) ? ($prs + ($_prs ?? [])) : [0 => '(禁止通行)'];
                 $doors .= sprintf($td, Form::select('ruleids[' . $t->id . '][]', $rules, null, [
                     'class'    => 'form-control select2 input-sm',
                     'style'    => 'width: 100%;',
