@@ -49,6 +49,7 @@ class CommonPolicy {
             case 'index':
             case 'create':
             case 'store':
+            case 'issue':
                 return $isSuperRole ? true : $this->action($user);
             case 'show':
             case 'edit':
