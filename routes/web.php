@@ -21,11 +21,11 @@ if (!function_exists('routes')) {
             foreach ($methods as $method => $reqs) {
                 $paths = [$table, $method == 'destroy' ? 'delete' : $method];
                 !$prefix ?: $paths = array_merge([$prefix], $paths);
-                $phrases = is_numeric($param = array_keys($reqs)[0]) ? $reqs : $reqs[$param];
-                is_array($phrases) ?: $phrases = [$phrases];
+                $verbs = is_numeric($param = array_keys($reqs)[0]) ? $reqs : $reqs[$param];
+                is_array($verbs) ?: $verbs = [$verbs];
                 is_numeric($param) ?: $paths = array_merge($paths, [$param]);
                 Route::match(
-                    $phrases, implode('/', $paths),
+                    $verbs, implode('/', $paths),
                     implode('@', [$controller, $method])
                 );
             }

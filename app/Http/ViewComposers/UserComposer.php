@@ -21,7 +21,7 @@ class UserComposer {
      */
     public function compose(View $view) {
         
-        if (Request::path() == '/' || stripos(Request::path(), 'pages') !== false) {
+        if (in_array(Request::path(),  ['/', '/home']) || stripos(Request::path(), 'pages') !== false) {
             $action = 'edit';
         } else {
             $action = explode('/', Request::path())[1];

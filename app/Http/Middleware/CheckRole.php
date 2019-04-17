@@ -3,16 +3,7 @@ namespace App\Http\Middleware;
 
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
-use App\Models\Action;
-use App\Models\ActionGroup;
-use App\Models\Corp;
-use App\Models\Department;
-use App\Models\Group;
-use App\Models\GroupMenu;
-use App\Models\Menu;
-use App\Models\School;
-use App\Models\Tab;
-use App\Models\WapSite;
+use App\Models\{Action, ActionGroup, Corp, Department, Group, GroupMenu, Menu, School, Tab, WapSite};
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,7 +44,7 @@ class CheckRole {
         $menuId = session('menuId');
     
         # 超级用户直接访问所有功能, 如果访问的是首页，则直接通过并进入下个请求
-        if ($role == '运营' || $route == '/' || $route == 'home') {
+        if ($role == '运营' || in_array($route, ['/', 'home'])) {
             return $next($request);
         }
     
@@ -64,9 +55,10 @@ class CheckRole {
                 $menuIds = $this->menu->subIds($rootMenuId);
                 $abort = !in_array($menuId, $menuIds) ?? false;
             } else {
-                $groupMenu = GroupMenu::whereMenuId($menuId)
-                    ->where('group_id', $groupId)
-                    ->first();
+                $groupMenu = GroupMenu::where([
+                    'menu_id' => $menuId,
+                    'group_id' => $groupId
+                ])->first();
                 $abort = !$groupMenu ?? false;
             }
             abort_if(
@@ -84,15 +76,14 @@ class CheckRole {
         $schoolGroupIds = [0, Group::whereName('学校')->first()->id];
         if (in_array($role, ['企业', '学校'])) {
             $tab = Tab::whereIn('group_id', $role == '企业' ? $corpGroupIds : $schoolGroupIds)
-                ->where('name', $controller)
-                ->first();
+                ->where('name', $controller)->first();
             $abort = !$tab ?? false;
         } else {
             # 校级以下角色 action权限判断
-            $actionId = Action::whereRoute($route)->first()->id;
-            $groupAction = ActionGroup::whereActionId($actionId)
-                ->where('group_id', $groupId)
-                ->first();
+            $groupAction = ActionGroup::where([
+                'action_id' => Action::whereRoute($route)->first()->id,
+                'group_id' => $groupId
+            ])->first();
             $abort = !$groupAction ?? false;
         }
 

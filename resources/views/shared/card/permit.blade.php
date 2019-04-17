@@ -1,3 +1,6 @@
+@php
+$styles = 'display nowrap table table-striped table-bordered table-hover table-condensed';
+@endphp
 <div class="box box-default box-solid">
     {!! Form::open([
         'method' => 'post',
@@ -26,8 +29,7 @@
                 <div class="form-group">
                     {!! Form::label('user_ids', '一卡通列表') !!}
                     <div>
-                        <table style="width: 100%"
-                               class="display nowrap table table-striped table-bordered table-hover table-condensed">
+                        <table style="width: 100%" class="{!! $styles !!}">
                             <thead>
                             <tr>
                                 <th style="vertical-align: middle;" class="text-center">
@@ -69,7 +71,7 @@
                 <div class="form-group">
                     {!! Form::label('user_ids', '门禁列表') !!}
                     <div>
-                        <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
+                        <table class="{!! $styles !!}">
                             <thead>
                             <tr>
                                 <th style="vertical-align: middle;" class="text-center">
