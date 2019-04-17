@@ -113,7 +113,7 @@ class CheckRole {
             }
         }
         Log::debug('you are here');
-        Log::debug('abort: ', $abort ? 'true' : 'false');
+        Log::debug('abort: ' . ($abort ? 'true' : 'false'));
         abort_if(
             $abort,
             HttpStatusCode::FORBIDDEN,
