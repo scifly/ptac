@@ -7,7 +7,9 @@ use App\Models\Mobile;
 use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -95,6 +97,15 @@ class LoginController extends Controller {
         return Auth::attempt([$field => $input, 'password' => $password], $rememberMe)
             ? response()->json(['url' => $returnUrl ?? '/'])
             : abort(HttpStatusCode::NOT_ACCEPTABLE, __('messages.invalid_credentials'));
+        
+    }
+    
+    /**
+     * @return RedirectResponse|Redirector
+     */
+    public function signup() {
+        
+        return redirect('login');
         
     }
     

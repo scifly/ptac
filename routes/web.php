@@ -35,7 +35,7 @@ if (!function_exists('routes')) {
 
 /** 后台路由 ---------------------------------------------------------------------------------------------------------- */
 Route::auth();
-Route::any('register', function () { return redirect('login'); });
+Route::any('register', 'Auth\LoginController@signup');
 Route::get('logout', 'Auth\LoginController@logout');
 # 测试及维护用路由
 Route::group(['prefix' => ''], function () {
@@ -43,14 +43,7 @@ Route::group(['prefix' => ''], function () {
     Route::any('test/index', $c . '@index');
     Route::get('listen', $c . '@listen');
 });
-Route::get('event', function () {
-    (new Broadcaster)->broadcast([
-        'userId'     => Auth::id() ?? 1,
-        'title'      => '广播测试',
-        'statusCode' => HttpStatusCode::OK,
-        'message'    => '工作正常',
-    ]);
-});
+Route::get('event', 'TestController@event');
 // Route::group(['prefix' => ''])
 Route::get('/', 'HomeController@index');
 Route::get('home', 'HomeController@index')->name('home');

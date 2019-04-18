@@ -2,8 +2,11 @@
 namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
+use App\Helpers\Broadcaster;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Models\{Corp, Department};
+use Auth;
 use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use GuzzleHttp\Client;
@@ -208,6 +211,20 @@ class TestController extends Controller {
                 $class->getMethods()
             )
         );
+        
+    }
+    
+    /**
+     * @throws PusherException
+     */
+    function event() {
+    
+        (new Broadcaster)->broadcast([
+            'userId'     => Auth::id() ?? 1,
+            'title'      => '广播测试',
+            'statusCode' => HttpStatusCode::OK,
+            'message'    => '工作正常',
+        ]);
         
     }
     
