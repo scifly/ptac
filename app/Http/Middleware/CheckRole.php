@@ -50,7 +50,8 @@ class CheckRole {
     
         $rootMenuId = $this->menu->rootId();
         # 菜单权限判断
-        if (stripos($route, 'pages') > -1) {
+        // if (stripos($route, 'pages') > -1) {
+        if ($request->is('pages/*')) {
             if (in_array($role, ['企业', '学校'])) {
                 $menuIds = $this->menu->subIds($rootMenuId);
                 $abort = !in_array($menuId, $menuIds) ?? false;
