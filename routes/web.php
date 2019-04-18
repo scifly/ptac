@@ -1,7 +1,5 @@
 <?php
 
-use App\Helpers\Broadcaster;
-use App\Helpers\HttpStatusCode;
 use App\Models\Corp;
 use Doctrine\Common\Inflector\Inflector;
 
@@ -44,7 +42,6 @@ Route::group(['prefix' => ''], function () {
     Route::get('listen', $c . '@listen');
 });
 Route::get('event', 'TestController@event');
-// Route::group(['prefix' => ''])
 Route::get('/', 'HomeController@index');
 Route::get('home', 'HomeController@index')->name('home');
 Route::get('pages/{id}', 'HomeController@menu');
