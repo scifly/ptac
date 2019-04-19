@@ -175,7 +175,7 @@ class PassageLog extends Model {
                     $turnstile = Turnstile::whereSn($record['sn'])->first();
                     $createdAt = $updatedAt = now()->toDateTimeString();
                     $logs[] = array_combine($fields, [
-                        $schoolId, $card ? $card->user_id : 1, $record['type'],
+                        $schoolId, $card ? $card->user_id : 0, $record['type'],
                         $record['direction'], $turnstile ? $turnstile->id : 0, $record['door_num'],
                         date('Y-m-d H:i:s', strtotime($record['time'])),
                         $createdAt, $updatedAt, $record['valid']
