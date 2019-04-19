@@ -170,16 +170,18 @@ class PassageLog extends Model {
                 ];
                 $logs = [];
                 $schoolId = $this->schoolId();
-                foreach ($records as $record) {
-                    $card = Card::whereSn($record['card_num'])->first();
-                    $turnstile = Turnstile::whereSn($record['sn'])->first();
-                    $createdAt = $updatedAt = now()->toDateTimeString();
-                    $logs[] = array_combine($fields, [
-                        $schoolId, $card ? $card->user_id : 0, $record['type'],
-                        $record['direction'], $turnstile ? $turnstile->id : 0, $record['door_num'],
-                        date('Y-m-d H:i:s', strtotime($record['time'])),
-                        $createdAt, $updatedAt, $record['valid']
-                    ]);
+                if (is_array($records)) {
+                    foreach ($records as $record) {
+                        $card = Card::whereSn($record['card_num'])->first();
+                        $turnstile = Turnstile::whereSn($record['sn'])->first();
+                        $createdAt = $updatedAt = now()->toDateTimeString();
+                        $logs[] = array_combine($fields, [
+                            $schoolId, $card ? $card->user_id : 0, $record['type'],
+                            $record['direction'], $turnstile ? $turnstile->id : 0, $record['door_num'],
+                            date('Y-m-d H:i:s', strtotime($record['time'])),
+                            $createdAt, $updatedAt, $record['valid']
+                        ]);
+                    }
                 }
                 $this->insert($logs);
             });

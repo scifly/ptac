@@ -49,7 +49,7 @@ class ModuleRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['uri'])) unset($input['tab_id']);
+        if ($this->has('uri')) unset($input['tab_id']);
         $this->replace($input);
         
     }
