@@ -41,18 +41,10 @@ class GroupRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['menu_ids'])) {
-            $input['menu_ids'] = explode(',', $input['menu_ids']);
-        }
-        if (isset($input['tab_ids'])) {
-            $input['tab_ids'] = explode(',', $input['tab_ids']);
-        }
-        if (isset($input['action_ids'])) {
-            $input['action_ids'] = explode(',', $input['action_ids']);
-        }
-        if (!isset($input['school_id'])) {
-            $input['school_id'] = $this->schoolId();
-        }
+        !$this->has('menu_ids') ?: $input['menu_ids'] = explode(',', $input['menu_ids']);
+        !$this->has('tab_ids') ?: $input['tab_ids'] = explode(',', $input['tab_ids']);
+        !$this->has('action_ids') ?: $input['action_ids'] = explode(',', $input['action_ids']);
+        !$this->has('school_id') ?: $input['school_id'] = $this->schoolId();
         $this->replace($input);
         
     }
