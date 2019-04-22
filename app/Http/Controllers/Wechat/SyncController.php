@@ -54,8 +54,8 @@ class SyncController extends Controller {
      */
     public function sync() {
         
-        $this->verifyUrl();
-        exit;
+        // $this->verifyUrl();
+        // exit;
         try {
             DB::transaction(function () {
                 $this->event = $this->event();
