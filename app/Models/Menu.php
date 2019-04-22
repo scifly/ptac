@@ -336,7 +336,12 @@ class Menu extends Model {
         
         try {
             DB::transaction(function () use ($id) {
-                $ids = array_merge([$id], $this->subIds($id));
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $menuIds = [];
+                foreach ($ids as $id) {
+                    $menuIds = array_merge($menuIds, $this->subIds($id));
+                }
+                $ids = array_unique($menuIds);
                 GroupMenu::whereIn('menu_id', $ids)->delete();
                 MenuTab::whereIn('menu_id', $ids)->delete();
                 $this->whereIn('id', $ids)->delete();
