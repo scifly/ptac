@@ -47,53 +47,64 @@ use Throwable;
  * @method static Builder|PassageLog whereUserId($value)
  * @mixin Eloquent
  */
-class PassageLog extends Model {
-    
+class PassageLog extends Model
+{
+
     use ModelTrait;
-    
+
     protected $table = 'passage_logs';
-    
+
     protected $fillable = [
         'school_id', 'user_id', 'category',
         'direction', 'turnsitle_id', 'door',
         'clocked_at', 'status',
     ];
-    
+
     /**
      * 返回通行记录所属的学校对象
      *
      * @return BelongsTo
      */
-    function school() { return $this->belongsTo('App\Models\School'); }
-    
+    function school()
+    {
+        return $this->belongsTo('App\Models\School');
+    }
+
     /**
      * 返回通行记录所属的用户对象
      *
      * @return BelongsTo
      */
-    function user() { return $this->belongsTo('App\Models\User'); }
-    
+    function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
     /**
      * 返回通行记录所属的门禁对象
      *
      * @return BelongsTo
      */
-    function turnstile() { return $this->belongsTo('App\Models\Turnstile'); }
-    
+    function turnstile()
+    {
+        return $this->belongsTo('App\Models\Turnstile');
+    }
+
     /**
      * 门禁通行记录列表
      *
      * @return array
      */
-    function index() {
-        
+    function index()
+    {
+
         $columns = [
             ['db' => 'PassageLog.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'Groups.name as role', 'dt' => 2],
             ['db' => 'PassageLog.category', 'dt' => 3],
             [
-                'db'        => 'PassageLog.direction', 'dt' => 4,
+                'db' => 'PassageLog.direction', 'dt' => 4,
                 'formatter' => function ($d) {
                     return sprintf(
                         Snippet::BADGE,
@@ -105,7 +116,7 @@ class PassageLog extends Model {
             ['db' => 'Turnstile.location', 'dt' => 5],
             ['db' => 'PassageLog.clocked_at', 'dt' => 6],
             [
-                'db'        => 'PassageLog.status', 'dt' => 7,
+                'db' => 'PassageLog.status', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return $row['role'] == '监护人'
                         ? ' - '
@@ -119,46 +130,47 @@ class PassageLog extends Model {
         ];
         $joins = [
             [
-                'table'     => 'users',
-                'alias'     => 'User',
-                'type'      => 'INNER',
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
                 'conditions' => [
                     'User.id = PassageLog.user_id',
                 ],
             ],
             [
-                'table'      => 'groups',
-                'alias'      => 'Groups',
-                'type'       => 'INNER',
+                'table' => 'groups',
+                'alias' => 'Groups',
+                'type' => 'INNER',
                 'conditions' => [
                     'Groups.id = User.group_id',
                 ],
             ],
             [
-                'table'      => 'turnstiles',
-                'alias'      => 'Turnstile',
-                'type'       => 'INNER',
+                'table' => 'turnstiles',
+                'alias' => 'Turnstile',
+                'type' => 'INNER',
                 'conditions' => [
                     'Turnstile.id = PassageLog.turnstile_id',
                 ],
             ]
         ];
         $condition = 'PassageLog.school_id = ' . $this->schoolId();
-        
+
         return Datatable::simple(
             $this, $columns, $joins, $condition
         );
-        
+
     }
-    
+
     /**
      * 采集门禁通行记录
      *
      * @return bool
      * @throws Throwable
      */
-    function store() {
-    
+    function store()
+    {
+
         try {
             DB::transaction(function () {
                 $records = (new Turnstile)->invoke(
@@ -188,20 +200,22 @@ class PassageLog extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-        
+
         return true;
-    
     }
-    
+
+
     /**
      * 批量导出记录
      *
      * @return string
      */
-    function export() {
-        
+    function export()
+    {
+
         return '下载地址';
-        
+
     }
-    
+
+
 }
