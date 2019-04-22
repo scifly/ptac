@@ -438,6 +438,7 @@ class School extends Model {
                     'PollQuestionnaire', 'Procedure', 'Semester',
                     'Subject', 'Tag', 'WapSite',
                 ];
+                Log::debug(json_encode($ids));
                 array_map(
                     function ($class) use ($ids) {
                         $model = $this->model($class);
@@ -452,7 +453,7 @@ class School extends Model {
                         }
                     }, $classes
                 );
-                Log::debug(json_encode($ids));
+                Log::debug('wtf' . json_encode($ids));
                 Request::replace(['ids' => $ids]);
                 $this->purge(['School'], 'id');
             });
