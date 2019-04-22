@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany,
     Relations\HasManyThrough,
     Relations\HasOne};
-use Illuminate\Support\Facades\{Auth, DB, Request};
+use Illuminate\Support\Facades\{Auth, DB, Log, Request};
 use Throwable;
 
 /**
@@ -447,6 +447,7 @@ class School extends Model {
                         $field = $isDM ? ($class == 'Menu' ? 'menu_id' : 'department_id') : 'id';
                         Request::replace(['ids' => $obj->whereIn($_id, $ids)->pluck($field)->toArray()]);
                         $model->remove();
+                        Log::debug($class . ' : ' . json_encode($ids));
                     }, $classes
                 );
                 Request::replace(['ids' => $ids]);
