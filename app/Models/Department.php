@@ -609,12 +609,12 @@ class Department extends Model {
     /**
      * 判断指定部门是否需要同步到企业微信
      *
-     * @param Department $department
+     * @param Department|null $department
      * @return bool
      */
-    function needSync(Department $department) {
-        
-        return !in_array(
+    function needSync(Department $department = null) {
+
+        return !$department ? false : !in_array(
             $department->departmentType->name, ['根', '运营', '企业']
         );
         
