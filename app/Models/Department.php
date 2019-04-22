@@ -316,7 +316,7 @@ class Department extends Model {
     function remove($id = null) {
         
         $ids = $id ? [$id] : array_values(Request::input('ids'));
-        SyncDepartment::dispatch($ids, 'delete', Auth::id());
+        empty($ids) ?: SyncDepartment::dispatch($ids, 'delete', Auth::id());
         
         return true;
         
