@@ -26,20 +26,20 @@ class SyncDepartment implements ShouldQueue {
     use Dispatchable, InteractsWithQueue, Queueable,
         SerializesModels, ModelTrait, JobTrait;
     
-    protected $departmentId, $action, $userId;
+    protected $departmentIds, $action, $userId;
     protected $corp, $bc, $response;
     
     /**
      * Create a new job instance.
      *
-     * @param $departmentId
+     * @param array $departmentIds
      * @param $action
      * @param $userId
      * @throws PusherException
      */
-    function __construct($departmentId, $action, $userId) {
+    function __construct(array $departmentIds, $action, $userId) {
         
-        $this->departmentId = $departmentId;
+        $this->departmentIds = $departmentIds;
         $this->action = $action;
         $this->userId = $userId;
         $this->bc = new Broadcaster;
@@ -73,7 +73,7 @@ class SyncDepartment implements ShouldQueue {
                     );
                     $this->response['message'] = __('messages.department.deleted');
                 } else {
-                    $this->corp = Corp::find($d->corpId($this->departmentId));
+                    $this->corp = Corp::find($d->corpId($this->departmentIds));
                     $this->syncParty();
                 }
             });
@@ -110,7 +110,7 @@ class SyncDepartment implements ShouldQueue {
             DB::transaction(function () use (&$deletedIds) {
                 $d = new Department;
                 $ids = [];
-                foreach ($this->departmentId as $dId) {
+                foreach ($this->departmentIds as $dId) {
                     $ids = array_merge(
                         $ids, array_merge([$dId], $d->subIds($dId))
                     );
@@ -237,7 +237,7 @@ class SyncDepartment implements ShouldQueue {
         $accessToken = $this->accessToken();
         if (!$deptIds) {
             $action = $this->action == 'create' ? 'createDept' : 'updateDept';
-            $d = (new Department)->find($this->departmentId);
+            $d = (new Department)->find($this->departmentIds);
             $parentid = $d->departmentType->name == '学校'
                 ? $d->school->corp->departmentid
                 : $d->parent_id;
