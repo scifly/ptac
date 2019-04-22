@@ -117,8 +117,9 @@ class SyncDepartment implements ShouldQueue {
                 }
                 foreach (array_unique($ids) as $id) {
                     if ($d->needSync($d->find($id))) {
+                        if (!($corpId = $d->corpId($id))) continue;
                         $level = 0;
-                        $syncIds[$d->corpId($id)][$id] = $d->level($id, $level);
+                        $syncIds[$corpId][$id] = $d->level($id, $level);
                     }
                 }
                 foreach ($syncIds ?? [] as $corpId => $_syncIds) {

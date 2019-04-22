@@ -400,6 +400,7 @@ class Department extends Model {
             return Corp::whereDepartmentId($id)->first()->id;
         }
         $parent = $department->parent;
+        if (!$parent) return null;
         while ($parent->departmentType->name != '企业') {
             $id = $parent->id;
             
