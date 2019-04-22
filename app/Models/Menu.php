@@ -339,7 +339,7 @@ class Menu extends Model {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
                 $menuIds = [];
                 foreach ($ids as $id) {
-                    $menuIds = array_merge($menuIds, $this->subIds($id));
+                    $menuIds = array_merge($menuIds, [$id], $this->subIds($id));
                 }
                 $ids = array_unique($menuIds);
                 GroupMenu::whereIn('menu_id', $ids)->delete();

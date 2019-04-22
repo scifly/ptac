@@ -65,7 +65,7 @@ class SyncDepartment implements ShouldQueue {
                     # 删除部门&用户绑定关系 / 部门&标签绑定关系 / 指定部门及其子部门
                     array_map(
                         function ($class, $field) {
-                            $this->model($class)->whereIn($field, $this->departmentIds)->delete();
+                            $this->model($class)->whereIn($field, $this->deptIds())->delete();
                         },
                         ['DepartmentUser', 'DepartmentTag', 'Department'],
                         ['department_id', 'department_id', 'id']
@@ -108,13 +108,7 @@ class SyncDepartment implements ShouldQueue {
         try {
             DB::transaction(function () use (&$deletedIds) {
                 $d = new Department;
-                $ids = [];
-                foreach ($this->departmentIds as $dId) {
-                    $ids = array_merge(
-                        $ids, array_merge([$dId], $d->subIds($dId))
-                    );
-                }
-                foreach (array_unique($ids) as $id) {
+                foreach ($this->deptIds() as $id) {
                     if ($d->needSync($d->find($id))) {
                         if (!($corpId = $d->corpId($id))) continue;
                         $level = 0;
@@ -182,7 +176,7 @@ class SyncDepartment implements ShouldQueue {
                     $deletedIds = array_merge(
                         $deletedIds,
                         $this->syncParty($deptIds),
-                        array_diff($ids, $deptIds)
+                        array_diff($this->deptIds(), $deptIds)
                     );
                 }
             });
@@ -296,6 +290,23 @@ class SyncDepartment implements ShouldQueue {
         }
         
         return $token['access_token'];
+        
+    }
+    
+    /**
+     * @return array
+     */
+    private function deptIds() {
+    
+        $d = new Department;
+        $ids = [];
+        foreach ($this->departmentIds as $dId) {
+            $ids = array_merge(
+                $ids, array_merge([$dId], $d->subIds($dId))
+            );
+        }
+        
+        return array_unique($ids);
         
     }
     
