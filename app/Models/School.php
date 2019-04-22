@@ -450,9 +450,9 @@ class School extends Model {
                             Request::replace(['ids' => $foreignIds]);
                             $model->remove();
                         }
-                        Log::debug($class . ' : ' . json_encode($ids));
                     }, $classes
                 );
+                Log::debug(json_encode($ids));
                 Request::replace(['ids' => $ids]);
                 $this->purge(['School'], 'id');
             });
