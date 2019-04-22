@@ -10,7 +10,8 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
-    Support\Facades\DB};
+    Support\Facades\DB,
+    Support\Facades\Log};
 use Pusher\PusherException;
 use Throwable;
 
@@ -210,6 +211,7 @@ class SyncDepartment implements ShouldQueue {
         $succeeded = [];
         foreach ($data as $datum) {
             $result = Wechat::$api($accessToken, $datum);
+            Log::debug(json_encode($result));
             $result['errcode'] ?: (
                 $method == 'update'
                     ? $succeeded[] = $datum['userid']
