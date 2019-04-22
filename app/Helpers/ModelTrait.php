@@ -22,7 +22,7 @@ use App\Policies\Route;
 use Carbon\Carbon;
 use Illuminate\Database\{Eloquent\Collection, Eloquent\Model, Query\Builder};
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\{Auth, DB, Request, Storage};
+use Illuminate\Support\Facades\{Auth, DB, Log, Request, Storage};
 use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\{Exception, IOFactory, Spreadsheet, Writer\Exception as WriterException};
 use ReflectionClass;
@@ -77,6 +77,10 @@ trait ModelTrait {
                             case 'reset':
                                 /** @var Builder $builder */
                                 $builder = $model->whereIn($field, $values);
+                                if ($class == 'School') {
+                                    Log::info('ids', $values);
+                                    exit;
+                                }
                                 $action == 'purge' ? $builder->delete() : $builder->update([$field => '0']);
                                 break;
                             case 'clear':
