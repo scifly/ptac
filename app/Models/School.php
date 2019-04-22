@@ -432,11 +432,11 @@ class School extends Model {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
                 session(['schoolId' => $id]);
                 $classes = [
-                    'Department', 'Menu', /*'Turnstile',*/
+                    'Department', 'Menu', 'Educator',
                     'ConferenceRoom', 'ComboType', 'ExamType',
                     'Grade', 'Group', 'Major', 'Module',
                     'PollQuestionnaire', 'Procedure', 'Semester',
-                    'Subject', 'Tag', 'WapSite', 'Educator'
+                    'Subject', 'Tag', 'WapSite',
                 ];
                 array_map(
                     function ($class) use ($ids) {
