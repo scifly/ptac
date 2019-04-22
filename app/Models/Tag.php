@@ -224,14 +224,15 @@ class Tag extends Model {
      */
     private function sync($id, $action) {
         
-        $tag = $this->find($id);
-        $data = [
-            'tagid' => $id, 'corp_id' => $tag->school->corp_id
-        ];
-        if ($action != 'delete') {
-            $data['tagname'] = $tag->name;
+        if ($tag = $this->find($id)) {
+            $data = [
+                'tagid' => $id, 'corp_id' => $tag->school->corp_id
+            ];
+            if ($action != 'delete') {
+                $data['tagname'] = $tag->name;
+            }
+            SyncTag::dispatch($data, Auth::id(), $action);
         }
-        SyncTag::dispatch($data, Auth::id(), $action);
         
     }
     
