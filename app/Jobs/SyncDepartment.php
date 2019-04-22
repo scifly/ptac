@@ -210,8 +210,9 @@ class SyncDepartment implements ShouldQueue {
         $api = $method == 'update' ? 'updateUser' : 'batchDelUser';
         $succeeded = [];
         foreach ($data as $datum) {
-            $result = Wechat::$api($accessToken, $datum);
-            Log::debug(json_encode($result));
+            $result = json_decode(
+                Wechat::$api($accessToken, $datum), true
+            );
             $result['errcode'] ?: (
                 $method == 'update'
                     ? $succeeded[] = $datum['userid']
