@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany,
     Relations\HasManyThrough,
     Relations\HasOne};
-use Illuminate\Support\Facades\{Auth, DB, Request};
+use Illuminate\Support\Facades\{Auth, DB, Log, Request};
 use Throwable;
 
 /**
@@ -449,6 +449,8 @@ class School extends Model {
                         $model->remove();
                     }, $classes
                 );
+                Log::info('ids', $ids);
+                exit;
                 Request::replace(['ids' => $ids]);
                 $this->purge(['School'], 'id');
             });

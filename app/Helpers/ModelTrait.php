@@ -2,7 +2,6 @@
 namespace App\Helpers;
 
 use App\Models\{Action,
-    ActionGroup,
     App,
     CommType,
     Corp,
@@ -23,7 +22,7 @@ use App\Policies\Route;
 use Carbon\Carbon;
 use Illuminate\Database\{Eloquent\Collection, Eloquent\Model, Query\Builder};
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Log, Facades\Request, Facades\Storage};
+use Illuminate\Support\Facades\{Auth, DB, Request, Storage};
 use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\{Exception, IOFactory, Spreadsheet, Writer\Exception as WriterException};
 use ReflectionClass;
@@ -78,9 +77,6 @@ trait ModelTrait {
                             case 'reset':
                                 /** @var Builder $builder */
                                 $builder = $model->whereIn($field, $values);
-                                Log::debug($class);
-                                Log::debug(json_encode($values));
-                                exit;
                                 $action == 'purge' ? $builder->delete() : $builder->update([$field => '0']);
                                 break;
                             case 'clear':
