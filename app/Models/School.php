@@ -445,8 +445,11 @@ class School extends Model {
                         $obj = $isDM ? $this : $model;
                         $_id = $isDM ? 'id' : 'school_id';
                         $field = $isDM ? ($class == 'Menu' ? 'menu_id' : 'department_id') : 'id';
-                        Request::replace(['ids' => $obj->whereIn($_id, $ids)->pluck($field)->toArray()]);
-                        $model->remove();
+                        $foreignIds = $obj->whereIn($_id, $ids)->pluck($field)->toArray();
+                        if (!empty($foreignIds)) {
+                            Request::replace(['ids' => $foreignIds]);
+                            $model->remove();
+                        }
                         Log::debug($class . ' : ' . json_encode($ids));
                     }, $classes
                 );
