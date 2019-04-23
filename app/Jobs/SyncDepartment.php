@@ -27,7 +27,7 @@ class SyncDepartment implements ShouldQueue {
         SerializesModels, ModelTrait, JobTrait;
     
     protected $departmentIds, $action, $userId;
-    protected $corp, $bc, $response;
+    protected $corp, $bc, $response, $deptIds;
     
     /**
      * Create a new job instance.
@@ -64,11 +64,9 @@ class SyncDepartment implements ShouldQueue {
                     # 同步企业微信通讯录并获取已删除的部门id
                     $this->remove();
                     # 删除部门&用户绑定关系 / 部门&标签绑定关系 / 指定部门及其子部门
-                    $deptIds = $this->deptIds();
-                    Log::debug(json_encode($deptIds));
                     array_map(
-                        function ($class, $field) use ($deptIds) {
-                            $this->model($class)->whereIn($field, $deptIds)->delete();
+                        function ($class, $field) {
+                            $this->model($class)->whereIn($field, $this->deptIds)->delete();
                         },
                         ['DepartmentUser', 'DepartmentTag', 'Department'],
                         ['department_id', 'department_id', 'id']
@@ -111,9 +109,8 @@ class SyncDepartment implements ShouldQueue {
         try {
             DB::transaction(function () use (&$deletedIds) {
                 $d = new Department;
-                $deptIds = $this->deptIds();
-                Log::debug(json_encode($deptIds));
-                foreach ($deptIds as $id) {
+                $this->deptIds = $this->deptIds();
+                foreach ($this->deptIds as $id) {
                     if ($d->needSync($d->find($id))) {
                         if (!($corpId = $d->corpId($id))) continue;
                         $level = 0;
