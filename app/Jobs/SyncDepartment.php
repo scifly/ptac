@@ -64,10 +64,10 @@ class SyncDepartment implements ShouldQueue {
                     # 同步企业微信通讯录并获取已删除的部门id
                     $this->remove();
                     # 删除部门&用户绑定关系 / 部门&标签绑定关系 / 指定部门及其子部门
+                    $deptIds = $this->deptIds();
                     array_map(
-                        function ($class, $field) {
-                            if ($field == 'id') Log::debug(json_encode($this->deptIds()));
-                            $this->model($class)->whereIn($field, $this->deptIds())->delete();
+                        function ($class, $field) use ($deptIds) {
+                            $this->model($class)->whereIn($field, $deptIds)->delete();
                         },
                         ['DepartmentUser', 'DepartmentTag', 'Department'],
                         ['department_id', 'department_id', 'id']
