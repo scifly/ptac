@@ -112,6 +112,7 @@ class SyncDepartment implements ShouldQueue {
             DB::transaction(function () use (&$deletedIds) {
                 $d = new Department;
                 $deptIds = $this->deptIds();
+                Log::debug(json_encode($deptIds));
                 foreach ($deptIds as $id) {
                     if ($d->needSync($d->find($id))) {
                         if (!($corpId = $d->corpId($id))) continue;
