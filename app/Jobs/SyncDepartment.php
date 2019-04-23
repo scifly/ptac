@@ -65,6 +65,7 @@ class SyncDepartment implements ShouldQueue {
                     $this->remove();
                     # 删除部门&用户绑定关系 / 部门&标签绑定关系 / 指定部门及其子部门
                     $deptIds = $this->deptIds();
+                    Log::debug(json_encode($deptIds));
                     array_map(
                         function ($class, $field) use ($deptIds) {
                             $this->model($class)->whereIn($field, $deptIds)->delete();
@@ -110,7 +111,8 @@ class SyncDepartment implements ShouldQueue {
         try {
             DB::transaction(function () use (&$deletedIds) {
                 $d = new Department;
-                foreach ($this->deptIds() as $id) {
+                $deptIds = $this->deptIds();
+                foreach ($deptIds as $id) {
                     if ($d->needSync($d->find($id))) {
                         if (!($corpId = $d->corpId($id))) continue;
                         $level = 0;
