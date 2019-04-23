@@ -10,7 +10,8 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
-    Support\Facades\DB};
+    Support\Facades\DB,
+    Support\Facades\Log};
 use Pusher\PusherException;
 use Throwable;
 
@@ -59,6 +60,7 @@ class SyncDepartment implements ShouldQueue {
         try {
             DB::transaction(function () {
                 $d = new Department();
+                Log::debug(json_encode($this->departmentIds));
                 if ($this->action == 'delete') {
                     # 同步企业微信通讯录并获取已删除的部门id
                     $this->remove();
