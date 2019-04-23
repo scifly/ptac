@@ -342,9 +342,11 @@ class Menu extends Model {
                     $menuIds = array_merge($menuIds, [$id], $this->subIds($id));
                 }
                 $ids = array_unique($menuIds);
-                GroupMenu::whereIn('menu_id', $ids)->delete();
-                MenuTab::whereIn('menu_id', $ids)->delete();
-                $this->whereIn('id', $ids)->delete();
+                array_map(
+                    function ($class, $field) use ($ids) {
+                        $this->model($class)->whereIn($field, $ids)->delete();
+                    }, ['GroupMenu', 'MenuTab', 'Menu'], ['menu_id', 'menu_id', 'id']
+                );
             });
         } catch (Exception $e) {
             throw $e;

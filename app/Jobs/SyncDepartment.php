@@ -60,13 +60,13 @@ class SyncDepartment implements ShouldQueue {
         try {
             DB::transaction(function () {
                 $d = new Department();
-                Log::debug(json_encode($this->departmentIds));
                 if ($this->action == 'delete') {
                     # 同步企业微信通讯录并获取已删除的部门id
                     $this->remove();
                     # 删除部门&用户绑定关系 / 部门&标签绑定关系 / 指定部门及其子部门
                     array_map(
                         function ($class, $field) {
+                            if ($field == 'id') Log::debug(json_encode($this->deptIds()));
                             $this->model($class)->whereIn($field, $this->deptIds())->delete();
                         },
                         ['DepartmentUser', 'DepartmentTag', 'Department'],
@@ -74,7 +74,7 @@ class SyncDepartment implements ShouldQueue {
                     );
                     $this->response['message'] = __('messages.department.deleted');
                 } else {
-                    $this->corp = Corp::find($d->corpId($this->departmentIds));
+                    $this->corp = Corp::find($d->corpId($this->departmentIds[0]));
                     $this->syncParty();
                 }
             });
@@ -110,7 +110,6 @@ class SyncDepartment implements ShouldQueue {
         try {
             DB::transaction(function () use (&$deletedIds) {
                 $d = new Department;
-                Log::debug(json_encode($this->deptIds()));
                 foreach ($this->deptIds() as $id) {
                     if ($d->needSync($d->find($id))) {
                         if (!($corpId = $d->corpId($id))) continue;
@@ -233,7 +232,7 @@ class SyncDepartment implements ShouldQueue {
         $accessToken = $this->accessToken();
         if (!$deptIds) {
             $action = $this->action == 'create' ? 'createDept' : 'updateDept';
-            $d = (new Department)->find($this->departmentIds);
+            $d = (new Department)->find($this->departmentIds[0]);
             $parentid = $d->departmentType->name == '学校'
                 ? $d->school->corp->departmentid
                 : $d->parent_id;
