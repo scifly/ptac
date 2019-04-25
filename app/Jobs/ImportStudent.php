@@ -164,19 +164,23 @@ class ImportStudent implements ShouldQueue, MassImport {
                     );
                     # 创建学生
                     $student = Student::create(
-                        array_combine(Constant::STUDENT_FIELDS, [
-                            $user->id, $insert['class_id'], $insert['sn'],
-                            $insert['oncampus'] == '住读' ? 1 : 0, $insert['birthday'],
-                            $insert['remark'] ?? '导入', $user->enabled,
-                        ])
+                        array_combine(
+                            (new Student)->getFillable(),
+                            [
+                                $user->id, $insert['class_id'], $insert['sn'],
+                                $insert['oncampus'] == '住读' ? 1 : 0, $insert['birthday'],
+                                $insert['remark'] ?? '导入', $user->enabled,
+                            ]
+                        )
                     );
                     # 保存监护关系
                     $this->binding($student, $insert, $password);
                     # 保存部门 & 用户绑定关系
                     DepartmentUser::create(
-                        array_combine(Constant::DU_FIELDS, [
-                            $insert['department_id'], $user->id, $user->enabled,
-                        ])
+                        array_combine(
+                            (new DepartmentUser)->getFillable(),
+                            [$insert['department_id'], $user->id, $user->enabled]
+                        )
                     );
                     // $this->members[] = [$user->id, '学生', 'create'];
                 }
@@ -206,14 +210,14 @@ class ImportStudent implements ShouldQueue, MassImport {
                     $student = Student::whereSn($update['sn'])->first();
                     throw_if(!$student, $ex);
                     $student->update(
-                        array_combine(Constant::STUDENT_FIELDS, [
-                            $student->user_id,
-                            $update['class_id'],
-                            $update['sn'],
-                            $update['oncampus'] == '住读' ? 1 : 0,
-                            $update['birthday'],
-                            '导入', $student->enabled,
-                        ])
+                        array_combine(
+                            (new Student)->getFillable(),
+                            [
+                                $student->user_id, $update['class_id'],
+                                $update['sn'], $update['oncampus'] == '住读' ? 1 : 0,
+                                $update['birthday'], '导入', $student->enabled,
+                            ]
+                        )
                     );
                     throw_if(!$student->user, $ex);
                     $student->user->update([
@@ -266,7 +270,7 @@ class ImportStudent implements ShouldQueue, MassImport {
                             ])
                         );
                         Mobile::create(
-                            array_combine(Constant::MOBILE_FIELDS, [
+                            array_combine((new Mobile)->getFillable(), [
                                 $user->id, $paths[3], 1, $user->enabled,
                             ])
                         );

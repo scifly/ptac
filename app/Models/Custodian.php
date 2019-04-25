@@ -182,7 +182,7 @@ class Custodian extends Model {
                     # 创建教职员工(Educator)记录
                     Educator::create(
                         array_combine(
-                            Constant::EDUCATOR_FIELDS,
+                            (new Educator)->getFillable(),
                             [$user->id, $schoolId, 0, 1,]
                         )
                     );
@@ -226,9 +226,10 @@ class Custodian extends Model {
                     $educator = $user->educator;
                     if (!$educator && !$data['singular']) {
                         Educator::create(
-                            array_combine(Constant::EDUCATOR_FIELDS, [
-                                $custodian->user_id, $this->schoolId(), 0, 1,
-                            ])
+                            array_combine(
+                                (new Educator)->getFillable(),
+                                [$custodian->user_id, $this->schoolId(), 0, 1]
+                            )
                         );
                     } elseif ($educator && $data['singular']) {
                         $educator->remove($educator->id);

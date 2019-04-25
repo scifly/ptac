@@ -129,13 +129,15 @@ class ImportScore implements ShouldQueue, MassImport {
         try {
             DB::transaction(function () use ($inserts) {
                 foreach ($inserts as $insert) {
-                    $student = Student::whereSn($insert['sn'])->first();
-                    if (!$student) continue;
+                    if (!($student = Student::whereSn($insert['sn'])->first())) continue;
                     Score::create(
-                        array_combine(Constant::SCORE_FIELDS, [
-                            $student->id, $insert['subject_id'],
-                            $insert['exam_id'], 0, 0, $insert['score'], 1
-                        ])
+                        array_combine(
+                            (new Score)->getFillable(),
+                            [
+                                $student->id, $insert['subject_id'],
+                                $insert['exam_id'], 0, 0, $insert['score'], 1
+                            ]
+                        )
                     );
                 }
             });
@@ -166,10 +168,13 @@ class ImportScore implements ShouldQueue, MassImport {
                         $student->id, $update['subject_id'], $update['exam_id'], 1
                     ]);
                     Score::where($condition)->first()->update(
-                        array_combine(Constant::SCORE_FIELDS, [
-                            $student->id, $update['subject_id'],
-                            $update['exam_id'], 0, 0, $update['score'], 1
-                        ])
+                        array_combine(
+                            (new Score)->getFillable(),
+                            [
+                                $student->id, $update['subject_id'],
+                                $update['exam_id'], 0, 0, $update['score'], 1
+                            ]
+                        )
                     );
                 }
             });

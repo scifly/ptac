@@ -58,8 +58,7 @@ class Educator extends Model {
         '学校', '手机号码', '年级主任', '班级主任', '班级科目',
     ];
     protected $fillable = [
-        'user_id', 'team_ids', 'school_id',
-        'position', 'sms_quote', 'enabled',
+        'user_id', 'school_id', 'sms_quote', 'enabled',
     ];
     
     /**
@@ -268,7 +267,7 @@ class Educator extends Model {
                     $custodian = $user->custodian;
                     if (!$data['singular']) {
                         $custodian ?: Custodian::create(
-                            array_combine(Constant::CUSTODIAN_FIELDS, [
+                            array_combine((new Custodian)->getFillable(), [
                                 $educator->user_id, $educator->enabled
                             ])
                         );

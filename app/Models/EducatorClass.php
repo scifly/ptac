@@ -96,9 +96,10 @@ class EducatorClass extends Model {
                     $classIds = $data['class_ids'];
                     $subjectIds = $data['subject_ids'];
                     for ($i = 0; $i < sizeof($classIds); $i++) {
-                        $record = array_combine(Constant::EC_FIELDS, [
-                            $educatorId, $classIds[$i], $subjectIds[$i], 1
-                        ]);
+                        $record = array_combine(
+                            $this->fillable,
+                            [$educatorId, $classIds[$i], $subjectIds[$i], 1]
+                        );
                         $this->where($record)->first() ?: $this->create($record);
                     }
                 }

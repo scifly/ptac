@@ -272,9 +272,10 @@ class Student extends Model {
                                 $du->update(['department_id' => $departmentId]);
                             } else {
                                 DepartmentUser::create(
-                                    array_combine(Constant::DU_FIELDS, [
-                                        $departmentId, $custodian->user_id, 0
-                                    ])
+                                    array_combine(
+                                        (new DepartmentUser)->getFillable(),
+                                        [$departmentId, $custodian->user_id, 0]
+                                    )
                                 );
                             }
                         }

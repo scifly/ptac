@@ -186,15 +186,17 @@ class ImportEducator implements ShouldQueue, MassImport {
                     );
                     # 创建教职员工
                     $educator = Educator::create(
-                        array_combine(Constant::EDUCATOR_FIELDS, [
-                            $user->id, $schoolId, 0, 1,
-                        ])
+                        array_combine(
+                            (new Educator)->getFillable(),
+                            [$user->id, $schoolId, 0, 1]
+                        )
                     );
                     # 创建用户手机号码
                     Mobile::create(
-                        array_combine(Constant::MOBILE_FIELDS, [
-                            $user->id, $insert['mobile'], 1, 1,
-                        ])
+                        array_combine(
+                            (new Mobile)->getFillable(),
+                            [$user->id, $insert['mobile'], 1, 1]
+                        )
                     );
                     # 添加用户 & 部门绑定关系
                     $this->updateDu($school, $user, $insert);
@@ -240,9 +242,10 @@ class ImportEducator implements ShouldQueue, MassImport {
                     ]);
                     # 更新教职员工
                     $educator = Educator::firstOrCreate(
-                        array_combine(Constant::EDUCATOR_FIELDS, [
-                            $user->id, $schoolId, 0, 1,
-                        ])
+                        array_combine(
+                            (new Educator)->getFillable(),
+                            [$user->id, $schoolId, 0, 1]
+                        )
                     );
                     # 更新用户部门绑定关系
                     $this->updateDu($school, $user, $update);
@@ -308,7 +311,10 @@ class ImportEducator implements ShouldQueue, MassImport {
                     $subject = Subject::whereName($paths[1])->where('school_id', $school->id)->first();
                     if (!isset($class, $subject)) continue;
                     EducatorClass::firstOrCreate(
-                        array_combine(Constant::EC_FIELDS, [$educator->id, $class->id, $subject->id, 1])
+                        array_combine(
+                            (new EducatorClass)->getFillable(),
+                            [$educator->id, $class->id, $subject->id, 1]
+                        )
                     );
                     # 更新部门&用户绑定关系
                     $this->refreshDu($class->department_id, $educator->user_id);
@@ -343,9 +349,10 @@ class ImportEducator implements ShouldQueue, MassImport {
             $schoolDepartmentIds
         );
         foreach ($departmentIds as $departmentId) {
-            $records[] = array_combine(Constant::DU_FIELDS, [
-                $departmentId, $user->id, 1,
-            ]);
+            $records[] = array_combine(
+                $du->getFillable(),
+                [$departmentId, $user->id, 1]
+            );
         }
         $du->insert($records ?? []);
         
@@ -360,7 +367,10 @@ class ImportEducator implements ShouldQueue, MassImport {
     function refreshDu($departmentId, $userId) {
         
         DepartmentUser::firstOrCreate(
-            array_combine(Constant::DU_FIELDS, [$departmentId, $userId, 1])
+            array_combine(
+                (new DepartmentUser)->getFillable(),
+                [$departmentId, $userId, 1]
+            )
         );
         
     }
