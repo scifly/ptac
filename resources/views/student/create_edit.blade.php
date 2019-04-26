@@ -24,24 +24,7 @@
                         {{ Form::text('user[realname]', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
-                            'placeholder' => '(请填写真实姓名)',
-                            'data-parsley-length' => '[2, 255]',
-                        ]) }}
-                    </div>
-                </div>
-            </div>
-            <!-- 英文名称 -->
-            <div class="form-group">
-                {{ Form::label('user[english_name]', '英文名', [
-                    'class' => 'col-sm-3 control-label'
-                ]) }}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-language'])
-                        {{ Form::text('user[english_name]', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(可选)',
-                            'type' => 'string',
+                            'placeholder' => '(不得少于2个字符)',
                             'data-parsley-length' => '[2, 255]',
                         ]) }}
                     </div>
@@ -112,9 +95,7 @@
                 'options' => ['是', '否']
             ])
             <!-- 备注 -->
-            @include('shared.remark', [
-                'field' => 'remark'
-            ])
+            @include('shared.remark', ['field' => 'remark'])
             <!-- 状态 -->
             @include('shared.switch', [
                 'id' => 'user[enabled]',
