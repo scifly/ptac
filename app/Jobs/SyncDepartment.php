@@ -239,20 +239,18 @@ class SyncDepartment implements ShouldQueue {
                 ['id', 'name', 'parentid', 'order'],
                 [$d->id, $d->name, $parentid, $d->order]
             );
-            $result = json_decode(Wechat::$action($accessToken, $params), true);
-            $errcode = $result['errcode'];
-            if ($errcode) {
-                # 如果在更新部门时返回"部门ID不存在"
-                if ($errcode == 60003) {
-                    $result = json_decode(Wechat::createDept($accessToken, $params), true);
-                    $errcode = $result['errcode'];
-                }
-                if ($errcode) {
-                    $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                    $this->response['message'] = Constant::WXERR[$errcode];
-                }
-            }
-            $response = $d->update(['synced' => !$errcode ? 1 : 0]);
+            $result = json_decode(
+                Wechat::$action($accessToken, $params), true
+            );
+            # 如果在更新部门时返回"部门ID不存在"
+            $result['errcode'] != 60003 ?: $result = json_decode(
+                Wechat::createDept($accessToken, $params), true
+            );
+            $this->response['statusCode'] = $result['errcode']
+                ? HttpStatusCode::INTERNAL_SERVER_ERROR
+                : HttpStatusCode::OK;
+            $this->response['message'] = Constant::WXERR[$result['errcode']];
+            $response = $d->update(['synced' => !$result['errcode'] ? 1 : 0]);
         } else {
             foreach ($deptIds as $id) {
                 $result = json_decode(
