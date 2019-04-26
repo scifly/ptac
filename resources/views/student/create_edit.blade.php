@@ -54,41 +54,6 @@
                 'value' => $user['gender'] ?? null,
                 'options' => ['男', '女']
             ])
-            <!-- 手机号码 -->
-            {{--@include('shared.mobile')--}}
-            <!-- 座机号码 -->
-            <div class="form-group">
-                {{ Form::label('user[telephone]', '座机', [
-                    'class' => 'col-sm-3 control-label'
-                ]) }}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-phone'])
-                        {{ Form::text('user[telephone]', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(可选)',
-                        ]) }}
-                    </div>
-                </div>
-            </div>
-            <!-- 电子邮件 -->
-            <div class="form-group">
-                {{ Form::label('user[email]', '邮箱', [
-                    'class' => 'col-sm-3 control-label'
-                ]) }}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
-                        {{ Form::text('user[email]', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(可选)',
-                            'type' => 'email',
-                            'maxlength' => '255',
-                            'data-parsley-type'=>"email"
-                        ]) }}
-                    </div>
-                </div>
-            </div>
             <!-- 所属年级/班级 -->
             @include('shared.single_select', [
                 'label' => '所属年级',
