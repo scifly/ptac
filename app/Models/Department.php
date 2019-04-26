@@ -185,7 +185,7 @@ class Department extends Model {
                 if ($department->movable($id, $parentId)) {
                     $moved = $department->move($id, $parentId);
                     if ($moved && $this->needSync($department)) {
-                        SyncDepartment::dispatch($id, 'update', Auth::id());
+                        SyncDepartment::dispatch([$id], 'update', Auth::id());
                     }
                 }
                 break;
@@ -207,7 +207,7 @@ class Department extends Model {
         
         $department = $this->create($data);
         if ($department && $this->needSync($department)) {
-            SyncDepartment::dispatch($department->id, 'create', Auth::id());
+            SyncDepartment::dispatch([$department->id], 'create', Auth::id());
         }
         
         return $department;
@@ -261,7 +261,7 @@ class Department extends Model {
         $department = self::find($id);
         $updated = $department->update($data);
         if ($this->needSync($department) && $updated) {
-            SyncDepartment::dispatch($id, 'update', Auth::id());
+            SyncDepartment::dispatch([$id], 'update', Auth::id());
         }
         
         return $updated ? $this->find($id) : null;
