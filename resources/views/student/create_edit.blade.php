@@ -11,7 +11,7 @@
                 <!-- 学生UserID -->
                 {{ Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) }}
                 <!-- 学生头像 -->
-                @include('shared.avatar', ['user' => $student->user])
+                @include('shared.avatar', ['user' => $student->user, 'student' => true])
             @endif
             <!-- 真实姓名 -->
             <div class="form-group">

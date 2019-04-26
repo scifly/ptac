@@ -8,6 +8,8 @@
             <img src="{{ empty($user->avatar_url) ? asset('img/default.png') : $user->avatar_url }}"
                  class="img-circle" style="height: 80px;" alt="">
         </div>
-        <p class="help-block">（头像同步自用户的微信账号，此处不可更改）</p>
+        @if (!isset($student))
+            <p class="help-block">（头像同步自用户的微信账号，此处不可更改）</p>
+        @endif
     </div>
 </div>
