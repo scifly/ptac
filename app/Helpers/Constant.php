@@ -387,12 +387,7 @@ class Constant {
         302007  => '批量导入任务的文件中，同一个部门下有两个子部门名字一样',
         2000002 => 'CorpId参数无效',
     ];
-    const EXPORT_RANGES = [
-        'class' => 0,
-        'grade' => 1,
-        'all'   => 2,
-    ];
-    
+
     # field names
     const USER_FIELDS = [
         'username', 'group_id', 'password', 'realname',

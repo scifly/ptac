@@ -26,18 +26,20 @@ class ImportStudent implements ShouldQueue, MassImport {
     use Dispatchable, InteractsWithQueue, Queueable,
         SerializesModels, ModelTrait, JobTrait;
     
-    public $data, $userId, $response, $broadcaster, $members, $corpId;
+    public $data, $schoolId, $userId, $response, $broadcaster, $members, $corpId;
     
     /**
      * Create a new job instance.
      *
      * @param array $data
+     * @param $schoolId
      * @param integer $userId
      * @throws PusherException
      */
-    function __construct(array $data, $userId) {
+    function __construct(array $data, $schoolId, $userId) {
         
         $this->data = $data;
+        $this->schoolId = $schoolId;
         $this->userId = $userId;
         $this->response = array_combine(Constant::BROADCAST_FIELDS, [
             $this->userId, __('messages.student.title'),
@@ -52,7 +54,7 @@ class ImportStudent implements ShouldQueue, MassImport {
      * @throws Throwable
      */
     function handle() {
-    
+        
         $imported = $this->import($this, $this->response);
         !$imported ?: (new User)->sync(
             $this->members, $this->userId
@@ -83,13 +85,12 @@ class ImportStudent implements ShouldQueue, MassImport {
     function validate(array $data): array {
         
         $fields = [
-            'name', 'gender', 'school', 'birthday', 'grade', 'class',
+            'name', 'gender', 'birthday', 'grade', 'class',
             'sn', 'oncampus', 'remark', 'relationship',
         ];
         $rules = array_combine($fields, [
             'required|string|between:2,60',
             ['required', Rule::in(['男', '女'])],
-            'required|string|between:4,20',
             'required|date',
             'required|string|between:3,20',
             'required|string|between:2,20',
@@ -99,38 +100,33 @@ class ImportStudent implements ShouldQueue, MassImport {
             'string',
         ]);
         $fields = array_merge($fields, ['class_id', 'department_id']);
+        $this->corpId = School::find($this->schoolId)->corp_id;
+        $isSchoolValid = in_array($this->schoolId, $this->schoolIds($this->userId));
         for ($i = 0; $i < count($data); $i++) {
             $datum = $data[$i];
-            $schoolName = $datum['C'];
-            $gradeName = $datum['E'];
-            $className = $datum['F'];
-            $sn = $datum['G'];
+            $gradeName = $datum['D'];
+            $className = $datum['E'];
+            $sn = $datum['F'];
             $user = array_combine($fields, [
-                trim($datum['A']), trim($datum['B']), $schoolName,
-                trim($datum['D']), $gradeName, $className,
-                $sn, trim(strval($datum['H'])),
-                trim($datum['I']), trim($datum['J']), 0, 0,
+                trim($datum['A']), trim($datum['B']),
+                trim($datum['C']), $gradeName, $className,
+                $sn, trim(strval($datum['G'])),
+                trim($datum['H']), trim($datum['I']), 0, 0,
             ]);
             $result = Validator::make($user, $rules);
             $failed = $result->fails();
-            $school = !$failed ? School::whereName($schoolName)->first() : null;
-            if ($school && !$this->corpId) $this->corpId = $school->corp_id;
-            $isSchoolValid = $school ? in_array($school->id, $this->schoolIds($this->userId)) : false;
-            $grade = $school ? Grade::whereName($gradeName)->where('school_id', $school->id)->first() : null;
-            $isGradeValid = $grade ? in_array($grade->id, $this->gradeIds($school->id, $this->userId)) : false;
-            $class = $grade ? Squad::whereName($className)->where('grade_id', $grade->id)->first() : null;
-            $isClassValid = $class ? in_array($class->id, $this->classIds($school->id, $this->userId)) : false;
+            $grade = Grade::where(['name' => $gradeName, 'school_id' => $this->schoolId])->get()->first();
+            $isGradeValid = $grade ? in_array($grade->id, $this->gradeIds($this->schoolId, $this->userId)) : false;
+            $class = $grade ? Squad::where(['name' => $className, 'grade_id' => $grade->id])->get()->first() : null;
+            $isClassValid = $class ? in_array($class->id, $this->classIds($this->schoolId, $this->userId)) : false;
             if (!(!$failed && $isSchoolValid && $isGradeValid && $isClassValid)) {
-                $datum['K'] = $failed
+                $datum['J'] = $failed
                     ? json_encode($result->errors(), JSON_UNESCAPED_UNICODE)
                     : __('messages.student.import_validation_error');
                 $illegals[] = $datum;
                 continue;
             }
-            $student = Student::where([
-                'sn' => $sn,
-                'class_id'       => $class->id,
-            ])->first();
+            $student = Student::where(['sn' => $sn, 'class_id' => $class->id])->first();
             $user['class_id'] = $class->id;
             $user['department_id'] = $class->department_id;
             $student ? $updates[] = $user : $inserts[] = $user;
@@ -206,7 +202,7 @@ class ImportStudent implements ShouldQueue, MassImport {
         try {
             DB::transaction(function () use ($updates) {
                 foreach ($updates as $update) {
-                    $ex = new NotFoundHttpException(__('messages.not_found'));
+                    $ex = new Exception(__('messages.not_found'));
                     $student = Student::whereSn($update['sn'])->first();
                     throw_if(!$student, $ex);
                     $student->update(
@@ -299,7 +295,6 @@ class ImportStudent implements ShouldQueue, MassImport {
                     # 需要同步至企业微信的监护人
                     $this->members[] = [$user->id, '监护人', !$mobile ? 'create' : 'update'];
                 }
-                
             });
         } catch (Exception $e) {
             throw $e;

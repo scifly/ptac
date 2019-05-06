@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\{Builder,
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\{Auth, DB, Request};
+use PhpOffice\PhpSpreadsheet\Exception as PssException;
+use PhpOffice\PhpSpreadsheet\Reader\Exception as PssrException;
 use ReflectionException;
 use Throwable;
 
@@ -382,8 +384,8 @@ class Educator extends Model {
      * 导入教职员工
      *
      * @return bool
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws PssException
+     * @throws PssrException
      */
     function import() {
         
@@ -403,7 +405,11 @@ class Educator extends Model {
                 '有重复，请检查后重试。',
             ])
         );
-        ImportEducator::dispatch($records, Auth::id());
+        abort_if(
+            !$group = Group::where(['name' => '教职员工', 'school_id' => $this->schoolId()])->first(),
+            HttpStatusCode::NOT_ACCEPTABLE, __('messages.educator.role_nonexistent')
+        );
+        ImportEducator::dispatch($records, $this->schoolId(), $group->id, Auth::id());
         
         return true;
         
