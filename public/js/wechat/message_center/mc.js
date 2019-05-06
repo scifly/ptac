@@ -74,7 +74,6 @@
                             $loadmore.hide();
                             $app.scrollTop(st - 1);
                         });
-                        $loadmore.hide();
                     }
                 });
                 // 目录
@@ -141,6 +140,7 @@
                         data: data(action),
                         success: function (result) {
                             callback(result);
+                            $loadmore.hide();
                         },
                         error: function (e) {
                             wap.errorHandler(e);
