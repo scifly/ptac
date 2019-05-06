@@ -271,7 +271,7 @@ class Module extends Model {
         foreach ($modules as &$module) {
             if ($module->tab_id) {
                 $tab = Tab::find($module->tab_id);
-                if ($tab->action_id) {
+                if ($tab && $tab->action_id) {
                     $module->uri = str_replace(
                         '{acronym}', session('acronym'),
                         Action::find($tab->action_id)->route
