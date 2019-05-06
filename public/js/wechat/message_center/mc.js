@@ -107,8 +107,7 @@
                     var $this = $(this),
                         id = $this.attr('id'),
                         sent = parseInt($this.data('type')),
-                        url = 'message_centers/',
-                        location = url + (sent ? 'show/' : 'edit/') + id;
+                        location = (sent ? 'show/' : 'edit/') + id;
 
                     sent ? $.ajax({
                         type: 'GET',
