@@ -48,7 +48,11 @@
                                                 </video>
                                                 @break
                                             @case ('file')
-                                                <p><a href="/{!! $detail['file']->{'path'} !!}">点击下载此文件</a></p>
+                                                <p>
+                                                    <a href="/{!! $detail['file'] ? $detail['file']->{'path'} : '' !!}">
+                                                        点击下载此文件
+                                                    </a>
+                                                </p>
                                                 @break
                                             @case ('textcard')
                                                 <div class="card-content">
