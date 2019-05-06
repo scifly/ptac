@@ -136,11 +136,10 @@
                     $.ajax({
                         type: 'POST',
                         dataType: 'html',
-                        url: 'message_centers',
+                        url: 'index',
                         data: data(action),
                         success: function (result) {
                             callback(result);
-                            $loadmore.hide();
                         },
                         error: function (e) {
                             wap.errorHandler(e);
