@@ -11,7 +11,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo, Relations\HasOne};
 use Illuminate\Support\Collection;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\{Auth, DB, Request};
+use Illuminate\Support\Facades\{Auth, DB, Log, Request};
 use Illuminate\View\View;
 use ReflectionClass;
 use ReflectionException;
@@ -697,6 +697,7 @@ class Message extends Model {
             DB::transaction(function () use ($message, $id, $read) {
                 $message->update(['read' => $read ? 1 : 0]);
                 $msl = MessageSendingLog::find($message->msl_id);
+                Log::debug($msl->read_count);
                 $msl->read_count += ($read ? 1 : -1);
                 $msl->save();
             });
