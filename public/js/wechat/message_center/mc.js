@@ -74,9 +74,9 @@
                             $loadmore.hide();
                             $app.scrollTop(st - 1);
                         });
+                        $loadmore.hide();
                     }
                 });
-                $loadmore.hide();
                 // 目录
                 $(document).on('click', '#show-actions', function () {
                     var actions = [];
