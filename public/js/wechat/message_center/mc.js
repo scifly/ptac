@@ -76,6 +76,7 @@
                         });
                     }
                 });
+                $loadmore.hide();
                 // 目录
                 $(document).on('click', '#show-actions', function () {
                     var actions = [];
