@@ -697,7 +697,7 @@ class Message extends Model {
             DB::transaction(function () use ($message, $id, $read) {
                 $message->update(['read' => $read ? 1 : 0]);
                 $msl = MessageSendingLog::find($message->msl_id);
-                $msl->read_count += $read ? 1 : -1;
+                $msl->read_count += ($read ? 1 : -1);
                 $msl->save();
             });
         } catch (Exception $e) {
