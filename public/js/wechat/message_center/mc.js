@@ -113,7 +113,7 @@
                     sent ? $.ajax({
                         type: 'GET',
                         dataType: 'json',
-                        url: url,
+                        url: 'index',
                         data: {_token: wap.token(), id: id},
                         success: function () {
                             window.location = location;
