@@ -13,7 +13,6 @@ use Illuminate\{Bus\Queueable,
     Support\Facades\DB,
     Validation\Rule};
 use Pusher\PusherException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 use Validator;
 

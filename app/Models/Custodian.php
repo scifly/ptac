@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;

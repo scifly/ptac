@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany,
     Relations\HasManyThrough,
     Relations\HasOne};
-use Illuminate\Support\Facades\{Auth, DB, Log, Request};
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**

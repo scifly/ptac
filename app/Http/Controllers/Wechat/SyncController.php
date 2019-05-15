@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
-use App\Helpers\{Constant, Wechat\WXBizMsgCrypt};
+use App\Helpers\{Wechat\WXBizMsgCrypt};
 use App\Http\Controllers\Controller;
 use App\Models\{Corp, Department, DepartmentType, DepartmentUser, Educator, Group, Mobile, School, User};
 use Doctrine\Common\Inflector\Inflector;

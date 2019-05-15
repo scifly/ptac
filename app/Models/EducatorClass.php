@@ -1,7 +1,6 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
