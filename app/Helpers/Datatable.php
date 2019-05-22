@@ -33,9 +33,8 @@ class Datatable {
      */
     function simple(Model $model, array $columns, array $joins = null, $condition = null) {
         
-        $modelName = class_basename($model);
         $tableName = $model->getTable();
-        switch ($modelName) {
+        switch ($modelName = class_basename($model)) {
             case 'Group':
                 $useTable = 'Groups';
                 break;
