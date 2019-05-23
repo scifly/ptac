@@ -41,8 +41,8 @@
                         {!! Form::number('ruleid', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
-                            'placeholder' => '请输入1-254范围内的整数',
-                            'min' => 1,
+                            'placeholder' => '请输入2-254范围内的整数',
+                            'min' => 2,
                             'max' => 254
                         ]) !!}
                     </div>

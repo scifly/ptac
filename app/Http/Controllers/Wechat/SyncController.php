@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
-use App\Helpers\{Constant, Wechat\WXBizMsgCrypt};
+use App\Helpers\{Wechat\WXBizMsgCrypt};
 use App\Http\Controllers\Controller;
 use App\Models\{Corp, Department, DepartmentType, DepartmentUser, Educator, Group, Mobile, School, User};
 use Doctrine\Common\Inflector\Inflector;
@@ -94,15 +94,17 @@ class SyncController extends Controller {
                 $user = User::create($data);
                 $departmentIds = [$this->corp->department_id];
                 if (Group::find($groupId)->name != '企业') {
-                    Educator::create(array_combine(
-                        Constant::EDUCATOR_FIELDS,
-                        [$user->id, $this->school()->id, 0, 1]
-                    ));
+                    Educator::create(
+                        array_combine(
+                            (new Educator)->getFillable(),
+                            [$user->id, $this->school()->id, 0, 1]
+                        )
+                    );
                     $departmentIds = (array)$this->event->{'Department'};
                 }
                 (new DepartmentUser)->storeByUserId($user->id, $departmentIds);
                 Mobile::create(array_combine(
-                    Constant::MOBILE_FIELDS,
+                    (new Mobile)->getFillable(),
                     [$user->id, $this->event->{'Mobile'}, 1, 1]
                 ));
             });

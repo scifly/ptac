@@ -1,7 +1,6 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -39,7 +38,7 @@ class Mobile extends Model {
     
     use ModelTrait;
     
-    protected $fillable = ['mobile', 'user_id', 'isdefault', 'enabled'];
+    protected $fillable = ['user_id', 'mobile', 'isdefault', 'enabled'];
     
     /**
      * 返回指定手机所属的用户对象
@@ -63,9 +62,9 @@ class Mobile extends Model {
                 $this->where('user_id', $userId)->delete();
                 foreach ($mobiles as $mobile) {
                     $records[] = array_combine(
-                        Constant::MOBILE_FIELDS, [
+                        $this->fillable, [
                             $userId, $mobile['mobile'],
-                            $mobile['isdefault'], $mobile['enabled']
+                            $mobile['isdefault'], $mobile['enabled'],
                         ]
                     );
                 }

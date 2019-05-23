@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
 use App\Jobs\ExportStudent;
 use App\Jobs\ImportStudent;
 use Carbon\Carbon;
@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\{Arr, Facades\Auth, Facades\DB, Facades\Request};
+use PhpOffice\PhpSpreadsheet\Exception as PssException;
+use PhpOffice\PhpSpreadsheet\Reader\Exception as PssrException;
 use ReflectionException;
 use Throwable;
 
@@ -63,7 +65,6 @@ class Student extends Model {
         '年级', '班级', '学号', '住校',
         '备注', '监护关系',
     ];
-    
     protected $fillable = [
         'user_id', 'class_id', 'sn', 'oncampus',
         'birthday', 'remark', 'enabled',
@@ -272,9 +273,10 @@ class Student extends Model {
                                 $du->update(['department_id' => $departmentId]);
                             } else {
                                 DepartmentUser::create(
-                                    array_combine(Constant::DU_FIELDS, [
-                                        $departmentId, $custodian->user_id, 0
-                                    ])
+                                    array_combine(
+                                        (new DepartmentUser)->getFillable(),
+                                        [$departmentId, $custodian->user_id, 0]
+                                    )
                                 );
                             }
                         }
@@ -350,8 +352,8 @@ class Student extends Model {
     /**
      * 导入学籍
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws PssException
+     * @throws PssrException
      */
     function import() {
     
@@ -387,22 +389,19 @@ class Student extends Model {
         
         $id = Request::input('id');
         abort_if(
-            !in_array(
-                $range = Request::input('range'),
-                array_values(Constant::EXPORT_RANGES)
-            ),
+            !in_array($range = Request::input('range'), [0, 1, 2]),
             HttpstatusCode::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );
         $students = collect([]);
         switch ($range) {
-            case Constant::EXPORT_RANGES['class']:
+            case 0:
                 $students = Squad::find($id)->students;
                 break;
-            case Constant::EXPORT_RANGES['grade']:
+            case 1:
                 $students = Grade::find($id)->students;
                 break;
-            case Constant::EXPORT_RANGES['all']:
+            case 2:
                 $students = $this->whereIn('id', $this->contactIds('student'))->get();
                 break;
             default:

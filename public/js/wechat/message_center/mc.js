@@ -107,13 +107,12 @@
                     var $this = $(this),
                         id = $this.attr('id'),
                         sent = parseInt($this.data('type')),
-                        url = 'message_centers/',
-                        location = url + (sent ? 'show/' : 'edit/') + id;
+                        location = (sent ? 'show/' : 'edit/') + id;
 
                     sent ? $.ajax({
                         type: 'GET',
                         dataType: 'json',
-                        url: url,
+                        url: 'index',
                         data: {_token: wap.token(), id: id},
                         success: function () {
                             window.location = location;
@@ -136,7 +135,7 @@
                     $.ajax({
                         type: 'POST',
                         dataType: 'html',
-                        url: 'message_centers',
+                        url: 'index',
                         data: data(action),
                         success: function (result) {
                             callback(result);

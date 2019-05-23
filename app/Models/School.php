@@ -432,11 +432,11 @@ class School extends Model {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
                 session(['schoolId' => $id]);
                 $classes = [
-                    'Department', 'Menu', 'Turnstile',
+                    'Department', 'Menu', 'Educator',
                     'ConferenceRoom', 'ComboType', 'ExamType',
                     'Grade', 'Group', 'Major', 'Module',
                     'PollQuestionnaire', 'Procedure', 'Semester',
-                    'Subject', 'Tag', 'WapSite', 'Educator'
+                    'Subject', 'Tag', 'WapSite',
                 ];
                 array_map(
                     function ($class) use ($ids) {
@@ -445,8 +445,11 @@ class School extends Model {
                         $obj = $isDM ? $this : $model;
                         $_id = $isDM ? 'id' : 'school_id';
                         $field = $isDM ? ($class == 'Menu' ? 'menu_id' : 'department_id') : 'id';
-                        Request::replace(['ids' => $obj->whereIn($_id, $ids)->pluck($field)->toArray()]);
-                        $model->remove();
+                        $foreignIds = $obj->whereIn($_id, $ids)->pluck($field)->toArray();
+                        if (!empty($foreignIds)) {
+                            Request::replace(['ids' => $foreignIds]);
+                            $model->remove();
+                        }
                     }, $classes
                 );
                 Request::replace(['ids' => $ids]);

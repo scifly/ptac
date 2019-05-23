@@ -8,13 +8,8 @@ use App\Jobs\SyncTag;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
@@ -146,7 +141,7 @@ class Tag extends Model {
                     $this->retain('DepartmentTag', $tag->id, $data['dept_ids'], false);
                 }
                 if ($tag) {
-                    $this->sync($tag->id, 'create');
+                    $this->sync([$tag->id], 'create');
                 }
             });
         } catch (Exception $e) {
@@ -179,7 +174,7 @@ class Tag extends Model {
                     $this->retain('DepartmentTag', $tag->id, $data['dept_ids'], false);
                 }
                 $updated = $tag->update($data);
-                if ($updated) { $this->sync($id, 'update'); }
+                if ($updated) { $this->sync([$id], 'update'); }
             });
         } catch (Exception $e) {
             throw $e;
@@ -192,20 +187,19 @@ class Tag extends Model {
     /**
      * 删除标签
      *
-     * @param $value
-     * @param null $field - 按指定字段删除记录
-     * @param bool $soft
+     * @param null $id
      * @return bool|null
      * @throws Throwable
      */
-    function remove($value = null, $field = null, $soft = false) {
+    function remove($id = null) {
     
         try {
-            DB::transaction(function () use ($value, $field, $soft) {
-                $this->sync($value, 'delete');
+            DB::transaction(function () use ($id) {
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $this->sync($ids, 'delete');
                 $this->purge(
                     [class_basename($this), 'TagUser', 'DepartmentTag'],
-                    'tag_id', $value, $soft
+                    'tag_id', 'purge', $ids
                 );
             });
         } catch (Exception $e) {
@@ -219,19 +213,18 @@ class Tag extends Model {
     /**
      * 同步企业微信通绪论标签
      *
-     * @param $id
+     * @param array $ids
      * @param $action
      */
-    private function sync($id, $action) {
+    private function sync(array $ids, $action) {
         
-        $tag = $this->find($id);
-        $data = [
-            'tagid' => $id, 'corp_id' => $tag->school->corp_id
-        ];
-        if ($action != 'delete') {
-            $data['tagname'] = $tag->name;
+        if ($tag = $this->find($ids[0])) {
+            $data = [
+                'tagid' => $ids, 'corp_id' => $tag->school->corp_id
+            ];
+            $action == 'delete' ?: ($data['tagname'] = $tag->name);
+            SyncTag::dispatch($data, Auth::id(), $action);
         }
-        SyncTag::dispatch($data, Auth::id(), $action);
         
     }
     

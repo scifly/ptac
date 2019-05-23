@@ -336,10 +336,17 @@ class Menu extends Model {
         
         try {
             DB::transaction(function () use ($id) {
-                $ids = array_merge([$id], $this->subIds($id));
-                GroupMenu::whereIn('menu_id', $ids)->delete();
-                MenuTab::whereIn('menu_id', $ids)->delete();
-                $this->whereIn('id', $ids)->delete();
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $menuIds = [];
+                foreach ($ids as $id) {
+                    $menuIds = array_merge($menuIds, [$id], $this->subIds($id));
+                }
+                $ids = array_unique($menuIds);
+                array_map(
+                    function ($class, $field) use ($ids) {
+                        $this->model($class)->whereIn($field, $ids)->delete();
+                    }, ['GroupMenu', 'MenuTab', 'Menu'], ['menu_id', 'menu_id', 'id']
+                );
             });
         } catch (Exception $e) {
             throw $e;

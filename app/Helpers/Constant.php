@@ -387,27 +387,11 @@ class Constant {
         302007  => '批量导入任务的文件中，同一个部门下有两个子部门名字一样',
         2000002 => 'CorpId参数无效',
     ];
-    const EXPORT_RANGES = [
-        'class' => 0,
-        'grade' => 1,
-        'all'   => 2,
-    ];
-    
+
     # field names
     const USER_FIELDS = [
         'username', 'group_id', 'password', 'realname',
         'gender', 'userid', 'position', 'enabled',
-    ];
-    const EDUCATOR_FIELDS = ['user_id', 'school_id', 'sms_quote', 'enabled'];
-    const STUDENT_FIELDS = [
-        'user_id', 'class_id', 'sn',
-        'oncampus', 'birthday', 'remark', 'enabled',
-    ];
-    const CUSTODIAN_FIELDS = ['user_id', 'enabled'];
-    const MOBILE_FIELDS = ['user_id', 'mobile', 'isdefault', 'enabled'];
-    const SCORE_FIELDS = [
-        'student_id', 'subject_id', 'exam_id', 'class_rank',
-        'grade_rank', 'score', 'enabled',
     ];
     const MESSAGE_FIELDS = [
         'comm_type_id', 'media_type_id', 'app_id', 'msl_id', 'title', 'content', 'serviceid', 'message_id',
@@ -417,14 +401,6 @@ class Constant {
         'title', 'remark', 'location', 'contact', 'url', 'start', 'end', 'ispublic', 'iscourse',
         'educator_id', 'subject_id', 'alertable', 'alert_mins', 'user_id', 'enabled',
     ];
-    const CS_FIELDS = ['custodian_id', 'student_id', 'relationship', 'created_at', 'updated_at', 'enabled'];
-    const DU_FIELDS = ['department_id', 'user_id', 'enabled'];
-    const EC_FIELDS = ['educator_id', 'class_id', 'subject_id', 'enabled'];
-    const SA_FIELDS = [
-        'student_id', 'sas_id', 'clocked_at', 'direction', 'attendance_machine_id',
-        'media_id', 'status', 'longitude', 'latitude',
-    ];
-    const MT_FIELDS = ['menu_id', 'tab_id', 'created_at', 'updated_at', 'enabled'];
     const MEMBER_FIELDS = [
         'userid', 'username', 'position', 'name', 'english_name',
         'mobile', 'email', 'department', 'gender', 'remark', 'enable',

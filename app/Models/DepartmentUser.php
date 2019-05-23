@@ -143,10 +143,7 @@ class DepartmentUser extends Model {
             DB::transaction(function () use($userId, $departmentId) {
                 $this->where('user_id', $userId)->delete();
                 $this->create(
-                    array_combine(
-                        Constant::DU_FIELDS,
-                        [$departmentId, $userId, 1]
-                    )
+                    array_combine($this->fillable, [$departmentId, $userId, 1])
                 );
             });
         } catch (Exception $e) {

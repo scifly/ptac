@@ -185,7 +185,7 @@ class Department extends Model {
                 if ($department->movable($id, $parentId)) {
                     $moved = $department->move($id, $parentId);
                     if ($moved && $this->needSync($department)) {
-                        SyncDepartment::dispatch($id, 'update', Auth::id());
+                        SyncDepartment::dispatch([$id], 'update', Auth::id());
                     }
                 }
                 break;
@@ -207,7 +207,7 @@ class Department extends Model {
         
         $department = $this->create($data);
         if ($department && $this->needSync($department)) {
-            SyncDepartment::dispatch($department->id, 'create', Auth::id());
+            SyncDepartment::dispatch([$department->id], 'create', Auth::id());
         }
         
         return $department;
@@ -261,7 +261,7 @@ class Department extends Model {
         $department = self::find($id);
         $updated = $department->update($data);
         if ($this->needSync($department) && $updated) {
-            SyncDepartment::dispatch($id, 'update', Auth::id());
+            SyncDepartment::dispatch([$id], 'update', Auth::id());
         }
         
         return $updated ? $this->find($id) : null;
@@ -315,10 +315,9 @@ class Department extends Model {
      */
     function remove($id = null) {
         
-        SyncDepartment::dispatch(
-            $id ?? array_values(Request::input('ids')),
-            'delete', Auth::id()
-        );
+        $ids = $id ? [$id] : array_values(Request::input('ids'));
+        empty($this->whereIn('id', $ids)->pluck('id')->toArray())
+            ?: SyncDepartment::dispatch($ids, 'delete', Auth::id());
         
         return true;
         
@@ -400,6 +399,7 @@ class Department extends Model {
             return Corp::whereDepartmentId($id)->first()->id;
         }
         $parent = $department->parent;
+        if (!$parent) return null;
         while ($parent->departmentType->name != '企业') {
             $id = $parent->id;
             
@@ -608,12 +608,12 @@ class Department extends Model {
     /**
      * 判断指定部门是否需要同步到企业微信
      *
-     * @param Department $department
+     * @param Department|null $department
      * @return bool
      */
-    function needSync(Department $department) {
-        
-        return !in_array(
+    function needSync(Department $department = null) {
+
+        return !$department ? false : !in_array(
             $department->departmentType->name, ['根', '运营', '企业']
         );
         
