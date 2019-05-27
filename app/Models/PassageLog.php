@@ -93,7 +93,15 @@ class PassageLog extends Model {
             ['db' => 'PassageLog.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'Groups.name as role', 'dt' => 2],
-            ['db' => 'PassageLog.category', 'dt' => 3],
+            [
+                'db' => 'PassageLog.category', 'dt' => 3,
+                'formatter' => function ($d) {
+                    $categories = [
+                        '无记录', '刷卡记录', '门磁', '报警记录'
+                    ];
+                    return $categories[$d];
+                }
+            ],
             [
                 'db'        => 'PassageLog.direction', 'dt' => 4,
                 'formatter' => function ($d) {
