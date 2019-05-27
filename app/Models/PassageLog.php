@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -176,6 +177,7 @@ class PassageLog extends Model
                 $records = (new Turnstile)->invoke(
                     'getlogs', ['ids' => []]
                 );
+                Log::debug(sizeof($records));
                 $fields = [
                     'school_id', 'user_id', 'category', 'direction', 'turnstile_id',
                     'door', 'clocked_at', 'created_at', 'updated_at', 'status'
