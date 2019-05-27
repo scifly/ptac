@@ -31,6 +31,7 @@ require __DIR__ . '/../bootstrap/autoload.php';
 | the responses back to the browser and delight our users.
 |
 */
+set_time_limit(0);
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 /*
 |--------------------------------------------------------------------------

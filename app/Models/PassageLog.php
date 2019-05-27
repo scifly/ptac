@@ -183,7 +183,9 @@ class PassageLog extends Model {
                         ]);
                     }
                 }
-                $this->insert($logs);
+                foreach (array_chunk($logs, 1000) as $chunk) {
+                    $this->insert($chunk);
+                }
             });
         } catch (Exception $e) {
             throw $e;
