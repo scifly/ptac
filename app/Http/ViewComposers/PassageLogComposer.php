@@ -43,7 +43,7 @@ class PassageLogComposer {
                         $optionAll + $roles, 'filter_role'
                     ),
                 ],
-                '规则',
+                '记录类型',
                 [
                     'title' => '方向',
                     'html'  => $this->singleSelectList(
