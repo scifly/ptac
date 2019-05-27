@@ -100,6 +100,11 @@ return [
         'submitted'        => '已提交消息发送请求',
         'preview'          => '消息预览已发送至你的手机微信，请打开相关应用查看',
     ],
+    'passage_log' => [
+        'title' => '通行记录',
+        'submitted' => '已发送采集请求。数据采集完成后请重新加载当前页面',
+        'gathered' => '采集完毕'
+    ],
     'school'                   => [
         'title'        => '学校管理',
         'not_found'    => '未找到该学校的相关信息',
