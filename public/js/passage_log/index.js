@@ -1,6 +1,6 @@
 page.index('passage_logs', [
     'export',
-    { className: 'text-center', targets: [1, 2, 3, 4, 6, 7]}
+    { className: 'text-center', targets: [1, 2, 3, 4, 5, 6, 7]}
 ]);
 page.initSelect2();
 $.getMultiScripts(['js/shared/dtrange.js']).done(
