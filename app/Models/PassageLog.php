@@ -118,7 +118,7 @@ class PassageLog extends Model {
                 },
             ],
             ['db' => 'Turnstile.location', 'dt' => 5],
-            ['db' => 'PassageLog.clocked_at', 'dt' => 6],
+            ['db' => 'PassageLog.clocked_at', 'dt' => 6, 'dr' => true],
             [
                 'db'        => 'PassageLog.status', 'dt' => 7,
                 'formatter' => function ($d, $row) {
