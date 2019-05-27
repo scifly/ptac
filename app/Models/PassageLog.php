@@ -4,12 +4,11 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
+use App\Jobs\GatherPassageLog;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Throwable;
 
 /**
@@ -169,43 +168,47 @@ class PassageLog extends Model
      * @return bool
      * @throws Throwable
      */
-    function store()
-    {
-
-        try {
-            DB::transaction(function () {
-                $records = (new Turnstile)->invoke(
-                    'getlogs', ['ids' => []]
-                );
-                Log::debug(sizeof($records));
-                $fields = [
-                    'school_id', 'user_id', 'category', 'direction', 'turnstile_id',
-                    'door', 'clocked_at', 'created_at', 'updated_at', 'status'
-                ];
-                $logs = [];
-                $schoolId = $this->schoolId();
-                if (is_array($records)) {
-                    foreach ($records as $record) {
-                        $card = Card::whereSn($record['card_num'])->first();
-                        $turnstile = Turnstile::whereSn($record['sn'])->first();
-                        $createdAt = $updatedAt = now()->toDateTimeString();
-                        $logs[] = array_combine($fields, [
-                            $schoolId, $card ? $card->user_id : 0, $record['type'],
-                            $record['direction'], $turnstile ? $turnstile->id : 0, $record['door_num'],
-                            date('Y-m-d H:i:s', strtotime($record['time'])),
-                            $createdAt, $updatedAt, $record['valid']
-                        ]);
-                    }
-                }
-                foreach (array_chunk($logs, 200) as $chunk) {
-                    $this->insert($chunk);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-
+    function store() {
+    
+        GatherPassageLog::dispatch(
+            $this->schoolId(), Auth::id()
+        );
+        
         return true;
+        // try {
+        //     DB::transaction(function () {
+        //         $records = (new Turnstile)->invoke(
+        //             'getlogs', ['ids' => []]
+        //         );
+        //         $fields = [
+        //             'school_id', 'user_id', 'category', 'direction', 'turnstile_id',
+        //             'door', 'clocked_at', 'created_at', 'updated_at', 'status'
+        //         ];
+        //         $logs = [];
+        //         $schoolId = $this->schoolId();
+        //         if (is_array($records)) {
+        //             foreach ($records as $record) {
+        //                 $card = Card::whereSn($record['card_num'])->first();
+        //                 $turnstile = Turnstile::whereSn($record['sn'])->first();
+        //                 $createdAt = $updatedAt = now()->toDateTimeString();
+        //                 $logs[] = array_combine($fields, [
+        //                     $schoolId, $card ? $card->user_id : 0, $record['type'],
+        //                     $record['direction'], $turnstile ? $turnstile->id : 0, $record['door_num'],
+        //                     date('Y-m-d H:i:s', strtotime($record['time'])),
+        //                     $createdAt, $updatedAt, $record['valid']
+        //                 ]);
+        //             }
+        //         }
+        //         foreach (array_chunk($logs, 200) as $chunk) {
+        //             $this->insert($chunk);
+        //         }
+        //     });
+        // } catch (Exception $e) {
+        //     throw $e;
+        // }
+        //
+        // return true;
+    
     }
 
 
