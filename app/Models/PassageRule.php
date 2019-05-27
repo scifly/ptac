@@ -296,11 +296,8 @@ class PassageRule extends Model {
                 }
             }
             array_map(
-                function ($api, $data) {
-                    empty($data) ?: (new Turnstile)->invoke($api, ['data' => $data]);
-                },
-                ['clrtimeframes', 'settimeframes'],
-                [$deviceids, $rules]
+                function ($api, $data) { empty($data) ?: (new Turnstile)->invoke($api, ['data' => $data]); },
+                ['clrtimeframes', 'settimeframes'], [$deviceids, $rules]
             );
         } catch (Exception $e) {
             throw $e;
