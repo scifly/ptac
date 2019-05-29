@@ -70,24 +70,35 @@ class Card extends Model {
                     return $d ?? sprintf(Snippet::BADGE, 'text-gray', '[尚未发卡]');
                 },
             ],
-            ['db' => 'User.realname', 'dt' => 2],
-            ['db' => 'Groups.name', 'dt' => 3],
             [
-                'db'        => 'User.id as userId', 'dt' => 4,
+                'db'        => 'CardTurnstile', 'dt' => 2,
+                'formatter' => function ($d) {
+                    $ruleids = explode(',', $d);
+                    
+                    return implode(
+                        '<br />',
+                        PassageRule::whereIn('id', $ruleids)->pluck('name')->toArray()
+                    );
+                },
+            ],
+            ['db' => 'User.realname', 'dt' => 3],
+            ['db' => 'Groups.name', 'dt' => 4],
+            [
+                'db'        => 'User.id as userId', 'dt' => 5,
                 'formatter' => function ($d) {
                     return User::find($d)->mobiles->where('isdefault', 1)->first()->mobile;
                 },
             ],
             [
-                'db'        => 'Card.created_at', 'dt' => 5, 'dr' => true,
+                'db'        => 'Card.created_at', 'dt' => 6, 'dr' => true,
                 'formatter' => function ($d) { return $d ?? ' - '; },
             ],
             [
-                'db'        => 'Card.updated_at', 'dt' => 6, 'dr' => true,
+                'db'        => 'Card.updated_at', 'dt' => 7, 'dr' => true,
                 'formatter' => function ($d) { return $d ?? ' - '; },
             ],
             [
-                'db'        => 'Card.status', 'dt' => 7,
+                'db'        => 'Card.status', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     
                     $colors = [
@@ -103,7 +114,7 @@ class Card extends Model {
                     return $row['card_id'] ? Datatable::status($status, $row, false) : $status;
                 },
             ],
-            ['db' => 'User.card_id', 'dt' => 8],
+            ['db' => 'User.card_id', 'dt' => 9],
         ];
         $joins = [
             [
@@ -115,6 +126,14 @@ class Card extends Model {
                 ],
             ],
             [
+                'table'      => 'cards_turnstiles',
+                'alias'      => 'CardTurnstile',
+                'type'       => 'LEFT',
+                'conditions' => [
+                    'Card.id = CardTurnstile.card_id',
+                ],
+            ],
+            [
                 'table'      => 'groups',
                 'alias'      => 'Groups',
                 'type'       => 'INNER',
@@ -123,8 +142,8 @@ class Card extends Model {
                 ],
             ],
         ];
-        $sGId = Group::whereName('学生')->first()->id;
-        $condition = 'User.id IN (' . $this->visibleUserIds() . ') AND User.group_id <> ' . $sGId;
+        // $sGId = Group::whereName('学生')->first()->id;
+        $condition = 'User.id IN (' . $this->visibleUserIds() . ')'; // AND User.group_id <> ' . $sGId;
         
         return Datatable::simple(new User, $columns, $joins, $condition);
         
@@ -430,7 +449,7 @@ class Card extends Model {
                             'card'        => $user->card->sn,
                             's_date'      => $sDate,
                             'e_date'      => $eDate,
-                            'time_frames' => array_pad($ruleids[$turnstileId], 4, 0)
+                            'time_frames' => array_pad($ruleids[$turnstileId], 4, 0),
                         ];
                     }
                 }
