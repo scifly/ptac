@@ -28,6 +28,7 @@ use Throwable;
  * @property int $enabled 门禁状态
  * @property-read School $school
  * @property-read Collection|PassageRule[] $passageRules
+ * @property-read Collection|Card[] $cards
  * @method static Builder|Turnstile whereCreatedAt($value)
  * @method static Builder|Turnstile whereEnabled($value)
  * @method static Builder|Turnstile whereId($value)
@@ -80,6 +81,17 @@ class Turnstile extends Model {
             'turnstile_id',
             'passage_rule_id'
         );
+        
+    }
+    
+    /**
+     * 获取门禁绑定的所有一卡通对象
+     *
+     * @return BelongsToMany
+     */
+    function cards() {
+        
+        return $this->belongsToMany('App\Models\Card', 'cards_turnstiles');
         
     }
     

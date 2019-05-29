@@ -9,7 +9,7 @@ use App\Http\Requests\CardRequest;
 use Eloquent;
 use Exception;
 use Form;
-use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -29,6 +29,7 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $status 状态
  * @property-read User $user
+ * @property-read Collection|Turnstile[] $turnstiles
  * @method static Builder|Card newModelQuery()
  * @method static Builder|Card newQuery()
  * @method static Builder|Card query()
@@ -56,6 +57,17 @@ class Card extends Model {
     function user() { return $this->belongsTo('App\Models\User'); }
     
     /**
+     * 获取一卡通绑定的所有门禁对象
+     *
+     * @return BelongsToMany
+     */
+    function turnstiles() {
+        
+        return $this->belongsToMany('App\Models\Turnstile', 'cards_turnstiles');
+        
+    }
+    
+    /**
      * 一卡通列表
      *
      * @return array
@@ -71,13 +83,16 @@ class Card extends Model {
                 },
             ],
             [
-                'db'        => 'CardTurnstile.ruleids', 'dt' => 2,
+                'db'        => 'User.card_id', 'dt' => 2,
                 'formatter' => function ($d) {
-                    $ruleids = explode(',', $d);
+                    if (!$card = $this->find($d)) return '';
+                    $turnstileIds = $card->turnstiles->pluck('id')->toArray();
+                    $prIds = RuleTurnstile::whereIn('turnstile_id', $turnstileIds)
+                        ->pluck('passage_rule_id')->toArray();
                     
-                    return implode(
-                        '<br />',
-                        PassageRule::whereIn('id', $ruleids)->pluck('name')->toArray()
+                    return implode('<br />',
+                        PassageRule::whereIn('id', array_unique($prIds))
+                            ->pluck('name')->toArray()
                     );
                 },
             ],
@@ -114,8 +129,7 @@ class Card extends Model {
                     
                     return $row['card_id'] ? Datatable::status($status, $row, false) : $status;
                 },
-            ],
-            ['db' => 'User.card_id', 'dt' => 9],
+            ]
         ];
         $joins = [
             [
