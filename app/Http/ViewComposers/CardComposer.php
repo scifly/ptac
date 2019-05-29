@@ -62,7 +62,7 @@ class CardComposer {
             $action = Request::route()->getActionMethod();
             $ids = Request::route('id') ? [Request::route('id')] : Request::get('ids');
             $isBatch = Request::route('id') ? false : true;
-            Log::debug(Request::getUri());
+            Log::debug(Request::path());
             if ($ids) {
                 session(['ids' => $ids]);
             } else {
