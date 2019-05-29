@@ -83,12 +83,13 @@ HTML;
             foreach ($users as $user) {
                 $status = $action == 'create' ? ''
                     : '<td>' . $card->status($user->card->status) . '</td>';
+                $default = $user->mobiles->where('isdefault', 1)->first();
                 $record = sprintf(
                     $row,
                     $user->id,
                     $user->realname,
                     $user->group->name,
-                    $user->mobiles->where('isdefault', 1)->first()->mobile,
+                    $default ? $default->mobile : 'n/a',
                     $user->id, $i,
                     $user->card ? $user->card->sn : '',
                     $status
