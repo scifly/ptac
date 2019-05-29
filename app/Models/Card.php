@@ -86,7 +86,8 @@ class Card extends Model {
             [
                 'db'        => 'User.id as userId', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return User::find($d)->mobiles->where('isdefault', 1)->first()->mobile;
+                    $default = User::find($d)->mobiles->where('isdefault', 1)->first();
+                    return $default ? $default->mobile : 'n/a';
                 },
             ],
             [
