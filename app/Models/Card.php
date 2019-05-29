@@ -197,8 +197,10 @@ class Card extends Model {
                     }
                 } else {
                     foreach (Request::input('sns') as $userId => $sn) {
-                        $records[] = ['sn' => $sn, 'user_id' => $userId, 'status' => 1];
-                        $userIds[] = $userId;
+                        if (!empty($sn)) {
+                            $records[] = ['sn' => $sn, 'user_id' => $userId, 'status' => 1];
+                            $userIds[] = $userId;
+                        }
                     }
                     $this->insert($records ?? []);
                     $cards = $this->whereIn('user_id', $userIds ?? [])->get();
@@ -227,10 +229,13 @@ class Card extends Model {
         $this->validate($cards = Request::input('sns'));
         try {
             DB::transaction(function () use ($cards) {
+                $inserts = $purges = [];
                 foreach ($cards as $userId => $card) {
                     $user = User::find($userId);
                     $sn = $card['sn'];
                     $status = $card['status'];
+                    $tIds = $user->card->turnstiles->pluck('id')->toArray();
+                    $cardId = $user->card_id;
                     if ($sn) {
                         $data = ['status' => $status];
                         if ($user->card->sn != $sn) {
@@ -243,10 +248,34 @@ class Card extends Model {
                         }
                         $user->card->update($data);
                     } else {
+                        $status = 2;
+                        $sn = $user->card->sn;
                         $user->card->delete();
                         $user->update(['card_id' => 0]);
                     }
+                    foreach ($tIds as $tId) {
+                        $ct = CardTurnstile::where([
+                            'card_id' => $cardId,
+                            'turnstile_id' => $tId
+                        ])->first();
+                        $perm = [
+                            'card' => $sn,
+                            's_date' => date('Ymd', strtotime($ct->start_date)),
+                            'e_date' => date('Ymd', strtotime($ct->end_date)),
+                            'time_frames' => array_pad(
+                                explode(',', $ct->ruleids), 4, 0
+                            )
+                        ];
+                        $dId = Turnstile::find($tId)->deviceid;
+                        $status == 1 ? $inserts[$dId][] = $perm : $purges[$dId][] = $perm;
+                    }
                 }
+                $t = new Turnstile;
+                array_map(
+                    function ($api, array $data) use ($t) {
+                        empty($data) ?: $t->invoke($api, ['data' => $data]);
+                    }, ['addperms', 'delperms'], [$inserts, $purges]
+                );
             });
         } catch (Exception $e) {
             throw $e;

@@ -60,7 +60,6 @@ class CardComposer {
         } else {
             $action = Request::route()->getActionMethod();
             $ids = Request::route('id') ? [Request::route('id')] : Request::get('ids');
-            $isBatch = Request::route('id') ? false : true;
             if ($ids) {
                 session(['ids' => $ids]);
             } else {
@@ -69,7 +68,10 @@ class CardComposer {
             $operator = $action == 'create' ? '=' : '<>';
             $users = User::whereIn('id', $ids)->where('card_id', $operator, 0)->get();
             $card = new Card;
-            $sn = $card->input($isBatch and (Request::path() == 'cards/edit'));
+            $sn = $card->input(
+                (Request::route('id') ? false : true) and
+                (Request::path() == 'cards/edit')
+            );
             $row = <<<HTML
 <tr>
 <td>%s</td>
