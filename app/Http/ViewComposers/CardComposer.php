@@ -5,6 +5,7 @@ use App\Helpers\ModelTrait;
 use App\Models\Card;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -61,6 +62,7 @@ class CardComposer {
             $action = Request::route()->getActionMethod();
             $ids = Request::route('id') ? [Request::route('id')] : Request::get('ids');
             $isBatch = Request::route('id') ? false : true;
+            Log::debug(Request::getUri());
             if ($ids) {
                 session(['ids' => $ids]);
             } else {
