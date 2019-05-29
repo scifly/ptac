@@ -244,7 +244,7 @@ class Card extends Model {
                         $user->card->update($data);
                     } else {
                         $user->card->delete();
-                        $user->update(['card_id' => null]);
+                        $user->update(['card_id' => 0]);
                     }
                 }
             });
@@ -285,16 +285,21 @@ class Card extends Model {
     /**
      * 返回卡号输入框html
      *
+     * @param bool $disabled
      * @return mixed
      */
-    function input() {
+    function input($disabled = false) {
         
-        return Form::text('sn', '%s', [
+        $params = [
             'class'     => 'form-control text-blue input-sm',
             'maxlength' => 10,
             'data-uid'  => '%s',
             'data-seq'  => '%s',
-        ])->toHtml();
+        ];
+        if ($disabled) {
+            $params = array_merge($params, ['disabled' => true]);
+        }
+        return Form::text('sn', '%s', $params)->toHtml();
         
     }
     
