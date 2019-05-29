@@ -143,7 +143,7 @@ class Card extends Model {
             [
                 'table'      => 'cards_turnstiles',
                 'alias'      => 'CardTurnstile',
-                'type'       => 'LEFT',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Card.id = CardTurnstile.card_id',
                 ],
