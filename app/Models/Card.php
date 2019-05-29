@@ -141,14 +141,6 @@ class Card extends Model {
                 ],
             ],
             [
-                'table'      => 'cards_turnstiles',
-                'alias'      => 'CardTurnstile',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Card.id = CardTurnstile.card_id',
-                ],
-            ],
-            [
                 'table'      => 'groups',
                 'alias'      => 'Groups',
                 'type'       => 'INNER',
