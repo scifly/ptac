@@ -71,7 +71,7 @@ class Card extends Model {
                 },
             ],
             [
-                'db'        => 'CardTurnstile', 'dt' => 2,
+                'db'        => 'CardTurnstile.ruleids', 'dt' => 2,
                 'formatter' => function ($d) {
                     $ruleids = explode(',', $d);
                     
