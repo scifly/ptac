@@ -100,7 +100,7 @@ HTML;
                 $i++;
             }
             !empty($list)
-                ?: $list = '<tr><td colspan="6" class="text-center text-red">- 请先发卡 -</td></tr>';
+                ?: $list = '<tr><td colspan="6" class="text-center text-red">- 已发卡 -</td></tr>';
             $data = [
                 'list' => $list,
                 'edit' => $action == 'edit' ? true : null
