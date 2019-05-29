@@ -8,7 +8,6 @@ use App\Models\{Department,
     Educator,
     EducatorClass,
     Grade,
-    Group,
     Mobile,
     School,
     Squad,
@@ -23,7 +22,6 @@ use Illuminate\{Bus\Queueable,
     Support\Facades\DB,
     Validation\Rule};
 use Pusher\PusherException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 use Validator;
 
@@ -35,18 +33,23 @@ class ImportEducator implements ShouldQueue, MassImport {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
     
-    protected $data, $userId, $response, $broadcaster, $members;
+    protected $data, $schoolId, $groupId, $userId, $response, $broadcaster, $members, $school;
     
     /**
      * Create a new job instance.
      *
      * @param array $data
+     * @param $schoolId
+     * @param $groupId
      * @param $userId
      * @throws PusherException
      */
-    function __construct(array $data, $userId) {
+    function __construct(array $data, $schoolId, $groupId, $userId) {
         
         $this->data = $data;
+        $this->schoolId = $schoolId;
+        $this->school = School::find($schoolId);
+        $this->groupId = $groupId;
         $this->userId = $userId;
         $this->response = array_combine(Constant::BROADCAST_FIELDS, [
             $userId, __('messages.educator.title'),
@@ -94,7 +97,7 @@ class ImportEducator implements ShouldQueue, MassImport {
         
         $fields = [
             'name', 'gender', 'username', 'position', 'departments',
-            'school', 'mobile', 'grades', 'classes', 'classes_subjects',
+            'mobile', 'grades', 'classes', 'classes_subjects',
         ];
         $rules = array_combine($fields, [
             'required|string|between:2,20',
@@ -102,12 +105,16 @@ class ImportEducator implements ShouldQueue, MassImport {
             'required|string',
             'nullable|string|between:1,60',
             'required|string',
-            'required|string',
             'required|regex:/^1[3456789][0-9]{9}$/',
             'nullable|string',
             'nullable|string',
             'nullable|string',
         ]);
+        $isSchoolValid = in_array($this->schoolId, $this->schoolIds($this->userId));
+        $schoolDepartmentIds = array_merge(
+            [$this->school->department_id],
+            (new Department)->subIds($this->school->department_id)
+        );
         foreach ($data as &$datum) {
             $paths = explode(' . ', $datum['E']);
             $department = $paths[sizeof($paths) - 1];
@@ -115,18 +122,10 @@ class ImportEducator implements ShouldQueue, MassImport {
                 $datum['A'], $datum['B'], $datum['C'],
                 $datum['D'], $department, $datum['F'],
                 $datum['G'], $datum['H'], $datum['I'],
-                $datum['J'],
             ]);
             $result = Validator::make($user, $rules);
             $failed = $result->fails();
-            $school = !$failed ? School::whereName($user['school'])->first() : null;
-            $schoolDepartmentId = $school ? $school->department_id : 0;
-            $isSchoolValid = $school ? in_array($school->id, $this->schoolIds($this->userId)) : false;
             $departments = explode(',', $user['departments']);
-            $schoolDepartmentIds = array_merge(
-                [$schoolDepartmentId],
-                (new Department)->subIds($schoolDepartmentId)
-            );
             $isDepartmentValid = true;
             foreach ($departments as $d) {
                 if (!($department = Department::whereName($d)->whereIn('id', $schoolDepartmentIds)->first())) {
@@ -135,19 +134,19 @@ class ImportEducator implements ShouldQueue, MassImport {
                 }
             }
             if (!(!$failed && $isSchoolValid && $isDepartmentValid)) {
-                $datum['K'] = $failed
+                $datum['J'] = $failed
                     ? json_encode($result->errors(), JSON_UNESCAPED_UNICODE)
                     : __('messages.educator.import_validation_error');
                 $illegals[] = $datum;
                 continue;
             }
             $user['departments'] = $departments;
-            $user['school_id'] = $school->id;
+            $user['school_id'] = $this->schoolId;
             if ($mobile = Mobile::where(['mobile' => $user['mobile'], 'isdefault' => 1])->first()) {
                 if ($mobile->user->educator) {
                     $updates[] = $user;
                 } else {
-                    $datum['K'] = '手机号码已存在';
+                    $datum['J'] = '手机号码已存在';
                     $illegals[] = $datum;
                 }
             } else {
@@ -170,34 +169,31 @@ class ImportEducator implements ShouldQueue, MassImport {
         
         try {
             DB::transaction(function () use ($inserts) {
-                $school = School::whereName($inserts[0]['school'])->first();
-                throw_if(!$school, new NotFoundHttpException(__('messages.school_not_found')));
-                $schoolId = $school->id;
-                $group = Group::whereName('教职员工')->where('school_id', $schoolId)->first();
-                throw_if(!$group, new NotFoundHttpException(__('messages.group.not_found')));
                 foreach ($inserts as $insert) {
                     # 创建用户
                     $user = User::create(
                         array_combine(Constant::USER_FIELDS, [
-                            $insert['username'], $group->id, bcrypt('12345678'),
+                            $insert['username'], $this->groupId, bcrypt('12345678'),
                             $insert['name'], $insert['gender'] == '男' ? '1' : '0',
                             uniqid('ptac_'), $insert['position'], 1,
                         ])
                     );
                     # 创建教职员工
                     $educator = Educator::create(
-                        array_combine(Constant::EDUCATOR_FIELDS, [
-                            $user->id, $schoolId, 0, 1,
-                        ])
+                        array_combine(
+                            (new Educator)->getFillable(),
+                            [$user->id, $this->schoolId, 0, 1]
+                        )
                     );
                     # 创建用户手机号码
                     Mobile::create(
-                        array_combine(Constant::MOBILE_FIELDS, [
-                            $user->id, $insert['mobile'], 1, 1,
-                        ])
+                        array_combine(
+                            (new Mobile)->getFillable(),
+                            [$user->id, $insert['mobile'], 1, 1]
+                        )
                     );
                     # 添加用户 & 部门绑定关系
-                    $this->updateDu($school, $user, $insert);
+                    $this->updateDu($user->id, $insert);
                     # 更新(班级/年级主任、任教科目等)绑定关系
                     $this->binding($insert, $educator);
                     # 需要新增的企业微信会员
@@ -224,28 +220,23 @@ class ImportEducator implements ShouldQueue, MassImport {
         
         try {
             DB::transaction(function () use ($updates) {
-                $school = School::whereName($updates[0]['school'])->first();
-                throw_if(!$school, new NotFoundHttpException(__('messages.school_not_found')));
-                $schoolId = $school->id;
-                $group = Group::whereName('教职员工')->where('school_id', $schoolId)->first();
-                throw_if(!$group, new NotFoundHttpException(__('messages.group.not_found')));
                 foreach ($updates as $update) {
                     $mobile = Mobile::whereMobile($update['mobile'])->first();
                     # 更新用户
-                    $user = User::find($mobile->user_id);
-                    if (!$user) continue;
+                    if (!($user = User::find($mobile->user_id))) continue;
                     $user->update([
                         'realname' => $update['name'],
                         'gender'   => $update['gender'] == '男' ? '0' : '1',
                     ]);
                     # 更新教职员工
                     $educator = Educator::firstOrCreate(
-                        array_combine(Constant::EDUCATOR_FIELDS, [
-                            $user->id, $schoolId, 0, 1,
-                        ])
+                        array_combine(
+                            (new Educator)->getFillable(),
+                            [$user->id, $this->schoolId, 0, 1]
+                        )
                     );
                     # 更新用户部门绑定关系
-                    $this->updateDu($school, $user, $update);
+                    $this->updateDu($user->id, $update);
                     # 更新(班级/年级主任、任教科目等)绑定关系
                     $this->binding($update, $educator);
                     # 更新卡德人员
@@ -269,10 +260,9 @@ class ImportEducator implements ShouldQueue, MassImport {
      * @throws Throwable
      */
     private function binding(array $data, Educator $educator) {
-    
+        
         try {
             DB::transaction(function () use ($data, $educator) {
-                $school = School::find($educator->school_id);
                 list($gNames, $cNames, $cses) = array_map(
                     function ($str) use ($data) {
                         return explode(',', str_replace(['，', '：'], [',', ':'], $data[$str]));
@@ -280,7 +270,7 @@ class ImportEducator implements ShouldQueue, MassImport {
                 );
                 # 更新年级主任
                 foreach ($gNames as $gName) {
-                    $condition = ['school_id' => $school->id, 'name' => $gName];
+                    $condition = ['school_id' => $this->schoolId, 'name' => $gName];
                     if (!($grade = Grade::where($condition)->first())) continue;
                     $educatorIds = array_merge(
                         explode(',', $grade->educator_ids),
@@ -292,12 +282,11 @@ class ImportEducator implements ShouldQueue, MassImport {
                     $this->refreshDu($grade->department_id, $educator->user_id);
                 }
                 # 更新班级主任
-                $gradeIds = $school->grades->pluck('id')->toArray();
+                $gradeIds = $this->school->grades->pluck('id')->toArray();
                 foreach ($cNames as $cName) {
                     if (!($class = Squad::whereName($cName)->whereIn('grade_id', $gradeIds)->first())) continue;
                     $educatorIds = array_merge(explode(',', $class->educator_ids), [$educator->id]);
                     $class->update(['educator_ids' => implode(',', array_unique($educatorIds))]);
-                    #
                     $this->refreshDu($class->department_id, $educator->user_id);
                 }
                 # 更新班级科目绑定关系
@@ -305,10 +294,13 @@ class ImportEducator implements ShouldQueue, MassImport {
                     if (empty($cs)) continue;
                     $paths = explode(':', $cs);
                     $class = Squad::whereName($paths[0])->whereIn('grade_id', $gradeIds)->first();
-                    $subject = Subject::whereName($paths[1])->where('school_id', $school->id)->first();
+                    $subject = Subject::where(['name' => $paths[1], 'school_id' => $this->schoolId])->get()->first();
                     if (!isset($class, $subject)) continue;
                     EducatorClass::firstOrCreate(
-                        array_combine(Constant::EC_FIELDS, [$educator->id, $class->id, $subject->id, 1])
+                        array_combine(
+                            (new EducatorClass)->getFillable(),
+                            [$educator->id, $class->id, $subject->id, 1]
+                        )
                     );
                     # 更新部门&用户绑定关系
                     $this->refreshDu($class->department_id, $educator->user_id);
@@ -319,33 +311,31 @@ class ImportEducator implements ShouldQueue, MassImport {
         }
         
     }
-
+    
     /**
      * 创建/更新当前导入用户的部门绑定关系
      *
-     * @param School $school
-     * @param User $user
+     * @param integer $userId
      * @param array $record
-     * @throws Exception
      */
-    private function updateDu(School $school, User $user, array $record) {
+    private function updateDu($userId, array $record) {
         
         $d = new Department;
         $du = new DepartmentUser;
-        $du->where(['user_id' => $user->id, 'enabled' => 1])->delete();
-        $schoolDepartmentId = $school->department_id;
+        $du->where(['user_id' => $userId, 'enabled' => 1])->delete();
         $schoolDepartmentIds = array_merge(
-            [$schoolDepartmentId],
-            $d->subIds($schoolDepartmentId)
+            [$this->school->department_id],
+            $d->subIds($this->school->department_id)
         );
         $departmentIds = array_intersect(
             $d->whereIn('name', $record['departments'])->pluck('id')->toArray(),
             $schoolDepartmentIds
         );
         foreach ($departmentIds as $departmentId) {
-            $records[] = array_combine(Constant::DU_FIELDS, [
-                $departmentId, $user->id, 1,
-            ]);
+            $records[] = array_combine(
+                $du->getFillable(),
+                [$departmentId, $userId, 1]
+            );
         }
         $du->insert($records ?? []);
         
@@ -360,7 +350,10 @@ class ImportEducator implements ShouldQueue, MassImport {
     function refreshDu($departmentId, $userId) {
         
         DepartmentUser::firstOrCreate(
-            array_combine(Constant::DU_FIELDS, [$departmentId, $userId, 1])
+            array_combine(
+                (new DepartmentUser)->getFillable(),
+                [$departmentId, $userId, 1]
+            )
         );
         
     }

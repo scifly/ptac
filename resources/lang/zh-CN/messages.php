@@ -71,7 +71,8 @@ return [
         'import_validation_error' => '学校/部门名称错误',
         'import_completed'        => '教职员工导入完毕',
         'export_completed'        => '教职员工导出完毕，请打开下载的excel文件查看详情',
-        'switch_school_not_allowed' => '不得切换学校'
+        'switch_school_not_allowed' => '不得切换学校',
+        'role_nonexistent' => '基本角色不存在'
     ],
     'grade'                    => [
         'title'     => '年级管理',
@@ -98,6 +99,11 @@ return [
         'empty_targets'    => '请选择发送对象',
         'submitted'        => '已提交消息发送请求',
         'preview'          => '消息预览已发送至你的手机微信，请打开相关应用查看',
+    ],
+    'passage_log' => [
+        'title' => '通行记录',
+        'submitted' => '已发送采集请求。数据采集完成后请重新加载当前页面',
+        'gathered' => '采集完毕'
     ],
     'school'                   => [
         'title'        => '学校管理',

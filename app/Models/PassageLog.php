@@ -4,16 +4,16 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
+use App\Jobs\GatherPassageLog;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Throwable;
 
 /**
  * 通行记录
- * 
+ *
  * Class PassageLog
  *
  * @package App\Models
@@ -64,21 +64,27 @@ class PassageLog extends Model {
      *
      * @return BelongsTo
      */
-    function school() { return $this->belongsTo('App\Models\School'); }
+    function school() {
+        return $this->belongsTo('App\Models\School');
+    }
     
     /**
      * 返回通行记录所属的用户对象
      *
      * @return BelongsTo
      */
-    function user() { return $this->belongsTo('App\Models\User'); }
+    function user() {
+        return $this->belongsTo('App\Models\User');
+    }
     
     /**
      * 返回通行记录所属的门禁对象
      *
      * @return BelongsTo
      */
-    function turnstile() { return $this->belongsTo('App\Models\Turnstile'); }
+    function turnstile() {
+        return $this->belongsTo('App\Models\Turnstile');
+    }
     
     /**
      * 门禁通行记录列表
@@ -91,7 +97,16 @@ class PassageLog extends Model {
             ['db' => 'PassageLog.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'Groups.name as role', 'dt' => 2],
-            ['db' => 'PassageLog.category', 'dt' => 3],
+            [
+                'db'        => 'PassageLog.category', 'dt' => 3,
+                'formatter' => function ($d) {
+                    $categories = [
+                        '无记录', '刷卡记录', '门磁', '报警记录',
+                    ];
+                    
+                    return $categories[$d];
+                },
+            ],
             [
                 'db'        => 'PassageLog.direction', 'dt' => 4,
                 'formatter' => function ($d) {
@@ -103,7 +118,7 @@ class PassageLog extends Model {
                 },
             ],
             ['db' => 'Turnstile.location', 'dt' => 5],
-            ['db' => 'PassageLog.clocked_at', 'dt' => 6],
+            ['db' => 'PassageLog.clocked_at', 'dt' => 6, 'dr' => true],
             [
                 'db'        => 'PassageLog.status', 'dt' => 7,
                 'formatter' => function ($d, $row) {
@@ -119,9 +134,9 @@ class PassageLog extends Model {
         ];
         $joins = [
             [
-                'table'     => 'users',
-                'alias'     => 'User',
-                'type'      => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
                     'User.id = PassageLog.user_id',
                 ],
@@ -141,7 +156,7 @@ class PassageLog extends Model {
                 'conditions' => [
                     'Turnstile.id = PassageLog.turnstile_id',
                 ],
-            ]
+            ],
         ];
         $condition = 'PassageLog.school_id = ' . $this->schoolId();
         
@@ -158,39 +173,13 @@ class PassageLog extends Model {
      * @throws Throwable
      */
     function store() {
-    
-        try {
-            DB::transaction(function () {
-                $records = (new Turnstile)->invoke(
-                    'getlogs', ['ids' => []]
-                );
-                $fields = [
-                    'school_id', 'user_id', 'category', 'direction', 'turnstile_id',
-                    'door', 'clocked_at', 'created_at', 'updated_at', 'status'
-                ];
-                $logs = [];
-                $schoolId = $this->schoolId();
-                if (is_array($records)) {
-                    foreach ($records as $record) {
-                        $card = Card::whereSn($record['card_num'])->first();
-                        $turnstile = Turnstile::whereSn($record['sn'])->first();
-                        $createdAt = $updatedAt = now()->toDateTimeString();
-                        $logs[] = array_combine($fields, [
-                            $schoolId, $card ? $card->user_id : 0, $record['type'],
-                            $record['direction'], $turnstile ? $turnstile->id : 0, $record['door_num'],
-                            date('Y-m-d H:i:s', strtotime($record['time'])),
-                            $createdAt, $updatedAt, $record['valid']
-                        ]);
-                    }
-                }
-                $this->insert($logs);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        
+        GatherPassageLog::dispatch(
+            $this->schoolId(), Auth::id()
+        );
         
         return true;
-    
+        
     }
     
     /**

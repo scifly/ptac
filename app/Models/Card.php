@@ -9,7 +9,7 @@ use App\Http\Requests\CardRequest;
 use Eloquent;
 use Exception;
 use Form;
-use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -29,6 +29,7 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $status 状态
  * @property-read User $user
+ * @property-read Collection|Turnstile[] $turnstiles
  * @method static Builder|Card newModelQuery()
  * @method static Builder|Card newQuery()
  * @method static Builder|Card query()
@@ -56,6 +57,17 @@ class Card extends Model {
     function user() { return $this->belongsTo('App\Models\User'); }
     
     /**
+     * 获取一卡通绑定的所有门禁对象
+     *
+     * @return BelongsToMany
+     */
+    function turnstiles() {
+        
+        return $this->belongsToMany('App\Models\Turnstile', 'cards_turnstiles');
+        
+    }
+    
+    /**
      * 一卡通列表
      *
      * @return array
@@ -70,24 +82,39 @@ class Card extends Model {
                     return $d ?? sprintf(Snippet::BADGE, 'text-gray', '[尚未发卡]');
                 },
             ],
-            ['db' => 'User.realname', 'dt' => 2],
-            ['db' => 'Groups.name', 'dt' => 3],
             [
-                'db'        => 'User.id as userId', 'dt' => 4,
+                'db'        => 'User.card_id', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return User::find($d)->mobiles->where('isdefault', 1)->first()->mobile;
+                    if (!$card = $this->find($d)) return '';
+                    $turnstileIds = $card->turnstiles->pluck('id')->toArray();
+                    $prIds = RuleTurnstile::whereIn('turnstile_id', $turnstileIds)
+                        ->pluck('passage_rule_id')->toArray();
+                    
+                    return implode('<br />',
+                        PassageRule::whereIn('id', array_unique($prIds))
+                            ->pluck('name')->toArray()
+                    );
+                },
+            ],
+            ['db' => 'User.realname', 'dt' => 3],
+            ['db' => 'Groups.name', 'dt' => 4],
+            [
+                'db'        => 'User.id as userId', 'dt' => 5,
+                'formatter' => function ($d) {
+                    $default = User::find($d)->mobiles->where('isdefault', 1)->first();
+                    return $default ? $default->mobile : 'n/a';
                 },
             ],
             [
-                'db'        => 'Card.created_at', 'dt' => 5, 'dr' => true,
+                'db'        => 'Card.created_at', 'dt' => 6, 'dr' => true,
                 'formatter' => function ($d) { return $d ?? ' - '; },
             ],
             [
-                'db'        => 'Card.updated_at', 'dt' => 6, 'dr' => true,
+                'db'        => 'Card.updated_at', 'dt' => 7, 'dr' => true,
                 'formatter' => function ($d) { return $d ?? ' - '; },
             ],
             [
-                'db'        => 'Card.status', 'dt' => 7,
+                'db'        => 'Card.status', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     
                     $colors = [
@@ -102,8 +129,7 @@ class Card extends Model {
                     
                     return $row['card_id'] ? Datatable::status($status, $row, false) : $status;
                 },
-            ],
-            ['db' => 'User.card_id', 'dt' => 8],
+            ]
         ];
         $joins = [
             [
@@ -123,8 +149,8 @@ class Card extends Model {
                 ],
             ],
         ];
-        $sGId = Group::whereName('学生')->first()->id;
-        $condition = 'User.id IN (' . $this->visibleUserIds() . ') AND User.group_id <> ' . $sGId;
+        // $sGId = Group::whereName('学生')->first()->id;
+        $condition = 'User.id IN (' . $this->visibleUserIds() . ')'; // AND User.group_id <> ' . $sGId;
         
         return Datatable::simple(new User, $columns, $joins, $condition);
         
@@ -430,7 +456,7 @@ class Card extends Model {
                             'card'        => $user->card->sn,
                             's_date'      => $sDate,
                             'e_date'      => $eDate,
-                            'time_frames' => array_pad($ruleids[$turnstileId], 4, 0)
+                            'time_frames' => array_pad($ruleids[$turnstileId], 4, 0),
                         ];
                     }
                 }

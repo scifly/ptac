@@ -74,14 +74,17 @@ class CustodianStudent extends Model {
                 $field = $this->fillable[$forward ? 0 : 1];
                 $this->where($field, $value)->delete();
                 foreach ($relationships as $id => $relationship) {
-                    $records[] = array_combine(Constant::CS_FIELDS, [
-                        $forward ? $value : $id,
-                        $forward ? $id : $value,
-                        $relationship,
-                        now()->toDateTimeString(),
-                        now()->toDateTimeString(),
-                        Constant::ENABLED
-                    ]);
+                    $records[] = array_combine(
+                        array_merge($this->fillable, ['created_at', 'updated_at']),
+                        [
+                            $forward ? $value : $id,
+                            $forward ? $id : $value,
+                            $relationship, null,
+                            Constant::ENABLED,
+                            now()->toDateTimeString(),
+                            now()->toDateTimeString(),
+                        ]
+                    );
                 }
                 $this->insert($records ?? []);
             });

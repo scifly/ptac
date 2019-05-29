@@ -102,6 +102,7 @@ $(document).off('click', '.fa-pencil').on(
 );
 
 // 删除应用
+page.unbindEvents();
 $(document).on(
     'click', '.fa-remove',
     function (e) {

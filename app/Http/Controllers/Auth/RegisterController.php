@@ -54,6 +54,7 @@ class RegisterController extends Controller {
      * @return RedirectResponse|Redirector
      */
     public function register(RegisterUser $request) {
+        
         event(new Registered($user = $this->create($request->all())));
         $this->guard()->login($user);
         
@@ -65,10 +66,11 @@ class RegisterController extends Controller {
     /**
      * 创建用户
      *
-     * @param  array $data
+     * @param array $data
      * @return User
      */
     protected function create(array $data) {
+        
         return $this->user->create([
             'realname' => $data['realname'],
             'username' => $data['username'],

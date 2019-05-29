@@ -67,18 +67,16 @@ class SyncTag implements ShouldQueue {
                 $this->response['message'] .= '企业微信通讯录';
                 $accessToken = $token['access_token'];
                 $action = $this->action . 'Tag';
-                $result = json_decode(
-                    Wechat::$action(
-                        $token['access_token'],
-                        $action != 'deleteTag' ? $this->data : $this->data['tagid']
-                    )
-                );
-                # 企业微信通讯录不存在需要更新的标签，则创建该标签
-                if ($result->{'errcode'} == 40068 && $action == 'updateTag') {
-                    $result = json_decode(Wechat::createTag($accessToken, $this->data));
-                }
-                $this->throw_if($result);
                 if ($action != 'deleteTag') {
+                    $this->data['tagid'] = $this->data['tagid'][0];
+                    $result = json_decode(
+                        Wechat::$action($token['access_token'], $this->data)
+                    );
+                    # 企业微信通讯录不存在需要更新的标签，则创建该标签
+                    if ($result->{'errcode'} == 40068 && $action == 'updateTag') {
+                        $result = json_decode(Wechat::createTag($accessToken, $this->data));
+                    }
+                    $this->throw_if($result);
                     # 如果成功创建/更新企业微信通讯录标签，则将本地通讯录相应标签的同步状态置为“已同步”
                     Tag::find($this->data['tagid'])->update(['synced' => 1]);
                     $tag = Tag::find($this->data['tagid']);
@@ -146,7 +144,14 @@ class SyncTag implements ShouldQueue {
                             }
                         }
                     }
+                } else {
+                    array_map(
+                        function ($tagId) use ($accessToken) {
+                            Wechat::deleteTag($accessToken, $tagId);
+                        }, $this->data['tagid']
+                    );
                 }
+                
                 $this->broadcaster->broadcast($this->response);
             });
         } catch (Exception $e) {

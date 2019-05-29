@@ -38,7 +38,7 @@ class CardComposer {
                     ],
                 ],
                 'titles'  => [
-                    '#', '卡号', '持卡人', '角色', '手机号码',
+                    '#', '卡号', '通行权限', '持卡人', '角色', '手机号码',
                     [
                         'title' => '发卡时间',
                         'html'  => $this->inputDateTimeRange('发卡时间'),
@@ -83,12 +83,13 @@ HTML;
             foreach ($users as $user) {
                 $status = $action == 'create' ? ''
                     : '<td>' . $card->status($user->card->status) . '</td>';
+                $default = $user->mobiles->where('isdefault', 1)->first();
                 $record = sprintf(
                     $row,
                     $user->id,
                     $user->realname,
                     $user->group->name,
-                    $user->mobiles->where('isdefault', 1)->first()->mobile,
+                    $default ? $default->mobile : 'n/a',
                     $user->id, $i,
                     $user->card ? $user->card->sn : '',
                     $status

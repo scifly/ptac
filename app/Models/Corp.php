@@ -269,7 +269,7 @@ class Corp extends Model {
                         Request::replace(['ids' => $ids]);
                         $this->model($class)->remove();
                     }, ['Department', 'Menu', 'App', 'School'],
-                    [$appIds, $schoolIds, $departmentIds, $menuIds]
+                    [$departmentIds, $menuIds, $appIds, $schoolIds]
                 );
                 Request::replace(['ids' => $ids]);
                 $this->purge([class_basename($this)], 'id');

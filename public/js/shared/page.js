@@ -712,15 +712,14 @@ var page = {
         page.initParsley($form, requestType, url);
     },
     unbindEvents: function () {
-        // var selectors = ['.fa-pencil', '.fa-money', '.fa-bars'];
-        $('#add-record').unbind('click');
-        // $(document).off('click', selectors.join());
-        $(document).off('click', '.fa-pencil');
-        $(document).off('click', '.fa-money');
-        $(document).off('click', '.fa-bars');
-        $(document).off('click', '.fa-remove');
-        $('#confirm-delete').unbind('click');
-        $('#cancel, #record-list').unbind('click');
+        $.map(
+            ['.fa-pencil', '.fa-money', '.fa-bars', '.fa-remove'],
+            function (target) { $(document).off('click', target); }
+        );
+        $.map(
+            ['#add-record', '#confirm-delete', '#cancel, #record-list'],
+            function (target) { $(target).unbind('click'); }
+        );
     },
     // 初始化起始时间与结束时间的Parsley验证规则
     initParsleyRules: function () {

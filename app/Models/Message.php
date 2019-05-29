@@ -9,8 +9,8 @@ use Eloquent;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo, Relations\HasOne};
-use Illuminate\Support\Collection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use Illuminate\View\View;
 use ReflectionClass;
@@ -696,9 +696,10 @@ class Message extends Model {
         try {
             DB::transaction(function () use ($message, $id, $read) {
                 $message->update(['read' => $read ? 1 : 0]);
-                $msl = MessageSendingLog::find($message->msl_id);
-                $msl->read_count += $read ? 1 : -1;
-                $msl->save();
+                if ($msl = MessageSendingLog::find($message->msl_id)) {
+                    $msl->read_count += ($read ? 1 : -1);
+                    $msl->save();
+                }
             });
         } catch (Exception $e) {
             throw $e;

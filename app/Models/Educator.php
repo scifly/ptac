@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\{Builder,
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\{Auth, DB, Request};
+use PhpOffice\PhpSpreadsheet\Exception as PssException;
+use PhpOffice\PhpSpreadsheet\Reader\Exception as PssrException;
 use ReflectionException;
 use Throwable;
 
@@ -58,8 +60,7 @@ class Educator extends Model {
         '学校', '手机号码', '年级主任', '班级主任', '班级科目',
     ];
     protected $fillable = [
-        'user_id', 'team_ids', 'school_id',
-        'position', 'sms_quote', 'enabled',
+        'user_id', 'school_id', 'sms_quote', 'enabled',
     ];
     
     /**
@@ -268,7 +269,7 @@ class Educator extends Model {
                     $custodian = $user->custodian;
                     if (!$data['singular']) {
                         $custodian ?: Custodian::create(
-                            array_combine(Constant::CUSTODIAN_FIELDS, [
+                            array_combine((new Custodian)->getFillable(), [
                                 $educator->user_id, $educator->enabled
                             ])
                         );
@@ -383,8 +384,8 @@ class Educator extends Model {
      * 导入教职员工
      *
      * @return bool
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws PssException
+     * @throws PssrException
      */
     function import() {
         
@@ -404,7 +405,11 @@ class Educator extends Model {
                 '有重复，请检查后重试。',
             ])
         );
-        ImportEducator::dispatch($records, Auth::id());
+        abort_if(
+            !$group = Group::where(['name' => '教职员工', 'school_id' => $this->schoolId()])->first(),
+            HttpStatusCode::NOT_ACCEPTABLE, __('messages.educator.role_nonexistent')
+        );
+        ImportEducator::dispatch($records, $this->schoolId(), $group->id, Auth::id());
         
         return true;
         

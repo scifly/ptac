@@ -51,7 +51,8 @@ class PassageLogController extends Controller {
     public function store() {
         
         return $this->result(
-            $this->pl->store()
+            $this->pl->store(),
+            __('messages.passage_log.submitted')
         );
         
     }

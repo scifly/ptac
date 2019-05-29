@@ -25,20 +25,20 @@ class SyncDepartment implements ShouldQueue {
     use Dispatchable, InteractsWithQueue, Queueable,
         SerializesModels, ModelTrait, JobTrait;
     
-    protected $departmentId, $action, $userId;
-    protected $corp, $bc, $response;
+    protected $departmentIds, $action, $userId;
+    protected $corp, $bc, $response, $deptIds;
     
     /**
      * Create a new job instance.
      *
-     * @param $departmentId
+     * @param array $departmentIds
      * @param $action
      * @param $userId
      * @throws PusherException
      */
-    function __construct($departmentId, $action, $userId) {
+    function __construct(array $departmentIds, $action, $userId) {
         
-        $this->departmentId = $departmentId;
+        $this->departmentIds = $departmentIds;
         $this->action = $action;
         $this->userId = $userId;
         $this->bc = new Broadcaster;
@@ -61,18 +61,18 @@ class SyncDepartment implements ShouldQueue {
                 $d = new Department();
                 if ($this->action == 'delete') {
                     # 同步企业微信通讯录并获取已删除的部门id
-                    $ids = $this->remove();
+                    $this->remove();
                     # 删除部门&用户绑定关系 / 部门&标签绑定关系 / 指定部门及其子部门
                     array_map(
-                        function ($class, $field) use ($ids) {
-                            $this->model($class)->whereIn($field, $ids)->delete();
+                        function ($class, $field) {
+                            $this->model($class)->whereIn($field, $this->deptIds)->delete();
                         },
                         ['DepartmentUser', 'DepartmentTag', 'Department'],
                         ['department_id', 'department_id', 'id']
                     );
                     $this->response['message'] = __('messages.department.deleted');
                 } else {
-                    $this->corp = Corp::find($d->corpId($this->departmentId));
+                    $this->corp = Corp::find($d->corpId($this->departmentIds[0]));
                     $this->syncParty();
                 }
             });
@@ -108,16 +108,12 @@ class SyncDepartment implements ShouldQueue {
         try {
             DB::transaction(function () use (&$deletedIds) {
                 $d = new Department;
-                $ids = [];
-                foreach ($this->departmentId as $dId) {
-                    $ids = array_merge(
-                        $ids, array_merge([$dId], $d->subIds($dId))
-                    );
-                }
-                foreach (array_unique($ids) as $id) {
+                $this->deptIds = $this->deptIds();
+                foreach ($this->deptIds as $id) {
                     if ($d->needSync($d->find($id))) {
+                        if (!($corpId = $d->corpId($id))) continue;
                         $level = 0;
-                        $syncIds[$d->corpId($id)][$id] = $d->level($id, $level);
+                        $syncIds[$corpId][$id] = $d->level($id, $level);
                     }
                 }
                 foreach ($syncIds ?? [] as $corpId => $_syncIds) {
@@ -181,7 +177,7 @@ class SyncDepartment implements ShouldQueue {
                     $deletedIds = array_merge(
                         $deletedIds,
                         $this->syncParty($deptIds),
-                        array_diff($ids, $deptIds)
+                        array_diff($this->deptIds(), $deptIds)
                     );
                 }
             });
@@ -209,7 +205,9 @@ class SyncDepartment implements ShouldQueue {
         $api = $method == 'update' ? 'updateUser' : 'batchDelUser';
         $succeeded = [];
         foreach ($data as $datum) {
-            $result = Wechat::$api($accessToken, $datum);
+            $result = json_decode(
+                Wechat::$api($accessToken, $datum), true
+            );
             $result['errcode'] ?: (
                 $method == 'update'
                     ? $succeeded[] = $datum['userid']
@@ -233,7 +231,7 @@ class SyncDepartment implements ShouldQueue {
         $accessToken = $this->accessToken();
         if (!$deptIds) {
             $action = $this->action == 'create' ? 'createDept' : 'updateDept';
-            $d = (new Department)->find($this->departmentId);
+            $d = (new Department)->find($this->departmentIds[0]);
             $parentid = $d->departmentType->name == '学校'
                 ? $d->school->corp->departmentid
                 : $d->parent_id;
@@ -241,20 +239,18 @@ class SyncDepartment implements ShouldQueue {
                 ['id', 'name', 'parentid', 'order'],
                 [$d->id, $d->name, $parentid, $d->order]
             );
-            $result = json_decode(Wechat::$action($accessToken, $params), true);
-            $errcode = $result['errcode'];
-            if ($errcode) {
-                # 如果在更新部门时返回"部门ID不存在"
-                if ($errcode == 60003) {
-                    $result = json_decode(Wechat::createDept($accessToken, $params), true);
-                    $errcode = $result['errcode'];
-                }
-                if ($errcode) {
-                    $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                    $this->response['message'] = Constant::WXERR[$errcode];
-                }
-            }
-            $response = $d->update(['synced' => !$errcode ? 1 : 0]);
+            $result = json_decode(
+                Wechat::$action($accessToken, $params), true
+            );
+            # 如果在更新部门时返回"部门ID不存在"
+            $result['errcode'] != 60003 ?: $result = json_decode(
+                Wechat::createDept($accessToken, $params), true
+            );
+            $this->response['statusCode'] = $result['errcode']
+                ? HttpStatusCode::INTERNAL_SERVER_ERROR
+                : HttpStatusCode::OK;
+            $this->response['message'] = Constant::WXERR[$result['errcode']];
+            $response = $d->update(['synced' => !$result['errcode'] ? 1 : 0]);
         } else {
             foreach ($deptIds as $id) {
                 $result = json_decode(
@@ -293,6 +289,23 @@ class SyncDepartment implements ShouldQueue {
         }
         
         return $token['access_token'];
+        
+    }
+    
+    /**
+     * @return array
+     */
+    private function deptIds() {
+    
+        $d = new Department;
+        $ids = [];
+        foreach ($this->departmentIds as $dId) {
+            $ids = array_merge(
+                $ids, array_merge([$dId], $d->subIds($dId))
+            );
+        }
+        
+        return array_unique($ids);
         
     }
     
