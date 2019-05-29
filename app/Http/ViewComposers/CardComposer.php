@@ -66,7 +66,7 @@ class CardComposer {
                 $ids = session('ids');
             }
             $operator = $action == 'create' ? '=' : '<>';
-            $users = User::whereIn('id', $ids)->where('card_id', $operator, null)->get();
+            $users = User::whereIn('id', $ids)->where('card_id', $operator, 0)->get();
             $card = new Card;
             $sn = $card->input();
             $row = <<<HTML
