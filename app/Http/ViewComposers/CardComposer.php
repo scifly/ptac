@@ -38,7 +38,7 @@ class CardComposer {
                     ],
                 ],
                 'titles'  => [
-                    '#', '卡号', '持卡人', '角色', '手机号码',
+                    '#', '卡号', '通行权限', '持卡人', '角色', '手机号码',
                     [
                         'title' => '发卡时间',
                         'html'  => $this->inputDateTimeRange('发卡时间'),
