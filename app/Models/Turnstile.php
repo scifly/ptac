@@ -205,8 +205,7 @@ class Turnstile extends Model {
         
         try {
             $client = new Client;
-            $token = session('token');
-            if (!$token) {
+            if (!$token = session('token')) {
                 $response = $client->post(
                     self::URL . 'login', [
                         'form_params' => [

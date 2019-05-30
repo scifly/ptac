@@ -68,7 +68,10 @@ class CardComposer {
             $operator = $action == 'create' ? '=' : '<>';
             $users = User::whereIn('id', $ids)->where('card_id', $operator, 0)->get();
             $card = new Card;
-            $sn = $card->input();
+            $sn = $card->input(
+                (Request::route('id') ? false : true) and
+                (Request::path() == 'cards/edit')
+            );
             $row = <<<HTML
 <tr>
 <td>%s</td>
@@ -99,7 +102,7 @@ HTML;
                 $i++;
             }
             !empty($list)
-                ?: $list = '<tr><td colspan="6" class="text-center text-red">- 请先发卡 -</td></tr>';
+                ?: $list = '<tr><td colspan="6" class="text-center text-red">- 已发卡 -</td></tr>';
             $data = [
                 'list' => $list,
                 'edit' => $action == 'edit' ? true : null
