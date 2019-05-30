@@ -11,8 +11,7 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
-    Support\Facades\DB,
-    Support\Facades\Log};
+    Support\Facades\DB};
 use Pusher\PusherException;
 use Throwable;
 
@@ -58,10 +57,9 @@ class GatherPassageLog implements ShouldQueue {
                 $records = (new Turnstile)->invoke(
                     'getlogs', ['ids' => []]
                 );
-                Log::debug(sizeof($records));
                 $fields = [
                     'school_id', 'user_id', 'category', 'direction', 'turnstile_id',
-                    'door', 'clocked_at', 'created_at', 'updated_at', 'status'
+                    'door', 'clocked_at', 'created_at', 'updated_at', 'reason', 'status'
                 ];
                 $logs = [];
                 if (is_array($records)) {
@@ -73,7 +71,7 @@ class GatherPassageLog implements ShouldQueue {
                             $this->schoolId, $card ? $card->user_id : 0, $record['type'],
                             $record['direction'], $turnstile ? $turnstile->id : 0, $record['door_num'],
                             date('Y-m-d H:i:s', strtotime($record['time'])),
-                            $createdAt, $updatedAt, $record['valid']
+                            $createdAt, $updatedAt, $record['reason'], $record['valid']
                         ]);
                     }
                 }

@@ -61,6 +61,7 @@ class PassageLogComposer {
                     'title' => '通行时间',
                     'html'  => $this->inputDateTimeRange('通行时间'),
                 ],
+                '故障原因',
                 [
                     'title' => '状态',
                     'html'  => $this->singleSelectList(

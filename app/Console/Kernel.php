@@ -35,10 +35,8 @@ class Kernel extends ConsoleKernel {
     protected function schedule(Schedule $schedule) {
         
         $schedule->job(new SendScheduledMessage())->everyMinute()->when(
-            function () {
-                return Event::whereEnabled(1)->get()->count() > 0;
-            }
-        );
+            function () { return Event::whereEnabled(1)->get()->count() > 0; }
+        )->withoutOverlapping()->runInBackground();
         
     }
     

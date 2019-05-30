@@ -263,7 +263,7 @@ class Card extends Model {
                             's_date' => date('Ymd', strtotime($ct->start_date)),
                             'e_date' => date('Ymd', strtotime($ct->end_date)),
                             'time_frames' => array_pad(
-                                explode(',', $ct->ruleids), 4, 0
+                                explode(',', $ct->ruleids), 4, "0"
                             )
                         ];
                         $dId = Turnstile::find($tId)->deviceid;

@@ -28,6 +28,7 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $status 通行状态
+ * @property int $reason 故障原因
  * @property-read School $school
  * @property-read Turnstile $turnstile
  * @property-read User $user
@@ -42,6 +43,7 @@ use Throwable;
  * @method static Builder|PassageLog whereCategory($value)
  * @method static Builder|PassageLog whereSchoolId($value)
  * @method static Builder|PassageLog whereStatus($value)
+ * @method static Builder|PassageLog whereReason($value)
  * @method static Builder|PassageLog whereTurnstileId($value)
  * @method static Builder|PassageLog whereUpdatedAt($value)
  * @method static Builder|PassageLog whereUserId($value)
@@ -56,7 +58,7 @@ class PassageLog extends Model {
     protected $fillable = [
         'school_id', 'user_id', 'category',
         'direction', 'turnsitle_id', 'door',
-        'clocked_at', 'status',
+        'clocked_at', 'reason', 'status',
     ];
     
     /**
@@ -119,8 +121,9 @@ class PassageLog extends Model {
             ],
             ['db' => 'Turnstile.location', 'dt' => 5],
             ['db' => 'PassageLog.clocked_at', 'dt' => 6, 'dr' => true],
+            ['db' => 'PassageLog.reason', 'dt' => 7],
             [
-                'db'        => 'PassageLog.status', 'dt' => 7,
+                'db'        => 'PassageLog.status', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return $row['role'] == '监护人'
                         ? ' - '
