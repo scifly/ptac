@@ -1,6 +1,7 @@
 <?php
 namespace App\Console;
 
+use App\Jobs\GatherPassageLog;
 use App\Jobs\SendScheduledMessage;
 use App\Models\Event;
 use Illuminate\Console\Scheduling\Schedule;
@@ -34,9 +35,18 @@ class Kernel extends ConsoleKernel {
      */
     protected function schedule(Schedule $schedule) {
         
-        $schedule->job(new SendScheduledMessage())->everyMinute()->when(
-            function () { return Event::whereEnabled(1)->get()->count() > 0; }
-        )->withoutOverlapping()->runInBackground();
+        $schedule->job(new SendScheduledMessage)
+            ->when(function () {
+                return Event::whereEnabled(1)->get()->count() > 0;
+            })
+            ->everyMinute()
+            ->withoutOverlapping()
+            ->runInBackground();
+        
+        $schedule->job(new GatherPassageLog)
+            ->everyFiveMinutes()
+            ->withoutOverlapping()
+            ->runInBackground();
         
     }
     

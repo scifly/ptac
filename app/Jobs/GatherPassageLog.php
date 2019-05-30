@@ -29,10 +29,10 @@ class GatherPassageLog implements ShouldQueue {
     /**
      * GatherPassageLog constructor.
      *
-     * @param $schoolId
-     * @param $userId
+     * @param integer|null $schoolId
+     * @param integer|null $userId
      */
-    function __construct($schoolId, $userId) {
+    function __construct($schoolId = null, $userId = null) {
         
         $this->schoolId = $schoolId;
         $this->userId = $userId;
@@ -55,32 +55,59 @@ class GatherPassageLog implements ShouldQueue {
         try {
             DB::transaction(function () {
                 $records = (new Turnstile)->invoke(
-                    'getlogs', ['ids' => []]
+                    'getlogs',
+                    $this->schoolId ? ['ids' => []] : ['ids' => [0]]
                 );
-                $fields = [
-                    'school_id', 'user_id', 'category', 'direction', 'turnstile_id',
-                    'door', 'clocked_at', 'created_at', 'updated_at', 'reason', 'status'
-                ];
-                $logs = [];
-                if (is_array($records)) {
-                    foreach ($records as $record) {
-                        $card = Card::whereSn($record['card_num'])->first();
-                        $turnstile = Turnstile::whereSn($record['sn'])->first();
-                        $createdAt = $updatedAt = now()->toDateTimeString();
-                        $logs[] = array_combine($fields, [
-                            $this->schoolId, $card ? $card->user_id : 0, $record['type'],
-                            $record['direction'], $turnstile ? $turnstile->id : 0, $record['door_num'],
-                            date('Y-m-d H:i:s', strtotime($record['time'])),
-                            $createdAt, $updatedAt, $record['reason'], $record['valid']
-                        ]);
+                if ($this->schoolId) {
+                    $fields = [
+                        'school_id', 'user_id', 'category', 'direction', 'turnstile_id',
+                        'door', 'clocked_at', 'created_at', 'updated_at', 'reason', 'status'
+                    ];
+                    $logs = [];
+                    if (is_array($records)) {
+                        foreach ($records as $record) {
+                            $card = Card::whereSn($record['card_num'])->first();
+                            $turnstile = Turnstile::whereSn($record['sn'])->first();
+                            $createdAt = $updatedAt = now()->toDateTimeString();
+                            $logs[] = array_combine($fields, [
+                                $this->schoolId, $card ? $card->user_id : 0, $record['type'],
+                                $record['direction'], $turnstile ? $turnstile->id : 0, $record['door_num'],
+                                date('Y-m-d H:i:s', strtotime($record['time'])),
+                                $createdAt, $updatedAt, $record['reason'], $record['valid']
+                            ]);
+                        }
+                    }
+                    $pl = new PassageLog;
+                    foreach (array_chunk($logs, 200) as $chunk) {
+                        $pl->insert($chunk);
+                    }
+                    $this->response['message'] = __('messages.passage_log.gathered');
+                    (new Broadcaster)->broadcast($this->response);
+                } else {
+                    if (is_array($records)) {
+                        $tpl = '您的孩子%s已于%s%s';
+                        $smses = [];
+                        foreach ($records as $record) {
+                            if (!$card = Card::whereSn($record['card_num'])->first()) continue;
+                            if ($card->user->group->name != '学生') continue;
+                            foreach ($card->user->student->custodians as $custodian) {
+                                $default = $custodian->user->mobiles->where('isdefault', 1)->first();
+                                if (!$default) continue;
+                                $smses[$default->mobile] = sprintf(
+                                    $tpl,
+                                    $card->user->realname,
+                                    date('Y-m-d H:i:s', strtotime($record['time'])),
+                                    $record['direction'] ? '进校' : '离校'
+                                );
+                            }
+                        }
+                        foreach (array_chunk($smses, 200) as $chunk) {
+                            foreach ($chunk as $mobile => $msg) {
+                                // invoke sms sending api here
+                            }
+                        }
                     }
                 }
-                $pl = new PassageLog;
-                foreach (array_chunk($logs, 200) as $chunk) {
-                    $pl->insert($chunk);
-                }
-                $this->response['message'] = __('messages.passage_log.gathered');
-                (new Broadcaster)->broadcast($this->response);
             });
         } catch (Exception $e) {
             throw $e;
