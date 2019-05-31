@@ -436,6 +436,7 @@ class Card extends Model {
                         }
                     }
                 }
+                $this->modify();
             });
         } catch (Exception $e) {
             throw $e;
