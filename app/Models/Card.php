@@ -400,6 +400,8 @@ class Card extends Model {
         $this->validate($sns = Request::input('sns'));
         try {
             DB::transaction(function () use ($sns) {
+                $cards = [];  # 换卡后需要删除通行权限的一卡通
+                $turnstile = new Turnstile;
                 foreach ($sns as $userId => $sn) {
                     if (!empty($sn)) {
                         $card = Card::whereUserId($userId)->first();
@@ -422,8 +424,7 @@ class Card extends Model {
                                     HttpStatusCode::NOT_ACCEPTABLE,
                                     __('卡号已被使用')
                                 );
-                                Request::merge(['ids' => [$card->user_id]]);
-                                $this->remove();
+                                $cards[$card->id] = $card->sn;
                                 $card->update(['sn' => $sn]);
                             }
                         }
@@ -438,6 +439,27 @@ class Card extends Model {
                     }
                 }
                 $this->modify();
+                if (!empty($cards)) {
+                    $purges = [];
+                    foreach ($cards as $cId => $cSn) {
+                        $tIds = Card::find($cId)->turnstiles->pluck('id')->toArray();
+                        foreach (array_unique($tIds) as $tId) {
+                            $ct = CardTurnstile::where([
+                                'card_id' => $cId,
+                                'turnstile_id' => $tId
+                            ])->first();
+                            $purges[$turnstile->find($tId)->deviceid][] = [
+                                'card' => $cSn,
+                                's_date' => date('Ymd', strtotime($ct->start_date)),
+                                'e_date' => date('Ymd', strtotime($ct->end_date)),
+                                'time_frames' => array_pad(
+                                    explode(',', $ct->ruleids), 4, "0"
+                                )
+                            ];
+                        }
+                    }
+                    $turnstile->invoke('delperms', ['data' => $purges]);
+                }
             });
         } catch (Exception $e) {
             throw $e;
