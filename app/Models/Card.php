@@ -231,7 +231,7 @@ class Card extends Model {
                 $inserts = $purges = [];
                 foreach ($cards as $userId => $card) {
                     $user = User::find($userId);
-                    $status = $card['status'];
+                    $status = $card['status'] ?? 1;
                     $tIds = array_unique(
                         $user->card->turnstiles->pluck('id')->toArray()
                     );
