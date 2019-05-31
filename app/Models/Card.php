@@ -192,7 +192,11 @@ class Card extends Model {
                                 $user->update(['card_id' => $card->id]);
                             }
                         } else {
-                            !$user->card ?: $user->card->delete();
+                            if ($user->card) {
+                                Request::merge(['ids' => [$user->id]]);
+                                $this->remove();
+                            }
+                            // !$user->card ?: $user->card->delete();
                         }
                     }
                 } else {
@@ -232,13 +236,12 @@ class Card extends Model {
                 $inserts = $purges = [];
                 foreach ($cards as $userId => $card) {
                     $user = User::find($userId);
-                    $sn = $card['sn'];
                     $status = $card['status'];
                     $tIds = array_unique(
                         $user->card->turnstiles->pluck('id')->toArray()
                     );
                     $cardId = $user->card_id;
-                    if ($sn) {
+                    if ($sn = $card['sn']) {
                         $data = ['status' => $status];
                         if ($user->card->sn != $sn) {
                             abort_if(
@@ -291,17 +294,37 @@ class Card extends Model {
     /**
      * 注销/删除一卡通
      *
-     * @param CardRequest $request
      * @return bool
      * @throws Throwable
      */
-    function remove(CardRequest $request) {
+    function remove() {
         
         try {
-            DB::transaction(function () use ($request) {
-                $userIds = $request->route('id')
-                    ? [$request->route('id')]
-                    : array_values($request->input('ids'));
+            DB::transaction(function() {
+                $purges = [];
+                $turnstile = new Turnstile;
+                $userIds = Request::route('id')
+                    ? [Request::route('id')]
+                    : array_values(Request::input('ids'));
+                foreach ($userIds as $userId) {
+                    if (!$card = User::find($userId)->card) continue;
+                    $tIds = $card->turnstiles->pluck('id')->toArray();
+                    foreach (array_unique($tIds) as $tId) {
+                        $ct = CardTurnstile::where([
+                            'card_id' => $card->id,
+                            'turnstile_id' => $tId
+                        ])->first();
+                        $purges[$turnstile->find($tId)->deviceid][] = [
+                            'card' => $card->sn,
+                            's_date' => date('Ymd', strtotime($ct->start_date)),
+                            'e_date' => date('Ymd', strtotime($ct->end_date)),
+                            'time_frames' => array_pad(
+                                explode(',', $ct->ruleids), 4, "0"
+                            )
+                        ];
+                    }
+                }
+                $turnstile->invoke('delperms', ['data' => $purges]);
                 $cardIds = Card::whereIn('user_id', $userIds)->pluck('id')->toArray();
                 CardTurnstile::whereIn('card_id', $cardIds)->delete();
                 $this->whereIn('user_id', $userIds)->delete();
