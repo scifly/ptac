@@ -271,6 +271,7 @@ class Card extends Model {
                     }
                 }
                 $t = new Turnstile;
+                Log::info('purges', $purges);
                 array_map(
                     function ($api, array $data) use ($t) {
                         empty($data) ?: $t->invoke($api, ['data' => $data]);
