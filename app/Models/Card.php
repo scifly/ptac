@@ -250,7 +250,7 @@ class Card extends Model {
                         }
                         $user->card->update($data);
                     } else {
-                        $status = 3;
+                        $status = 3;    # 删除一卡通
                         $sn = $user->card->sn;
                         $user->card->delete();
                         $user->update(['card_id' => 0]);
