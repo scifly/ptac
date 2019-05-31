@@ -422,6 +422,8 @@ class Card extends Model {
                                     HttpStatusCode::NOT_ACCEPTABLE,
                                     __('卡号已被使用')
                                 );
+                                Request::merge(['ids' => [$card->user_id]]);
+                                $this->remove();
                                 $card->update(['sn' => $sn]);
                             }
                         }
