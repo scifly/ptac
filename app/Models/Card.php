@@ -234,7 +234,9 @@ class Card extends Model {
                     $user = User::find($userId);
                     $sn = $card['sn'];
                     $status = $card['status'];
-                    $tIds = $user->card->turnstiles->pluck('id')->toArray();
+                    $tIds = array_unique(
+                        $user->card->turnstiles->pluck('id')->toArray()
+                    );
                     $cardId = $user->card_id;
                     if ($sn) {
                         $data = ['status' => $status];
@@ -299,9 +301,10 @@ class Card extends Model {
                 $userIds = $request->route('id')
                     ? [$request->route('id')]
                     : array_values($request->input('ids'));
+                $cardIds = Card::whereIn('user_id', $userIds)->pluck('id')->toArray();
+                CardTurnstile::whereIn('card_id', $cardIds)->delete();
                 $this->whereIn('user_id', $userIds)->delete();
-                User::whereIn('id', $userIds)
-                    ->update(['card_id' => null]);
+                User::whereIn('id', $userIds)->update(['card_id' => 0]);
             });
         } catch (Exception $e) {
             throw $e;
