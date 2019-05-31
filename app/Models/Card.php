@@ -237,7 +237,6 @@ class Card extends Model {
                     $tIds = array_unique(
                         $user->card->turnstiles->pluck('id')->toArray()
                     );
-                    Log::info('tIds', $tIds);
                     $cardId = $user->card_id;
                     if ($sn) {
                         $data = ['status' => $status];
@@ -253,6 +252,7 @@ class Card extends Model {
                     } else {
                         $status = 2;
                         $sn = $user->card->sn;
+                        CardTurnstile::whereCardId($user->card_id)->delete();
                         $user->card->delete();
                         $user->update(['card_id' => 0]);
                     }
@@ -274,7 +274,6 @@ class Card extends Model {
                     }
                 }
                 $t = new Turnstile;
-                Log::info('purges', $purges);
                 array_map(
                     function ($api, array $data) use ($t) {
                         empty($data) ?: $t->invoke($api, ['data' => $data]);
@@ -303,9 +302,10 @@ class Card extends Model {
                 $userIds = $request->route('id')
                     ? [$request->route('id')]
                     : array_values($request->input('ids'));
+                $cardIds = User::whereIn('id', $userIds)->pluck('card_id')->toArray();
+                CardTurnstile::whereIn('card_id', $cardIds)->delete();
                 $this->whereIn('user_id', $userIds)->delete();
-                User::whereIn('id', $userIds)
-                    ->update(['card_id' => null]);
+                User::whereIn('id', $userIds)->update(['card_id' => 0]);
             });
         } catch (Exception $e) {
             throw $e;
