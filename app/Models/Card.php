@@ -250,7 +250,7 @@ class Card extends Model {
                         }
                         $user->card->update($data);
                     } else {
-                        $status = 2;
+                        $status = 3;
                         $sn = $user->card->sn;
                         $user->card->delete();
                         $user->update(['card_id' => 0]);
@@ -271,7 +271,7 @@ class Card extends Model {
                         $dId = Turnstile::find($tId)->deviceid;
                         $status == 1 ? $inserts[$dId][] = $perm : $purges[$dId][] = $perm;
                     }
-                    $status == 1 ?: CardTurnstile::whereCardId($cardId)->delete();
+                    $status != 3 ?: CardTurnstile::whereCardId($cardId)->delete();
                 }
                 $t = new Turnstile;
                 array_map(
