@@ -236,7 +236,7 @@ class Card extends Model {
                         $user->card->turnstiles->pluck('id')->toArray()
                     );
                     $cardId = $user->card_id;
-                    if ($sn = $card['sn']) {
+                    if ($sn = $card['sn'] ?? $card) {
                         $data = ['status' => $status];
                         if ($user->card->sn != $sn) {
                             abort_if(
