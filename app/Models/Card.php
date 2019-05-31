@@ -2,18 +2,13 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use App\Http\Requests\CardRequest;
+use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
 use Eloquent;
 use Exception;
 use Form;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\{DB, Log, Request};
+use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Log, Facades\Request};
 use Throwable;
 
 /**
