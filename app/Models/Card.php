@@ -430,7 +430,8 @@ class Card extends Model {
                     } else {
                         $user = User::find($userId);
                         if ($user->card) {
-                            $user->card->delete();
+                            Request::merge(['ids' => [$userId]]);
+                            $user->card->remove();
                             $user->update(['card_id' => 0]);
                         }
                     }
