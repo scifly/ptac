@@ -301,6 +301,7 @@ class Card extends Model {
                 $userIds = Request::route('id')
                     ? [Request::route('id')]
                     : array_values(Request::input('ids'));
+                Log::info('userIds',$userIds);
                 foreach ($userIds as $userId) {
                     if (!$card = User::find($userId)->card) continue;
                     $tIds = $card->turnstiles->pluck('id')->toArray();
