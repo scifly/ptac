@@ -302,7 +302,7 @@ class Card extends Model {
                 $userIds = $request->route('id')
                     ? [$request->route('id')]
                     : array_values($request->input('ids'));
-                $cardIds = User::whereIn('id', $userIds)->pluck('card_id')->toArray();
+                $cardIds = Card::whereIn('user_id', $userIds)->pluck('id')->toArray();
                 CardTurnstile::whereIn('card_id', $cardIds)->delete();
                 $this->whereIn('user_id', $userIds)->delete();
                 User::whereIn('id', $userIds)->update(['card_id' => 0]);

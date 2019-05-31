@@ -38,15 +38,9 @@ class Kernel extends ConsoleKernel {
         $schedule->job(new SendScheduledMessage)
             ->when(function () {
                 return Event::whereEnabled(1)->get()->count() > 0;
-            })
-            ->everyMinute()
-            ->withoutOverlapping()
-            ->runInBackground();
+            })->everyMinute();
         
-        $schedule->job(new GatherPassageLog)
-            ->everyFiveMinutes()
-            ->withoutOverlapping()
-            ->runInBackground();
+        $schedule->job(new GatherPassageLog)->everyMinute();
         
     }
     
@@ -56,7 +50,9 @@ class Kernel extends ConsoleKernel {
      * @return void
      */
     protected function commands() {
+        
         /** @noinspection PhpIncludeInspection */
         require base_path('routes/console.php');
+        
     }
 }
