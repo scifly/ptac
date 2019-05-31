@@ -235,6 +235,7 @@ class Card extends Model {
                     $sn = $card['sn'];
                     $status = $card['status'];
                     $tIds = $user->card->turnstiles->pluck('id')->toArray();
+                    Log::info('tIds', $tIds);
                     $cardId = $user->card_id;
                     if ($sn) {
                         $data = ['status' => $status];
@@ -271,7 +272,7 @@ class Card extends Model {
                     }
                 }
                 $t = new Turnstile;
-                Log::info('purges', $purges);
+                // Log::info('purges', $purges);
                 array_map(
                     function ($api, array $data) use ($t) {
                         empty($data) ?: $t->invoke($api, ['data' => $data]);
