@@ -164,7 +164,6 @@ class Card extends Model {
             DB::transaction(function () use ($user) {
                 !$user ?: Request::merge(['sns' => [$user->id => Request::input('card')['sn']]]);
                 $sns = Request::input('sns');
-                Log::info('sns:', $sns);
                 $this->validate(array_values($sns));
                 $inserts = $replaces = $purges = $userIds = [];
                 foreach ($sns as $userId => $sn) {
@@ -182,6 +181,10 @@ class Card extends Model {
                         !User::find($userId)->card ?: $purges[] = $userId;
                     }
                 }
+                
+                Log::info('inserts', $inserts);
+                Log::info('replaces', $replaces);
+                Log::info('purges', $purges);
                 # 发卡
                 $this->insert($inserts ?? []);
                 $cards = $this->whereIn('user_id', $userIds)->get();
