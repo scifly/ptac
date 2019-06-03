@@ -257,7 +257,8 @@ class Card extends Model {
                     if (!$card = User::find($userId)->card) continue;
                     $tList = $card->turnstiles->pluck('deviceid', 'id')->toArray();
                     foreach ($tList as $tId => $deviceid) {
-                        $perms[$deviceid][] = $this->perm($card->id, $tId);
+                        if (!$perm = $this->perm($card->id, $tId)) continue;
+                        $perms[$deviceid][] = $perm;
                     }
                 }
                 # 删除已下发的设备权限
