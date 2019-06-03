@@ -181,10 +181,6 @@ class Card extends Model {
                         !User::find($userId)->card ?: $purges[] = $userId;
                     }
                 }
-                
-                Log::info('inserts', $inserts);
-                Log::info('replaces', $replaces);
-                Log::info('purges', $purges);
                 # 发卡
                 $this->insert($inserts ?? []);
                 $cards = $this->whereIn('user_id', $userIds)->get();
@@ -274,6 +270,7 @@ class Card extends Model {
                 # 删除已下发的设备权限
                 empty($perms) ?: (new Turnstile)->invoke('delperms', ['data' => $perms]);
                 if (!$soft) {
+                    Log::info('userIds: ', $userIds);
                     $cards = $this->whereIn('user_id', $userIds);
                     CardTurnstile::whereIn('card_id', $cards->pluck('id')->toArray())->delete();
                     $cards->delete();
