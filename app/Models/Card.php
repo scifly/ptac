@@ -383,14 +383,14 @@ class Card extends Model {
             DB::transaction(function () {
                 $input = Request::all();
                 $userIds = $input['user_ids'];
-                $turnstileIds = $input['turnstile_ids'];
+                $tIds = $input['turnstile_ids'];
                 $ruleids = $input['ruleids'];
                 list($start, $end) = isset($input['daterange'])
                     ? explode(' ~ ', $input['daterange'])
                     : array_fill(0, 2, null);
                 (new CardTurnstile)->store(
                     Card::whereIn('user_id', $userIds)->pluck('id')->toArray(),
-                    $turnstileIds, $start, $end, $ruleids
+                    $tIds, $start, $end, $ruleids
                 );
                 $data = [];
                 list($sDate, $eDate) = array_map(
@@ -398,8 +398,8 @@ class Card extends Model {
                         return $date ? date('Ymd', strtotime($date)) : '00000000';
                     }, [$start, $end]
                 );
-                foreach ($turnstileIds as $turnstileId) {
-                    $deviceid = Turnstile::find($turnstileId)->deviceid;
+                foreach ($tIds as $tId) {
+                    $deviceid = Turnstile::find($tId)->deviceid;
                     foreach ($userIds as $userId) {
                         $user = User::find($userId);
                         if (!$user->card) continue;
@@ -407,7 +407,7 @@ class Card extends Model {
                             'card'        => $user->card->sn,
                             's_date'      => $sDate,
                             'e_date'      => $eDate,
-                            'time_frames' => array_pad($ruleids[$turnstileId], 4, 0),
+                            'time_frames' => array_pad($ruleids[$tId], 4, 0),
                         ];
                     }
                 }
