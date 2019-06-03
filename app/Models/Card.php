@@ -155,7 +155,7 @@ class Card extends Model {
      *
      * @param User|null $user
      * @param bool $issue
-     * @return bool
+     * @return string|bool
      * @throws Throwable
      */
     function store(User $user = null, $issue = false) {
