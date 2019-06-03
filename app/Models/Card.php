@@ -234,7 +234,7 @@ class Card extends Model {
                         $inserts[$deviceid][] = $this->perm($user->card_id, $tId);
                     }
                 }
-                (new Turnstile)->invoke('addperms', ['data' => $inserts]);
+                empty($inserts) ?: (new Turnstile)->invoke('addperms', ['data' => $inserts]);
             });
         } catch (Exception $e) {
             throw $e;
@@ -411,7 +411,7 @@ class Card extends Model {
                         ];
                     }
                 }
-                (new Turnstile)->invoke('addperms', ['data' => $data]);
+                empty($data) ?: (new Turnstile)->invoke('addperms', ['data' => $data]);
             });
         } catch (Exception $e) {
             throw $e;
