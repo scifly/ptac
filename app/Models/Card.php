@@ -8,7 +8,7 @@ use Exception;
 use Form;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Request};
+use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Log, Facades\Request};
 use Throwable;
 
 /**
@@ -164,6 +164,7 @@ class Card extends Model {
             DB::transaction(function () use ($user) {
                 !$user ?: Request::merge(['sns' => [$user->id => Request::input('card')['sn']]]);
                 $sns = Request::input('sns');
+                Log::info('sns:', $sns);
                 $this->validate(array_values($sns));
                 $inserts = $replaces = $purges = $userIds = [];
                 foreach ($sns as $userId => $sn) {
