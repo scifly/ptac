@@ -519,7 +519,7 @@ class Card extends Model {
         abort_if(
             $this->whereSn($sn)->first() ? true : false,
             HttpStatusCode::NOT_ACCEPTABLE,
-            __('卡号已被使用')
+            __( '卡号：' . $sn . ' 已被使用')
         );
         
     }
