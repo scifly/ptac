@@ -8,7 +8,7 @@ use Exception;
 use Form;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Log, Facades\Request};
+use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Request};
 use Throwable;
 
 /**
@@ -40,9 +40,7 @@ class Card extends Model {
     
     use ModelTrait;
     
-    protected $fillable = [
-        'sn', 'user_id', 'status',
-    ];
+    protected $fillable = ['user_id', 'sn', 'status'];
     
     /**
      * 获取一卡通对应的用户对象
@@ -97,6 +95,7 @@ class Card extends Model {
                 'db'        => 'User.id as userId', 'dt' => 5,
                 'formatter' => function ($d) {
                     $default = User::find($d)->mobiles->where('isdefault', 1)->first();
+                    
                     return $default ? $default->mobile : 'n/a';
                 },
             ],
@@ -124,7 +123,7 @@ class Card extends Model {
                     
                     return $row['card_id'] ? Datatable::status($status, $row, false) : $status;
                 },
-            ]
+            ],
         ];
         $joins = [
             [
@@ -152,7 +151,7 @@ class Card extends Model {
     }
     
     /**
-     * 保存一卡通
+     * 保存一卡通 - (批量)发卡、删卡、换卡
      *
      * @param User|null $user
      * @return bool
@@ -162,52 +161,31 @@ class Card extends Model {
         
         try {
             DB::transaction(function () use ($user) {
-                $data = Request::all();
-                if ($user) {
-                    if (Request::method() == 'POST') {
-                        if (!empty($data['card']['sn'])) {
-                            $card = Card::create([
-                                'sn'      => $data['card_sn'],
-                                'user_id' => $user->id,
-                                'status'  => 1,
-                            ]);
-                            $user->update(['card_id' => $card->id]);
+                !$user ?: Request::merge(['sns' => [$user->id => Request::input('card')['sn']]]);
+                $this->validate($sns = Request::input('sns'));
+                $sns = Request::input('sns');
+                $inserts = $replaces = $purges = $userIds = [];
+                foreach ($sns as $userId => $sn) {
+                    $this->exists($sn);
+                    if (!empty($sn)) {
+                        if (!$card = Card::whereUserId($userId)->first()) {
+                            $inserts[] = array_combine($this->fillable, [$userId, $sn, 1]);
+                            $userIds[] = $userId;
+                        } else {
+                            $card->sn == $sn ?: $replaces[$userId] = $sn;
                         }
                     } else {
-                        if (!empty($data['card']['sn'])) {
-                            if ($user->card) {
-                                $user->card->update($data['card']);
-                            } else {
-                                $card = Card::create(
-                                    array_merge($data['card'], [
-                                        'user_id' => $user->id,
-                                        'status'  => 1,
-                                    ])
-                                );
-                                $user->update(['card_id' => $card->id]);
-                            }
-                        } else {
-                            if ($user->card) {
-                                Request::merge(['ids' => [$user->id]]);
-                                $this->remove();
-                            }
-                            // !$user->card ?: $user->card->delete();
-                        }
-                    }
-                } else {
-                    foreach (Request::input('sns') as $userId => $sn) {
-                        if (!empty($sn)) {
-                            $records[] = ['sn' => $sn, 'user_id' => $userId, 'status' => 1];
-                            $userIds[] = $userId;
-                        }
-                    }
-                    $this->insert($records ?? []);
-                    $cards = $this->whereIn('user_id', $userIds ?? [])->get();
-                    /** @var Card $card */
-                    foreach ($cards as $card) {
-                        $card->user->update(['card_id' => $card->id]);
+                        !User::find($userId)->card ?: $purges[] = $userId;
                     }
                 }
+                # 发卡
+                $this->insert($inserts ?? []);
+                $cards = $this->whereIn('user_id', $userIds)->get();
+                foreach ($cards as $card) { $card->user->update(['card_id' => $card->id]); }
+                # 换卡
+                Request::merge(['sns' => $replaces]); $this->modify();
+                # 删卡
+                Request::merge(['ids' => $purges]); $this->remove();
             });
         } catch (Exception $e) {
             throw $e;
@@ -228,55 +206,28 @@ class Card extends Model {
         $this->validate($cards = Request::input('sns'));
         try {
             DB::transaction(function () use ($cards) {
-                $inserts = $purges = [];
+                $inserts = [];
                 foreach ($cards as $userId => $card) {
                     $user = User::find($userId);
-                    $status = $card['status'] ?? 1;
-                    $tIds = array_unique(
-                        $user->card->turnstiles->pluck('id')->toArray()
-                    );
-                    $cardId = $user->card_id;
+                    Request::merge(['ids' => [$userId]]);
                     if ($sn = $card['sn'] ?? $card) {
-                        $data = ['status' => $status];
-                        if ($user->card->sn != $sn) {
-                            abort_if(
-                                Card::whereSn($sn)->first() ? true : false,
-                                HttpStatusCode::NOT_ACCEPTABLE,
-                                __('卡号已被使用')
-                            );
+                        $data = ['status' => ($status = $card['status'] ?? 1)];
+                        if ($user->card->sn != $sn) {   # 换卡
+                            $this->exists($sn);
+                            $this->remove(true);
                             $data = array_merge($data, ['sn' => $sn]);
                         }
+                        $status != 2 ?: $this->remove(true); # 挂失
                         $user->card->update($data);
                     } else {
-                        $status = 3;    # 删除一卡通
-                        $sn = $user->card->sn;
-                        $user->card->delete();
-                        $user->update(['card_id' => 0]);
+                        $this->remove();    # 删卡
                     }
-                    foreach ($tIds as $tId) {
-                        $ct = CardTurnstile::where([
-                            'card_id' => $cardId,
-                            'turnstile_id' => $tId
-                        ])->first();
-                        $perm = [
-                            'card' => $sn,
-                            's_date' => date('Ymd', strtotime($ct->start_date)),
-                            'e_date' => date('Ymd', strtotime($ct->end_date)),
-                            'time_frames' => array_pad(
-                                explode(',', $ct->ruleids), 4, "0"
-                            )
-                        ];
-                        $dId = Turnstile::find($tId)->deviceid;
-                        $status == 1 ? $inserts[$dId][] = $perm : $purges[$dId][] = $perm;
+                    $tList = $user->card->turnstiles->pluck('deviceid', 'id')->toArray();
+                    foreach ($tList as $tId => $deviceid) {
+                        $inserts[$deviceid][] = $this->perm($user->card_id, $sn, $tId);
                     }
-                    $status != 3 ?: CardTurnstile::whereCardId($cardId)->delete();
                 }
-                $t = new Turnstile;
-                array_map(
-                    function ($api, array $data) use ($t) {
-                        empty($data) ?: $t->invoke($api, ['data' => $data]);
-                    }, ['addperms', 'delperms'], [$inserts, $purges]
-                );
+                (new Turnstile)->invoke('addperms', $inserts);
             });
         } catch (Exception $e) {
             throw $e;
@@ -289,42 +240,33 @@ class Card extends Model {
     /**
      * 注销/删除一卡通
      *
+     * @param bool $soft - true: 仅删除已下发的一卡通设备权限
      * @return bool
      * @throws Throwable
      */
-    function remove() {
+    function remove($soft = false) {
         
         try {
-            DB::transaction(function() {
-                $purges = [];
-                $turnstile = new Turnstile;
+            DB::transaction(function () use ($soft) {
                 $userIds = Request::route('id')
                     ? [Request::route('id')]
                     : array_values(Request::input('ids'));
                 Log::info('userIds',$userIds);
                 foreach ($userIds as $userId) {
                     if (!$card = User::find($userId)->card) continue;
-                    $tIds = $card->turnstiles->pluck('id')->toArray();
-                    foreach (array_unique($tIds) as $tId) {
-                        $ct = CardTurnstile::where([
-                            'card_id' => $card->id,
-                            'turnstile_id' => $tId
-                        ])->first();
-                        $purges[$turnstile->find($tId)->deviceid][] = [
-                            'card' => $card->sn,
-                            's_date' => date('Ymd', strtotime($ct->start_date)),
-                            'e_date' => date('Ymd', strtotime($ct->end_date)),
-                            'time_frames' => array_pad(
-                                explode(',', $ct->ruleids), 4, "0"
-                            )
-                        ];
+                    $tList = $card->turnstiles->pluck('deviceid', 'id')->toArray();
+                    foreach ($tList as $tId => $deviceid) {
+                        $perms[$deviceid][] = $this->perm($card->id, $card->sn, $tId);
                     }
                 }
-                $turnstile->invoke('delperms', ['data' => $purges]);
-                $cardIds = Card::whereIn('user_id', $userIds)->pluck('id')->toArray();
-                CardTurnstile::whereIn('card_id', $cardIds)->delete();
-                $this->whereIn('user_id', $userIds)->delete();
-                User::whereIn('id', $userIds)->update(['card_id' => 0]);
+                # 删除已下发的设备权限
+                (new Turnstile)->invoke('delperms', ['data' => $perms ?? []]);
+                if (!$soft) {
+                    $cards = $this->whereIn('user_id', $userIds);
+                    CardTurnstile::whereIn('card_id', $cards->pluck('id')->toArray())->delete();
+                    $cards->delete();
+                    User::whereIn('id', $userIds)->update(['card_id' => 0]);
+                }
             });
         } catch (Exception $e) {
             throw $e;
@@ -351,6 +293,7 @@ class Card extends Model {
         if ($disabled) {
             $params = array_merge($params, ['disabled' => true]);
         }
+        
         return Form::text('sn', '%s', $params)->toHtml();
         
     }
@@ -387,89 +330,6 @@ class Card extends Model {
             'style'    => 'width: 100%;',
             'disabled' => sizeof($items) <= 1,
         ])->toHtml();
-        
-    }
-    
-    /**
-     * 通讯录批量发卡
-     *
-     * @return JsonResponse
-     * @throws Throwable
-     */
-    function issue() {
-        
-        $this->validate($sns = Request::input('sns'));
-        try {
-            DB::transaction(function () use ($sns) {
-                $cards = [];  # 换卡后需要删除通行权限的一卡通
-                $turnstile = new Turnstile;
-                foreach ($sns as $userId => $sn) {
-                    if (!empty($sn)) {
-                        $card = Card::whereUserId($userId)->first();
-                        $_sn = Card::whereSn($sn)->first();
-                        if (!$card) {
-                            abort_if(
-                                $_sn ? true : false,
-                                HttpStatusCode::NOT_ACCEPTABLE,
-                                __('卡号已被使用')
-                            );
-                            $card = Card::create([
-                                'user_id' => $userId,
-                                'sn'      => $sn,
-                                'status'  => 1,
-                            ]);
-                        } else {
-                            if ($card->sn != $sn) {
-                                abort_if(
-                                    Card::whereSn($sn)->first() ? true : false,
-                                    HttpStatusCode::NOT_ACCEPTABLE,
-                                    __('卡号已被使用')
-                                );
-                                $cards[$card->id] = $card->sn;
-                                $card->update(['sn' => $sn]);
-                            }
-                        }
-                        $card->user->update(['card_id' => $card->id]);
-                    } else {
-                        $user = User::find($userId);
-                        if ($user->card) {
-                            Request::merge(['ids' => [$userId]]);
-                            $user->card->remove();
-                            $user->update(['card_id' => 0]);
-                        }
-                    }
-                }
-                $this->modify();
-                if (!empty($cards)) {
-                    $purges = [];
-                    foreach ($cards as $cId => $cSn) {
-                        $tIds = Card::find($cId)->turnstiles->pluck('id')->toArray();
-                        foreach (array_unique($tIds) as $tId) {
-                            $ct = CardTurnstile::where([
-                                'card_id' => $cId,
-                                'turnstile_id' => $tId
-                            ])->first();
-                            $purges[$turnstile->find($tId)->deviceid][] = [
-                                'card' => $cSn,
-                                's_date' => date('Ymd', strtotime($ct->start_date)),
-                                'e_date' => date('Ymd', strtotime($ct->end_date)),
-                                'time_frames' => array_pad(
-                                    explode(',', $ct->ruleids), 4, "0"
-                                )
-                            ];
-                        }
-                    }
-                    $turnstile->invoke('delperms', ['data' => $purges]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return response()->json([
-            'title'   => '批量发卡',
-            'message' => __('messages.ok'),
-        ]);
         
     }
     
@@ -521,7 +381,7 @@ class Card extends Model {
                     ? explode(' ~ ', $input['daterange'])
                     : array_fill(0, 2, null);
                 (new CardTurnstile)->store(
-                    Card::whereIn('user_id', $userIds)->get()->pluck('id')->toArray(),
+                    Card::whereIn('user_id', $userIds)->pluck('id')->toArray(),
                     $turnstileIds, $start, $end, $ruleids
                 );
                 $data = [];
@@ -543,7 +403,6 @@ class Card extends Model {
                         ];
                     }
                 }
-                Log::info('data', $data);
                 (new Turnstile)->invoke('addperms', ['data' => $data]);
             });
         } catch (Exception $e) {
@@ -612,9 +471,7 @@ class Card extends Model {
     private function validate(array $cards) {
         
         $sns = array_values($cards);
-        if (is_array($sns[0])) {
-            $sns = Arr::pluck($sns, 'sn');
-        }
+        if (is_array($sns[0])) $sns = Arr::pluck($sns, 'sn');
         $ns = array_count_values(array_map('strval', $sns));
         foreach ($ns as $n => $count) {
             if (!empty($n) && $count > 1) $ds[] = $n;
@@ -626,6 +483,43 @@ class Card extends Model {
                 (!empty($sns) ? ('卡号: ' . implode(',', $ds ?? [])) : ''),
                 '有重复，请检查后重试',
             ])
+        );
+        
+    }
+    
+    /**
+     * 返回门禁设备权限
+     *
+     * @param integer $id - 一卡通id
+     * @param string $sn - 一卡通卡号
+     * @param integer $tId - 门禁id
+     * @return array|null
+     */
+    private function perm($id, $sn, $tId) {
+    
+        $ct = CardTurnstile::where(['card_id' => $id, 'turnstile_id' => $tId])->first();
+        return !$ct ? null : [
+            'card'        => $sn,
+            's_date'      => date('Ymd', strtotime($ct->start_date)),
+            'e_date'      => date('Ymd', strtotime($ct->end_date)),
+            'time_frames' => array_pad(
+                explode(',', $ct->ruleids), 4, "0"
+            ),
+        ];
+        
+    }
+    
+    /**
+     * 判断卡号是否已存在
+     *
+     * @param $sn
+     */
+    private function exists($sn) {
+    
+        abort_if(
+            $this->whereSn($sn)->first() ? true : false,
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('卡号已被使用')
         );
         
     }

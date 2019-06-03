@@ -454,7 +454,7 @@ HTML;
             return $list;
         }
         
-        return $card->issue();
+        return $card->store();
     
     }
     
