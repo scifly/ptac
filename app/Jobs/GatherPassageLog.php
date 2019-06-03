@@ -11,7 +11,8 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
-    Support\Facades\DB};
+    Support\Facades\DB,
+    Support\Facades\Log};
 use Pusher\PusherException;
 use Throwable;
 
@@ -101,6 +102,7 @@ class GatherPassageLog implements ShouldQueue {
                                 );
                             }
                         }
+                        Log::info('smses', $smses);
                         foreach (array_chunk($smses, 200) as $chunk) {
                             foreach ($chunk as $mobile => $msg) {
                                 // invoke sms sending api here

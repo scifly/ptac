@@ -8,7 +8,7 @@ use Exception;
 use Form;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Request};
+use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Log, Facades\Request};
 use Throwable;
 
 /**
@@ -253,6 +253,7 @@ class Card extends Model {
                 $userIds = Request::route('id')
                     ? [Request::route('id')]
                     : array_values(Request::input('ids'));
+                // Log::info('userIds',$userIds);
                 foreach ($userIds as $userId) {
                     if (!$card = User::find($userId)->card) continue;
                     $tList = $card->turnstiles->pluck('deviceid', 'id')->toArray();
