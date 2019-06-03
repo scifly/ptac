@@ -163,8 +163,8 @@ class Card extends Model {
         try {
             DB::transaction(function () use ($user) {
                 !$user ?: Request::merge(['sns' => [$user->id => Request::input('card')['sn']]]);
-                $this->validate($sns = Request::input('sns'));
                 $sns = Request::input('sns');
+                $this->validate(array_values($sns));
                 $inserts = $replaces = $purges = $userIds = [];
                 foreach ($sns as $userId => $sn) {
                     if (!empty($sn)) {
@@ -208,8 +208,9 @@ class Card extends Model {
      * @throws Throwable
      */
     function modify() {
-        
-        $this->validate($cards = Request::input('sns'));
+    
+        $cards = Request::input('sns');
+        $this->validate(Arr::pluck(array_values($cards), 'sn'));
         try {
             DB::transaction(function () use ($cards) {
                 $inserts = [];
@@ -473,12 +474,10 @@ class Card extends Model {
     /**
      * 检查卡号是否有重复
      *
-     * @param array $cards
+     * @param array $sns
      */
-    private function validate(array $cards) {
+    private function validate(array $sns) {
         
-        $sns = array_values($cards);
-        if (is_array($sns[0])) $sns = Arr::pluck($sns, 'sn');
         $ns = array_count_values(array_map('strval', $sns));
         foreach ($ns as $n => $count) {
             if (!empty($n) && $count > 1) $ds[] = $n;
