@@ -255,7 +255,6 @@ class Card extends Model {
         
         try {
             DB::transaction(function () use ($soft) {
-                Log::debug(json_encode(Request::input('ids')));
                 $userIds = Request::route('id')
                     ? [Request::route('id')]
                     : array_values(Request::input('ids'));
