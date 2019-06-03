@@ -224,7 +224,7 @@ class Card extends Model {
                     }
                     $tList = $user->card->turnstiles->pluck('deviceid', 'id')->toArray();
                     foreach ($tList as $tId => $deviceid) {
-                        $inserts[$deviceid][] = $this->perm($user->card_id, $sn, $tId);
+                        $inserts[$deviceid][] = $this->perm($user->card_id, $tId);
                     }
                 }
                 (new Turnstile)->invoke('addperms', $inserts);
@@ -255,7 +255,7 @@ class Card extends Model {
                     if (!$card = User::find($userId)->card) continue;
                     $tList = $card->turnstiles->pluck('deviceid', 'id')->toArray();
                     foreach ($tList as $tId => $deviceid) {
-                        $perms[$deviceid][] = $this->perm($card->id, $card->sn, $tId);
+                        $perms[$deviceid][] = $this->perm($card->id, $tId);
                     }
                 }
                 # 删除已下发的设备权限
@@ -494,11 +494,11 @@ class Card extends Model {
      * @param integer $tId - 门禁id
      * @return array|null
      */
-    private function perm($id, $sn, $tId) {
+    private function perm($id, $tId) {
     
         $ct = CardTurnstile::where(['card_id' => $id, 'turnstile_id' => $tId])->first();
         return !$ct ? null : [
-            'card'        => $sn,
+            'card'        => $this->find($id)->sn,
             's_date'      => date('Ymd', strtotime($ct->start_date)),
             'e_date'      => date('Ymd', strtotime($ct->end_date)),
             'time_frames' => array_pad(
