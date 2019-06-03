@@ -454,7 +454,7 @@ HTML;
             return $list;
         }
         
-        return $card->store();
+        return $card->store(null, true);
     
     }
     

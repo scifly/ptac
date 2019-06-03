@@ -154,10 +154,11 @@ class Card extends Model {
      * 保存一卡通 - (批量)发卡、删卡、换卡
      *
      * @param User|null $user
+     * @param bool $issue
      * @return bool
      * @throws Throwable
      */
-    function store(User $user = null) {
+    function store(User $user = null, $issue = false) {
         
         try {
             DB::transaction(function () use ($user) {
@@ -193,7 +194,10 @@ class Card extends Model {
             throw $e;
         }
         
-        return true;
+        return !$issue ? true : response()->json([
+            'title' => '批量发卡',
+            'message' => __('messages.ok')
+        ]);
         
     }
     

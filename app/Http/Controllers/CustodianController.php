@@ -131,16 +131,9 @@ class CustodianController extends Controller {
      */
     public function issue() {
         
-        if (Request::method() == 'POST') {
-            $result = $this->custodian->issue();
-            !is_bool($result) ?: $result = response()->json([
-                'title'   => '批量发卡',
-                'message' => __('messages.ok'),
-            ]);
-            
-            return $result;
-        }
-        return $this->output();
+        return Request::method() == 'POST'
+            ? $this->custodian->issue()
+            : $this->output();
         
     }
     
