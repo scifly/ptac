@@ -8,7 +8,7 @@ use Exception;
 use Form;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Log, Facades\Request};
+use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Request};
 use Throwable;
 
 /**
@@ -253,6 +253,7 @@ class Card extends Model {
                 $userIds = Request::route('id')
                     ? [Request::route('id')]
                     : array_values(Request::input('ids'));
+                $perms = [];
                 foreach ($userIds as $userId) {
                     if (!$card = User::find($userId)->card) continue;
                     $tList = $card->turnstiles->pluck('deviceid', 'id')->toArray();
@@ -262,7 +263,7 @@ class Card extends Model {
                     }
                 }
                 # 删除已下发的设备权限
-                (new Turnstile)->invoke('delperms', ['data' => $perms ?? []]);
+                empty($perms) ?: (new Turnstile)->invoke('delperms', ['data' => $perms]);
                 if (!$soft) {
                     $cards = $this->whereIn('user_id', $userIds);
                     CardTurnstile::whereIn('card_id', $cards->pluck('id')->toArray())->delete();
@@ -493,7 +494,6 @@ class Card extends Model {
      * 返回门禁设备权限
      *
      * @param integer $id - 一卡通id
-     * @param string $sn - 一卡通卡号
      * @param integer $tId - 门禁id
      * @return array|null
      */
