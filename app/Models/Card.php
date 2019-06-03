@@ -166,13 +166,15 @@ class Card extends Model {
                 $sns = Request::input('sns');
                 $inserts = $replaces = $purges = $userIds = [];
                 foreach ($sns as $userId => $sn) {
-                    $this->exists($sn);
                     if (!empty($sn)) {
                         if (!$card = Card::whereUserId($userId)->first()) {
                             $inserts[] = array_combine($this->fillable, [$userId, $sn, 1]);
                             $userIds[] = $userId;
                         } else {
-                            $card->sn == $sn ?: $replaces[$userId] = $sn;
+                            if ($card->sn != $sn) {
+                                $this->exists($sn);
+                                $replaces[$userId] = $sn;
+                            }
                         }
                     } else {
                         !User::find($userId)->card ?: $purges[] = $userId;
