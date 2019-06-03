@@ -253,7 +253,7 @@ class Card extends Model {
                 $userIds = Request::route('id')
                     ? [Request::route('id')]
                     : array_values(Request::input('ids'));
-                // Log::info('userIds',$userIds);
+                $perms = [];
                 foreach ($userIds as $userId) {
                     if (!$card = User::find($userId)->card) continue;
                     $tList = $card->turnstiles->pluck('deviceid', 'id')->toArray();
@@ -263,7 +263,7 @@ class Card extends Model {
                     }
                 }
                 # 删除已下发的设备权限
-                (new Turnstile)->invoke('delperms', ['data' => $perms ?? []]);
+                empty($perms) ?: (new Turnstile)->invoke('delperms', ['data' => $perms]);
                 if (!$soft) {
                     $cards = $this->whereIn('user_id', $userIds);
                     CardTurnstile::whereIn('card_id', $cards->pluck('id')->toArray())->delete();
