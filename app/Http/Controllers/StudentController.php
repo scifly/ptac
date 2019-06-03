@@ -170,9 +170,16 @@ class StudentController extends Controller {
      */
     public function issue() {
     
-        return Request::method() == 'POST'
-            ? $this->student->issue()
-            : $this->output();
+        if (Request::method() == 'POST') {
+            $result = $this->student->issue();
+            !is_bool($result) ?: $result = response()->json([
+                'title'   => '批量发卡',
+                'message' => __('messages.ok'),
+            ]);
+        
+            return $result;
+        }
+        return $this->output();
     
     }
     

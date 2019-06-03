@@ -197,10 +197,17 @@ class EducatorController extends Controller {
      * @throws Throwable
      */
     public function issue() {
+    
+        if (Request::method() == 'POST') {
+            $result = $this->educator->issue();
+            !is_bool($result) ?: $result = response()->json([
+                'title'   => '批量发卡',
+                'message' => __('messages.ok'),
+            ]);
         
-        return Request::method() == 'POST'
-            ? $this->educator->issue()
-            : $this->output();
+            return $result;
+        }
+        return $this->output();
         
     }
 
