@@ -199,9 +199,7 @@ class EducatorController extends Controller {
     public function issue() {
         
         return Request::method() == 'POST'
-            ? $this->result(
-                $this->educator->issue()
-            )
+            ? $this->educator->issue()
             : $this->output();
         
     }
