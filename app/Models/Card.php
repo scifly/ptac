@@ -229,8 +229,7 @@ class Card extends Model {
                         $inserts[$deviceid][] = $this->perm($user->card_id, $tId);
                     }
                 }
-                Log::info('inserts', $inserts);
-                (new Turnstile)->invoke('addperms', $inserts);
+                (new Turnstile)->invoke('addperms', ['data' => $inserts]);
             });
         } catch (Exception $e) {
             throw $e;
