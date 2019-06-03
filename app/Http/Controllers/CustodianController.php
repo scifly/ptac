@@ -132,9 +132,7 @@ class CustodianController extends Controller {
     public function issue() {
         
         return Request::method() == 'POST'
-            ? $this->result(
-                $this->custodian->issue()
-            )
+            ? $this->custodian->issue()
             : $this->output();
         
     }

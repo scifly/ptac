@@ -171,9 +171,7 @@ class StudentController extends Controller {
     public function issue() {
     
         return Request::method() == 'POST'
-            ? $this->result(
-                $this->student->issue()
-            )
+            ? $this->student->issue()
             : $this->output();
     
     }
