@@ -217,6 +217,7 @@ class Card extends Model {
                 foreach ($cards as $userId => $card) {
                     $user = User::find($userId);
                     Request::merge(['ids' => [$userId]]);
+                    $tList = $user->card->turnstiles->pluck('deviceid', 'id')->toArray();
                     if ($sn = is_array($card) ? $card['sn'] : $card) {
                         $data = ['status' => ($status = $card['status'] ?? 1)];
                         if ($user->card->sn != $sn) {   # 换卡
@@ -229,7 +230,6 @@ class Card extends Model {
                     } else {
                         $this->remove();    # 删卡
                     }
-                    $tList = $user->card->turnstiles->pluck('deviceid', 'id')->toArray();
                     foreach ($tList as $tId => $deviceid) {
                         $inserts[$deviceid][] = $this->perm($user->card_id, $tId);
                     }
