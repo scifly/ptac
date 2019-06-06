@@ -51,7 +51,7 @@ class StudentPolicy {
             case 'import':
             case 'export':
             case 'issue':
-            case 'permit':
+            case 'grant':
                 return $isSuperRole ? true : $this->action($user);
             case 'show':
             case 'edit':

@@ -103,6 +103,6 @@ $styles = 'display nowrap table table-striped table-bordered table-hover table-c
             </div>
         </div>
     </div>
-    @include('shared.form_buttons', ['id' => 'permit'])
+    @include('shared.form_buttons', ['id' => 'grant'])
     {!! Form::close() !!}
 </div>

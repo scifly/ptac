@@ -86,7 +86,7 @@ class EducatorPolicy {
             case 'import':
             case 'export':
             case 'issue':
-            case 'permit':
+            case 'grant':
                 return $isSuperRole ? true : $this->action($user);
             case 'store':
                 return $isSuperRole
