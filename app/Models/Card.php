@@ -217,18 +217,22 @@ class Card extends Model {
                 foreach ($cards as $userId => $card) {
                     $user = User::find($userId);
                     Request::merge(['ids' => [$userId]]);
-                    $tList = $user->card->turnstiles->pluck('deviceid', 'id')->toArray();
-                    foreach ($tList as $tId => $deviceid) {
-                        $inserts[$deviceid][] = $this->perm($user->card_id, $tId);
-                    }
                     if ($sn = is_array($card) ? $card['sn'] : $card) {
                         $data = ['status' => ($status = $card['status'] ?? 1)];
                         if ($user->card->sn != $sn) {   # 换卡
                             $this->exists($sn);
                             $this->remove(true);
                             $data = array_merge($data, ['sn' => $sn]);
+                        } else {
+                            if ($status == 1) {
+                                $tList = $user->card->turnstiles->pluck('deviceid', 'id')->toArray();
+                                foreach ($tList as $tId => $deviceid) {
+                                    $inserts[$deviceid][] = $this->perm($user->card_id, $tId);
+                                }
+                            } else {
+                                $this->remove(true); # 挂失
+                            }
                         }
-                        $status != 2 ?: $this->remove(true); # 挂失
                         $user->card->update($data);
                     } else {
                         $this->remove();    # 删卡
