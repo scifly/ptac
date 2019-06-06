@@ -5,7 +5,7 @@
             options: $.extend({}, options),
             index: function (table) {
                 $.map(
-                    ['issue', 'permit'],
+                    ['issue', 'grant'],
                     function (action) {
                         $('#' + action).off().on('click', function () {
                             page.getTabContent(
@@ -29,13 +29,13 @@
                 page.initSelect2();
                 card.onInput();
             },
-            permit: function (table, formId) {
+            grant: function (table, formId) {
                 var $sectionId = $('#section_id'),
                     $list = $('tbody'),
                     empty = $list.html();
 
-                card.onSectionChange($sectionId, empty, 'permit');
-                card.onPermit(table, formId);
+                card.onSectionChange($sectionId, empty, 'grant');
+                card.onGrant(table, formId);
                 page.initSelect2();
                 page.initICheck();
                 page.initBackBtn(table);
@@ -155,11 +155,11 @@
                     });
                 });
             },
-            onPermit: function (table, formId) {
+            onGrant: function (table, formId) {
                 $('#' + formId).on('submit', function () {
                     return false;
                 });
-                $('#permit').on('click', function () {
+                $('#grant').on('click', function () {
                     if (
                         $('input[name=gates]:checked').length === 0 ||
                         $('input[name=contacts]:checked').length === 0
@@ -168,7 +168,7 @@
                         return false;
                     }
                     page.ajaxRequest(
-                        'POST', table + '/permit',
+                        'POST', table + '/grant',
                         page.formData($('#' + formId))
                     );
                 });
@@ -186,7 +186,7 @@
         return {
             index: card.index,
             issue: card.issue,
-            permit: card.permit
+            grant: card.grant
         };
     }
 })(jQuery);

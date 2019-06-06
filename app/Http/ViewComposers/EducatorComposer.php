@@ -59,8 +59,8 @@ class EducatorComposer {
                             'label' => '发卡',
                             'icon'  => 'fa fa-credit-card',
                         ],
-                        'permit' => [
-                            'id'    => 'permit',
+                        'grant' => [
+                            'id'    => 'grant',
                             'label' => '一卡通授权',
                             'icon'  => 'fa fa-credit-card',
                         ],
