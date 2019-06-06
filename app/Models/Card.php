@@ -226,7 +226,12 @@ class Card extends Model {
                         } else {
                             $status != 2 ?: $this->remove(true); # 挂失
                         }
-                        $user->card->update($data);
+                        if ($user->card) {
+                            $user->card->update($data);
+                        } else {
+                            Request::merge(['card' => ['sn' => $sn]]);
+                            $this->store($user);
+                        }
                     } else {
                         $this->remove();    # 删卡
                     }
