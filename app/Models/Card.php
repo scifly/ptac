@@ -219,9 +219,9 @@ class Card extends Model {
                     Request::merge(['ids' => [$userId]]);
                     $data = ['status' => ($status = $card['status'] ?? 1)];
                     if ($sn = is_array($card) ? $card['sn'] : $card) {
-                        if ($user->card->sn != $sn) {   # 换卡
+                        if (!$user->card || $user->card->sn != $sn) {   # 发卡 || 换卡
                             $this->exists($sn);
-                            $this->remove(true);
+                            !$user->card ?: $this->remove(true);
                             $data = array_merge($data, ['sn' => $sn]);
                         } else {
                             $status != 2 ?: $this->remove(true); # 挂失
