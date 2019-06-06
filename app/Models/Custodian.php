@@ -393,9 +393,9 @@ HTML;
      * @return JsonResponse|string
      * @throws Throwable
      */
-    function permit() {
+    function grant() {
         
-        return (new Card)->permit('Custodian');
+        return (new Card)->grant('Custodian');
         
     }
     

@@ -143,10 +143,10 @@ class CustodianController extends Controller {
      * @return bool|JsonResponse|string
      * @throws Throwable
      */
-    public function permit() {
+    public function grant() {
         
         return Request::method() == 'POST'
-            ? $this->custodian->permit()
+            ? $this->custodian->grant()
             : $this->output();
         
     }

@@ -464,9 +464,9 @@ HTML;
      * @return string
      * @throws Throwable
      */
-    function permit() {
+    function grant() {
     
-        return (new Card)->permit('Student');
+        return (new Card)->grant('Student');
         
     }
     

@@ -182,10 +182,10 @@ class StudentController extends Controller {
      * @return bool|JsonResponse|string
      * @throws Throwable
      */
-    public function permit() {
+    public function grant() {
     
         return Request::method() == 'POST'
-            ? $this->student->permit()
+            ? $this->student->grant()
             : $this->output();
     
     }

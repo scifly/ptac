@@ -348,7 +348,7 @@ class Card extends Model {
      * @return JsonResponse|string
      * @throws Throwable
      */
-    function permit($type) {
+    function grant($type) {
         
         if (Request::has('sectionId')) {
             if ($type == 'Educator') {

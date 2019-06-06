@@ -210,10 +210,10 @@ class EducatorController extends Controller {
      * @return bool|JsonResponse|string
      * @throws Throwable
      */
-    public function permit() {
+    public function grant() {
         
         return Request::method() == 'POST'
-            ? $this->educator->permit()
+            ? $this->educator->grant()
             : $this->output();
         
     }
