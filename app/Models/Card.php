@@ -217,7 +217,7 @@ class Card extends Model {
                 foreach ($cards as $userId => $card) {
                     $user = User::find($userId);
                     Request::merge(['ids' => [$userId]]);
-                    if ($sn = $card['sn'] ?? $card) {
+                    if ($sn = is_array($card) ? $card['sn'] : $card) {
                         $data = ['status' => ($status = $card['status'] ?? 1)];
                         if ($user->card->sn != $sn) {   # 换卡
                             $this->exists($sn);
