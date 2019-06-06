@@ -218,6 +218,9 @@ class Card extends Model {
                     $user = User::find($userId);
                     Request::merge(['ids' => [$userId]]);
                     $tList = $user->card->turnstiles->pluck('deviceid', 'id')->toArray();
+                    foreach ($tList as $tId => $deviceid) {
+                        $inserts[$deviceid][] = $this->perm($user->card_id, $tId);
+                    }
                     if ($sn = is_array($card) ? $card['sn'] : $card) {
                         $data = ['status' => ($status = $card['status'] ?? 1)];
                         if ($user->card->sn != $sn) {   # 换卡
@@ -229,9 +232,6 @@ class Card extends Model {
                         $user->card->update($data);
                     } else {
                         $this->remove();    # 删卡
-                    }
-                    foreach ($tList as $tId => $deviceid) {
-                        $inserts[$deviceid][] = $this->perm($user->card_id, $tId);
                     }
                 }
                 empty($inserts) ?: (new Turnstile)->invoke('addperms', ['data' => $inserts]);
