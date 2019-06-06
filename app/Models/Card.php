@@ -462,6 +462,7 @@ class Card extends Model {
         $builder = $type == 'Educator'
             ? Department::whereIn('id', $this->departmentIds())
             : Squad::whereIn('id', $this->classIds());
+        Log::debug('form' . $type);
         
         return [
             'formId'     => 'form' . $type,
