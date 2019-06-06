@@ -119,7 +119,7 @@ HTML;
                     'columns' => 5
                 ];
                 break;
-            case 'permit':
+            case 'grant':
                 $data = (new Card)->compose('Custodian');
                 break;
             default:

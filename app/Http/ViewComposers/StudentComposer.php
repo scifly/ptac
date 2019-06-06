@@ -133,7 +133,7 @@ HTML;
                     'columns' => 4,
                 ];
                 break;
-            case 'permit':
+            case 'grant':
                 $data = (new Card)->compose('Student');
                 break;
             default:

@@ -30,7 +30,6 @@ if (!function_exists('routes')) {
         }
     }
 }
-
 /** 后台路由 ---------------------------------------------------------------------------------------------------------- */
 Route::auth();
 Route::any('register', 'Auth\LoginController@signup');
@@ -91,7 +90,7 @@ $routes = [
         'update'  => ['{id?}' => 'put'],
         'destroy' => ['{id?}' => 'delete'],
         'issue'   => ['get', 'post'],
-        'permit'  => ['get', 'post'],
+        'grant'   => ['get', 'post'],
     ],
     'department'             => [
         'index'   => ['get', 'post'],
@@ -112,7 +111,7 @@ $routes = [
         'import'   => ['post'],
         'export'   => ['get', 'post'],
         'issue'    => ['get', 'post'],
-        'permit'   => ['get', 'post'],
+        'grant'    => ['get', 'post'],
     ],
     'event'                  => $default,
     'exam'                   => $default,
@@ -208,7 +207,7 @@ $routes = [
         'import'  => ['post'],
         'export'  => ['get', 'post'],
         'issue'   => ['get', 'post'],
-        'permit'  => ['get', 'post'],
+        'grant'   => ['get', 'post'],
     ],
     'subject'                => $default,
     'subject_module'         => $default,
