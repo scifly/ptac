@@ -2,10 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\{User, Group, Educator};
-use App\Helpers\{Constant, ModelTrait, PolicyTrait, HttpStatusCode};
-use Illuminate\Support\Facades\Request;
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, PolicyTrait};
+use App\Models\{Educator, Group, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 use ReflectionException;
 
 /**

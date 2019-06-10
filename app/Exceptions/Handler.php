@@ -3,8 +3,6 @@ namespace App\Exceptions;
 
 use App\Helpers\HttpStatusCode;
 use Exception;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-// use HttpException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -13,6 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
+// use HttpException;
 
 /**
  * Class Handler

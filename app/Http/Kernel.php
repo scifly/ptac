@@ -1,23 +1,18 @@
 <?php
 namespace App\Http;
 
-use App\Http\Middleware\CheckRole;
-use App\Http\Middleware\EncryptCookies;
-use App\Http\Middleware\RedirectIfAuthenticated;
-use App\Http\Middleware\TrimStrings;
-use App\Http\Middleware\VerifyCsrfToken;
-use App\Http\Middleware\CorpAuth;
-use App\Http\Middleware\CorpRole;
-use Illuminate\Auth\Middleware\Authenticate;
-use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
-use Illuminate\Auth\Middleware\Authorize;
+use App\Http\Middleware\{CheckRole,
+    CorpAuth,
+    CorpRole,
+    EncryptCookies,
+    RedirectIfAuthenticated,
+    TrimStrings,
+    VerifyCsrfToken};
+use Illuminate\Auth\Middleware\{Authenticate, AuthenticateWithBasicAuth, Authorize};
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
-use Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode;
-use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
-use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Foundation\Http\Middleware\{CheckForMaintenanceMode, ConvertEmptyStringsToNull, ValidatePostSize};
+use Illuminate\Routing\Middleware\{SubstituteBindings, ThrottleRequests};
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Laravel\Passport\Http\Middleware\CreateFreshApiToken;

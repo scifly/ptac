@@ -1,12 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\{Helpers\HttpStatusCode,
-    Jobs\SendMessageApi,
-    Models\Consumption,
-    Models\Group,
-    Models\Message,
-    Models\User};
+use App\Helpers\HttpStatusCode;
+use App\Jobs\SendMessageApi;
+use App\Models\{Consumption, Group, Message, User};
 use Exception;
 use Illuminate\{Http\JsonResponse, Support\Facades\Auth, Support\Facades\Request};
 use Throwable;

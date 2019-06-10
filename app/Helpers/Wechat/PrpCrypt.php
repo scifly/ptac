@@ -2,6 +2,7 @@
 namespace App\Helpers\Wechat;
 
 use Exception;
+
 /**
  * Prpcrypt class
  *

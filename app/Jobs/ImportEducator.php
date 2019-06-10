@@ -3,16 +3,7 @@ namespace App\Jobs;
 
 use App\Apis\MassImport;
 use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
-use App\Models\{Department,
-    DepartmentUser,
-    Educator,
-    ClassEducator,
-    Grade,
-    Mobile,
-    School,
-    Squad,
-    Subject,
-    User};
+use App\Models\{ClassEducator, Department, DepartmentUser, Educator, Grade, Mobile, School, Squad, Subject, User};
 use Exception;
 use Illuminate\{Bus\Queueable,
     Contracts\Queue\ShouldQueue,

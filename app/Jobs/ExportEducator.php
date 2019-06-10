@@ -2,7 +2,7 @@
 namespace App\Jobs;
 
 use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
-use App\Models\{Educator, ClassEducator};
+use App\Models\{ClassEducator, Educator};
 use Exception;
 use Illuminate\{Bus\Queueable,
     Contracts\Queue\ShouldQueue,

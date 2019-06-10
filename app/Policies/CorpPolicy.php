@@ -4,10 +4,10 @@ namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Menu;
 use App\Models\User;
-use App\Models\Corp;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
