@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel {
                 return Event::whereEnabled(1)->get()->count() > 0;
             })->everyMinute();
         
-        $schedule->job(new GatherPassageLog)->everyMinute();
+        // $schedule->job(new GatherPassageLog)->everyMinute();
         
     }
     
