@@ -108,15 +108,15 @@ class Module extends Model {
             ['db' => 'Module.id', 'dt' => 0],
             ['db' => 'Module.name', 'dt' => 1],
             [
-                'db'        => 'Module.school_id', 'dt' => 2,
+                'db'        => 'School.name as schoolname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::icon(School::find($d)->name, 'school');
+                    return Snippet::icon($d, 'school');
                 },
             ],
             [
-                'db'        => 'Module.tab_id', 'dt' => 3,
+                'db'        => 'Tab.comment', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return $d ? Tab::find($d)->comment : '-';
+                    return $d ?? '-';
                 },
             ],
             [
@@ -154,6 +154,22 @@ class Module extends Model {
                 'type'       => 'INNER',
                 'conditions' => [
                     'Media.id = Module.media_id',
+                ],
+            ],
+            [
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'School.id = Module.school_id',
+                ],
+            ],
+            [
+                'table'      => 'tabs',
+                'alias'      => 'Tab',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Tab.id = Module.tab_id',
                 ],
             ],
         ];
