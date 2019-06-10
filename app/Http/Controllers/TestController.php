@@ -56,6 +56,8 @@ class TestController extends Controller {
      */
     public function index() {
     
+        phpinfo();
+        exit;
         dd(ucfirst(Inflector::camelize('passage_rule')));
         // return view('user.index');
         // $server = "120.78.55.152";
