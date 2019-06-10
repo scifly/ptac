@@ -61,7 +61,7 @@ class MessageRequest extends FormRequest {
                 'http://', '0', $this->user()->id ?? 0, 0, $msgTypeId, 0, 0,
             ]);
             $targetIds = $this->input('targetIds') ?? [];
-            foreach (explode(',', $targetIds) as $targetId) {
+            foreach (!is_array($targetIds) ? explode(',', $targetIds) : $targetIds as $targetId) {
                 # paths[2] = user-[departmentId]-[userId]
                 $paths = explode('-', $targetId);
                 isset($paths[2])
