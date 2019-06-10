@@ -56,6 +56,7 @@ class TestController extends Controller {
      */
     public function index() {
     
+        echo 'abc';
         phpinfo();
         exit;
         dd(ucfirst(Inflector::camelize('passage_rule')));
