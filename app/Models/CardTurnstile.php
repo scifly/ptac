@@ -3,16 +3,13 @@ namespace App\Models;
 
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
+use Illuminate\Support\{Carbon, Facades\DB};
 use Throwable;
 
 /**
  * 一卡通 & 门禁绑定关系
- * 
+ *
  * Class CardTurnstile
  *
  * @package App\Models
@@ -41,13 +38,11 @@ use Throwable;
  * @method static Builder|CardTurnstile whereUpdatedAt($value)
  * @mixin Eloquent
  */
-class CardTurnstile extends Model {
-
-    protected $table = 'cards_turnstiles';
+class CardTurnstile extends Pivot {
     
     protected $fillable = [
         'card_id', 'turnstile_id', 'start_date',
-        'end_date', 'ruleids', 'enabled'
+        'end_date', 'ruleids', 'enabled',
     ];
     
     /**
@@ -81,14 +76,14 @@ class CardTurnstile extends Model {
                 foreach ($cardIds as $cardId) {
                     foreach ($turnstileIds as $turnstileId) {
                         $records[] = [
-                            'card_id' => $cardId,
+                            'card_id'      => $cardId,
                             'turnstile_id' => $turnstileId,
-                            'start_date' => $start,
-                            'end_date' => $end,
-                            'ruleids' => implode(',', $ruleids[$turnstileId]),
-                            'created_at' => $timestamp,
-                            'updated_at' => $timestamp,
-                            'enabled' => 1
+                            'start_date'   => $start,
+                            'end_date'     => $end,
+                            'ruleids'      => implode(',', $ruleids[$turnstileId]),
+                            'created_at'   => $timestamp,
+                            'updated_at'   => $timestamp,
+                            'enabled'      => 1,
                         ];
                     }
                 }

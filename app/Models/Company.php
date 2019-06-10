@@ -181,7 +181,7 @@ class Company extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
@@ -193,7 +193,7 @@ class Company extends Model {
                     }, ['Corp', 'Department', 'Menu'], [
                         Corp::whereIn('company_id', $ids)->pluck('id'),
                         $companies->pluck('department_id'),
-                        $companies->pluck('menu_id')
+                        $companies->pluck('menu_id'),
                     ]
                 );
                 Request::replace(['ids' => $ids]);
@@ -202,7 +202,7 @@ class Company extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

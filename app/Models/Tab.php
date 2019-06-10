@@ -2,9 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{Constant, ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -50,6 +48,7 @@ use Throwable;
  * @method static Builder|Tab newQuery()
  * @method static Builder|Tab query()
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Group[] $groups
  */
 class Tab extends Model {
     
@@ -65,7 +64,7 @@ class Tab extends Model {
      *
      * @return BelongsToMany
      */
-    function menus() { return $this->belongsToMany('App\Models\Menu', 'menus_tabs'); }
+    function menus() { return $this->belongsToMany('App\Models\Menu', 'menu_tab'); }
     
     /**
      * 返回指定卡片所属的图标对象
@@ -82,6 +81,13 @@ class Tab extends Model {
     function actions() { return $this->hasMany('App\Models\Action'); }
     
     /**
+     * 返回指定卡片所属的角色对象
+     *
+     * @return BelongsToMany
+     */
+    function groups() { return $this->belongsToMany('App\Models\Group', 'group_tab'); }
+    
+    /**
      * 卡片列表
      *
      * @return array
@@ -94,11 +100,12 @@ class Tab extends Model {
                 'db'        => 'Tab.name', 'dt' => 1,
                 'formatter' => function ($d, $row) {
                     $iconId = $this->find($row['id'])->icon_id;
+                    
                     return sprintf(
-                        Snippet::ICON,
-                        $iconId ? Icon::find($iconId)->name : 'fa-calendar-check-o text-gray',
-                        ''
-                    ) . $d;
+                            Snippet::ICON,
+                            $iconId ? Icon::find($iconId)->name : 'fa-calendar-check-o text-gray',
+                            ''
+                        ) . $d;
                 },
             ],
             ['db' => 'Tab.comment', 'dt' => 2],
@@ -110,8 +117,9 @@ class Tab extends Model {
                         '所有' => 'text-black',
                         '运营' => 'text-light-blue',
                         '企业' => 'text-green',
-                        '学校' => 'text-fuchsia'
+                        '学校' => 'text-fuchsia',
                     ];
+                    
                     return sprintf(Snippet::BADGE, $colors[$group], $group);
                 },
             ],
@@ -132,8 +140,9 @@ class Tab extends Model {
                     $colors = [
                         '后台' => 'text-light-blue',
                         '前端' => 'text-green',
-                        '其他' => 'text-gray'
+                        '其他' => 'text-gray',
                     ];
+                    
                     return sprintf(Snippet::BADGE, $colors[$category], $category);
                 },
             ],
@@ -209,25 +218,12 @@ class Tab extends Model {
             $action = Request::input('action');
             
             return $this->whereIn('id', $ids)->update([
-                'enabled' => $action == 'enable' ? 1 : 0
+                'enabled' => $action == 'enable' ? 1 : 0,
             ]);
         }
         
         return true;
         
-    }
-    
-    /**
-     * 移除指定的卡片
-     *
-     * @param $id
-     * @return bool|mixed
-     * @throws Throwable
-     */
-    function remove($id = null) {
-    
-        return $this->purge(['Tab', 'MenuTab'], 'tab_id', 'purge', $id);
-    
     }
     
     /**
@@ -297,67 +293,6 @@ class Tab extends Model {
         
     }
     
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-    /**
-     * 根据角色返回可访问的卡片id
-     *
-     * @return array
-     */
-    function allowedTabIds() {
-        
-        $user = Auth::user();
-        $role = $user->role();
-        list($corpGid, $schoolGid) = array_map(
-            function ($role) {
-                return Group::whereName($role)->first()->id;
-            }, ['企业', '学校']
-        );
-        switch ($role) {
-            case '运营':
-                $builder = $this->whereEnabled(1);
-                break;
-            case '企业':
-                $builder = $this->whereEnabled(1)
-                    ->whereIn('group_id', [0, $corpGid, $schoolGid]);
-                break;
-            case '学校':
-                $builder = $this->whereEnabled(1)
-                    ->whereIn('group_id', [0, $schoolGid]);
-                break;
-            default:
-                $builder = GroupTab::whereGroupId($user->group_id);
-                $field = 'tab_id';
-                break;
-        }
-        
-        return $builder->pluck($field ?? 'id')->toArray();
-        
-    }
-    
-    /**
-     * 获取指定控制器的注释文本
-     *
-     * @param ReflectionClass $controller
-     * @return mixed|string
-     */
-    private function controllerComments(ReflectionClass $controller) {
-        
-        $comment = $controller->getDocComment();
-        $name = 'n/a';
-        preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
-        if (isset($matches[0][0])) {
-            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
-        } else {
-            preg_match_all("#\/\*\*\r\n\s{1}\*[^\*]*\*#", $comment, $matches);
-            if (isset($matches[0][0])) {
-                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
-            }
-        }
-        
-        return $name;
-        
-    }
-    
     /**
      * 返回所有控制器的完整路径
      *
@@ -391,6 +326,45 @@ class Tab extends Model {
         
     }
     
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
+    /**
+     * 移除指定的卡片
+     *
+     * @param $id
+     * @return bool|mixed
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        return $this->purge(['Tab', 'MenuTab'], 'tab_id', 'purge', $id);
+        
+    }
+    
+    /**
+     * 获取指定控制器的注释文本
+     *
+     * @param ReflectionClass $controller
+     * @return mixed|string
+     */
+    private function controllerComments(ReflectionClass $controller) {
+        
+        $comment = $controller->getDocComment();
+        $name = 'n/a';
+        preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
+        if (isset($matches[0][0])) {
+            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+        } else {
+            preg_match_all("#\/\*\*\r\n\s{1}\*[^\*]*\*#", $comment, $matches);
+            if (isset($matches[0][0])) {
+                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+            }
+        }
+        
+        return $name;
+        
+    }
+    
     /**
      * 获取index方法的action_id
      *
@@ -407,6 +381,42 @@ class Tab extends Model {
         ])->first();
         
         return $action ? $action->id : 0;
+        
+    }
+    
+    /**
+     * 根据角色返回可访问的卡片id
+     *
+     * @return array
+     */
+    function allowedTabIds() {
+        
+        $user = Auth::user();
+        $role = $user->role();
+        list($corpGid, $schoolGid) = array_map(
+            function ($role) {
+                return Group::whereName($role)->first()->id;
+            }, ['企业', '学校']
+        );
+        switch ($role) {
+            case '运营':
+                $builder = $this->whereEnabled(1);
+                break;
+            case '企业':
+                $builder = $this->whereEnabled(1)
+                    ->whereIn('group_id', [0, $corpGid, $schoolGid]);
+                break;
+            case '学校':
+                $builder = $this->whereEnabled(1)
+                    ->whereIn('group_id', [0, $schoolGid]);
+                break;
+            default:
+                $builder = GroupTab::whereGroupId($user->group_id);
+                $field = 'tab_id';
+                break;
+        }
+        
+        return $builder->pluck($field ?? 'id')->toArray();
         
     }
     

@@ -3,7 +3,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\{Builder, Model};
+use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
 
 /**
  * App\Models\MajorSubject 专业与科目关系
@@ -27,9 +27,7 @@ use Illuminate\Database\Eloquent\{Builder, Model};
  * @mixin Eloquent
  * @property int $enabled
  */
-class MajorSubject extends Model {
-    
-    protected $table = 'majors_subjects';
+class MajorSubject extends Pivot {
     
     protected $fillable = ['major_id', 'subject_id', 'enabled'];
     

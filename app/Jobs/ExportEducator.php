@@ -2,7 +2,7 @@
 namespace App\Jobs;
 
 use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
-use App\Models\{Educator, EducatorClass};
+use App\Models\{Educator, ClassEducator};
 use Exception;
 use Illuminate\{Bus\Queueable,
     Contracts\Queue\ShouldQueue,
@@ -67,7 +67,7 @@ class ExportEducator implements ShouldQueue {
                         : implode(',', $collection->pluck('name')->toArray());
                 }, ['grade', 'squad']
             );
-            $eces = EducatorClass::whereEducatorId($educator->id)->get();
+            $eces = ClassEducator::whereEducatorId($educator->id)->get();
             $cses = [];
             foreach ($eces as $ec) {
                 $squad = $ec->squad;

@@ -39,8 +39,6 @@ class Major extends Model {
     
     use ModelTrait;
     
-    protected $table = 'majors';
-    
     protected $fillable = [
         'name', 'remark', 'school_id', 'enabled',
     ];
@@ -57,16 +55,7 @@ class Major extends Model {
      *
      * @return BelongsToMany
      */
-    function subjects() {
-        
-        return $this->belongsToMany(
-            'App\Models\Subject',
-            'majors_subjects',
-            'major_id',
-            'subject_id'
-        );
-        
-    }
+    function subjects() { return $this->belongsToMany('App\Models\Subject', 'major_subject'); }
     
     /**
      * 返回专业列表
@@ -75,7 +64,7 @@ class Major extends Model {
      */
     function majorList() {
         
-        return self::whereSchoolId($this->schoolId())->get()->pluck('name', 'id');
+        return $this->whereSchoolId($this->schoolId())->get()->pluck('name', 'id');
         
     }
     
@@ -175,7 +164,7 @@ class Major extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $this->purge(
@@ -186,7 +175,7 @@ class Major extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

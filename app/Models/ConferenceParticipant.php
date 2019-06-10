@@ -2,14 +2,10 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{Constant, ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Facades\Auth;
 use Throwable;
 
@@ -80,6 +76,7 @@ class ConferenceParticipant extends Model {
                 'formatter' => function ($d) {
                     $color = $d ? 'text-green' : 'text-yellow';
                     $text = $d ? '签到已到' : '签到未到';
+                    
                     return sprintf(Snippet::BADGE, $color, $text);
                 },
             ],

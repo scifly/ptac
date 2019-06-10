@@ -6,12 +6,8 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\HasMany};
+use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**
@@ -110,7 +106,7 @@ class ProcedureType extends Model {
      * @throws Throwable
      */
     function remove($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
@@ -124,7 +120,7 @@ class ProcedureType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

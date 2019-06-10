@@ -60,7 +60,7 @@ class Custodian extends Model {
         
         return $this->belongsToMany(
             'App\Models\Student',
-            'custodians_students',
+            'custodian_student',
             'custodian_id',
             'student_id'
         );
@@ -199,6 +199,28 @@ class Custodian extends Model {
     }
     
     /**
+     * 保存家长&学生 、家长&部门绑定关系数据
+     *
+     * @param Custodian $custodian
+     * @param array $data
+     * @throws Throwable
+     */
+    function storeProperties(Custodian $custodian, array $data) {
+        
+        # 更新监护人&部门绑定关系
+        (new DepartmentUser)->storeByUserId(
+            $custodian->user_id,
+            $data['departmentIds'] ?? [],
+            true
+        );
+        # 更新监护人&学生关系
+        (new CustodianStudent)->store($custodian->id, $data['relationships'] ?? []);
+        # 更新监护人手机号码
+        (new Mobile)->store($data['mobile'], $custodian->user->id);
+        
+    }
+    
+    /**
      * 更新指定的监护人记录
      *
      * @param array $data
@@ -260,7 +282,7 @@ class Custodian extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
@@ -290,6 +312,7 @@ class Custodian extends Model {
                                 }
                             }
                         }
+                        
                         return array_map('array_unique', [
                             $sIds ?? [], $cIds ?? [], $dIds ?? [],
                             $rUIds ?? [], $uUIds ?? [],
@@ -323,7 +346,7 @@ class Custodian extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
@@ -335,7 +358,7 @@ class Custodian extends Model {
      * @throws Throwable
      */
     function issue() {
-    
+        
         $card = new Card;
         if (Request::has('sectionId')) {
             $class = Squad::find(Request::input('sectionId'));
@@ -379,6 +402,7 @@ HTML;
                 );
                 $i++;
             }
+            
             return $list;
         }
         
@@ -492,28 +516,6 @@ HTML;
             $relations ?? collect([]),
             $mobiles ?? [],
         ];
-        
-    }
-    
-    /**
-     * 保存家长&学生 、家长&部门绑定关系数据
-     *
-     * @param Custodian $custodian
-     * @param array $data
-     * @throws Throwable
-     */
-    function storeProperties(Custodian $custodian, array $data) {
-        
-        # 更新监护人&部门绑定关系
-        (new DepartmentUser)->storeByUserId(
-            $custodian->user_id,
-            $data['departmentIds'] ?? [],
-            true
-        );
-        # 更新监护人&学生关系
-        (new CustodianStudent)->store($custodian->id, $data['relationships'] ?? []);
-        # 更新监护人手机号码
-        (new Mobile)->store($data['mobile'], $custodian->user->id);
         
     }
     

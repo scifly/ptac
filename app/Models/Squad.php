@@ -81,7 +81,7 @@ class Squad extends Model {
      *
      * @return BelongsToMany
      */
-    function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_classes'); }
+    function educators() { return $this->belongsToMany('App\Models\Educator', 'class_educator'); }
     
     /**
      * 获取指定班级对应的所有科目对象
@@ -222,7 +222,7 @@ class Squad extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
@@ -240,7 +240,7 @@ class Squad extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

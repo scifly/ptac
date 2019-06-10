@@ -277,7 +277,7 @@ $factory->define(App\Models\SubjectModule::class, function (Faker\Generator $fak
     ];
 });
 
-$factory->define(App\Models\EducatorClass::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\ClassEducator::class, function (Faker\Generator $faker) {
 
     return [
         'educator_id' => rand(1,10),

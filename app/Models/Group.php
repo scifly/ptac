@@ -7,12 +7,12 @@ use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\BelongsToMany,
+    Relations\HasMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -74,21 +74,21 @@ class Group extends Model {
      *
      * @return BelongsToMany
      */
-    function menus() { return $this->belongsToMany('App\Models\Menu', 'groups_menus'); }
+    function menus() { return $this->belongsToMany('App\Models\Menu', 'group_menu'); }
     
     /**
      * 获取指定角色可以访问的功能对象
      *
      * @return BelongsToMany
      */
-    function actions() { return $this->belongsToMany('App\Models\Action', 'actions_groups'); }
+    function actions() { return $this->belongsToMany('App\Models\Action', 'action_group'); }
     
     /**
      * 获取指定角色可以访问的卡片对象
      *
      * @return BelongsToMany
      */
-    function tabs() { return $this->belongsToMany('App\Models\Tab', 'groups_tabs'); }
+    function tabs() { return $this->belongsToMany('App\Models\Tab', 'group_tab'); }
     
     /**
      * 角色列表
@@ -190,6 +190,25 @@ class Group extends Model {
     }
     
     /**
+     * 保存角色 & 功能/菜单/卡片绑定关系
+     *
+     * @param $id
+     * @param array $data
+     */
+    private function binding($id, array $data) {
+        
+        array_map(
+            function ($class, $ids, $forward) use ($id, $data) {
+                $this->retain($class, $id, $data[$ids], $forward);
+            },
+            ['ActionGroup', 'GroupMenu', 'GroupTab'],
+            ['action_ids', 'menu_ids', 'tab_ids'],
+            [false, true, true]
+        );
+        
+    }
+    
+    /**
      * 更新角色
      *
      * @param array $data
@@ -224,7 +243,7 @@ class Group extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $this->purge([
@@ -235,7 +254,7 @@ class Group extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
@@ -265,28 +284,6 @@ class Group extends Model {
             'school_id' => $this->schoolId(),
             'enabled'   => 1,
         ])->pluck('name', 'id')->toArray();
-        
-    }
-    
-    /**
-     * 保存角色 & 功能/菜单/卡片绑定关系
-     *
-     * @param $id
-     * @param array $data
-     */
-    private function binding($id, array $data) {
-    
-        array_map(
-            function ($class, $ids, $forward) use ($id, $data) {
-                $this->retain($class, $id, $data[$ids], $forward);
-            }, [
-                'ActionGroup', 'GroupMenu', 'GroupTab'
-            ], [
-                'action_ids', 'menu_ids', 'tab_ids'
-            ], [
-                false, true, true
-            ]
-        );
         
     }
     

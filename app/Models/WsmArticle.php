@@ -146,7 +146,7 @@ class WsmArticle extends Model {
      * @return bool|mixed
      */
     function store(array $data) {
-    
+        
         return $this->create($data) ? true : false;
         
     }
@@ -159,9 +159,9 @@ class WsmArticle extends Model {
      * @return bool|mixed
      */
     function modify(array $data, $id) {
-    
+        
         return $this->find($id)->update($data);
-    
+        
     }
     
     /**

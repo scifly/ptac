@@ -136,10 +136,10 @@ class Grade extends Model {
             ['db' => 'Grade.created_at', 'dt' => 3],
             ['db' => 'Grade.updated_at', 'dt' => 4],
             [
-                'db' => 'Department.synced as synced', 'dt' => 5,
+                'db'        => 'Department.synced as synced', 'dt' => 5,
                 'formatter' => function ($d) {
                     return $this->synced($d);
-                }
+                },
             ],
             [
                 'db'        => 'Grade.enabled', 'dt' => 6,
@@ -238,7 +238,7 @@ class Grade extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
@@ -253,7 +253,7 @@ class Grade extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

@@ -4,7 +4,7 @@ namespace App\Models;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\{Builder, Model};
+use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
 use Throwable;
 
 /**
@@ -27,11 +27,9 @@ use Throwable;
  * @method static Builder|TagUser query()
  * @mixin Eloquent
  */
-class TagUser extends Model {
+class TagUser extends Pivot {
     
     use ModelTrait;
-    
-    protected $table = 'tags_users';
     
     protected $fillable = ['tag_id', 'user_id', 'enabled'];
     
@@ -43,9 +41,9 @@ class TagUser extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         return $this->purge(['TagUser'], 'id', 'purge', $id);
-    
+        
     }
     
 }

@@ -2,21 +2,13 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\{Auth, Request};
 use Illuminate\View\View;
 use Throwable;
 
@@ -103,7 +95,7 @@ class Module extends Model {
      *
      * @return BelongsToMany
      */
-    function students() { return $this->belongsToMany('App\Models\Student', 'modules_students'); }
+    function students() { return $this->belongsToMany('App\Models\Student', 'module_student'); }
     
     /**
      * 应用模块列表

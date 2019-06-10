@@ -96,7 +96,7 @@ class PassageRule extends Model {
         
         return $this->belongsToMany(
             'App\Models\Turnstile',
-            'rules_turnstiles',
+            'rule_turnstile',
             'passage_rule_id',
             'turnstile_id'
         );
@@ -258,7 +258,7 @@ class PassageRule extends Model {
      * @throws Exception
      */
     function issue($deviceids = []) {
-    
+        
         try {
             $devices = empty($deviceids)
                 ? Turnstile::whereSchoolId($this->schoolId())->get()
@@ -304,7 +304,7 @@ class PassageRule extends Model {
         }
         
         return true;
-    
+        
     }
     
 }

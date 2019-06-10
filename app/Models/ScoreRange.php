@@ -5,12 +5,9 @@ use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**

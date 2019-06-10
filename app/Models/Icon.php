@@ -155,7 +155,7 @@ class Icon extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $this->purge(['Tab'], 'icon_id', 'reset', $id);
@@ -164,7 +164,7 @@ class Icon extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
     }
     

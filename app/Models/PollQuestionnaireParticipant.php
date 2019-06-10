@@ -4,9 +4,7 @@ namespace App\Models;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Throwable;
 
 /**

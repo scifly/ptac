@@ -3,8 +3,7 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
-use App\Jobs\ExportStudent;
-use App\Jobs\ImportStudent;
+use App\Jobs\{ExportStudent, ImportStudent};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -16,8 +15,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\{Arr, Facades\Auth, Facades\DB, Facades\Request};
-use PhpOffice\PhpSpreadsheet\Exception as PssException;
-use PhpOffice\PhpSpreadsheet\Reader\Exception as PssrException;
+use PhpOffice\PhpSpreadsheet\{Exception as PssException, Reader\Exception as PssrException};
 use ReflectionException;
 use Throwable;
 
@@ -100,12 +98,7 @@ class Student extends Model {
      */
     function custodians() {
         
-        return $this->belongsToMany(
-            'App\Models\Custodian',
-            'custodians_students',
-            'student_id',
-            'custodian_id'
-        );
+        return $this->belongsToMany('App\Models\Custodian', 'custodian_student');
         
     }
     
@@ -142,7 +135,7 @@ class Student extends Model {
      *
      * @return BelongsToMany
      */
-    function modules() { return $this->belongsToMany('App\Models\Module', 'modules_students'); }
+    function modules() { return $this->belongsToMany('App\Models\Module', 'module_student'); }
     
     /**
      * 学生列表
@@ -266,8 +259,8 @@ class Student extends Model {
                         $departmentId = Squad::find($data['class_id'])->department_id;
                         foreach ($student->custodians as $custodian) {
                             $condition = [
-                                'user_id' => $custodian->user_id,
-                                'department_id' => $student->squad->department_id
+                                'user_id'       => $custodian->user_id,
+                                'department_id' => $student->squad->department_id,
                             ];
                             if ($du = DepartmentUser::where($condition)->first()) {
                                 $du->update(['department_id' => $departmentId]);
@@ -338,7 +331,7 @@ class Student extends Model {
                 Request::replace(['ids' => $ids]);
                 $this->purge([
                     class_basename($this), 'Consumption',
-                    'CustodianStudent', 'ScoreTotal', 'Score'
+                    'CustodianStudent', 'ScoreTotal', 'Score',
                 ], 'student_id');
             });
         } catch (Exception $e) {
@@ -356,7 +349,7 @@ class Student extends Model {
      * @throws PssrException
      */
     function import() {
-    
+        
         $records = $this->upload();
         $ns = array_count_values(
             array_map('strval', Arr::pluck($records, 'G'))
@@ -370,11 +363,11 @@ class Student extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             implode('', [
                 (!empty($sns) ? ('学号: ' . implode(',', $sns)) : ''),
-                '有重复，请检查后重试'
+                '有重复，请检查后重试',
             ])
         );
         ImportStudent::dispatch($records, Auth::id());
-    
+        
         return true;
         
     }
@@ -420,7 +413,7 @@ class Student extends Model {
      * @throws Throwable
      */
     function issue() {
-    
+        
         $card = new Card;
         if (Request::has('sectionId')) {
             $classId = Request::input('sectionId');
@@ -451,11 +444,12 @@ HTML;
                 );
                 $i++;
             }
+            
             return $list;
         }
         
         return $card->store(null, true);
-    
+        
     }
     
     /**
@@ -465,11 +459,10 @@ HTML;
      * @throws Throwable
      */
     function grant() {
-    
+        
         return (new Card)->grant('Student');
         
     }
-    
     
     /**
      * 获取指定年级对应的班级列表
@@ -494,12 +487,12 @@ HTML;
      * @return array
      */
     function exams($id) {
-    
+        
         return (new Exam)->whereRaw('FIND_IN_SET(' . $this->find($id)->class_id . ', class_ids)')
             ->orderBy('start_date', 'desc')
             ->where('enabled', 1)
             ->get()->toArray();
-    
+        
     }
     
     /**
@@ -525,7 +518,7 @@ HTML;
         $builder = empty($grades)
             ? Squad::whereIn('id', $this->classIds())
             : Squad::where(['grade_id' => $gradeId, 'enabled' => 1]);
-    
+        
         return [
             $student ?? null,
             $grades,

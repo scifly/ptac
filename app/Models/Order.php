@@ -6,9 +6,7 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -45,8 +43,6 @@ use Throwable;
 class Order extends Model {
     
     use ModelTrait;
-    
-    protected $table = 'orders';
     
     protected $fillable = [
         'ordersn', 'user_id', 'pay_user_id',

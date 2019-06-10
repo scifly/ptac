@@ -5,7 +5,7 @@ use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Model};
+use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -31,9 +31,7 @@ use Throwable;
  * @method static Builder|MenuTab newQuery()
  * @method static Builder|MenuTab query()
  */
-class MenuTab extends Model {
-    
-    protected $table = 'menus_tabs';
+class MenuTab extends Pivot {
     
     protected $fillable = ['menu_id', 'tab_id', 'tab_order', 'enabled'];
     
@@ -60,7 +58,7 @@ class MenuTab extends Model {
                         $forward ? $id : $value,
                         null, Constant::ENABLED,
                         now()->toDateTimeString(),
-                        now()->toDateTimeString()
+                        now()->toDateTimeString(),
                     ]);
                 }
                 $this->insert($records);

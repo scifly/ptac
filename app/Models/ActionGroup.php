@@ -3,7 +3,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\{Builder, Model};
+use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
 
 /**
  * App\Models\ActionGroup
@@ -25,9 +25,7 @@ use Illuminate\Database\Eloquent\{Builder, Model};
  * @method static Builder|ActionGroup query()
  * @mixin Eloquent
  */
-class ActionGroup extends Model {
-    
-    protected $table = 'actions_groups';
+class ActionGroup extends Pivot {
     
     protected $fillable = ['action_id', 'group_id', 'enabled'];
     

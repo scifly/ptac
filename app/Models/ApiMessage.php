@@ -5,9 +5,7 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -43,14 +41,14 @@ use Throwable;
  * @mixin Eloquent
  */
 class ApiMessage extends Model {
-
+    
     use ModelTrait;
     
     protected $table = 'api_messages';
     
     protected $fillable = [
         'mobile', 'content', 'read',
-        'sent', 'message_type_id'
+        'sent', 'message_type_id',
     ];
     
     /**
@@ -84,7 +82,7 @@ class ApiMessage extends Model {
      * @throws Throwable
      */
     function log(array $mobiles, array $data) {
-    
+        
         try {
             DB::transaction(function () use ($mobiles, $data) {
                 $records = [];
@@ -97,9 +95,9 @@ class ApiMessage extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
-    
+        
     }
     
 }

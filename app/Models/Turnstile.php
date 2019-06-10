@@ -2,8 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
+use App\Helpers\{HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -77,7 +76,7 @@ class Turnstile extends Model {
         
         return $this->belongsToMany(
             'App\Models\PassageRule',
-            'rules_turnstiles',
+            'rule_turnstile',
             'turnstile_id',
             'passage_rule_id'
         );
@@ -91,7 +90,7 @@ class Turnstile extends Model {
      */
     function cards() {
         
-        return $this->belongsToMany('App\Models\Card', 'cards_turnstiles');
+        return $this->belongsToMany('App\Models\Card', 'card_turnstile');
         
     }
     
@@ -157,43 +156,6 @@ class Turnstile extends Model {
     }
     
     /**
-     * 返回门列表
-     *
-     * @return array
-     */
-    function doors() {
-        
-        $i = 0;
-        foreach ($this->whereSchoolId($this->schoolId())->get() as $t) {
-            $door = $t->sn . '.%s.' . $t->location;
-            for ($j = 1; $j <= $t->doors; $j++) {
-                $doors[$i++] = sprintf($door, $j);
-            }
-        }
-        
-        return $doors ?? [];
-        
-    }
-    
-    /**
-     * 返回门禁设备ID
-     *
-     * @param $doorIds
-     * @return array
-     */
-    function deviceids(array $doorIds) {
-        
-        $doors = $this->doors();
-        foreach ($doorIds as $doorId) {
-            $paths = explode('.', $doors[$doorId]);
-            $deviceIds[] = $this->whereSn($paths[0])->first()->deviceid;
-        }
-        
-        return array_unique($deviceIds ?? []);
-        
-    }
-    
-    /**
      * 调用接口
      *
      * @param string $api - 接口名称
@@ -234,6 +196,43 @@ class Turnstile extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
+    }
+    
+    /**
+     * 返回门禁设备ID
+     *
+     * @param $doorIds
+     * @return array
+     */
+    function deviceids(array $doorIds) {
+        
+        $doors = $this->doors();
+        foreach ($doorIds as $doorId) {
+            $paths = explode('.', $doors[$doorId]);
+            $deviceIds[] = $this->whereSn($paths[0])->first()->deviceid;
+        }
+        
+        return array_unique($deviceIds ?? []);
+        
+    }
+    
+    /**
+     * 返回门列表
+     *
+     * @return array
+     */
+    function doors() {
+        
+        $i = 0;
+        foreach ($this->whereSchoolId($this->schoolId())->get() as $t) {
+            $door = $t->sn . '.%s.' . $t->location;
+            for ($j = 1; $j <= $t->doors; $j++) {
+                $doors[$i++] = sprintf($door, $j);
+            }
+        }
+        
+        return $doors ?? [];
         
     }
     

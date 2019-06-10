@@ -155,7 +155,7 @@ class Exam extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $this->purge(
@@ -166,7 +166,7 @@ class Exam extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

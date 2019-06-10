@@ -2,19 +2,12 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany, Relations\HasOne};
+use Illuminate\Support\Facades\{Auth, DB};
 use Throwable;
 
 /**
@@ -185,7 +178,7 @@ class PollQuestionnaireSubject extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $pre = 'PollQuestionnaire';
@@ -197,7 +190,7 @@ class PollQuestionnaireSubject extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

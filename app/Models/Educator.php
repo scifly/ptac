@@ -8,12 +8,7 @@ use App\Jobs\ImportEducator;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder,
-    Collection,
-    Model,
-    Relations\BelongsTo,
-    Relations\BelongsToMany,
-    Relations\HasMany};
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\{Auth, DB, Request};
@@ -37,7 +32,7 @@ use Throwable;
  * @property-read School $school
  * @property-read Collection|Tag[] $tags
  * @property-read User $user
- * @property-read Collection|EducatorClass[] $educatorClasses
+ * @property-read Collection|ClassEducator[] $educatorClasses
  * @method static Builder|Educator whereCreatedAt($value)
  * @method static Builder|Educator whereEnabled($value)
  * @method static Builder|Educator whereId($value)
@@ -84,27 +79,7 @@ class Educator extends Model {
      */
     function classes() {
         
-        return $this->belongsToMany(
-            'App\Models\Squad',
-            'educators_classes',
-            'educator_id',
-            'class_id'
-        );
-        
-    }
-    
-    /**
-     * 获取指定教职员工所属的所管理班级科目对象
-     *
-     * @return HasMany
-     */
-    function educatorClasses() {
-        
-        return $this->hasMany(
-            'App\Models\EducatorClass',
-            'educator_id',
-            'id'
-        );
+        return $this->belongsToMany('App\Models\Squad', 'class_educator');
         
     }
     
@@ -220,7 +195,7 @@ class Educator extends Model {
                 $data['user_id'] = $user->id;
                 $educator = $this->create($data);
                 # 班级科目绑定关系
-                (new EducatorClass)->storeByEducatorId($educator->id, $data['cs']);
+                (new ClassEducator)->storeByEducatorId($educator->id, $data['cs']);
                 # 部门用户绑定关系
                 (new DepartmentUser)->storeByUserId($user->id, $data['selectedDepartments']);
                 # 手机号码
@@ -262,7 +237,7 @@ class Educator extends Model {
                     $user->update($data['user']);
                     $educator->update($data);
                     (new Card)->store($user);
-                    (new EducatorClass)->storeByEducatorId($educator->id, $data['cs']);
+                    (new ClassEducator)->storeByEducatorId($educator->id, $data['cs']);
                     (new DepartmentUser)->storeByUserId($educator->user_id, $data['selectedDepartments']);
                     (new Mobile)->store($data['mobile'], $educator->user_id);
                     # 如果同时也是监护人
@@ -270,7 +245,7 @@ class Educator extends Model {
                     if (!$data['singular']) {
                         $custodian ?: Custodian::create(
                             array_combine((new Custodian)->getFillable(), [
-                                $educator->user_id, $educator->enabled
+                                $educator->user_id, $educator->enabled,
                             ])
                         );
                     } else {
@@ -280,7 +255,7 @@ class Educator extends Model {
                 # 同步企业微信
                 (new User)->sync(
                     array_map(
-                        function ($userId) {return [$userId, '', 'update']; },
+                        function ($userId) { return [$userId, '', 'update']; },
                         $this->whereIn('id', $ids)->get()->pluck('user_id')->toArray()
                     )
                 );
@@ -355,7 +330,7 @@ class Educator extends Model {
                     # 删除部门绑定关系
                     (new DepartmentUser)->where([
                         ['user_id', 'in', $uUIds],
-                        ['enabled', '=', 1]
+                        ['enabled', '=', 1],
                     ])->delete();
                     Request::replace(['ids' => $uUIds]);
                     $user->modify(['group_id' => Group::whereName('监护人')->first()->id]);
@@ -369,7 +344,7 @@ class Educator extends Model {
                 Request::replace(['ids' => $ids]);
                 $this->purge([
                     class_basename($this), 'ConferenceParticipant',
-                    'EducatorAppeal', 'EducatorClass', 'Event', 'SmsEducator'
+                    'EducatorAppeal', 'ClassEducator', 'Event', 'SmsEducator',
                 ], 'educator_id');
             });
         } catch (Exception $e) {
@@ -422,7 +397,7 @@ class Educator extends Model {
      * @throws Throwable
      */
     function issue() {
-    
+        
         $card = new Card;
         if (Request::has('sectionId')) {
             $userIds = DepartmentUser::whereDepartmentId(Request::input('sectionId'))->pluck('user_id')->toArray();
@@ -454,6 +429,7 @@ HTML;
                 );
                 $i++;
             }
+            
             return $list;
         }
         
@@ -469,7 +445,7 @@ HTML;
      * @throws Throwable
      */
     function grant() {
-    
+        
         return (new Card)->grant('Educator');
         
     }
@@ -512,7 +488,7 @@ HTML;
             ->get()->filter(function (Subject $subject) use ($gradeIds) {
                 return !empty(array_intersect($gradeIds, explode(',', $subject->grade_ids)));
             }
-        );
+            );
         if (($educatorId = $id ?? Request::route('id')) && Request::method() == 'GET') {
             $educator = $this->find($educatorId);
             $educator->{'card'} = $educator->user->card;

@@ -3,8 +3,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
 
 /**
  * App\Models\GroupTab
@@ -26,9 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|GroupTab newQuery()
  * @method static Builder|GroupTab query()
  */
-class GroupTab extends Model {
-    
-    protected $table = 'groups_tabs';
+class GroupTab extends Pivot {
     
     protected $fillable = ['group_id', 'tab_id', 'enabled'];
     

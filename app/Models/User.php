@@ -110,7 +110,7 @@ class User extends Authenticatable {
         'position', 'enabled', 'email',
         'card_id', 'avatar_url', 'english_name',
         'isleader', 'telephone', 'order',
-        'synced', 'subscribed'
+        'synced', 'subscribed',
     ];
     
     /**
@@ -177,7 +177,7 @@ class User extends Authenticatable {
      */
     function departments() {
         
-        return $this->belongsToMany('App\Models\Department', 'departments_users');
+        return $this->belongsToMany('App\Models\Department', 'department_user');
         
     }
     
@@ -286,7 +286,7 @@ class User extends Authenticatable {
                     return Datatable::status($d, $row, false);
                 },
             ],
-            ['db' => 'Groups.remark as remark', 'dt' => 12]
+            ['db' => 'Groups.remark as remark', 'dt' => 12],
         ];
         $joins = [
             [
@@ -409,9 +409,9 @@ class User extends Authenticatable {
                     (new DepartmentUser)->storeByUserId($user->id, [$this->departmentId($data)]);
                     $group = Group::find($data['user']['group_id']);
                     $this->sync([
-                        [$user->id, $group->name, 'create']
+                        [$user->id, $group->name, 'create'],
                     ]);
-                # 创建合作伙伴(api用户)
+                    # 创建合作伙伴(api用户)
                 } else {
                     $partner = $this->create($data);
                     MessageType::create([
@@ -427,6 +427,107 @@ class User extends Authenticatable {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 返回当前登录用户的角色名称
+     *
+     * @param null $id
+     * @return string
+     */
+    function role($id = null) {
+        
+        $user = $this->find($id ?? Auth::id());
+        $role = $user->group->name;
+        $part = session('part');
+        
+        return !isset($user->educator, $part) ? $role
+            : ($part == 'educator' ? $role : '监护人');
+        
+    }
+    
+    /**
+     * 获取超级用户所处的部门id
+     *
+     * @param $data
+     * @return int|mixed|null
+     */
+    private function departmentId($data) {
+        
+        switch (Group::find($data['user']['group_id'])->name) {
+            case '运营':
+                return Department::whereParentId(null)->first()->id;
+            case '企业':
+                return Corp::find($data['corp_id'])->department_id;
+            case '学校':
+                return School::find($data['school_id'])->department_id;
+            default:
+                return null;
+        }
+        
+    }
+    
+    /**
+     * 同步企业微信会员
+     *
+     * @param array $contacts
+     * @param null $id - 接收广播的用户id
+     * @return bool
+     */
+    function sync(array $contacts, $id = null) {
+        
+        foreach ($contacts as $contact) {
+            list($userId, $role, $method) = $contact;
+            if ($role == '学生') continue;
+            $user = $this->find($userId);
+            $params = [
+                'userid'   => $user->userid,
+                'username' => $user->username,
+                'position' => $user->position ?? $role,
+                'corpIds'  => $this->corpIds($userId),
+            ];
+            if ($method != 'delete') {
+                $departments = in_array($role, ['运营', '企业']) ? [1]
+                    : $user->departments->unique()->pluck('id')->toArray();
+                $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
+                $params = array_merge($params, [
+                    'name'         => $user->realname,
+                    'english_name' => $user->english_name,
+                    'mobile'       => $mobile,
+                    'email'        => $user->email,
+                    'department'   => $departments,
+                    'gender'       => $user->gender,
+                    'remark'       => '',
+                    'enable'       => $user->enabled,
+                ]);
+                # 在创建会员时，默认情况下不向该会员发送邀请
+                // $method != 'create' ?: $params = array_merge($params, ['to_invite' => false]);
+            }
+            $members[] = [$params, $method];
+        }
+        SyncMember::dispatch($members ?? [], $id ?? Auth::id());
+        
+        return true;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
+    /**
+     * 返回指定用户所属的所有企业id
+     *
+     * @param $id
+     * @return array
+     */
+    function corpIds($id) {
+        
+        $user = $this->find($id);
+        $topDeptId = $this->topDeptId($user);
+        
+        return $this->role($id) == '运营'
+            ? Corp::pluck('id')->toArray()
+            : ($topDeptId != 1 ? [(new Department)->corpId($topDeptId)] : []);
         
     }
     
@@ -483,7 +584,7 @@ class User extends Authenticatable {
                             }, $ids
                         )
                     );
-                # 更新合作伙伴(api)
+                    # 更新合作伙伴(api)
                 } else {
                     if ($id) {
                         $this->find($id)->update($data);
@@ -558,7 +659,7 @@ class User extends Authenticatable {
                     $this->purge([
                         class_basename($this), 'DepartmentUser', 'TagUser', 'Card',
                         'Tag', 'Mobile', 'PollQuestionnaire', 'MessageReply',
-                        'PollQuestionnaireAnswer', 'PollQuestionnaireParticipant'
+                        'PollQuestionnaireAnswer', 'PollQuestionnaireParticipant',
                     ], 'user_id');
                 } else {
                     $mtIds = MessageType::whereIn('user_id', $ids)
@@ -572,52 +673,6 @@ class User extends Authenticatable {
         } catch (Exception $e) {
             throw $e;
         }
-        
-        return true;
-        
-    }
-    
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-    /**
-     * 同步企业微信会员
-     *
-     * @param array $contacts
-     * @param null $id - 接收广播的用户id
-     * @return bool
-     */
-    function sync(array $contacts, $id = null) {
-        
-        foreach ($contacts as $contact) {
-            list($userId, $role, $method) = $contact;
-            if ($role == '学生') continue;
-            $user = $this->find($userId);
-            
-            $params = [
-                'userid'   => $user->userid,
-                'username' => $user->username,
-                'position' => $user->position ?? $role,
-                'corpIds'  => $this->corpIds($userId),
-            ];
-            if ($method != 'delete') {
-                $departments = in_array($role, ['运营', '企业']) ? [1]
-                    : $user->departments->unique()->pluck('id')->toArray();
-                $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
-                $params = array_merge($params, [
-                    'name'         => $user->realname,
-                    'english_name' => $user->english_name,
-                    'mobile'       => $mobile,
-                    'email'        => $user->email,
-                    'department'   => $departments,
-                    'gender'       => $user->gender,
-                    'remark'       => '',
-                    'enable'       => $user->enabled,
-                ]);
-                # 在创建会员时，默认情况下不向该会员发送邀请
-                // $method != 'create' ?: $params = array_merge($params, ['to_invite' => false]);
-            }
-            $members[] = [$params, $method];
-        }
-        SyncMember::dispatch($members ?? [], $id ?? Auth::id());
         
         return true;
         
@@ -660,19 +715,38 @@ class User extends Authenticatable {
     }
     
     /**
-     * 返回当前登录用户的角色名称
+     * 获取Select HTML
      *
-     * @param null $id
+     * @param array $items
+     * @param $field
      * @return string
      */
-    function role($id = null) {
+    private function selectList(array $items, $field) {
         
-        $user = $this->find($id ?? Auth::id());
-        $role = $user->group->name;
-        $part = session('part');
+        $html = str_replace('ID', $field, self::SELECT_HTML);
+        foreach ($items as $key => $value) {
+            $html .= '<option value="' . $key . '">' . $value . '</option>';
+        }
         
-        return !isset($user->educator, $part) ? $role
-            : ($part == 'educator' ? $role : '监护人');
+        return $html . '</select>';
+        
+    }
+    
+    /**
+     * @return array
+     */
+    private function corps() {
+        
+        switch (Auth::user()->role()) {
+            case '运营':
+                return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
+            case '企业':
+                $corp = Corp::whereDepartmentId($this->topDeptId())->first();
+                
+                return [$corp->id => $corp->name];
+            default:
+                return [];
+        }
         
     }
     
@@ -695,23 +769,6 @@ class User extends Authenticatable {
                 'user_id' => $user->id,
                 'enabled' => $role == '监护人' ? 0 : 1,
             ])->pluck('department_id')->toArray();
-        
-    }
-    
-    /**
-     * 返回指定用户所属的所有企业id
-     *
-     * @param $id
-     * @return array
-     */
-    function corpIds($id) {
-        
-        $user = $this->find($id);
-        $topDeptId = $this->topDeptId($user);
-
-        return $this->role($id) == '运营'
-            ? Corp::pluck('id')->toArray()
-            : ($topDeptId != 1 ? [(new Department)->corpId($topDeptId)] : []);
         
     }
     
@@ -784,63 +841,6 @@ class User extends Authenticatable {
             Request::route('id') ? $this->find(Request::route('id'))->mobiles : [],
             $groups ?? [], $corps, $schools,
         ];
-        
-    }
-    
-    /**
-     * 获取Select HTML
-     *
-     * @param array $items
-     * @param $field
-     * @return string
-     */
-    private function selectList(array $items, $field) {
-        
-        $html = str_replace('ID', $field, self::SELECT_HTML);
-        foreach ($items as $key => $value) {
-            $html .= '<option value="' . $key . '">' . $value . '</option>';
-        }
-        
-        return $html . '</select>';
-        
-    }
-    
-    /**
-     * 获取超级用户所处的部门id
-     *
-     * @param $data
-     * @return int|mixed|null
-     */
-    private function departmentId($data) {
-        
-        switch (Group::find($data['user']['group_id'])->name) {
-            case '运营':
-                return Department::whereParentId(null)->first()->id;
-            case '企业':
-                return Corp::find($data['corp_id'])->department_id;
-            case '学校':
-                return School::find($data['school_id'])->department_id;
-            default:
-                return null;
-        }
-        
-    }
-    
-    /**
-     * @return array
-     */
-    private function corps() {
-        
-        switch (Auth::user()->role()) {
-            case '运营':
-                return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
-            case '企业':
-                $corp = Corp::whereDepartmentId($this->topDeptId())->first();
-                
-                return [$corp->id => $corp->name];
-            default:
-                return [];
-        }
         
     }
     

@@ -51,7 +51,7 @@ class IconType extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $this->purge(['Icon'], 'icon_type_id', 'reset', $id);
@@ -60,7 +60,7 @@ class IconType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

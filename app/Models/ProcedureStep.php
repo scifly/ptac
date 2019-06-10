@@ -5,9 +5,7 @@ use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Throwable;
 
 /**
@@ -105,6 +103,21 @@ class ProcedureStep extends Model {
     }
     
     /**
+     * 返回指定审批流程步骤相关的审批者用户
+     *
+     * @param string $d
+     * @return string
+     */
+    private function userList($d) {
+        
+        $userList = User::whereIn('id', explode(',', $d))
+            ->pluck('realname')->toArray();
+        
+        return implode(',', $userList);
+        
+    }
+    
+    /**
      * 保存审批流程步骤
      *
      * @param array $data
@@ -141,21 +154,6 @@ class ProcedureStep extends Model {
     function remove($id = null) {
         
         return $this->purge(['ProcedureStep'], 'id', 'purge', $id);
-        
-    }
-    
-    /**
-     * 返回指定审批流程步骤相关的审批者用户
-     *
-     * @param string $d
-     * @return string
-     */
-    private function userList($d) {
-        
-        $userList = User::whereIn('id', explode(',', $d))
-            ->pluck('realname')->toArray();
-        
-        return implode(',', $userList);
         
     }
     

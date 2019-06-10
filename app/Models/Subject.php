@@ -2,8 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -13,8 +12,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\BelongsToMany,
     Relations\HasMany};
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**
@@ -33,7 +31,7 @@ use Throwable;
  * @property-read Grade $grade
  * @property-read School $school
  * @property-read Collection|SubjectModule[] $subjectModules
- * @property-read EducatorClass $educatorClass
+ * @property-read ClassEducator $educatorClass
  * @property-read Collection|Major[] $majors
  * @property-read Collection|Event[] $events
  * @property-read Collection|Squad[] $classes
@@ -85,16 +83,7 @@ class Subject extends Model {
      *
      * @return BelongsToMany
      */
-    function majors() {
-        
-        return $this->belongsToMany(
-            'App\Models\Major',
-            'majors_subjects',
-            'subject_id',
-            'major_id'
-        );
-        
-    }
+    function majors() { return $this->belongsToMany('App\Models\Major', 'major_subject'); }
     
     /**
      * 获取指定科目包含的所有事件对象
@@ -162,7 +151,7 @@ class Subject extends Model {
                 'formatter' => function ($d) {
                     return sprintf(
                         Snippet::BADGE,
-                          $d ? 'text-green' : 'text-gray',
+                        $d ? 'text-green' : 'text-gray',
                         $d ? '是' : '否'
                     );
                 },
@@ -255,20 +244,20 @@ class Subject extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $this->purge(['Exam', 'ScoreRange'], 'subject_ids', 'clear', $id);
                 $this->purge(['Score'], 'subject_id', 'reset', $id);
                 $this->purge(
-                    [class_basename($this), 'EducatorClass', 'Event', 'SubjectModule', 'MajorSubject'],
+                    [class_basename($this), 'ClassEducator', 'Event', 'SubjectModule', 'MajorSubject'],
                     'subject_id', 'purge', $id
                 );
             });
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
@@ -291,7 +280,7 @@ class Subject extends Model {
             (new Grade)->gradeList(),
             (new Major)->majorList(),
             $selectedMajors ?? null,
-            $selectedGrades ?? null
+            $selectedGrades ?? null,
         ];
         
     }

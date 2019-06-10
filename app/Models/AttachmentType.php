@@ -6,9 +6,7 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\HasMany};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -108,7 +106,7 @@ class AttachmentType extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $this->purge([class_basename($this)], 'id', 'purge', $id);
@@ -117,7 +115,7 @@ class AttachmentType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

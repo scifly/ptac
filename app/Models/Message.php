@@ -76,15 +76,6 @@ class Message extends Model {
     
     use ModelTrait;
     
-    protected $table = 'messages';
-    
-    protected $fillable = [
-        'comm_type_id', 'app_id', 'msl_id', 'content',
-        'serviceid', 'message_id', 'url', 'media_ids',
-        's_user_id', 'r_user_id', 'message_type_id',
-        'read', 'sent', 'title', 'event_id', 'media_type_id',
-    ];
-    
     const TPL = '<div class="weui-media-box weui-media-box_text">
         <a id="%s" href="#" class="weui-cell_access" data-type="%s">
             <p class="truncate" style="font-weight: %s;">%s</p>
@@ -95,6 +86,13 @@ class Message extends Model {
             <li class="weui-media-box__info__meta weui-media-box__info__meta_extra">%s</li>
         </ul>
     </div>';
+    protected $table = 'messages';
+    protected $fillable = [
+        'comm_type_id', 'app_id', 'msl_id', 'content',
+        'serviceid', 'message_id', 'url', 'media_ids',
+        's_user_id', 'r_user_id', 'message_type_id',
+        'read', 'sent', 'title', 'event_id', 'media_type_id',
+    ];
     
     /**
      * 返回指定消息所属的消息类型对象
@@ -175,10 +173,10 @@ class Message extends Model {
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             [
-                'db' => 'Message.title', 'dt' => 1,
+                'db'        => 'Message.title', 'dt' => 1,
                 'formatter' => function ($d, $row) {
                     return '[' . MediaType::find($row['media_type_id'])->remark . ']' . '&nbsp;' . mb_substr($d, 0, 10);
-                }
+                },
             ],
             [
                 'db'        => 'Message.msl_id', 'dt' => 2,
@@ -202,6 +200,7 @@ class Message extends Model {
                 'db'        => 'Message.media_type_id', 'dt' => 4,
                 'formatter' => function ($d) {
                     $mt = MediaType::find($d);
+                    
                     return Constant::MEDIA_TYPE_ICONS[$mt->name] . '&nbsp;' . $mt->remark;
                 },
             ],
@@ -253,7 +252,7 @@ class Message extends Model {
                             ? sprintf($html, 'edit_' . $id, '编辑', 'fa-edit')
                             : sprintf($html, 'show_' . $id, '详情', 'fa-laptop');
                     }
-
+                    
                     return $status . sprintf(Snippet::DT_ANCHOR, $id, '删除', 'fa-remove text-red');
                 },
             ],
@@ -352,6 +351,32 @@ class Message extends Model {
     }
     
     /**
+     * 显示指定消息的内容
+     *
+     * @param $id
+     * @return array
+     */
+    function detail($id) {
+        
+        $message = $this->find($id);
+        $msl = $message->messageSendinglog;
+        $type = MediaType::find($message->media_type_id)->name;
+        if (CommType::find($message->comm_type_id)->name == '短信') $type = 'sms';
+        
+        return [
+            'id'         => $message->id,
+            'title'      => $message->title,
+            'updated_at' => $this->humanDate($message->updated_at),
+            'sender'     => User::find($message->s_user_id)->realname,
+            'recipients' => $msl ? $msl->recipient_count : 0,
+            'msl_id'     => $msl ? $msl->id : 0,
+            'type'       => $type,
+            $type        => $message->content,
+        ];
+        
+    }
+    
+    /**
      * 获取发送对象列表Html
      *
      * @param $users
@@ -391,32 +416,6 @@ class Message extends Model {
         }
         
         return $targetsHtml;
-        
-    }
-    
-    /**
-     * 显示指定消息的内容
-     *
-     * @param $id
-     * @return array
-     */
-    function detail($id) {
-        
-        $message = $this->find($id);
-        $msl = $message->messageSendinglog;
-        $type = MediaType::find($message->media_type_id)->name;
-        if (CommType::find($message->comm_type_id)->name == '短信') $type = 'sms';
-        
-        return [
-            'id'         => $message->id,
-            'title'      => $message->title,
-            'updated_at' => $this->humanDate($message->updated_at),
-            'sender'     => User::find($message->s_user_id)->realname,
-            'recipients' => $msl ? $msl->recipient_count : 0,
-            'msl_id'     => $msl ? $msl->id : 0,
-            'type'       => $type,
-            $type        => $message->content,
-        ];
         
     }
     
@@ -488,7 +487,7 @@ class Message extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
@@ -499,7 +498,7 @@ class Message extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
@@ -974,6 +973,194 @@ class Message extends Model {
     }
     
     /**
+     * 返回消息列表(微信端)
+     *
+     * @return string
+     */
+    private function msgList() {
+        
+        $msgList = '';
+        /** @var Message $message */
+        foreach ($this->messages() as $message) {
+            if ($message->s_user_id == Auth::id() && !$message->r_user_id) {
+                $direction = '发件';
+                $color = $message->sent ? 'primary' : ($message->event_id ? 'warning' : 'error');
+                $status = $message->sent ? '已发' : ($message->event_id ? '定时' : '草稿');
+                $stat = '接收者';
+                $msl = $message->messageSendinglog;
+                $value = ($msl ? $msl->recipient_count : 0) . '人';
+            } else {
+                $direction = '收件';
+                $color = $message->read ? 'primary' : 'error';
+                $status = $message->read ? '已读' : '未读';
+                $stat = '发送者';
+                $value = $message->sender ? $message->sender->realname : '(未知)';
+            }
+            $msgList .= sprintf(
+                self::TPL,
+                $message->id,
+                $message->sent,
+                $message->read ? 'normal' : 'bold',
+                '[' . $message->mediaType->remark . ']' . $message->title,
+                $message->messageType->name,
+                sprintf(
+                    '%s : <span class="color-%s">%s</span>, %s : %s',
+                    $direction, $color, $status, $stat, $value
+                ),
+                $this->humanDate($message->created_at)
+            );
+        }
+        
+        return $msgList;
+        
+    }
+    
+    /**
+     * 获取消息
+     *
+     * @return Message[]|Builder[]|Collection|\Illuminate\Database\Query\Builder[]|Collection
+     */
+    private function messages() {
+        
+        $userId = Auth::id();
+        $clause = '((s_user_id = ' . $userId . ' AND r_user_id = 0) OR r_user_id = ' . $userId . ')';
+        $builder = $this->whereRaw($clause);
+        $action = Request::input('action');
+        $params = Request::input('params');
+        # 消息目录(所有、收件箱、发件箱、草稿箱)
+        $folder = $params['folder'] ?? 'all';
+        if (in_array($folder, ['outbox', 'draft'])) {
+            $sent = $folder == 'outbox' ? 1 : 0;
+            $builder = $this->where([
+                's_user_id' => $userId,
+                'r_user_id' => 0,
+                'sent'      => $sent,
+            ]);
+        } else {
+            $folder == 'all' ?: $builder = $this->where('r_user_id', $userId);
+        }
+        # 消息过滤（消息类型/格式、关键词、起止日期)
+        !($messageTypeId = $params['message_type_id'])
+            ?: $builder = $builder->where('message_type_id', $messageTypeId);
+        !($mediaTypeId = $params['media_type_id'])
+            ?: $builder = $builder->where('media_type_id', $mediaTypeId);
+        !($keyword = $params['keyword'])
+            ?: $builder = $builder->whereRaw("(title LIKE '%{$keyword}%' OR content LIKE '%{$keyword}%')");
+        $start = $params['start'] ? $params['start'] . ' 00:00:00' : null;
+        $end = $params['end'] ? $params['end'] . ' 23:59:59' : null;
+        if ($start && $end) {
+            abort_if(
+                $start > $end, HttpStatusCode::NOT_ACCEPTABLE,
+                __('messages.incorrect_data_range')
+            );
+            $builder = $builder->whereBetween('created_at', [$start, $end]);
+        } elseif ($start && !$end) {
+            $builder = $builder->where('created_at', '>=', $start);
+        } elseif (!$start && $end) {
+            $builder = $builder->where('created_at', '<=', $end);
+        }
+        # 分页加载
+        $page = $params['page'] ?? 1;
+        $skip = $action == 'page' ? $page * 7 : 0;
+        $records = $action == 'page' ? 7 : $page * 7;
+        
+        return $builder->orderBy('created_at', 'desc')
+            ->skip($skip)->take($records)->get();
+        
+    }
+    
+    /**
+     * 微信端创建消息
+     *
+     * @return Factory|JsonResponse|View|string
+     * @throws Throwable
+     */
+    function wCreate() {
+        
+        return Request::method() == 'POST'
+            ? (Request::has('file') ? $this->import() : $this->search())
+            : view('wechat.message_center.create');
+        
+    }
+    
+    /**
+     * 上传媒体文件
+     *
+     * @return JsonResponse
+     * @throws Throwable
+     */
+    function import() {
+        
+        # 上传到本地后台
+        abort_if(
+            empty($file = Request::file('file')),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.empty_file')
+        );
+        abort_if(
+            !($uploadedFile = (new Media)->import($file, __('messages.message.title'))),
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            __('messages.file_upload_failed')
+        );
+        # 上传到企业号后台
+        list($corpid, $secret) = $this->tokenParams();
+        $token = Wechat::getAccessToken($corpid, $secret);
+        if ($token['errcode']) {
+            abort(
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                $token['errmsg']
+            );
+        }
+        $type = Request::input('type');
+        $result = json_decode(
+            Wechat::uploadMedia($token['access_token'], $type == 'audio' ? 'voice' : $type, [
+                'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
+                'filename'      => $uploadedFile['filename'],
+                'content-type'  => Constant::CONTENT_TYPE[$type],
+                'filelength'    => $file->getSize(),
+            ])
+        );
+        abort_if(
+            $result->{'errcode'},
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            Constant::WXERR[$result->{'errcode'}]
+        );
+        $uploadedFile['media_id'] = $result->{'media_id'};
+        
+        return response()->json([
+            'message' => __('messages.message.uploaded'),
+            'data'    => $uploadedFile,
+        ]);
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
+    /**
+     * 获取当前请求对应的企业号id和“通讯录同步”Secret
+     *
+     * @return array
+     */
+    private function tokenParams() {
+        
+        if (!session('corpId')) {
+            abort_if(
+                !($corpMenuId = (new Menu)->menuId(session('menuId'), '企业')),
+                HttpStatusCode::BAD_REQUEST, __('messages.bad_request')
+            );
+            $corp = Corp::whereMenuId($corpMenuId)->first();
+        } else {
+            $corp = Corp::find(session('corpId'));
+        }
+        
+        return [
+            $corp->corpid,
+            $corp->contact_sync_secret,
+        ];
+        
+    }
+    
+    /**
      * 搜索已发或收到的消息
      *
      * @return string
@@ -1093,72 +1280,6 @@ class Message extends Model {
             'selectedTargetIds' => $selectedTargetIds ?? null,
             'type'              => $type,
         ])->render();
-        
-    }
-    
-    /**
-     * 微信端创建消息
-     *
-     * @return Factory|JsonResponse|View|string
-     * @throws Throwable
-     */
-    function wCreate() {
-        
-        return Request::method() == 'POST'
-            ? (Request::has('file') ? $this->import() : $this->search())
-            : view('wechat.message_center.create');
-        
-    }
-    
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-    /**
-     * 上传媒体文件
-     *
-     * @return JsonResponse
-     * @throws Throwable
-     */
-    function import() {
-        
-        # 上传到本地后台
-        abort_if(
-            empty($file = Request::file('file')),
-            HttpStatusCode::NOT_ACCEPTABLE,
-            __('messages.empty_file')
-        );
-        abort_if(
-            !($uploadedFile = (new Media)->import($file, __('messages.message.title'))),
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            __('messages.file_upload_failed')
-        );
-        # 上传到企业号后台
-        list($corpid, $secret) = $this->tokenParams();
-        $token = Wechat::getAccessToken($corpid, $secret);
-        if ($token['errcode']) {
-            abort(
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                $token['errmsg']
-            );
-        }
-        $type = Request::input('type');
-        $result = json_decode(
-            Wechat::uploadMedia($token['access_token'], $type == 'audio' ? 'voice' : $type, [
-                'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
-                'filename'      => $uploadedFile['filename'],
-                'content-type'  => Constant::CONTENT_TYPE[$type],
-                'filelength'    => $file->getSize(),
-            ])
-        );
-        abort_if(
-            $result->{'errcode'},
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            Constant::WXERR[$result->{'errcode'}]
-        );
-        $uploadedFile['media_id'] = $result->{'media_id'};
-        
-        return response()->json([
-            'message' => __('messages.message.uploaded'),
-            'data'    => $uploadedFile,
-        ]);
         
     }
     
@@ -1285,127 +1406,6 @@ class Message extends Model {
             School::find(session('schoolId'))->corp->acronym,
             !in_array($role, ['监护人', '学生']),
         ];
-        
-    }
-    
-    /**
-     * 获取当前请求对应的企业号id和“通讯录同步”Secret
-     *
-     * @return array
-     */
-    private function tokenParams() {
-        
-        if (!session('corpId')) {
-            abort_if(
-                !($corpMenuId = (new Menu)->menuId(session('menuId'), '企业')),
-                HttpStatusCode::BAD_REQUEST, __('messages.bad_request')
-            );
-            $corp = Corp::whereMenuId($corpMenuId)->first();
-        } else {
-            $corp = Corp::find(session('corpId'));
-        }
-        
-        return [
-            $corp->corpid,
-            $corp->contact_sync_secret,
-        ];
-        
-    }
-    
-    /**
-     * 返回消息列表(微信端)
-     *
-     * @return string
-     */
-    private function msgList() {
-        
-        $msgList = '';
-        /** @var Message $message */
-        foreach ($this->messages() as $message) {
-            if ($message->s_user_id == Auth::id() && !$message->r_user_id) {
-                $direction = '发件';
-                $color = $message->sent ? 'primary' : ($message->event_id ? 'warning' : 'error');
-                $status = $message->sent ? '已发' : ($message->event_id ? '定时' : '草稿');
-                $stat = '接收者';
-                $msl = $message->messageSendinglog;
-                $value = ($msl ? $msl->recipient_count : 0) . '人';
-            } else {
-                $direction = '收件';
-                $color = $message->read ? 'primary' : 'error';
-                $status = $message->read ? '已读' : '未读';
-                $stat = '发送者';
-                $value = $message->sender ? $message->sender->realname : '(未知)';
-            }
-            $msgList .= sprintf(
-                self::TPL,
-                $message->id,
-                $message->sent,
-                $message->read ? 'normal' : 'bold',
-                '[' . $message->mediaType->remark . ']' . $message->title,
-                $message->messageType->name,
-                sprintf(
-                    '%s : <span class="color-%s">%s</span>, %s : %s',
-                    $direction, $color, $status, $stat, $value
-                ),
-                $this->humanDate($message->created_at)
-            );
-        }
-        
-        return $msgList;
-        
-    }
-    
-    /**
-     * 获取消息
-     *
-     * @return Message[]|Builder[]|Collection|\Illuminate\Database\Query\Builder[]|Collection
-     */
-    private function messages() {
-    
-        $userId = Auth::id();
-        $clause = '((s_user_id = ' . $userId . ' AND r_user_id = 0) OR r_user_id = ' . $userId . ')';
-        $builder = $this->whereRaw($clause);
-        $action = Request::input('action');
-        $params = Request::input('params');
-        # 消息目录(所有、收件箱、发件箱、草稿箱)
-        $folder = $params['folder'] ?? 'all';
-        if (in_array($folder, ['outbox', 'draft'])) {
-            $sent = $folder == 'outbox' ? 1 : 0;
-            $builder = $this->where([
-                's_user_id' => $userId,
-                'r_user_id' => 0,
-                'sent' => $sent
-            ]);
-        } else {
-            $folder == 'all' ?: $builder = $this->where('r_user_id', $userId);
-        }
-        # 消息过滤（消息类型/格式、关键词、起止日期)
-        !($messageTypeId = $params['message_type_id'])
-            ?: $builder = $builder->where('message_type_id', $messageTypeId);
-        !($mediaTypeId = $params['media_type_id'])
-            ?: $builder = $builder->where('media_type_id', $mediaTypeId);
-        !($keyword = $params['keyword'])
-            ?: $builder = $builder->whereRaw("(title LIKE '%{$keyword}%' OR content LIKE '%{$keyword}%')");
-        $start = $params['start'] ? $params['start'] . ' 00:00:00' : null;
-        $end = $params['end'] ? $params['end'] . ' 23:59:59' : null;
-        if ($start && $end) {
-            abort_if(
-                $start > $end, HttpStatusCode::NOT_ACCEPTABLE,
-                __('messages.incorrect_data_range')
-            );
-            $builder = $builder->whereBetween('created_at', [$start, $end]);
-        } elseif ($start && !$end) {
-            $builder = $builder->where('created_at', '>=', $start);
-        } elseif (!$start && $end) {
-            $builder = $builder->where('created_at', '<=', $end);
-        }
-        # 分页加载
-        $page = $params['page'] ?? 1;
-        $skip = $action == 'page' ? $page * 7 : 0;
-        $records = $action == 'page' ? 7 : $page * 7;
-
-        return $builder->orderBy('created_at', 'desc')
-            ->skip($skip)->take($records)->get();
         
     }
     

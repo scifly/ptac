@@ -3,8 +3,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
 
 /**
  * Class DepartmentTag
@@ -27,9 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|DepartmentTag query()
  * @mixin Eloquent
  */
-class DepartmentTag extends Model {
-    
-    protected $table = 'departments_tags';
+class DepartmentTag extends Pivot {
     
     protected $fillable = ['department_id', 'tag_id', 'enabled'];
     

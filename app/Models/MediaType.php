@@ -54,7 +54,7 @@ class MediaType extends Model {
      * @throws Throwable
      */
     function remove($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
@@ -68,7 +68,7 @@ class MediaType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

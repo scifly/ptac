@@ -11,7 +11,7 @@ class EducatorClassSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\EducatorClass::class, 10)->create()->each(function ($educatorClass) {
+        factory(App\Models\ClassEducator::class, 10)->create()->each(function ($educatorClass) {
             $educatorClass->save();
 
         });

@@ -3,14 +3,13 @@ namespace App\Models;
 
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
+use Illuminate\Support\{Carbon, Facades\DB};
 use Throwable;
 
 /**
  * 通行规则与门禁绑定关系
- * 
+ *
  * Class RuleTurnstile
  *
  * @package App\Models
@@ -35,12 +34,10 @@ use Throwable;
  * @method static Builder|RuleTurnstile whereDoor($value)
  * @mixin Eloquent
  */
-class RuleTurnstile extends Model {
-    
-    protected $table = 'rules_turnstiles';
+class RuleTurnstile extends Pivot {
     
     protected $fillable = [
-        'turnstile_id', 'door', 'passage_rule_id', 'enabled'
+        'turnstile_id', 'door', 'passage_rule_id', 'enabled',
     ];
     
     /**
@@ -72,9 +69,9 @@ class RuleTurnstile extends Model {
                 $timestamp = now()->toDateTimeString();
                 $record = [
                     'passage_rule_id' => $passageRuleId,
-                    'created_at' => $timestamp,
-                    'updated_at' => $timestamp,
-                    'enabled' => 1
+                    'created_at'      => $timestamp,
+                    'updated_at'      => $timestamp,
+                    'enabled'         => 1,
                 ];
                 foreach ($ids as $id) {
                     list($sn, $door) = explode('.', $doors[$id]);

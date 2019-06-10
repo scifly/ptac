@@ -3,7 +3,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\{Builder, Model};
+use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
 
 /**
  * App\Models\ModuleStudent 学生应用模块订阅
@@ -25,9 +25,7 @@ use Illuminate\Database\Eloquent\{Builder, Model};
  * @method static Builder|ModuleStudent query()
  * @mixin Eloquent
  */
-class ModuleStudent extends Model {
-    
-    protected $table = 'modules_students';
+class ModuleStudent extends Pivot {
     
     protected $fillable = ['module_id', 'student_id', 'expired_at'];
     

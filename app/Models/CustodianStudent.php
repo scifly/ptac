@@ -5,7 +5,7 @@ use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -35,9 +35,7 @@ use Throwable;
  * @method static Builder|CustodianStudent query()
  * @mixin Eloquent
  */
-class CustodianStudent extends Model {
-    
-    protected $table = 'custodians_students';
+class CustodianStudent extends Pivot {
     
     protected $fillable = [
         'custodian_id', 'student_id', 'relationship',

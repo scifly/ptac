@@ -3,8 +3,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Builder, Model};
 
 /**
  * App\Models\SmsEducator 教职员工短信配额

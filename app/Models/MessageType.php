@@ -6,10 +6,7 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\HasMany};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -119,7 +116,7 @@ class MessageType extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $this->purge(['Message'], 'message_type_id', 'reset', $id);
@@ -128,7 +125,7 @@ class MessageType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

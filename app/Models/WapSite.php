@@ -68,10 +68,10 @@ class WapSite extends Model {
         $columns = [
             ['db' => 'WapSite.id', 'dt' => 0],
             [
-                'db' => 'School.name', 'dt' => 1,
+                'db'        => 'School.name', 'dt' => 1,
                 'formatter' => function ($d) {
                     return Snippet::icon($d, 'school');
-                }
+                },
             ],
             ['db' => 'WapSite.site_title', 'dt' => 2],
             ['db' => 'WapSite.created_at', 'dt' => 3],
@@ -165,7 +165,7 @@ class WapSite extends Model {
      * @return bool|mixed
      */
     function modify(array $data, $id) {
-    
+        
         return $this->find($id)->update($data);
         
     }
@@ -178,7 +178,7 @@ class WapSite extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
@@ -192,7 +192,7 @@ class WapSite extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

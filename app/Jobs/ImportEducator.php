@@ -6,7 +6,7 @@ use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
 use App\Models\{Department,
     DepartmentUser,
     Educator,
-    EducatorClass,
+    ClassEducator,
     Grade,
     Mobile,
     School,
@@ -296,9 +296,9 @@ class ImportEducator implements ShouldQueue, MassImport {
                     $class = Squad::whereName($paths[0])->whereIn('grade_id', $gradeIds)->first();
                     $subject = Subject::where(['name' => $paths[1], 'school_id' => $this->schoolId])->get()->first();
                     if (!isset($class, $subject)) continue;
-                    EducatorClass::firstOrCreate(
+                    ClassEducator::firstOrCreate(
                         array_combine(
-                            (new EducatorClass)->getFillable(),
+                            (new ClassEducator)->getFillable(),
                             [$educator->id, $class->id, $subject->id, 1]
                         )
                     );

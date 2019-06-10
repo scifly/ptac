@@ -2,13 +2,11 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{ModelTrait, Snippet};
 use App\Jobs\GatherPassageLog;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\{Carbon, Facades\Auth};
 use Throwable;
 
 /**
@@ -66,18 +64,14 @@ class PassageLog extends Model {
      *
      * @return BelongsTo
      */
-    function school() {
-        return $this->belongsTo('App\Models\School');
-    }
+    function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
      * 返回通行记录所属的用户对象
      *
      * @return BelongsTo
      */
-    function user() {
-        return $this->belongsTo('App\Models\User');
-    }
+    function user() { return $this->belongsTo('App\Models\User'); }
     
     /**
      * 返回通行记录所属的门禁对象

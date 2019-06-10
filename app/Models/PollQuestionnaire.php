@@ -8,12 +8,12 @@ use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\HasMany,
+    Relations\HasManyThrough};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -142,7 +142,7 @@ class PollQuestionnaire extends Model {
                 'db'        => 'School.name as school_name', 'dt' => 2,
                 'formatter' => function ($d) {
                     return Snippet::icon($d, 'school');
-                }
+                },
             ],
             ['db' => 'User.realname', 'dt' => 3],
             ['db' => 'PollQuestionnaire.start', 'dt' => 4],

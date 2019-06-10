@@ -1,14 +1,12 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Model};
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\{DB};
+use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
+use Illuminate\Support\{Arr, Facades\DB};
 use Throwable;
 
 /**
@@ -31,11 +29,9 @@ use Throwable;
  * @method static Builder|DepartmentUser query()
  * @mixin Eloquent
  */
-class DepartmentUser extends Model {
+class DepartmentUser extends Pivot {
     
     use ModelTrait;
-    
-    protected $table = 'departments_users';
     
     protected $fillable = ['department_id', 'user_id', 'enabled'];
     
@@ -49,13 +45,13 @@ class DepartmentUser extends Model {
      * @throws Throwable
      */
     function storeByUserId($userId, array $departmentIds, $custodian = null) {
-
+        
         try {
             DB::transaction(function () use ($userId, $departmentIds, $custodian) {
                 $enabled = $custodian ? Constant::DISABLED : Constant::ENABLED;
                 $this->where([
                     'user_id' => $userId,
-                    'enabled' => $enabled
+                    'enabled' => $enabled,
                 ])->delete();
                 $records = [];
                 $record = ['user_id' => $userId, 'enabled' => $enabled];
@@ -101,7 +97,7 @@ class DepartmentUser extends Model {
                 foreach ($userIds as $userId) {
                     $du = $this->where([
                         'department_id' => $departmentId,
-                        'user_id' => $userId
+                        'user_id'       => $userId,
                     ])->first();
                     if (!$du) {
                         $records[] = [
@@ -140,7 +136,7 @@ class DepartmentUser extends Model {
     function store($userId, $departmentId): bool {
         
         try {
-            DB::transaction(function () use($userId, $departmentId) {
+            DB::transaction(function () use ($userId, $departmentId) {
                 $this->where('user_id', $userId)->delete();
                 $this->create(
                     array_combine($this->fillable, [$departmentId, $userId, 1])

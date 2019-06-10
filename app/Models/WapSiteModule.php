@@ -2,8 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
+use App\Helpers\{HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
@@ -126,7 +125,7 @@ class WapSiteModule extends Model {
      * @return bool
      */
     function modify(array $data, $id) {
-
+        
         return $this->find($id)->update($data);
         
     }
@@ -139,12 +138,12 @@ class WapSiteModule extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         return $this->purge(
             [class_basename($this), 'WsmArticle'],
             'wsm_id', 'purge', $id
         );
-    
+        
     }
     
     /** 微信端 ------------------------------------------------------------------------------------------------------- */

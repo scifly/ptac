@@ -228,6 +228,20 @@ class App extends Model {
     }
     
     /**
+     * 保存新创建的app
+     *
+     * @param array $data
+     * @return $this|bool|Model
+     */
+    private function store(array $data) {
+        
+        return $this->create($data) ?? false;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
+    /**
      * 移除应用
      *
      * @param $id
@@ -246,19 +260,6 @@ class App extends Model {
         }
         
         return true;
-        
-    }
-    
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-    /**
-     * 保存新创建的app
-     *
-     * @param array $data
-     * @return $this|bool|Model
-     */
-    private function store(array $data) {
-        
-        return $this->create($data) ?? false;
         
     }
     

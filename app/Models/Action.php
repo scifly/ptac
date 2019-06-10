@@ -2,20 +2,14 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{Constant, ModelTrait, Snippet};
 use App\Models\ActionType as ActionType;
 use Carbon\Carbon;
 use Doctrine\Common\Inflector\Inflector;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
+use Illuminate\Support\{Facades\DB, Facades\Route, Str};
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -38,6 +32,7 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read Tab $tab
+ * @property-read Collection|Group[] $groups
  * @method static Builder|Action whereActionTypeIds($value)
  * @method static Builder|Action whereController($value)
  * @method static Builder|Action whereTabId($value)
@@ -63,8 +58,9 @@ class Action extends Model {
     const ACTIONS_WITHOUT_VIEW_AND_JS = [
         'destroy', 'store', 'update', 'sync', 'export',
         'move', 'rankTabs', 'sanction', 'import', 'rank',
-        'detail', 'studentConsumption', 'sendMsg'
+        'detail', 'studentConsumption', 'sendMsg',
     ];
+    public $type = 1;
     protected $fillable = [
         'name', 'method', 'remark',
         'tab_id', 'view', 'route',
@@ -74,14 +70,19 @@ class Action extends Model {
     protected $acronyms;
     protected $actionTypes;
     
-    public $type = 1;
-    
     /**
      * 返回当前action包含的卡片
      *
      * @return BelongsTo
      */
     function tab() { return $this->belongsTo('App\Models\Tab'); }
+    
+    /**
+     * 返回当前action所属的角色对象collection
+     *
+     * @return BelongsToMany
+     */
+    function groups() { return $this->belongsToMany('App\Models\Group', 'action_group'); }
     
     /**
      * 功能列表
@@ -141,8 +142,9 @@ class Action extends Model {
                     $colors = [
                         '后台' => 'text-light-blue',
                         '前端' => 'text-green',
-                        '其他' => 'text-gray'
+                        '其他' => 'text-gray',
                     ];
+                    
                     return sprintf(Snippet::BADGE, $colors[$category], $category);
                 },
             ],
@@ -155,9 +157,9 @@ class Action extends Model {
         ];
         $joins = [
             [
-                'table' => 'tabs',
-                'alias' => 'Tab',
-                'type' => 'INNER',
+                'table'      => 'tabs',
+                'alias'      => 'Tab',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Tab.id = Action.tab_id',
                 ],
@@ -167,7 +169,22 @@ class Action extends Model {
         return Datatable::simple($this, $columns, $joins);
         
     }
-
+    
+    /**
+     * 根据ActionType IDs返回Http action名称
+     *
+     * @param string $action_type_ids
+     * @return string
+     */
+    private function actionTypes($action_type_ids) {
+        
+        $actionTypes = ActionType::whereIn('id', explode(',', $action_type_ids))
+            ->where('enabled', 1)->pluck('name')->toArray();
+        
+        return implode(',', $actionTypes);
+        
+    }
+    
     /**
      * 扫描所有控制器中的方法
      *
@@ -275,44 +292,40 @@ class Action extends Model {
     }
     
     /**
-     * 更新功能
+     * 返回所有控制器的完整路径
      *
-     * @param array $data
-     * @param integer $id
-     * @return bool
+     * @param string $rootDir
+     * @param array $allData
+     * @return array
      */
-    function modify(array $data, $id) {
+    private function scanDirs($rootDir, $allData = []) {
         
-        return $this->find($id)->update($data);
-        
-    }
-    
-    /**
-     * 删除功能
-     *
-     * @param null|integer $id
-     * @return bool
-     * @throws Throwable
-     */
-    function remove($id = null) {
-    
-        try {
-            DB::transaction(function () use ($id) {
-                array_map(
-                    function (array $classes, string $action) use($id) {
-                        $this->purge($classes, 'action_id', $action, $id);
-                    }, [[class_basename($this), 'ActionGroup'], ['Tab']], ['purge', 'reset']
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
+        // set filenames invisible if you want
+        $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
+        // run through content of root directory
+        $dirContent = scandir($rootDir);
+        foreach ($dirContent as $key => $content) {
+            // filter all files not accessible
+            $path = $rootDir . '/' . $content;
+            if (!in_array($content, $invisibleFileNames)) {
+                // if content is file & readable, add to array
+                if (is_file($path) && is_readable($path)) {
+                    // save file name with path
+                    $allData[] = $path;
+                    // if content is a directory and readable, add path and name
+                } elseif (is_dir($path) && is_readable($path)) {
+                    // recursive callback to open new directory
+                    $allData = $this->scanDirs($path, $allData);
+                }
+            }
         }
-    
-        return true;
+        
+        return $allData;
         
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
+
     /**
      * 获取网站根所处的路径
      *
@@ -321,37 +334,6 @@ class Action extends Model {
     function siteRoot() {
         
         return substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
-        
-    }
-    
-    /**
-     * 返回HTTP请求方法中包含GET以及路由中不带参数的action列表
-     *
-     * @return array
-     */
-    function actions() {
-        
-        $data = self::whereEnabled(1)->get([
-            'tab_id', 'name', 'id',
-            'action_type_ids', 'route',
-        ]);
-        $actions = [];
-        # 获取HTTP请求类型为GET的Action类型ID
-        $id = ActionType::whereName('GET')->first()->id;
-        foreach ($data as $action) {
-            $tab = Tab::find($action->tab_id);
-            if (!$tab) continue;
-            if (
-                in_array($id, explode(',', $action['action_type_ids'])) &&
-                !strpos($action['route'], '{') &&
-                $tab->category != 2 # 其他类型控制器
-            ) {
-                $actions[$action->tab->name][$action->id] = $action['name'] . ' - ' . $action['route'];
-            }
-        }
-        ksort($actions);
-        
-        return $actions;
         
     }
     
@@ -390,35 +372,27 @@ class Action extends Model {
     }
     
     /**
-     * 返回所有控制器的完整路径
+     * 删除功能
      *
-     * @param string $rootDir
-     * @param array $allData
-     * @return array
+     * @param null|integer $id
+     * @return bool
+     * @throws Throwable
      */
-    private function scanDirs($rootDir, $allData = []) {
+    function remove($id = null) {
         
-        // set filenames invisible if you want
-        $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
-        // run through content of root directory
-        $dirContent = scandir($rootDir);
-        foreach ($dirContent as $key => $content) {
-            // filter all files not accessible
-            $path = $rootDir . '/' . $content;
-            if (!in_array($content, $invisibleFileNames)) {
-                // if content is file & readable, add to array
-                if (is_file($path) && is_readable($path)) {
-                    // save file name with path
-                    $allData[] = $path;
-                    // if content is a directory and readable, add path and name
-                } elseif (is_dir($path) && is_readable($path)) {
-                    // recursive callback to open new directory
-                    $allData = $this->scanDirs($path, $allData);
-                }
-            }
+        try {
+            DB::transaction(function () use ($id) {
+                array_map(
+                    function (array $classes, string $action) use ($id) {
+                        $this->purge($classes, 'action_id', $action, $id);
+                    }, [[class_basename($this), 'ActionGroup'], ['Tab']], ['purge', 'reset']
+                );
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return $allData;
+        return true;
         
     }
     
@@ -514,93 +488,6 @@ class Action extends Model {
     }
     
     /**
-     * 根据ActionType IDs返回Http action名称
-     *
-     * @param string $action_type_ids
-     * @return string
-     */
-    private function actionTypes($action_type_ids) {
-        
-        $actionTypes = ActionType::whereIn('id', explode(',', $action_type_ids))
-            ->where('enabled', 1)->pluck('name')->toArray();
-        
-        return implode(',', $actionTypes);
-        
-    }
-    
-    /**
-     * 根据控制器名称返回表名称
-     *
-     * @param $controller string 控制器类名
-     * @return string 数据表名称
-     */
-    private function tableName($controller) {
-        
-        $modelName = substr(
-            $controller, 0,
-            strlen($controller) - strlen('Controller')
-        );
-        
-        return $modelName === 'Squad'
-            ? 'classes'
-            : Inflector::pluralize(Inflector::tableize($modelName));
-            
-    }
-    
-    /**
-     * 根据控制器名称和action名称返回action对应的路由名称
-     *
-     * @param $controller string 控制器名称
-     * @param $action string action名称
-     * @return mixed 路由名称
-     */
-    private function actionRoute($controller, $action) {
-        
-        if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
-            /** @var \Illuminate\Routing\Route $route */
-            foreach ($this->routes as $route) {
-                $aPos = stripos(
-                    $route->action['controller'] ?? '',
-                    '\\' . $controller . '@' . $action
-                );
-                if ($aPos === false) continue;
-                $tableName = $this->tableName($controller);
-                $uris = explode('/', $route->uri);
-                $rPos = stripos($route->uri, $tableName . '/' . $action);
-                if ($rPos === 0 || ($rPos === false && array_search($tableName, $uris) === false)) {
-                    return $route->uri;
-                }
-                if (in_array($uris[0], $this->acronyms)) {
-                    $uris[0] =  '{acronym}';
-                }
-                return implode('/', $uris);
-            }
-        }
-        
-        return null;
-        
-    }
-    
-    /**
-     * 返回指定action的HTTP请求类型名称
-     *
-     * @param $controller
-     * @param $action
-     * @return null|string
-     */
-    private function actionTypeIds($controller, $action) {
-        
-        if (in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
-            return null;
-        }
-        $actionTypes = $this->actionMethods($controller, $action);
-        $actionTypeIds = ActionType::whereIn('name', $actionTypes)->pluck('id')->toArray();
-        
-        return implode(',', $actionTypeIds);
-        
-    }
-    
-    /**
      * 获取控制器action对应的View路径
      *
      * @param $controller
@@ -638,7 +525,108 @@ class Action extends Model {
         $category = Tab::whereName($controller)->first()->category;
         
         return !$category ? $viewPath
-            : ($category == 1 ? 'wechat.' . $viewPath  : 'auth.' . $action);
+            : ($category == 1 ? 'wechat.' . $viewPath : 'auth.' . $action);
+        
+    }
+    
+    /**
+     * 返回指定控制器 & 方法对应的Http请求方式
+     *
+     * @param $controller
+     * @param $action
+     * @return array|mixed
+     */
+    private function actionMethods($controller, $action) {
+        
+        $routes = array_filter(
+            $this->routes,
+            function (\Illuminate\Routing\Route $route) use ($controller, $action) {
+                return stripos(
+                        $route->action['controller'] ?? '',
+                        '\\' . $controller . '@' . $action
+                    ) !== false;
+            }
+        );
+        $methods = [];
+        /** @var \Illuminate\Routing\Route $route */
+        foreach ($routes as $route) {
+            $methods = array_merge($methods, $route->methods);
+        }
+        
+        return array_unique($methods);
+        
+    }
+    
+    /**
+     * 根据控制器名称返回表名称
+     *
+     * @param $controller string 控制器类名
+     * @return string 数据表名称
+     */
+    private function tableName($controller) {
+        
+        $modelName = substr(
+            $controller, 0,
+            strlen($controller) - strlen('Controller')
+        );
+        
+        return $modelName === 'Squad'
+            ? 'classes'
+            : Inflector::pluralize(Inflector::tableize($modelName));
+        
+    }
+    
+    /**
+     * 根据控制器名称和action名称返回action对应的路由名称
+     *
+     * @param $controller string 控制器名称
+     * @param $action string action名称
+     * @return mixed 路由名称
+     */
+    private function actionRoute($controller, $action) {
+        
+        if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
+            /** @var \Illuminate\Routing\Route $route */
+            foreach ($this->routes as $route) {
+                $aPos = stripos(
+                    $route->action['controller'] ?? '',
+                    '\\' . $controller . '@' . $action
+                );
+                if ($aPos === false) continue;
+                $tableName = $this->tableName($controller);
+                $uris = explode('/', $route->uri);
+                $rPos = stripos($route->uri, $tableName . '/' . $action);
+                if ($rPos === 0 || ($rPos === false && array_search($tableName, $uris) === false)) {
+                    return $route->uri;
+                }
+                if (in_array($uris[0], $this->acronyms)) {
+                    $uris[0] = '{acronym}';
+                }
+                
+                return implode('/', $uris);
+            }
+        }
+        
+        return null;
+        
+    }
+    
+    /**
+     * 返回指定action的HTTP请求类型名称
+     *
+     * @param $controller
+     * @param $action
+     * @return null|string
+     */
+    private function actionTypeIds($controller, $action) {
+        
+        if (in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
+            return null;
+        }
+        $actionTypes = $this->actionMethods($controller, $action);
+        $actionTypeIds = ActionType::whereIn('name', $actionTypes)->pluck('id')->toArray();
+        
+        return implode(',', $actionTypeIds);
         
     }
     
@@ -666,30 +654,46 @@ class Action extends Model {
     }
     
     /**
-     * 返回指定控制器 & 方法对应的Http请求方式
+     * 更新功能
      *
-     * @param $controller
-     * @param $action
-     * @return array|mixed
+     * @param array $data
+     * @param integer $id
+     * @return bool
      */
-    private function actionMethods($controller, $action) {
-
-        $routes = array_filter(
-            $this->routes,
-            function (\Illuminate\Routing\Route $route) use ($controller, $action) {
-                return stripos(
-                    $route->action['controller'] ?? '',
-                    '\\' . $controller . '@' . $action
-                ) !== false;
-            }
-        );
-        $methods = [];
-        /** @var \Illuminate\Routing\Route $route */
-        foreach ($routes as $route) {
-            $methods = array_merge($methods, $route->methods);
-        }
+    function modify(array $data, $id) {
         
-        return array_unique($methods);
+        return $this->find($id)->update($data);
+        
+    }
+    
+    /**
+     * 返回HTTP请求方法中包含GET以及路由中不带参数的action列表
+     *
+     * @return array
+     */
+    function actions() {
+        
+        $data = self::whereEnabled(1)->get([
+            'tab_id', 'name', 'id',
+            'action_type_ids', 'route',
+        ]);
+        $actions = [];
+        # 获取HTTP请求类型为GET的Action类型ID
+        $id = ActionType::whereName('GET')->first()->id;
+        foreach ($data as $action) {
+            $tab = Tab::find($action->tab_id);
+            if (!$tab) continue;
+            if (
+                in_array($id, explode(',', $action['action_type_ids'])) &&
+                !strpos($action['route'], '{') &&
+                $tab->category != 2 # 其他类型控制器
+            ) {
+                $actions[$action->tab->name][$action->id] = $action['name'] . ' - ' . $action['route'];
+            }
+        }
+        ksort($actions);
+        
+        return $actions;
         
     }
     

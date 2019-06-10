@@ -2,8 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
+use App\Helpers\{Constant, ModelTrait};
 use App\Jobs\SyncTag;
 use Carbon\Carbon;
 use Eloquent;
@@ -48,7 +47,7 @@ class Tag extends Model {
     
     protected $fillable = [
         'name', 'school_id', 'user_id',
-        'remark', 'enabled', 'synced'
+        'remark', 'enabled', 'synced',
     ];
     
     /**
@@ -77,7 +76,7 @@ class Tag extends Model {
      *
      * @return BelongsToMany
      */
-    function departments() { return $this->belongsToMany('App\Models\Department', 'departments_tags'); }
+    function departments() { return $this->belongsToMany('App\Models\Department', 'department_tag'); }
     
     /**
      * 标签列表
@@ -89,19 +88,19 @@ class Tag extends Model {
         $columns = [
             ['db' => 'Tag.id', 'dt' => 0],
             [
-                'db' => 'Tag.name', 'dt' => 1,
+                'db'        => 'Tag.name', 'dt' => 1,
                 'formatter' => function ($d) {
                     return explode('.', $d)[0];
-                }
+                },
             ],
             ['db' => 'Tag.remark', 'dt' => 2],
             ['db' => 'Tag.created_at', 'dt' => 3],
             ['db' => 'Tag.updated_at', 'dt' => 4],
             [
-                'db' => 'Tag.synced', 'dt' => 5,
+                'db'        => 'Tag.synced', 'dt' => 5,
                 'formatter' => function ($d) {
                     return $this->synced($d);
-                }
+                },
             ],
             [
                 'db'        => 'Tag.enabled', 'dt' => 6,
@@ -153,6 +152,24 @@ class Tag extends Model {
     }
     
     /**
+     * 同步企业微信通绪论标签
+     *
+     * @param array $ids
+     * @param $action
+     */
+    private function sync(array $ids, $action) {
+        
+        if ($tag = $this->find($ids[0])) {
+            $data = [
+                'tagid' => $ids, 'corp_id' => $tag->school->corp_id,
+            ];
+            $action == 'delete' ?: ($data['tagname'] = $tag->name);
+            SyncTag::dispatch($data, Auth::id(), $action);
+        }
+        
+    }
+    
+    /**
      * 更新标签
      *
      * @param array $data
@@ -174,7 +191,9 @@ class Tag extends Model {
                     $this->retain('DepartmentTag', $tag->id, $data['dept_ids'], false);
                 }
                 $updated = $tag->update($data);
-                if ($updated) { $this->sync([$id], 'update'); }
+                if ($updated) {
+                    $this->sync([$id], 'update');
+                }
             });
         } catch (Exception $e) {
             throw $e;
@@ -192,7 +211,7 @@ class Tag extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
@@ -205,26 +224,8 @@ class Tag extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
-        
-    }
-    
-    /**
-     * 同步企业微信通绪论标签
-     *
-     * @param array $ids
-     * @param $action
-     */
-    private function sync(array $ids, $action) {
-        
-        if ($tag = $this->find($ids[0])) {
-            $data = [
-                'tagid' => $ids, 'corp_id' => $tag->school->corp_id
-            ];
-            $action == 'delete' ?: ($data['tagname'] = $tag->name);
-            SyncTag::dispatch($data, Auth::id(), $action);
-        }
         
     }
     

@@ -4,9 +4,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\View\View;
 
 /**
@@ -35,7 +33,7 @@ class WechatSms extends Model {
     protected $table = 'wechat_smses';
     
     protected $fillable = [
-        'id', 'urlcode', 'message_id', 'enabled'
+        'id', 'urlcode', 'message_id', 'enabled',
     ];
     
     /**
@@ -52,12 +50,12 @@ class WechatSms extends Model {
      * @return Factory|View
      */
     function show($urlcode) {
-    
+        
         $message = WechatSms::whereUrlcode($urlcode)->first()->message;
-    
+        
         return view('wechat.message_center.show_sms', [
             'message' => $message,
-            'content' => $message->detail($message->id)
+            'content' => $message->detail($message->id),
         ]);
         
     }

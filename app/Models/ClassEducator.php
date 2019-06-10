@@ -5,12 +5,12 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\{Eloquent\Builder, Eloquent\Model, Eloquent\Relations\BelongsTo};
+use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
 use Illuminate\Support\{Facades\DB};
 use Throwable;
 
 /**
- * App\Models\EducatorClass 教职员工与班级关系
+ * App\Models\ClassEducator 教职员工与班级关系
  *
  * @property int $id
  * @property int $educator_id 教职员工ID
@@ -23,23 +23,21 @@ use Throwable;
  * @property-read Squad $squad
  * @property-read Subject $subject
  * @property-read Educator $classes
- * @method static Builder|EducatorClass whereClassId($value)
- * @method static Builder|EducatorClass whereCreatedAt($value)
- * @method static Builder|EducatorClass whereEducatorId($value)
- * @method static Builder|EducatorClass whereId($value)
- * @method static Builder|EducatorClass whereSubjectId($value)
- * @method static Builder|EducatorClass whereUpdatedAt($value)
- * @method static Builder|EducatorClass whereEnabled($value)
- * @method static Builder|EducatorClass newModelQuery()
- * @method static Builder|EducatorClass newQuery()
- * @method static Builder|EducatorClass query()
+ * @method static Builder|ClassEducator whereClassId($value)
+ * @method static Builder|ClassEducator whereCreatedAt($value)
+ * @method static Builder|ClassEducator whereEducatorId($value)
+ * @method static Builder|ClassEducator whereId($value)
+ * @method static Builder|ClassEducator whereSubjectId($value)
+ * @method static Builder|ClassEducator whereUpdatedAt($value)
+ * @method static Builder|ClassEducator whereEnabled($value)
+ * @method static Builder|ClassEducator newModelQuery()
+ * @method static Builder|ClassEducator newQuery()
+ * @method static Builder|ClassEducator query()
  * @mixin Eloquent
  */
-class EducatorClass extends Model {
+class ClassEducator extends Pivot {
     
     use ModelTrait;
-    
-    protected $table = 'educators_classes';
     
     protected $fillable = ['educator_id', 'class_id', 'subject_id', 'enabled'];
     
@@ -106,7 +104,7 @@ class EducatorClass extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

@@ -3,7 +3,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
 
 /**
  * App\Models\GroupMenu
@@ -26,9 +26,7 @@ use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
  * @method static Builder|GroupMenu newQuery()
  * @method static Builder|GroupMenu query()
  */
-class GroupMenu extends Model {
-    
-    protected $table = 'groups_menus';
+class GroupMenu extends Pivot {
     
     protected $fillable = ['group_id', 'menu_id', 'enabled'];
     

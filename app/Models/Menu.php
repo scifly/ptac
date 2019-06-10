@@ -111,30 +111,14 @@ class Menu extends Model {
      *
      * @return BelongsToMany
      */
-    function groups() { return $this->belongsToMany('App\Models\Group', 'groups_menus'); }
-    
-    /**
-     * 获取指定菜单包含的所有角色菜单对象
-     *
-     * @return HasMany
-     */
-    function groupMenus() { return $this->hasMany('App\Models\GroupMenu'); }
+    function groups() { return $this->belongsToMany('App\Models\Group', 'group_menu'); }
     
     /**
      * 获取菜单包含的卡片
      *
      * @return BelongsToMany
      */
-    function tabs() {
-        
-        return $this->belongsToMany(
-            'App\Models\Tab',
-            'menus_tabs',
-            'menu_id',
-            'tab_id'
-        );
-        
-    }
+    function tabs() { return $this->belongsToMany('App\Models\Tab', 'menu_tab'); }
     
     /**
      * 获取上级菜单
@@ -213,6 +197,261 @@ class Menu extends Model {
     }
     
     /**
+     * 获取用于显示jstree的菜单数据
+     *
+     * @param null $id
+     * @return JsonResponse
+     */
+    private function jsTree($id) {
+        
+        $root = $this->find($id);
+        $subs = $this->subs(
+            $id, $this->subIds($id), true
+        );
+        $subs[$id] = [
+            'parent_id'    => null,
+            'name'         => $root->name,
+            'icon'         => $root->icon ? $root->icon->name : 'fa fa-circle-o',
+            'menu_type_id' => $root->menu_type_id,
+            'enabled'      => 1,
+        ];
+        $tree = [];
+        foreach ($subs as $key => $sub) {
+            $name = $sub['name'];
+            if (isset($sub['parent_id'])) {
+                $icon = $sub['icon'];
+                $iconHtml = $icon
+                    ? sprintf(Snippet::MENU_ICON, $icon)
+                    : Snippet::MENU_DEFAULT_ICON;
+                $name = $iconHtml . '&nbsp;&nbsp;' . $name;
+            }
+            $menuType = MenuType::find($sub['menu_type_id'])->name;
+            $type = Constant::NODE_TYPES[$menuType]['type'];
+            $color = Constant::NODE_TYPES[$menuType]['color'];
+            $text = sprintf(
+                Snippet::NODE_TEXT,
+                $sub['enabled'] ? $color : 'text-gray', '', $name, ''
+            );
+            if ($type == '企业') {
+                $corpId = Corp::whereMenuId($key)->first()->id;
+            } elseif ($type == '学校') {
+                $corpId = School::whereMenuId($key)->first()->corp_id;
+            }
+            $tree[] = [
+                'id'      => $key,
+                'parent'  => $sub['parent_id'] ?? '#',
+                'text'    => $text,
+                'type'    => $type,
+                'corp_id' => $corpId ?? null,
+            ];
+        }
+        
+        return response()->json($tree);
+        
+    }
+    
+    /**
+     * 获取指定菜单下的所有菜单对象
+     *
+     * @param $rootId
+     * @param $childrenIds
+     * @param bool $disabled 是否获取未启用的菜单对象
+     * @return Collection|static[]
+     */
+    private function subs($rootId, $childrenIds = null, $disabled = false) {
+        
+        $user = Auth::user();
+        if ($rootId == 1) {
+            $menus = $this->where('id', '<>', 1)
+                ->orderBy('position')
+                ->get()->toArray();
+        } else {
+            if (!in_array($user->role(), Constant::SUPER_ROLES)) {
+                $menus = GroupMenu::with('menu')
+                    ->where('group_id', $user->group_id)
+                    ->get()->pluck('menu')
+                    ->toArray();
+                $arr = [];
+                foreach ($menus as $key => $menu) {
+                    $arr[$key] = $menu['position'];
+                }
+                array_multisort($arr, SORT_ASC, $menus);
+            } else {
+                $menus = $this->whereIn('id', $childrenIds)
+                    ->orderBy('position')
+                    ->get()->toArray();
+            }
+        }
+        foreach ($menus as $menu) {
+            $icon = 'fa fa-circle-o';
+            if ($menu['icon_id']) $icon = Icon::find($menu['icon_id'])->name;
+            if (!$disabled && !$menu['enabled']) continue;
+            $subs[$menu['id']] = [
+                'parent_id'    => $menu['parent_id'],
+                'name'         => $menu['name'],
+                'uri'          => $menu['uri'],
+                'icon'         => $icon,
+                'menu_type_id' => $menu['menu_type_id'],
+                'enabled'      => $menu['enabled'],
+            ];
+        }
+        
+        return $subs ?? [];
+        
+    }
+    
+    /**
+     * 获取指定菜单所有的子菜单Id
+     *
+     * @param $id
+     * @return array
+     */
+    function subIds($id) {
+        
+        static $subIds;
+        $childrenIds = Menu::whereParentId($id)->pluck('id')->toArray();
+        foreach ($childrenIds as $childId) {
+            $subIds[] = $childId;
+            $this->subIds($childId);
+        }
+        
+        return $subIds ?? [];
+        
+    }
+    
+    /**
+     * 获取当前登录用户的顶级菜单ID
+     *
+     * @param bool $subRoot
+     *      false 返回当前角色可访问的最顶级菜单id,
+     *      true  返回当前角色可访问的最直接顶级(学校或企业)菜单id
+     * @return int|mixed
+     */
+    function rootId($subRoot = false) {
+        
+        $rootMTId = MenuType::whereName('根')->first()->id;
+        $rootMId = Menu::whereMenuTypeId($rootMTId)->first()->id;
+        $menuId = session('menuId') != '0' ? session('menuId') : $rootMId;
+        $smId = $this->menuId($menuId);
+        $cmId = $this->menuId($menuId, '企业');
+        $departmentId = $this->topDeptId();
+        $user = Auth::user();
+        switch ($user->role()) {
+            case '运营':
+                return !$subRoot ? $rootMId : ($smId ?? ($cmId ?? $rootMId));
+            case '企业':
+                $cmId = $cmId ?? Corp::whereDepartmentId($departmentId)->first()->menu_id;
+                
+                return !$subRoot ? $cmId : ($smId ?? $cmId);
+            case '学校':
+                return $smId ?? School::whereDepartmentId($departmentId)->first()->menu_id;
+            default:
+                return School::find($user->educator->school_id)->menu_id;
+        }
+        
+    }
+    
+    /**
+     * 根据菜单ID返回其父级菜单中类型为$type的菜单ID
+     *
+     * @param $id
+     * @param string $type
+     * @return int|mixed
+     */
+    function menuId($id, $type = '学校') {
+        
+        if (!($menu = $this->find($id))) return null;
+        $mtName = $menu->menuType->name;
+        while ($mtName != $type) {
+            if (!($menu = $menu->parent)) return null;
+            $mtName = $menu->menuType->name;
+        }
+        
+        return $menu->id;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
+    /**
+     * 指定菜单可否移动至指定的菜单下
+     *
+     * @param $id
+     * @param $parentId
+     * @return bool
+     * @throws ReflectionException
+     */
+    private function movable($id, $parentId) {
+        
+        if (!isset($id, $parentId)) return false;
+        $user = Auth::user();
+        if ($user->role() != '运营') {
+            $menuIds = $this->menuIds();
+            abort_if(
+                !in_array($id, $menuIds) || !in_array($parentId, $menuIds),
+                HttpStatusCode::UNAUTHORIZED,
+                __('messages.forbidden')
+            );
+        }
+        $parentType = $this->find($parentId)->menuType->name;
+        switch ($this->find($id)->menuType->name) {
+            case '运营':
+                return $parentType == '根';
+            case '企业':
+                return $parentType == '运营';
+            case '学校':
+                # 如果学校所属企业发生变化，则不允许移动
+                $school = School::whereMenuId($id)->first();
+                
+                return $parentType !== '企业' ? false
+                    : $school->corp_id == Corp::whereMenuId($parentId)->first()->id;
+            case '其他':
+                return true;
+            default:
+                return false;
+        }
+        
+    }
+    
+    /**
+     * 更改菜单所处位置
+     *
+     * @param $id
+     * @param $parentId
+     * @return bool
+     * @throws Throwable
+     */
+    private function move($id, $parentId) {
+        
+        $moved = false;
+        try {
+            DB::transaction(function () use ($id, $parentId, &$moved) {
+                $menu = $this->find($id);
+                if (!isset($menu)) {
+                    $moved = false;
+                } else {
+                    $menu->parent_id = $parentId === '#' ? null : intval($parentId);
+                    $moved = $menu->save();
+                    /** 当企业类菜单所属运营类菜单发生变化时，更新企业所属运营者及所属部门 */
+                    if ($moved && $menu->menuType->name == '企业') {
+                        $corp = Corp::whereMenuId($menu->id)->first();
+                        $company = Company::whereMenuId($menu->parent_id)->first();
+                        $data = ['parent_id' => $company->department_id];
+                        $moved = $moved && ((new Department)->modify($data, $corp->department_id) ? true : false);
+                        $data = ['company_id' => $company->id];
+                        $moved = $moved && $corp->update($data);
+                    }
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return $moved;
+        
+    }
+    
+    /**
      * 创建菜单
      *
      * @param array $data
@@ -244,7 +483,7 @@ class Menu extends Model {
      * @return $this|Model
      */
     function stow(Model $model, $beLongsTo = null) {
-    
+        
         $icons = [
             'company' => 'fa fa-building',
             'corp'    => 'fa fa-weixin',
@@ -356,7 +595,6 @@ class Menu extends Model {
         
     }
     
-    /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 获取后台Menu的HTML字符串
      *
@@ -369,202 +607,6 @@ class Menu extends Model {
         $html = $this->html($subs, $rootId);
         
         return $html; // substr($menu, 0, -10);
-    }
-    
-    /**
-     * 获取指定学校的菜单树
-     *
-     * @param integer $id 指定学校的菜单ID
-     * @return JsonResponse
-     */
-    function schoolTree($id) {
-        
-        $rootMenu = $this->find($id);
-        $nodes[] = [
-            'id'     => $rootMenu['id'],
-            'parent' => '#',
-            'text'   => '<i class="fa fa-university"></i>&nbsp;&nbsp;' . $rootMenu['name'],
-            'type'   => 'school',
-        ];
-        
-        return response()->json(
-            $this->nodes($id, $nodes)
-        );
-        
-    }
-    
-    /**
-     * 获取指定菜单对应的部门图标及名称
-     *
-     * @param $id
-     * @return array
-     */
-    function department($id) {
-        
-        $icon = 'fa fa-send-o text-blue';
-        $name = '运营';
-        $departmentMenuId = $this->menuId($id);
-        if ($departmentMenuId) {
-            $icon = 'fa fa-university text-purple';
-            $name = $this->find($departmentMenuId)->name;
-        } else {
-            $departmentMenuId = $this->menuId($id, '企业');
-            if ($departmentMenuId) {
-                $icon = 'fa fa-weixin text-green';
-                $name = $this->find($departmentMenuId)->name;
-            }
-        }
-        
-        return ['icon' => $icon, 'name' => $name];
-        
-    }
-    
-    /**
-     * 获取指定菜单所有的子菜单Id
-     *
-     * @param $id
-     * @return array
-     */
-    function subIds($id) {
-        
-        static $subIds;
-        $childrenIds = Menu::whereParentId($id)->pluck('id')->toArray();
-        foreach ($childrenIds as $childId) {
-            $subIds[] = $childId;
-            $this->subIds($childId);
-        }
-        
-        return $subIds ?? [];
-        
-    }
-    
-    /**
-     * 获取当前登录用户的顶级菜单ID
-     *
-     * @param bool $subRoot
-     *      false 返回当前角色可访问的最顶级菜单id,
-     *      true  返回当前角色可访问的最直接顶级(学校或企业)菜单id
-     * @return int|mixed
-     */
-    function rootId($subRoot = false) {
-        
-        $rootMTId = MenuType::whereName('根')->first()->id;
-        $rootMId = Menu::whereMenuTypeId($rootMTId)->first()->id;
-        $menuId = session('menuId') != '0' ? session('menuId') : $rootMId;
-        $smId = $this->menuId($menuId);
-        $cmId = $this->menuId($menuId, '企业');
-        $departmentId = $this->topDeptId();
-        $user = Auth::user();
-        switch ($user->role()) {
-            case '运营':
-                return !$subRoot ? $rootMId : ($smId ?? ($cmId ?? $rootMId));
-            case '企业':
-                $cmId = $cmId ?? Corp::whereDepartmentId($departmentId)->first()->menu_id;
-                
-                return !$subRoot ? $cmId : ($smId ?? $cmId);
-            case '学校':
-                return $smId ?? School::whereDepartmentId($departmentId)->first()->menu_id;
-            default:
-                return School::find($user->educator->school_id)->menu_id;
-        }
-        
-    }
-    
-    /**
-     * 根据菜单ID返回其父级菜单中类型为$type的菜单ID
-     *
-     * @param $id
-     * @param string $type
-     * @return int|mixed
-     */
-    function menuId($id, $type = '学校') {
-        
-        if (!($menu = $this->find($id))) return null;
-        $mtName = $menu->menuType->name;
-        while ($mtName != $type) {
-            if (!($menu = $menu->parent)) return null;
-            $mtName = $menu->menuType->name;
-        }
-        
-        return $menu->id;
-        
-    }
-    
-    /**
-     * 获取所有叶节点菜单
-     *
-     * @param null $rootMenuId
-     * @return Collection|static[]
-     */
-    function leaves($rootMenuId = null) {
-        
-        $leafPath = [];
-        $ids = $rootMenuId
-            ? $this->subIds($rootMenuId)
-            : $this->all()->pluck('id')->toArray();
-        foreach ($ids as $id) {
-            if (empty($this->find($id)->children->count())) {
-                $path = $this->leafPath($id, $leafPath);
-                $leaves[$id] = $path;
-                $leafPath = [];
-            }
-        }
-        
-        return $leaves ?? [];
-        
-    }
-    
-    /**
-     * 获取指定菜单的完整路径
-     *
-     * @param $id
-     * @param array $path
-     * @return string
-     */
-    private function leafPath($id, array &$path) {
-        
-        $menu = $this->find($id);
-        if (!$menu) return '';
-        $path[] = $menu->name;
-        if (isset($menu->parent_id)) {
-            $this->leafPath($menu->parent_id, $path);
-        }
-        krsort($path);
-        
-        return implode(' . ', $path);
-        
-    }
-    
-    /**
-     * 获取指定学校的所有子菜单
-     *
-     * @param integer $id
-     * @param array $nodes
-     * @return array
-     */
-    private function nodes($id, &$nodes = []) {
-        
-        $htmlDefaultIcon = '<i class="fa fa-circle-o"></i>';
-        $htmlIcon = '<i class="%s"></i>';
-        $children = $this->find($id)->children;
-        foreach ($children as $child) {
-            $name = $child['name'];
-            if (isset($child['parent_id'])) {
-                $icon = $this->find($child['id'])->icon;
-                $iconHtml = $icon ? sprintf($htmlIcon, $icon->name) : $htmlDefaultIcon;
-                $name = $iconHtml . '&nbsp;&nbsp;' . $name;
-            }
-            $nodes[] = [
-                'id'     => $child->id,
-                'parent' => $child->parent_id,
-                'text'   => $name,
-                'type'   => 'other',
-            ];
-            $this->nodes($child->id, $nodes);
-        }
-        
-        return $nodes;
-        
     }
     
     /**
@@ -618,183 +660,127 @@ class Menu extends Model {
     }
     
     /**
-     * 指定菜单可否移动至指定的菜单下
+     * 获取指定学校的菜单树
      *
-     * @param $id
-     * @param $parentId
-     * @return bool
-     * @throws ReflectionException
-     */
-    private function movable($id, $parentId) {
-        
-        if (!isset($id, $parentId)) return false;
-        $user = Auth::user();
-        if ($user->role() != '运营') {
-            $menuIds = $this->menuIds();
-            abort_if(
-                !in_array($id, $menuIds) || !in_array($parentId, $menuIds),
-                HttpStatusCode::UNAUTHORIZED,
-                __('messages.forbidden')
-            );
-        }
-        $parentType = $this->find($parentId)->menuType->name;
-        switch ($this->find($id)->menuType->name) {
-            case '运营':
-                return $parentType == '根';
-            case '企业':
-                return $parentType == '运营';
-            case '学校':
-                # 如果学校所属企业发生变化，则不允许移动
-                $school = School::whereMenuId($id)->first();
-                return $parentType !== '企业' ? false
-                    : $school->corp_id == Corp::whereMenuId($parentId)->first()->id;
-            case '其他':
-                return true;
-            default:
-                return false;
-        }
-        
-    }
-    
-    /**
-     * 更改菜单所处位置
-     *
-     * @param $id
-     * @param $parentId
-     * @return bool
-     * @throws Throwable
-     */
-    private function move($id, $parentId) {
-        
-        $moved = false;
-        try {
-            DB::transaction(function () use ($id, $parentId, &$moved) {
-                $menu = $this->find($id);
-                if (!isset($menu)) {
-                    $moved = false;
-                } else {
-                    $menu->parent_id = $parentId === '#' ? null : intval($parentId);
-                    $moved = $menu->save();
-                    /** 当企业类菜单所属运营类菜单发生变化时，更新企业所属运营者及所属部门 */
-                    if ($moved && $menu->menuType->name == '企业') {
-                        $corp = Corp::whereMenuId($menu->id)->first();
-                        $company = Company::whereMenuId($menu->parent_id)->first();
-                        $data = ['parent_id' => $company->department_id];
-                        $moved = $moved && ((new Department)->modify($data, $corp->department_id) ? true : false);
-                        $data = ['company_id' => $company->id];
-                        $moved = $moved && $corp->update($data);
-                    }
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return $moved;
-        
-    }
-    
-    /**
-     * 获取用于显示jstree的菜单数据
-     *
-     * @param null $id
+     * @param integer $id 指定学校的菜单ID
      * @return JsonResponse
      */
-    private function jsTree($id) {
+    function schoolTree($id) {
         
-        $root = $this->find($id);
-        $subs = $this->subs(
-            $id, $this->subIds($id), true
-        );
-        $subs[$id] = [
-            'parent_id'    => null,
-            'name'         => $root->name,
-            'icon'         => $root->icon ? $root->icon->name : 'fa fa-circle-o',
-            'menu_type_id' => $root->menu_type_id,
-            'enabled'      => 1,
+        $rootMenu = $this->find($id);
+        $nodes[] = [
+            'id'     => $rootMenu['id'],
+            'parent' => '#',
+            'text'   => '<i class="fa fa-university"></i>&nbsp;&nbsp;' . $rootMenu['name'],
+            'type'   => 'school',
         ];
-        $tree = [];
-        foreach ($subs as $key => $sub) {
-            $name = $sub['name'];
-            if (isset($sub['parent_id'])) {
-                $icon = $sub['icon'];
-                $iconHtml = $icon
-                    ? sprintf(Snippet::MENU_ICON, $icon)
-                    : Snippet::MENU_DEFAULT_ICON;
-                $name = $iconHtml . '&nbsp;&nbsp;' . $name;
-            }
-            $menuType = MenuType::find($sub['menu_type_id'])->name;
-            $type = Constant::NODE_TYPES[$menuType]['type'];
-            $color = Constant::NODE_TYPES[$menuType]['color'];
-            $text = sprintf(
-                Snippet::NODE_TEXT,
-                $sub['enabled'] ? $color : 'text-gray', '', $name, ''
-            );
-            if ($type == '企业') {
-                $corpId = Corp::whereMenuId($key)->first()->id;
-            } elseif ($type == '学校') {
-                $corpId = School::whereMenuId($key)->first()->corp_id;
-            }
-            $tree[] = [
-                'id'      => $key,
-                'parent'  => $sub['parent_id'] ?? '#',
-                'text'    => $text,
-                'type'    => $type,
-                'corp_id' => $corpId ?? null,
-            ];
-        }
         
-        return response()->json($tree);
+        return response()->json(
+            $this->nodes($id, $nodes)
+        );
         
     }
     
     /**
-     * 获取指定菜单下的所有菜单对象
+     * 获取指定学校的所有子菜单
      *
-     * @param $rootId
-     * @param $childrenIds
-     * @param bool $disabled 是否获取未启用的菜单对象
-     * @return Collection|static[]
+     * @param integer $id
+     * @param array $nodes
+     * @return array
      */
-    private function subs($rootId, $childrenIds = null, $disabled = false) {
+    private function nodes($id, &$nodes = []) {
         
-        $user = Auth::user();
-        if ($rootId == 1) {
-            $menus = $this->where('id', '<>', 1)
-                ->orderBy('position')
-                ->get()->toArray();
+        $htmlDefaultIcon = '<i class="fa fa-circle-o"></i>';
+        $htmlIcon = '<i class="%s"></i>';
+        $children = $this->find($id)->children;
+        foreach ($children as $child) {
+            $name = $child['name'];
+            if (isset($child['parent_id'])) {
+                $icon = $this->find($child['id'])->icon;
+                $iconHtml = $icon ? sprintf($htmlIcon, $icon->name) : $htmlDefaultIcon;
+                $name = $iconHtml . '&nbsp;&nbsp;' . $name;
+            }
+            $nodes[] = [
+                'id'     => $child->id,
+                'parent' => $child->parent_id,
+                'text'   => $name,
+                'type'   => 'other',
+            ];
+            $this->nodes($child->id, $nodes);
+        }
+        
+        return $nodes;
+        
+    }
+    
+    /**
+     * 获取指定菜单对应的部门图标及名称
+     *
+     * @param $id
+     * @return array
+     */
+    function department($id) {
+        
+        $icon = 'fa fa-send-o text-blue';
+        $name = '运营';
+        $departmentMenuId = $this->menuId($id);
+        if ($departmentMenuId) {
+            $icon = 'fa fa-university text-purple';
+            $name = $this->find($departmentMenuId)->name;
         } else {
-            if (!in_array($user->role(), Constant::SUPER_ROLES)) {
-                $menus = GroupMenu::with('menu')
-                    ->where('group_id', $user->group_id)
-                    ->get()->pluck('menu')
-                    ->toArray();
-                $arr = [];
-                foreach ($menus as $key => $menu) {
-                    $arr[$key] = $menu['position'];
-                }
-                array_multisort($arr, SORT_ASC, $menus);
-            } else {
-                $menus = $this->whereIn('id', $childrenIds)
-                    ->orderBy('position')
-                    ->get()->toArray();
+            $departmentMenuId = $this->menuId($id, '企业');
+            if ($departmentMenuId) {
+                $icon = 'fa fa-weixin text-green';
+                $name = $this->find($departmentMenuId)->name;
             }
         }
-        foreach ($menus as $menu) {
-            $icon = 'fa fa-circle-o';
-            if ($menu['icon_id']) $icon = Icon::find($menu['icon_id'])->name;
-            if (!$disabled && !$menu['enabled']) continue;
-            $subs[$menu['id']] = [
-                'parent_id'    => $menu['parent_id'],
-                'name'         => $menu['name'],
-                'uri'          => $menu['uri'],
-                'icon'         => $icon,
-                'menu_type_id' => $menu['menu_type_id'],
-                'enabled'      => $menu['enabled'],
-            ];
+        
+        return ['icon' => $icon, 'name' => $name];
+        
+    }
+    
+    /**
+     * 获取所有叶节点菜单
+     *
+     * @param null $rootMenuId
+     * @return Collection|static[]
+     */
+    function leaves($rootMenuId = null) {
+        
+        $leafPath = [];
+        $ids = $rootMenuId
+            ? $this->subIds($rootMenuId)
+            : $this->all()->pluck('id')->toArray();
+        foreach ($ids as $id) {
+            if (empty($this->find($id)->children->count())) {
+                $path = $this->leafPath($id, $leafPath);
+                $leaves[$id] = $path;
+                $leafPath = [];
+            }
         }
         
-        return $subs ?? [];
+        return $leaves ?? [];
+        
+    }
+    
+    /**
+     * 获取指定菜单的完整路径
+     *
+     * @param $id
+     * @param array $path
+     * @return string
+     */
+    private function leafPath($id, array &$path) {
+        
+        $menu = $this->find($id);
+        if (!$menu) return '';
+        $path[] = $menu->name;
+        if (isset($menu->parent_id)) {
+            $this->leafPath($menu->parent_id, $path);
+        }
+        krsort($path);
+        
+        return implode(' . ', $path);
         
     }
     

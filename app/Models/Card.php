@@ -8,7 +8,7 @@ use Exception;
 use Form;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Log, Facades\Request};
+use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Request};
 use Throwable;
 
 /**
@@ -56,7 +56,7 @@ class Card extends Model {
      */
     function turnstiles() {
         
-        return $this->belongsToMany('App\Models\Turnstile', 'cards_turnstiles');
+        return $this->belongsToMany('App\Models\Turnstile', 'card_turnstile');
         
     }
     
@@ -184,20 +184,61 @@ class Card extends Model {
                 # 发卡
                 $this->insert($inserts ?? []);
                 $cards = $this->whereIn('user_id', $userIds)->get();
-                foreach ($cards as $card) { $card->user->update(['card_id' => $card->id]); }
+                foreach ($cards as $card) {
+                    $card->user->update(['card_id' => $card->id]);
+                }
                 # 换卡
-                Request::merge(['sns' => $replaces]); $this->modify();
+                Request::merge(['sns' => $replaces]);
+                $this->modify();
                 # 删卡
-                Request::merge(['ids' => $purges]); $this->remove();
+                Request::merge(['ids' => $purges]);
+                $this->remove();
             });
         } catch (Exception $e) {
             throw $e;
         }
         
         return !$issue ? true : response()->json([
-            'title' => '批量发卡',
-            'message' => __('messages.ok')
+            'title'   => '批量发卡',
+            'message' => __('messages.ok'),
         ]);
+        
+    }
+    
+    /**
+     * 检查卡号是否有重复
+     *
+     * @param array $sns
+     */
+    private function validate(array $sns) {
+        
+        $ns = array_count_values(array_map('strval', $sns));
+        foreach ($ns as $n => $count) {
+            if (!empty($n) && $count > 1) $ds[] = $n;
+        }
+        abort_if(
+            !empty($ds ?? []),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            implode('', [
+                (!empty($sns) ? ('卡号: ' . implode(',', $ds ?? [])) : ''),
+                '有重复，请检查后重试',
+            ])
+        );
+        
+    }
+    
+    /**
+     * 判断卡号是否已存在
+     *
+     * @param $sn
+     */
+    private function exists($sn) {
+        
+        abort_if(
+            $this->whereSn($sn)->first() ? true : false,
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('卡号：' . $sn . ' 已被使用')
+        );
         
     }
     
@@ -208,7 +249,7 @@ class Card extends Model {
      * @throws Throwable
      */
     function modify() {
-    
+        
         $cards = Request::input('sns');
         $this->validate(Arr::pluck(array_values($cards), 'sn'));
         try {
@@ -294,6 +335,28 @@ class Card extends Model {
     }
     
     /**
+     * 返回门禁设备权限
+     *
+     * @param integer $id - 一卡通id
+     * @param integer $tId - 门禁id
+     * @return array|null
+     */
+    private function perm($id, $tId) {
+        
+        $ct = CardTurnstile::where(['card_id' => $id, 'turnstile_id' => $tId])->first();
+        
+        return !$ct ? null : [
+            'card'        => $this->find($id)->sn,
+            's_date'      => date('Ymd', strtotime($ct->start_date)),
+            'e_date'      => date('Ymd', strtotime($ct->end_date)),
+            'time_frames' => array_pad(
+                explode(',', $ct->ruleids), 4, "0"
+            ),
+        ];
+        
+    }
+    
+    /**
      * 返回卡号输入框html
      *
      * @param bool $disabled
@@ -312,23 +375,6 @@ class Card extends Model {
         }
         
         return Form::text('sn', '%s', $params)->toHtml();
-        
-    }
-    
-    /**
-     * 返回授权选择输入html
-     *
-     * @param $name
-     * @param $class
-     * @param bool $checked
-     * @return string
-     */
-    function checkbox($name, $class, $checked = true) {
-        
-        return Form::checkbox(
-            $name, '%s', $checked,
-            ['class' => 'minimal ' . $class]
-        )->toHtml();
         
     }
     
@@ -434,6 +480,23 @@ class Card extends Model {
     }
     
     /**
+     * 返回授权选择输入html
+     *
+     * @param $name
+     * @param $class
+     * @param bool $checked
+     * @return string
+     */
+    function checkbox($name, $class, $checked = true) {
+        
+        return Form::checkbox(
+            $name, '%s', $checked,
+            ['class' => 'minimal ' . $class]
+        )->toHtml();
+        
+    }
+    
+    /**
      * 返回一卡通批量授权页面所需数据
      *
      * @param $type
@@ -477,64 +540,6 @@ class Card extends Model {
             'sections'   => [0 => '(请选择一个部门)'] + $builder->get()->pluck('name', 'id')->toArray(),
             'turnstiles' => implode('', $tList),
         ];
-        
-    }
-    
-    /**
-     * 检查卡号是否有重复
-     *
-     * @param array $sns
-     */
-    private function validate(array $sns) {
-        
-        $ns = array_count_values(array_map('strval', $sns));
-        foreach ($ns as $n => $count) {
-            if (!empty($n) && $count > 1) $ds[] = $n;
-        }
-        abort_if(
-            !empty($ds ?? []),
-            HttpStatusCode::NOT_ACCEPTABLE,
-            implode('', [
-                (!empty($sns) ? ('卡号: ' . implode(',', $ds ?? [])) : ''),
-                '有重复，请检查后重试',
-            ])
-        );
-        
-    }
-    
-    /**
-     * 返回门禁设备权限
-     *
-     * @param integer $id - 一卡通id
-     * @param integer $tId - 门禁id
-     * @return array|null
-     */
-    private function perm($id, $tId) {
-    
-        $ct = CardTurnstile::where(['card_id' => $id, 'turnstile_id' => $tId])->first();
-        return !$ct ? null : [
-            'card'        => $this->find($id)->sn,
-            's_date'      => date('Ymd', strtotime($ct->start_date)),
-            'e_date'      => date('Ymd', strtotime($ct->end_date)),
-            'time_frames' => array_pad(
-                explode(',', $ct->ruleids), 4, "0"
-            ),
-        ];
-        
-    }
-    
-    /**
-     * 判断卡号是否已存在
-     *
-     * @param $sn
-     */
-    private function exists($sn) {
-    
-        abort_if(
-            $this->whereSn($sn)->first() ? true : false,
-            HttpStatusCode::NOT_ACCEPTABLE,
-            __( '卡号：' . $sn . ' 已被使用')
-        );
         
     }
     

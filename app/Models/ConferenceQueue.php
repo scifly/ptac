@@ -2,18 +2,12 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Support\Facades\{Auth, DB};
 use Throwable;
 
 /**
@@ -118,6 +112,7 @@ class ConferenceQueue extends Model {
                         '<i class="fa fa-circle text-%s" title="%s"></i>',
                         $statuses[$d][0], $statuses[$d][1]
                     );
+                    
                     return Datatable::status($status, $row);
                 },
             ],

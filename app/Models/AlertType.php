@@ -5,8 +5,7 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Builder, Model};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -44,7 +43,7 @@ class AlertType extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $this->purge([class_basename($this)], 'id', 'purge', $id);
@@ -52,7 +51,7 @@ class AlertType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

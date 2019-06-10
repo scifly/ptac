@@ -1,21 +1,13 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany, Relations\HasOne};
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\{DB, Request, Storage};
 use Throwable;
 
 /**
@@ -119,7 +111,7 @@ class Media extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
@@ -127,12 +119,12 @@ class Media extends Model {
                 $this->purge(['WapSite', 'WsmArticle', 'Message'], 'media_ids', 'clear');
                 $this->purge(['WapSiteModule', 'WsmArticle'], ['media_id', 'thumbnail_media_id'], 'reset');
                 $this->purge(['Media'], 'id');
-                array_map(function ($id) {Storage::disk('uploads')->delete($this->find($id)->path); }, $ids);
+                array_map(function ($id) { Storage::disk('uploads')->delete($this->find($id)->path); }, $ids);
             });
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
