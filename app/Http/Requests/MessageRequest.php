@@ -88,7 +88,8 @@ class MessageRequest extends FormRequest {
                 'msgtype' => $type,
                 $type     => $this->input($type),
             ], JSON_UNESCAPED_UNICODE);
-            
+    
+            Log::info('data', $input);
             # 需要立即或定时发送的消息中对应的用户类发送对象，
             # 需在Message表中保存学生对应的监护人userid及教职员工的userid，
             # 学生userid转换成监护人userid的过程将在SendMessage队列任务中进行
