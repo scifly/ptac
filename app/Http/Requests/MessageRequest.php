@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 use App\Helpers\{Constant, ModelTrait};
 use App\Models\{CommType, MediaType, School, User};
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class MessageRequest
@@ -68,6 +69,7 @@ class MessageRequest extends FormRequest {
                     ? $input['user_ids'][] = $paths[2]
                     : $input['dept_ids'][] = $targetId;
             }
+            Log::info('input', $input);
             # 定时发送的日期时间
             $time = $this->input('time') ?? null;
             !$time ?: $input['time'] .= ':00';
