@@ -61,6 +61,7 @@ class MessageRequest extends FormRequest {
                 $app->id, 0, $this->title($type), '', '0', 0,
                 'http://', '0', $this->user()->id ?? 0, 0, $msgTypeId, 0, 0,
             ]);
+            # 从后台发送消息
             if ($this->has('targetIds')) {
                 $targetIds = $this->input('targetIds') ?? [];
                 foreach (!is_array($targetIds) ? explode(',', $targetIds) : $targetIds as $targetId) {
@@ -70,6 +71,7 @@ class MessageRequest extends FormRequest {
                         ? $input['user_ids'][] = $paths[2]
                         : $input['dept_ids'][] = $targetId;
                 }
+            # 从微信端发送消息
             } else {
                 $input['user_ids'] = $this->input('user_ids');
                 $input['dept_ids'] = $this->input('dept_ids');
@@ -89,7 +91,6 @@ class MessageRequest extends FormRequest {
                 $type     => $this->input($type),
             ], JSON_UNESCAPED_UNICODE);
     
-            Log::info('data', $input);
             # 需要立即或定时发送的消息中对应的用户类发送对象，
             # 需在Message表中保存学生对应的监护人userid及教职员工的userid，
             # 学生userid转换成监护人userid的过程将在SendMessage队列任务中进行
