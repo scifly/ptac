@@ -61,14 +61,18 @@ class MessageRequest extends FormRequest {
                 $app->id, 0, $this->title($type), '', '0', 0,
                 'http://', '0', $this->user()->id ?? 0, 0, $msgTypeId, 0, 0,
             ]);
-            Log::info('input', $input);
-            $targetIds = $this->input('targetIds') ?? [];
-            foreach (!is_array($targetIds) ? explode(',', $targetIds) : $targetIds as $targetId) {
-                # paths[2] = user-[departmentId]-[userId]
-                $paths = explode('-', $targetId);
-                isset($paths[2])
-                    ? $input['user_ids'][] = $paths[2]
-                    : $input['dept_ids'][] = $targetId;
+            if ($this->has('targetIds')) {
+                $targetIds = $this->input('targetIds') ?? [];
+                foreach (!is_array($targetIds) ? explode(',', $targetIds) : $targetIds as $targetId) {
+                    # paths[2] = user-[departmentId]-[userId]
+                    $paths = explode('-', $targetId);
+                    isset($paths[2])
+                        ? $input['user_ids'][] = $paths[2]
+                        : $input['dept_ids'][] = $targetId;
+                }
+            } else {
+                $input['user_ids'] = $this->input('user_ids');
+                $input['dept_ids'] = $this->input('dept_ids');
             }
             # 定时发送的日期时间
             $time = $this->input('time') ?? null;
