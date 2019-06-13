@@ -57,6 +57,7 @@ class TestController extends Controller {
     public function index() {
     
         echo Request::route('id');
+        echo '<br />';
         echo Request::path();
         exit;
         dd(ucfirst(Inflector::camelize('passage_rule')));
