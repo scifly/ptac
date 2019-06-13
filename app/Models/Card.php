@@ -8,7 +8,7 @@ use Exception;
 use Form;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Request};
+use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Log, Facades\Request};
 use Throwable;
 
 /**
@@ -305,6 +305,8 @@ class Card extends Model {
         
         try {
             DB::transaction(function () use ($soft) {
+                Log::debug(Request::route('id'));
+                Log::debug(stripos('delete', Request::path()) !== false);
                 $userIds = (Request::route('id') && stripos('delete', Request::path()) !== false)
                     ? [Request::route('id')]
                     : array_values(Request::input('ids'));
