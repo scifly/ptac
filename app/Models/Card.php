@@ -8,7 +8,7 @@ use Exception;
 use Form;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Log, Facades\Request};
+use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Request};
 use Throwable;
 
 /**

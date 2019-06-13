@@ -5,6 +5,7 @@ use App\Helpers\ModelTrait;
 use App\Models\Card;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -65,8 +66,12 @@ class CardComposer {
             } else {
                 $ids = session('ids');
             }
-            $operator = $action == 'create' ? '=' : '<>';
-            $users = User::whereIn('id', $ids)->where('card_id', $operator, 0)->get();
+            // $operator = $action == 'create' ? '=' : '<>';
+            $users = User::whereIn('id', $ids)->get()->when(
+                $action == 'create', function (Collection $users) {
+                   return $users->where('card_id', 0);
+                }
+            );
             $card = new Card;
             $sn = $card->input(
                 (Request::route('id') ? false : true) and
