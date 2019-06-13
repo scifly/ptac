@@ -99,15 +99,14 @@ class CardController extends Controller {
     /**
      * 删除一卡通
      *
-     * @param $id
      * @return JsonResponse
      * @throws Exception
      * @throws Throwable
      */
-    public function destroy($id = null) {
+    public function destroy() {
         
         return $this->result(
-            $this->card->remove($id)
+            $this->card->remove()
         );
         
     }
