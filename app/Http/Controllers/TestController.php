@@ -13,7 +13,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Support\Facades\{DB};
+use Illuminate\Support\Facades\{DB, Request};
 use Illuminate\View\View;
 use Pusher\Pusher;
 use Pusher\PusherException;
@@ -56,7 +56,8 @@ class TestController extends Controller {
      */
     public function index() {
     
-        phpinfo();
+        echo Request::route('id');
+        echo Request::path();
         exit;
         dd(ucfirst(Inflector::camelize('passage_rule')));
         // return view('user.index');

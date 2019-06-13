@@ -349,10 +349,8 @@ class Department extends Model {
             $levels[$id] = $this->level($id, $level);
         }
         asort($levels);
-        reset($levels);
-        $topLevelId = key($levels);
         
-        return $this->find($topLevelId)->parent->id;
+        return $this->find(array_key_first($levels))->parent->id;
         
     }
     

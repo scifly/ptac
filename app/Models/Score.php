@@ -951,14 +951,12 @@ class Score extends Model {
         }
         if ($user->role() == '监护人') {
             $targets = $user->custodian->myStudents();
-            reset($targets);
-            $exams = array_slice((new Student)->exams(key($targets)), $start, $pageSize);
+            $exams = array_slice((new Student)->exams(array_key_first($targets)), $start, $pageSize);
             $type = 'student';
         } else {
             $targets = Squad::whereIn('id', $this->classIds($schoolId))
                 ->where('enabled', 1)->pluck('name', 'id')->toArray();
-            reset($targets);
-            $exams = array_slice($exam->examsByClassId(key($targets)), $start, $pageSize);
+            $exams = array_slice($exam->examsByClassId(array_key_first($targets)), $start, $pageSize);
             $type = 'class';
         }
         
@@ -1019,12 +1017,9 @@ class Score extends Model {
         # 获取该次考试所有科目id
         $subjectList = Subject::whereIn('id', explode(',', $exam->subject_ids))
             ->pluck('name', 'id')->toArray();
-        if (Request::method() == 'POST') {
-            $subjectId = Request::get('subject_id');
-        } else {
-            reset($subjectList);
-            $subjectId = key($subjectList);
-        }
+        $subjectId = Request::method() == 'POST'
+            ? Request::get('subject_id')
+            : array_key_first($subjectList);
         /** @var Score $score */
         $scores = $this->subjectScores($studentId, $subjectId, $examId);
         $score = !$scores->isEmpty() ? $scores->first() : null;

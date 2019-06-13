@@ -699,10 +699,7 @@ class User extends Authenticatable {
             $result['corpList'] = $this->selectList(
                 $corps = $this->corps(), 'corp_id'
             );
-            if (Group::find($value)->name == '学校') {
-                reset($corps);
-                $corpId = key($corps);
-            }
+            Group::find($value)->name != '学校' ?: $corpId = array_key_first($corps);
         } else {
             $corpId = $value;
         }

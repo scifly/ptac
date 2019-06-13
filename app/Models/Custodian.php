@@ -485,12 +485,10 @@ HTML;
             ->where('enabled', 1)
             ->pluck('name', 'id')
             ->toArray();
-        reset($grades);
-        $classes = Squad::where(['grade_id' => key($grades), 'enabled' => 1])
+        $classes = Squad::where(['grade_id' => array_key_first($grades), 'enabled' => 1])
             ->pluck('name', 'id')->toArray();
-        reset($classes);
         $records = Student::with('user:id,realname')
-            ->where(['class_id' => key($classes), 'enabled' => 1])
+            ->where(['class_id' => array_key_first($classes), 'enabled' => 1])
             ->get()->toArray();
         foreach ($records as $record) {
             if (!isset($record['user'])) continue;

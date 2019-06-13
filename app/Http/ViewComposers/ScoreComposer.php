@@ -34,8 +34,7 @@ class ScoreComposer {
                     ->whereIn('id', $this->examIds())
                     ->pluck('name', 'id')
                     ->toArray();
-                reset($examList);
-                $exam = Exam::find(key($examList));
+                $exam = Exam::find(array_key_first($examList));
                 # 指定考试对应的班级
                 $classIds = array_intersect(
                     explode(',', $exam ? $exam->class_ids : ''),
@@ -143,14 +142,12 @@ class ScoreComposer {
                 # 对当前用户可见的考试列表
                 $examList = Exam::whereEnabled(1)->whereIn('id', $this->examIds())
                     ->pluck('name', 'id')->toArray();
-                reset($examList);
-                $exam = Exam::find(key($examList));
+                $exam = Exam::find(array_key_first($examList));
                 # 指定考试对应的班级
                 $classList = Squad::whereEnabled(1)
                     ->whereIn('id', $exam ? explode(',', $exam->class_ids) : [])
                     ->pluck('name', 'id')->toArray();
-                reset($classList);
-                $class = Squad::find(key($classList));
+                $class = Squad::find(array_key_first($classList));
                 # 指定考试对应的科目列表
                 $subjectList = Subject::whereEnabled(1)
                     ->whereIn('id', $exam ? explode(',', $exam->subject_ids) : [])
@@ -174,12 +171,9 @@ class ScoreComposer {
                 $examList = Exam::whereEnabled(1)
                     ->whereIn('id', $this->examIds())
                     ->pluck('name', 'id')->toArray();
-                if (Request::route('id')) {
-                    $exam = Score::find(Request::route('id'))->exam;
-                } else {
-                    reset($examList);
-                    $exam = Exam::find(key($examList));
-                }
+                $exam = Request::route('id')
+                    ? Score::find(Request::route('id'))->exam
+                    : Exam::find(array_key_first($examList));
                 # 指定考试对应的班级
                 $classIds = Squad::whereEnabled(1)
                     ->whereIn('id', explode(',', $exam ? $exam->class_ids : ''))

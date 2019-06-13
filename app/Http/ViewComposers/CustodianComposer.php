@@ -39,8 +39,7 @@ class CustodianComposer {
                     ->where('enabled', 1)
                     ->pluck('name', 'id')
                     ->toArray();
-                reset($grades);
-                $classes = Squad::whereGradeId(key($grades))
+                $classes = Squad::whereGradeId(array_key_first($grades))
                     ->where('enabled', 1)
                     ->pluck('name', 'id')
                     ->toArray();

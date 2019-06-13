@@ -44,8 +44,7 @@ class AppComposer {
                 $corp = Corp::whereMenuId($rootMenuId)->first();
                 $corps = [$corp->id => $corp->name];
             }
-            reset($corps);
-            $apps = App::whereCorpId(key($corps))->get()->toArray();
+            $apps = App::whereCorpId(array_key_first($corps))->get()->toArray();
             $this->formatDateTime($apps);
             $view->with([
                 'corps' => $corps,

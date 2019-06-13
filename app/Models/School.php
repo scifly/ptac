@@ -472,11 +472,10 @@ class School extends Model {
         
         $grades = Grade::whereIn('id', $this->gradeIds())
             ->pluck('name', 'id')->toArray();
-        reset($grades);
         
         return [
             $this->singleSelectList($grades, 'grade_id'),
-            key($grades),
+            array_key_first($grades),
         ];
         
     }

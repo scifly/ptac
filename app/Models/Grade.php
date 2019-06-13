@@ -272,11 +272,10 @@ class Grade extends Model {
             __('messages.not_acceptable')
         );
         $items = $this->find($id)->classes->pluck('name', 'id')->toArray();
-        reset($items);
         
         return [
             $this->singleSelectList($items, 'class_id'),
-            key($items),
+            array_key_first($items),
         ];
         
     }

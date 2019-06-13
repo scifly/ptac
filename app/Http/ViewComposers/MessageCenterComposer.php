@@ -98,10 +98,10 @@ class MessageCenterComposer {
                         case 'mpnews':
                             $articles = $content->{'articles'};
                             $tpl = <<<HTML
-                        <li id="mpnews-%s" class="weui-uploader__file" style="background-image: %s"
-                            data-media-id="%s" data-author="%s" data-content="%s" data-digest="%s"
-                            data-filename="%s" data-url="%s" data-image="%s" data-title="%s"></li>
-HTML;
+                                <li id="mpnews-%s" class="weui-uploader__file" style="background-image: %s"
+                                data-media-id="%s" data-author="%s" data-content="%s" data-digest="%s"
+                                data-filename="%s" data-url="%s" data-image="%s" data-title="%s"></li>
+                            HTML;
                             for ($i = 0; $i < sizeof($articles); $i++) {
                                 $article = $articles[$i];
                                 $mpnewsList .= sprintf(
