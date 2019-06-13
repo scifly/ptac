@@ -66,17 +66,17 @@ class CardComposer {
             } else {
                 $ids = session('ids');
             }
-            // $operator = $action == 'create' ? '=' : '<>';
             $users = User::whereIn('id', $ids)->get()->when(
                 $action == 'create', function (Collection $users) {
                    return $users->where('card_id', 0);
                 }
             );
             $card = new Card;
-            $sn = $card->input(
-                (Request::route('id') ? false : true) and
-                (Request::path() == 'cards/edit')
-            );
+            $sn = $card->input();
+            // $sn = $card->input(
+            //     (Request::route('id') ? false : true) and
+            //     (Request::path() == 'cards/edit')
+            // );
             $row = <<<HTML
 <tr>
 <td>%s</td>
