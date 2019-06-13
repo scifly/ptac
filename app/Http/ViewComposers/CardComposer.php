@@ -90,7 +90,7 @@ HTML;
             /** @var User $user */
             foreach ($users as $user) {
                 $status = $action == 'create' ? ''
-                    : '<td>' . $card->status($user->card->status) . '</td>';
+                    : '<td>' . $card->status($user->card ? $user->card->status : 1) . '</td>';
                 $default = $user->mobiles->where('isdefault', 1)->first();
                 $record = sprintf(
                     $row,
