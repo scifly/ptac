@@ -305,9 +305,7 @@ class Card extends Model {
         
         try {
             DB::transaction(function () use ($soft) {
-                Log::debug(Request::route('id'));
-                Log::debug(stripos('delete', Request::path()) !== false);
-                $userIds = (Request::route('id') && stripos('delete', Request::path()) !== false)
+                $userIds = (Request::route('id') && stripos(Request::path(), 'delete') !== false)
                     ? [Request::route('id')]
                     : array_values(Request::input('ids'));
                 $perms = [];
