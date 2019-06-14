@@ -55,10 +55,8 @@ class TestController extends Controller {
      * @throws Throwable
      */
     public function index() {
-    
-        echo Request::route('id');
-        echo '<br />';
-        echo Request::path();
+
+        phpinfo();
         exit;
         dd(ucfirst(Inflector::camelize('passage_rule')));
         // return view('user.index');
