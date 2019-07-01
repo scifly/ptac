@@ -53,7 +53,12 @@ class TestController extends Controller {
      * @throws Throwable
      */
     public function index() {
-
+        
+        $client = new Client;
+        $response = $client->post(
+            'http://127.0.0.1:18080/GetDeviceList?username=admin&password=admin'
+        );
+        dd($response);
         (new Corp)->index();
         phpinfo();
         exit;

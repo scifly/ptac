@@ -18,7 +18,7 @@ use Throwable;
 
 /**
  * 门禁通行规则
- *
+ * 
  * Class PassageRule
  *
  * @package App\Models
@@ -230,7 +230,7 @@ class PassageRule extends Model {
             $selectedDoors = [];
             foreach ($rts as $rt) {
                 $t = $rt->turnstile;
-                $door = implode('.', [$t->sn, $rt->door, $t->location]);
+                $door = join('.', [$t->sn, $rt->door, $t->location]);
                 $selectedDoors[array_search($door, $doors)] = $door;
             }
             if ($pr->ruleid) {
@@ -273,20 +273,17 @@ class PassageRule extends Model {
                             return date('Ymd', strtotime($pr->{$field}));
                         }, ['start_date', 'end_date']
                     );
-                    $week = implode('',
-                        array_map(
-                            function ($chr) { return '0' . $chr; },
-                            str_split($pr->statuses)
-                        )
-                    );
+                    $week = join(array_map(
+                        function ($chr) { return '0' . $chr; },
+                        str_split($pr->statuses)
+                    ));
                     $tzones = array_map(
                         function ($field) use ($pr) {
-                            return implode('', array_map(
-                                    function ($time) {
-                                        return date('Hi', strtotime($time));
-                                    }, explode(' - ', $pr->{$field})
-                                )
-                            );
+                            return join(array_map(
+                                function ($time) {
+                                    return date('Hi', strtotime($time));
+                                }, explode(' - ', $pr->{$field})
+                            ));
                         }, ['tr1', 'tr2', 'tr3']
                     );
                     $rules[$device->deviceid][] = array_combine(
@@ -296,8 +293,9 @@ class PassageRule extends Model {
                 }
             }
             array_map(
-                function ($api, $data) { empty($data) ?: (new Turnstile)->invoke($api, ['data' => $data]); },
-                ['clrtimeframes', 'settimeframes'], [$deviceids, $rules]
+                function ($api, $data) {
+                    empty($data) ?: (new Turnstile)->invoke($api, ['data' => $data]);
+                }, ['tfclr', 'tfset'], [$deviceids, $rules]
             );
         } catch (Exception $e) {
             throw $e;

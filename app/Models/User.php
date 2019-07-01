@@ -26,6 +26,7 @@ use Throwable;
  * @property int $id
  * @property int $group_id 所属角色/权限ID
  * @property int|null $card_id
+ * @property int $face_id 人脸id
  * @property string $username 用户名
  * @property string|null $remember_token "记住我"令牌，登录时用
  * @property string $password 密码
@@ -49,6 +50,7 @@ use Throwable;
  * @property-read Educator $educator
  * @property-read Group $group
  * @property-read Card $card
+ * @property-read Face $face
  * @property-read Collection|Message[] $messages
  * @property-read Collection|Mobile[] $mobiles
  * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
@@ -67,6 +69,7 @@ use Throwable;
  * @method static Builder|User whereAvatarMediaid($value)
  * @method static Builder|User whereAvatarUrl($value)
  * @method static Builder|User whereCardId($value)
+ * @method static Builder|User whereFaceId($value)
  * @method static Builder|User whereCreatedAt($value)
  * @method static Builder|User whereEmail($value)
  * @method static Builder|User whereEnabled($value)
@@ -157,6 +160,13 @@ class User extends Authenticatable {
     function card() { return $this->hasOne('App\Models\Card'); }
     
     /**
+     * 获取指定用户对应的人脸对象
+     *
+     * @return HasOne
+     */
+    function face() { return $this->hasOne('App\Models\Face'); }
+    
+    /**
      * 获取指定用户的所有订单对象
      *
      * @return HasMany
@@ -175,11 +185,7 @@ class User extends Authenticatable {
      *
      * @return BelongsToMany
      */
-    function departments() {
-        
-        return $this->belongsToMany('App\Models\Department', 'department_user');
-        
-    }
+    function departments() { return $this->belongsToMany('App\Models\Department', 'department_user'); }
     
     /**
      * 获取指定用户创建的所有标签对象
@@ -193,7 +199,7 @@ class User extends Authenticatable {
      *
      * @return BelongsToMany
      */
-    function tags() { return $this->belongsToMany('App\Models\Tag', 'tags_users'); }
+    function tags() { return $this->belongsToMany('App\Models\Tag', 'tag_user'); }
     
     /**
      * 获取指定用户创建的所有日历对象
@@ -207,33 +213,21 @@ class User extends Authenticatable {
      *
      * @return HasMany
      */
-    function pollQuestionnaires() {
-        
-        return $this->hasMany('App\Models\PollQuestionnaire');
-        
-    }
+    function pollQuestionnaires() { return $this->hasMany('App\Models\PollQuestionnaire'); }
     
     /**
      * 获取指定用户参与的调查问卷所给出的答案对象
      *
      * @return HasMany
      */
-    function pqAnswers() {
-        
-        return $this->hasMany('App\Models\PollQuestionnaireAnswer');
-        
-    }
+    function pqAnswers() { return $this->hasMany('App\Models\PollQuestionnaireAnswer'); }
     
     /**
      * 获取指定用户参与的所有调查问卷对象
      *
      * @return HasMany
      */
-    function pqParticipants() {
-        
-        return $this->hasMany('App\Models\PollQuestionnaireParticipant');
-        
-    }
+    function pqParticipants() { return $this->hasMany('App\Models\PollQuestionnaireParticipant'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
     /**
@@ -658,7 +652,7 @@ class User extends Authenticatable {
                     );
                     $this->purge([
                         class_basename($this), 'DepartmentUser', 'TagUser', 'Card',
-                        'Tag', 'Mobile', 'PollQuestionnaire', 'MessageReply',
+                        'Tag', 'Mobile', 'PollQuestionnaire', 'MessageReply', 'Face',
                         'PollQuestionnaireAnswer', 'PollQuestionnaireParticipant',
                     ], 'user_id');
                 } else {

@@ -116,6 +116,7 @@ $routes = [
     'event'                  => $default,
     'exam'                   => $default,
     'exam_type'              => $default,
+    'face'                   => $default,
     'grade'                  => $default,
     'group'                  => [
         'index'   => ['get'],

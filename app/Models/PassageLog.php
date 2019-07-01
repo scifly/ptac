@@ -11,7 +11,7 @@ use Throwable;
 
 /**
  * 通行记录
- *
+ * 
  * Class PassageLog
  *
  * @package App\Models

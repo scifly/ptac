@@ -9,7 +9,7 @@ use Throwable;
 
 /**
  * 一卡通 & 门禁绑定关系
- *
+ * 
  * Class CardTurnstile
  *
  * @package App\Models

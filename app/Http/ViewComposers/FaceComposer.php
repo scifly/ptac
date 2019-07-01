@@ -2,17 +2,17 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\Card;
+use App\Models\Face;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Request;
 
 /**
- * Class CardComposer
+ * Class FaceComposer
  * @package App\Http\ViewComposers
  */
-class CardComposer {
+class FaceComposer {
     
     use ModelTrait;
     
@@ -27,22 +27,22 @@ class CardComposer {
                 'buttons' => [
                     'create' => [
                         'id'    => 'batch-create',
-                        'label' => '发卡',
-                        'icon'  => 'fa fa-credit-card',
-                        'title' => '发卡',
+                        'label' => '设置人脸识别',
+                        'icon'  => 'fa fa-user-md',
+                        'title' => '设置',
                     ],
                     'edit'   => [
                         'id'    => 'batch-edit',
-                        'label' => '更新(挂失/解挂)',
+                        'label' => '修改(黑名单/白名单)',
                         'icon'  => 'fa fa-asterisk',
                         'title' => '更新',
                     ],
                 ],
                 'titles'  => [
-                    '#', '卡号', '通行权限', '持卡人', '角色', '手机号码',
+                    '#', 'faceid', '头像', '姓名', '角色',
                     [
-                        'title' => '发卡时间',
-                        'html'  => $this->inputDateTimeRange('发卡时间'),
+                        'title' => '创建于',
+                        'html'  => $this->inputDateTimeRange('创建于'),
                     ],
                     [
                         'title' => '更新于',
@@ -51,7 +51,7 @@ class CardComposer {
                     [
                         'title' => '状态 . 操作',
                         'html'  => $this->singleSelectList(
-                            [null => '全部', 0 => '待发', 1 => '正常', 2 => '挂失'], 'filter_status'
+                            [null => '全部', 0 => '未设置', 1 => '白名单', 2 => '黑名单', 3 => 'VIP'], 'filter_state'
                         ),
                     ],
                 ],
@@ -68,29 +68,23 @@ class CardComposer {
             }
             $users = User::whereIn('id', $ids)->get()->when(
                 $action == 'create', function (Collection $users) {
-                   return $users->where('card_id', 0);
+                   return $users->where('face_id', 0);
                 }
             );
-            $card = new Card;
-            $sn = $card->input();
-            // $sn = $card->input(
-            //     (Request::route('id') ? false : true) and
-            //     (Request::path() == 'cards/edit')
-            // );
+            $face = new Face;
             $row = <<<HTML
                 <tr>
                     <td>%s</td>
                     <td class="text-center">%s</td>
                     <td class="text-center">%s</td>
                     <td class="text-center">%s</td>
-                    <td>$sn</td>%s
+                    <td class="text-center">%s</td>%s
                 </tr>
             HTML;
             $list = ''; $i = 0;
-            /** @var User $user */
             foreach ($users as $user) {
-                $status = $action == 'create' ? ''
-                    : '<td>' . $card->status($user->card ? $user->card->status : 1) . '</td>';
+                $state = $action == 'create' ? ''
+                    : '<td>' . $face->status($user->card ? $user->card->status : 1) . '</td>';
                 $default = $user->mobiles->where('isdefault', 1)->first();
                 $record = sprintf(
                     $row,
@@ -100,14 +94,14 @@ class CardComposer {
                     $default ? $default->mobile : 'n/a',
                     $user->id, $i,
                     $user->card ? $user->card->sn : '',
-                    $status
+                    $state
                 );
         
                 $list .= $record;
                 $i++;
             }
             !empty($list)
-                ?: $list = '<tr><td colspan="6" class="text-center text-red">- 已发卡 -</td></tr>';
+                ?: $list = '<tr><td colspan="6" class="text-center text-red">- 已设置人脸识别 -</td></tr>';
             $data = [
                 'list' => $list,
                 'edit' => $action == 'edit' ? true : null

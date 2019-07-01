@@ -9,7 +9,7 @@ use Throwable;
 
 /**
  * 通行规则与门禁绑定关系
- *
+ * 
  * Class RuleTurnstile
  *
  * @package App\Models

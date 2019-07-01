@@ -134,7 +134,7 @@ class Turnstile extends Model {
         
         try {
             DB::transaction(function () {
-                $devices = $this->invoke('devlist');
+                $devices = $this->invoke('list');
                 foreach ($devices as $device) {
                     $data = array_combine($this->fillable, [
                             $device['sn'], $device['doors'], $device['ip'],

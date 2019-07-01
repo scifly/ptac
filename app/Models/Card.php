@@ -13,7 +13,7 @@ use Throwable;
 
 /**
  * 一卡通
- *
+ * 
  * Class Card
  *
  * @package App\Models
@@ -110,7 +110,6 @@ class Card extends Model {
             [
                 'db'        => 'Card.status', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    
                     $colors = [
                         ['text-gray', '待发'],
                         ['text-green', '正常'],
@@ -284,7 +283,7 @@ class Card extends Model {
                         }
                     }
                 }
-                empty($inserts) ?: (new Turnstile)->invoke('addperms', ['data' => $inserts]);
+                empty($inserts) ?: (new Turnstile)->invoke('padd', ['data' => $inserts]);
             });
         } catch (Exception $e) {
             throw $e;
@@ -318,7 +317,7 @@ class Card extends Model {
                     }
                 }
                 # 删除已下发的设备权限
-                empty($perms) ?: (new Turnstile)->invoke('delperms', ['data' => $perms]);
+                empty($perms) ?: (new Turnstile)->invoke('pdel', ['data' => $perms]);
                 if (!$soft) {
                     $cards = $this->whereIn('user_id', $userIds);
                     CardTurnstile::whereIn('card_id', $cards->pluck('id')->toArray())->delete();
@@ -466,7 +465,7 @@ class Card extends Model {
                         ];
                     }
                 }
-                empty($data) ?: (new Turnstile)->invoke('addperms', ['data' => $data]);
+                empty($data) ?: (new Turnstile)->invoke('padd', ['data' => $data]);
             });
         } catch (Exception $e) {
             throw $e;

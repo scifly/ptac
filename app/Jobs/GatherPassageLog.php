@@ -56,7 +56,7 @@ class GatherPassageLog implements ShouldQueue {
         try {
             DB::transaction(function () {
                 $records = (new Turnstile)->invoke(
-                    'getlogs',
+                    'logs',
                     $this->schoolId ? ['ids' => []] : ['ids' => [0]]
                 );
                 if ($this->schoolId) {
