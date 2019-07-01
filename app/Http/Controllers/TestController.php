@@ -58,7 +58,7 @@ class TestController extends Controller {
         $response = $client->post(
             'http://127.0.0.1:18080/GetDeviceList?username=admin&password=admin'
         );
-        dd($response);
+        dd(json_decode($response->getBody(), true));
         (new Corp)->index();
         phpinfo();
         exit;
