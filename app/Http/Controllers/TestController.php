@@ -55,6 +55,9 @@ class TestController extends Controller {
     public function index() {
         
         if (Request::method() == 'POST') {
+            $abc = Request::file('abc');
+            $def = Request::file('def');
+            echo $abc->getFilename() . ' : ' . $def->getFilename();
             return dd(Request::all());
         } else {
             return view('user.test');
