@@ -10,10 +10,15 @@
 <p>
     同步美视企业微信通讯录到本地数据库
 </p>
-{!! Form::open(['url' => 'test/index', 'method' => 'post', 'id' => 'testform']) !!}
+{!! Form::open([
+    'url' => 'test/index',
+    'method' => 'post',
+    'id' => 'testform',
+    'enctype' => 'multipart/form-data'
+]) !!}
 {!! Form::textarea('message', null) !!}
 {!! Form::file('abc', ['id' => 'abc']) !!}
-{{--{!! Form::file('def', ['id' => 'def']) !!}--}}
+{!! Form::file('def', ['id' => 'def']) !!}
 {!! Form::submit() !!}
 {!! Form::close() !!}
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
