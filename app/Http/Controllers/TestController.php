@@ -56,6 +56,7 @@ class TestController extends Controller {
         
         if (Request::method() == 'POST') {
             $abc = Request::file('abc');
+            dd($abc);
             $def = Request::file('def');
             echo $abc->getFilename() . ' : ' . $def->getFilename();
             return dd(Request::all());
