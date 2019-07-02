@@ -10,8 +10,10 @@
 <p>
     同步美视企业微信通讯录到本地数据库
 </p>
-{!! Form::open(['url' => 'test/index', 'method' => 'post']) !!}
+{!! Form::open(['url' => 'test/index', 'method' => 'post', 'id' => 'testform']) !!}
 {!! Form::textarea('message', null) !!}
+{!! Form::file('abc', ['id' => 'abc']) !!}
+{!! Form::file('def', ['id' => 'def']) !!}
 {!! Form::submit() !!}
 {!! Form::close() !!}
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
@@ -34,7 +36,8 @@
             url: 'index',
             dataType: 'json',
             data: {
-                _token: $('#csrf_token').attr('content')
+                _token: $('#csrf_token').attr('content'),
+                data: $('#testform').serialize()
             }
         });
         return false;

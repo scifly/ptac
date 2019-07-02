@@ -107,8 +107,8 @@ class Turnstile extends Model {
             ['db' => 'Turnstile.location', 'dt' => 2],
             ['db' => 'Turnstile.doors', 'dt' => 3],
             ['db' => 'Turnstile.deviceid', 'dt' => 4],
-            ['db' => 'Turnstile.created_at', 'dt' => 5],
-            ['db' => 'Turnstile.updated_at', 'dt' => 6],
+            ['db' => 'Turnstile.created_at', 'dt' => 5, 'dr' => true],
+            ['db' => 'Turnstile.updated_at', 'dt' => 6, 'dr' => true],
             [
                 'db'        => 'Turnstile.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
