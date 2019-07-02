@@ -13,7 +13,7 @@
 {!! Form::open(['url' => 'test/index', 'method' => 'post', 'id' => 'testform']) !!}
 {!! Form::textarea('message', null) !!}
 {!! Form::file('abc', ['id' => 'abc']) !!}
-{!! Form::file('def', ['id' => 'def']) !!}
+{{--{!! Form::file('def', ['id' => 'def']) !!}--}}
 {!! Form::submit() !!}
 {!! Form::close() !!}
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
