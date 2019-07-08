@@ -104,7 +104,7 @@ class Face extends Model {
             [
                 'db'        => 'Face.state', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    if (!isset($d)) return ' - ';
+                    // if (!isset($d)) return ' - ';
                     $colors = [
                         ['text-gray', '未设置'],
                         ['text-green', '白名单'],
