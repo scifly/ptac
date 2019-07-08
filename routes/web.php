@@ -64,6 +64,10 @@ $routes = [
         'update'  => ['{id}' => 'put'],
         'destroy' => ['{id}' => 'delete'],
     ],
+    'camera'                 => [
+        'index' => ['get'],
+        'store' => ['post'],
+    ],
     'card'                   => $default,
     'class'                  => $default,
     'combo_type'             => $default,
@@ -91,7 +95,7 @@ $routes = [
         'destroy' => ['{id?}' => 'delete'],
         'issue'   => ['get', 'post'],
         'grant'   => ['get', 'post'],
-        'face'    => ['get', 'post']
+        'face'    => ['get', 'post'],
     ],
     'department'             => [
         'index'   => ['get', 'post'],

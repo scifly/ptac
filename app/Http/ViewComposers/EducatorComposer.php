@@ -2,13 +2,9 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\Card;
-use App\Models\Custodian;
-use App\Models\Department;
-use App\Models\Educator;
+use App\Models\{Card, Custodian, Department, Educator};
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\{Auth, Request};
 
 /**
  * Class EducatorComposer
