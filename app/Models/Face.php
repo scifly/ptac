@@ -348,10 +348,10 @@ class Face extends Model {
         $tpl = Html::tag('select', '%s', [
             'multiple' => 'multiple', 'name' => '%s',
             'id' => '%s', 'class' => 'form-control select2',
-            'style' => 'width: 100%'
+            'style' => '%s'
         ])->toHtml();
 
-        return sprintf($tpl, $name, $id, $options);
+        return sprintf($tpl, $name, $id, 'width: 100%;', $options);
         
     }
     
