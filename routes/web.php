@@ -91,6 +91,7 @@ $routes = [
         'destroy' => ['{id?}' => 'delete'],
         'issue'   => ['get', 'post'],
         'grant'   => ['get', 'post'],
+        'face'    => ['get', 'post']
     ],
     'department'             => [
         'index'   => ['get', 'post'],
@@ -112,6 +113,7 @@ $routes = [
         'export'   => ['get', 'post'],
         'issue'    => ['get', 'post'],
         'grant'    => ['get', 'post'],
+        'face'     => ['get', 'post'],
     ],
     'event'                  => $default,
     'exam'                   => $default,
@@ -209,6 +211,7 @@ $routes = [
         'export'  => ['get', 'post'],
         'issue'   => ['get', 'post'],
         'grant'   => ['get', 'post'],
+        'face'    => ['get', 'post'],
     ],
     'subject'                => $default,
     'subject_module'         => $default,

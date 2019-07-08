@@ -8,7 +8,7 @@ page.index('students', [
 $.getMultiScripts([
     'js/shared/dtrange.js',
     'js/shared/contact.js',
-    'js/shared/card.js'
+    'js/shared/cf.js'
 ]).done(
     function () {
         $.dtrange().dRange('.dtrange');

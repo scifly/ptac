@@ -3,11 +3,19 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
+use App\Jobs\FaceConfig;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Model, Relations\HasOne};
+use Form;
+use Html;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\BelongsToMany,
+    Relations\HasOne};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Carbon, Facades\DB, Facades\Request};
+use Illuminate\Support\{Carbon, Facades\Auth, Facades\DB, Facades\Request};
 use Throwable;
 
 /**
@@ -15,31 +23,23 @@ use Throwable;
  *
  * @package App\Models
  * @property int $id
- * @property string $faceid 人脸id
  * @property int $user_id 用户id
- * @property int $v_type 有效期类型：1 - 天，2 - 星期，3 - 时间
- * @property string $v_start 有效期开始时间
- * @property string $v_end 有效期结束时间
- * @property int $wgid 韦根id
- * @property string $url 人脸图片地址
+ * @property string $media_id 人脸图片媒体id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $state 状态: 1 - 白名单，2 - 黑名单，3 - vip
  * @property-read User $user
+ * @property-read Media $media
+ * @property-read Collection|Camera[] $cameras
  * @method static Builder|Face newModelQuery()
  * @method static Builder|Face newQuery()
  * @method static Builder|Face query()
  * @method static Builder|Face whereCreatedAt($value)
  * @method static Builder|Face whereId($value)
- * @method static Builder|Face whereFaceid($value)
  * @method static Builder|Face whereState($value)
  * @method static Builder|Face whereUpdatedAt($value)
- * @method static Builder|Face whereUrl($value)
+ * @method static Builder|Face whereMediaId($value)
  * @method static Builder|Face whereUserId($value)
- * @method static Builder|Face whereVEnd($value)
- * @method static Builder|Face whereVStart($value)
- * @method static Builder|Face whereVType($value)
- * @method static Builder|Face whereWgid($value)
  * @mixin Eloquent
  */
 class Face extends Model {
@@ -52,11 +52,29 @@ class Face extends Model {
     ];
     
     /**
+     * 返回指定人脸所属的所有人脸识别设备对象
+     *
+     * @return BelongsToMany
+     */
+    function cameras() {
+        
+        return $this->belongsToMany('App\Models\Camera', 'camera_face');
+        
+    }
+    
+    /**
      * 返回人脸所属用户对象
      *
      * @return HasOne
      */
     function user() { return $this->hasOne('App\Models\User'); }
+    
+    /**
+     * 返回热恋所属的媒体对象
+     *
+     * @return BelongsTo
+     */
+    function media() { return $this->belongsTo('App\Models\Media'); }
     
     /**
      * 人脸数据列表
@@ -68,7 +86,7 @@ class Face extends Model {
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
             [
-                'db'        => 'Face.url', 'dt' => 1,
+                'db'        => 'Media.path', 'dt' => 1,
                 'formatter' => function ($d) {
                     return isset($d) ? Snippet::avatar($d) : ' - ';
                 },
@@ -119,6 +137,14 @@ class Face extends Model {
                     'Groups.id = User.group_id',
                 ],
             ],
+            [
+                'table'      => 'medias',
+                'alias'      => 'Media',
+                'type'       => 'LEFT',
+                'conditions' => [
+                    'Media.id = Face.media_id',
+                ],
+            ],
         ];
         $condition = 'User.id IN (' . $this->visibleUserIds() . ')';
         
@@ -130,15 +156,17 @@ class Face extends Model {
      * 设置人脸识别 - (批量)设置、修改、清除
      *
      * @param User|null $user
-     * @param bool $issue
+     * @param bool $api - 是否同步
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    function store(User $user = null, $issue = false) {
+    function store(User $user = null, $api = true) {
         
         try {
-            DB::transaction(function () use ($user) {
-                !$user ?: Request::merge(['faces' => [$user->id => Request::input('face')]]);
+            DB::transaction(function () use ($user, $api) {
+                !$user ?: Request::merge([
+                    'faces' => [$user->id => Request::input('face')],
+                ]);
                 $faces = Request::input('faces');
                 $inserts = $replaces = $purges = $userIds = [];
                 foreach ($faces as $userId => $face) {
@@ -146,37 +174,40 @@ class Face extends Model {
                         if (!$_face = Face::whereUserId($userId)->first()) {
                             $inserts[] = $face;
                             $userIds[] = $userId;
-                        } else {
-                            if ($_face->faceid != $face['faceid']) {
-                                $this->exists($face['faceid']);
-                                $replaces[$userId] = $face;
-                            }
+                        } elseif ($_face->media_id != $face['media_id']) {
+                            $this->exists($face['media_id']);
+                            $replaces[$userId] = $face;
                         }
                     } else {
                         !User::find($userId)->face ?: $purges[] = $userId;
                     }
                 }
-                # 设置
-                $this->insert($inserts ?? []);
-                $faces = $this->whereIn('user_id', $userIds)->get();
-                foreach ($faces as $face) {
+                # 新增
+                foreach ($inserts as $insert) {
+                    $face = $this->create($insert);
                     $face->user->update(['face_id' => $face->id]);
+                    (new CameraFace)->storeByFaceId($face->id, $insert['cameraids']);
                 }
-                # invoke api here
                 # 修改
-                Request::merge(['faces' => $replaces]);
-                $this->modify();
+                $input['faces'] = $replaces;
+                Request::replace($input);
+                $this->modify(false);
                 # 清除
                 Request::merge(['ids' => $purges]);
-                $this->remove();
+                $this->remove(false);
+                # 同步
+                !$api ?: FaceConfig::dispatch(
+                    [array_keys($inserts), array_keys($replaces), $purges],
+                    Auth::id()
+                );
             });
             
         } catch (Exception $e) {
             throw $e;
         }
         
-        return !$issue ? true : response()->json([
-            'title'   => '批量设置',
+        return !$api ? true : response()->json([
+            'title'   => '批量设置人脸识别',
             'message' => __('messages.ok'),
         ]);
         
@@ -185,36 +216,40 @@ class Face extends Model {
     /**
      * 修改设置
      *
+     * @param bool $api - 是否同步
      * @return bool
      * @throws Throwable
      */
-    function modify() {
+    function modify($api = true) {
         
         $faces = Request::input('faces');
         try {
-            DB::transaction(function () use ($faces) {
-                $inserts = [];
+            DB::transaction(function () use ($faces, $api) {
+                $inserts = $replaces = $purges = [];
+                $cf = new CameraFace;
                 foreach ($faces as $userId => $face) {
                     $user = User::find($userId);
-                    Request::merge(['ids' => [$userId]]);
-                    if ($faceid = $face['faceid']) {
-                        if (!$user->face || $user->face->faceid != $faceid) {   # 设置 || 修改
-                            $this->exists($faceid);
-                            !$user->face ?: $this->remove(true); # 黑名单
-                        } else {
-                            !$face['state'] != 2 ?: $this->remove(true); # 黑名单
+                    if ($mediaId = $face['media_id']) {
+                        if ($user->face && $mediaId != $user->face->media_id) {
+                            $user->face->update($face); # 修改
+                            $cf->storeByFaceId($user->face_id, $face['cameraids']);
+                            $replaces[] = $userId;
+                        } elseif (!$user->face) {
+                            $inserts[$userId] = $face;
                         }
-                        if ($user->face) {
-                            $user->face->update($face);
-                        } else {
-                            Request::merge(['face' => $face]);
-                            $this->store($user);
-                        }
-                    } else {
-                        $this->remove();
+                    } elseif ($user->face) {
+                        $purges[] = $userId;
                     }
                 }
-                # invoke api here
+                # 新增
+                $input['faces'] = $inserts;
+                Request::replace($input);
+                $this->store(null, false);
+                # 删除
+                Request::merge(['ids' => $purges]);
+                $this->remove(false);
+                # 同步
+                !$api ?: FaceConfig::dispatch([$inserts, $replaces, $purges], Auth::id());
             });
         } catch (Exception $e) {
             throw $e;
@@ -227,31 +262,116 @@ class Face extends Model {
     /**
      * 清除人脸识别数据
      *
-     * @param bool $soft
+     * @param bool $api - 是否同步
      * @return bool
      * @throws Throwable
      */
-    function remove($soft = false) {
+    function remove($api = true) {
         
         try {
-            DB::transaction(function () use ($soft) {
+            DB::transaction(function () use ($api) {
                 $userIds = (Request::route('id') && stripos(Request::path(), 'delete') !== false)
                     ? [Request::route('id')]
                     : array_values(Request::input('ids'));
-                foreach ($userIds as $userId) {
-                    $face = User::find($userId)->face;
-                    # invoke api here
-                }
-                if (!$soft) {
-                    $this->whereIn('user_id', $userIds)->delete();
-                    User::whereIn('id', $userIds)->update(['face_id' => 0]);
-                }
+                # 同步
+                !$api ?: FaceConfig::dispatch([[], [], $userIds], Auth::id());
+                # 删除
+                $users = User::whereIn('id', $userIds);
+                CameraFace::whereIn('face_id', $users->pluck('face_id')->toArray())->delete();
+                $this->whereIn('user_id', $userIds)->delete();
+                $users->update(['face_id' => 0]);
             });
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 人脸照片上传html
+     *
+     * @param User $user
+     * @return string
+     */
+    function uploader(User $user) {
+        
+        $media = $user->face ? $user->face->media : null;
+        $uid = $user->id;
+        # 图片预览
+        $image = $media ? Html::image('../../' . $media->path)->toHtml() : '';
+        $preview = Form::hidden(
+            $id = 'media-id-' . $uid,
+            $media ? $media->id : null,
+            ['id' => $id, 'class' => 'medias']
+        )->toHtml() . $image;
+        # 上传/删除
+        $upload = '<i class="fa fa-cloud-upload"></i> 上传';
+        $remove = $media ? '<i class="fa fa-remove"></i> 删除' : '';
+        $actions = Form::label(
+            'face-' . $uid, $upload . $remove,
+            ['class' => 'custom-file-upload text-blue'], false
+        )->toHtml();
+        # 上传控件
+        $uploader = Form::file('face-' . $uid, [
+            'id'     => 'face-' . $uid,
+            'accept' => 'image/*',
+            'class'  => 'face-upload',
+        ])->toHtml();
+        
+        return sprintf(
+            '<div class="preview-%s">%s</div>%s%s',
+            $uid, $preview, $actions, $uploader
+        );
+        
+    }
+    
+    /**
+     * 设备选择下拉列表html
+     *
+     * @param array $cameras
+     * @param User $user
+     * @return string
+     */
+    function selector(array $cameras, User $user) {
+        
+        $face = $user->face;
+        $selected = $face ? $face->cameras->pluck('id')->toArray() : null;
+        $options = '';
+        foreach ($cameras as $key => $value) {
+            $isSelected = array_key_exists($key, $selected ?? []) ? 'selected>' : '>';
+            $options .= '<option value="' . $key . '" ' . $isSelected . $value . '</option>';
+        }
+        $id = 'cameraids-' . $user->id;
+        $name = $id . '[]';
+        $tpl = Html::tag('select', '%s', [
+            'multiple' => 'multiple', 'name' => '%s',
+            'id' => '%s', 'class' => 'form-control select2',
+            'style' => 'width: 100%'
+        ])->toHtml();
+
+        return sprintf($tpl, $name, $id, $options);
+        
+    }
+    
+    /**
+     * 人脸状态下拉列表html
+     *
+     * @param $selected
+     * @param $userId
+     * @return string
+     */
+    function state($selected, $userId) {
+        
+        $options = [1 => '白名单', 2 => '黑名单', 3 => 'VIP'];
+        
+        return Form::select('state', $options, $selected, [
+            'id'       => 'state-' . $userId,
+            'class'    => 'form-control select2 input-sm',
+            'style'    => 'width: 100%;',
+            'disabled' => sizeof($options) <= 1,
+        ])->toHtml();
         
     }
     
@@ -276,18 +396,17 @@ class Face extends Model {
         }
         
     }*/
-    
     /**
-     * 判断卡号是否已存在
+     * 判断媒体图片是否已存在
      *
-     * @param $faceid
+     * @param $mediaId
      */
-    private function exists($faceid) {
+    private function exists($mediaId) {
         
         abort_if(
-            $this->whereFaceid($faceid)->first() ? true : false,
+            $this->whereMediaId($mediaId)->first() ? true : false,
             HttpStatusCode::NOT_ACCEPTABLE,
-            __('faceid:' . $faceid . ' 已被使用')
+            __('mediaId:' . $mediaId . ' 已被使用')
         );
         
     }

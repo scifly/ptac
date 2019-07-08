@@ -1,0 +1,76 @@
+<?php
+namespace App\Models;
+
+use Eloquent;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Throwable;
+
+/**
+ * Class CameraFace
+ *
+ * @package App\Models
+ * @property int $id
+ * @property int $camera_id 人脸识别设备id
+ * @property int $face_id 人脸id
+ * @property int|null $v_type 期限类型：1 - 天，2 - 星期，3 - 时间
+ * @property int|null $v_start 开始时间
+ * @property int|null $v_end 结束时间
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property int $enabled
+ * @method static Builder|CameraFace newModelQuery()
+ * @method static Builder|CameraFace newQuery()
+ * @method static Builder|CameraFace query()
+ * @method static Builder|CameraFace whereCameraId($value)
+ * @method static Builder|CameraFace whereCreatedAt($value)
+ * @method static Builder|CameraFace whereEnabled($value)
+ * @method static Builder|CameraFace whereFaceId($value)
+ * @method static Builder|CameraFace whereId($value)
+ * @method static Builder|CameraFace whereUpdatedAt($value)
+ * @method static Builder|CameraFace whereVEnd($value)
+ * @method static Builder|CameraFace whereVStart($value)
+ * @method static Builder|CameraFace whereVType($value)
+ * @mixin Eloquent
+ */
+class CameraFace extends Pivot {
+
+    protected $fillable = [
+        'camera_id', 'face_id', 'v_type',
+        'v_start', 'v_end', 'enabled'
+    ];
+    
+    /**
+     * 按人脸id保存绑定关系
+     *
+     * @param $faceId
+     * @param array $cameraIds
+     * @return bool
+     * @throws Throwable
+     */
+    function storeByFaceId($faceId, array $cameraIds) {
+        
+        try {
+            DB::transaction(function () use ($faceId, $cameraIds) {
+                $records = [];
+                foreach ($cameraIds as $cameraId) {
+                    $this->whereFaceId($faceId)->delete();
+                    $records[] = array_combine(
+                        $this->fillable,
+                        [$cameraId, $faceId, 1, 0, 0, 1]
+                    );
+                }
+                $this->insert($records);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+}

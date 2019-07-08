@@ -364,7 +364,7 @@ class Educator extends Model {
      */
     function import() {
         
-        $records = $this->upload();
+        $records = $this->uploader();
         $mobiles = array_count_values(
             array_map('strval', Arr::pluck($records, 'G'))
         );
@@ -400,32 +400,25 @@ class Educator extends Model {
         
         $card = new Card;
         if (Request::has('sectionId')) {
-            $userIds = DepartmentUser::whereDepartmentId(Request::input('sectionId'))->pluck('user_id')->toArray();
-            $users = User::whereIn('id', $userIds)->get()->filter(
-                function (User $user) { return !in_array($user->group->name, ['监护人', '学生']); }
-            );
+            $users = $this->users(Request::input('sectionId'));
             $snHtml = $card->input();
-            $record = <<<HTML
-<tr>
-    <td>%s</td>
-    <td class="text-center">%s</td>
-    <td class="text-center">%s</td>
-    <td>$snHtml</td>
-</tr>
-HTML;
+            $tpl = <<<HTML
+                <tr>
+                    <td>%s</td>
+                    <td class="text-center">%s</td>
+                    <td class="text-center">%s</td>
+                    <td>$snHtml</td>
+                </tr>
+            HTML;
             $list = '';
             $i = 0;
             foreach ($users as $user) {
                 $card = $user->card;
                 $sn = $card ? $card->sn : null;
                 $list .= sprintf(
-                    $record,
-                    $user->id,
-                    $user->realname,
-                    $user->username,
-                    $user->id,
-                    $i,
-                    $sn
+                    $tpl,
+                    $user->id, $user->realname, $user->username,
+                    $user->id, $i, $sn
                 );
                 $i++;
             }
@@ -447,6 +440,48 @@ HTML;
     function grant() {
         
         return (new Card)->grant('Educator');
+        
+    }
+    
+    /**
+     * 批量设置人脸识别
+     *
+     * @return bool|JsonResponse|string
+     * @throws Throwable
+     */
+    function face() {
+    
+        $face = new Face;
+        if (Request::has('sectionId')) {
+            $users = $this->users(Request::input('sectionId'));
+            $tpl = <<<HTML
+                <tr>
+                    <td>%s</td>
+                    <td class="text-center">%s</td>
+                    <td class="text-center">%s</td>
+                    <td>%s</td><td>%s</td>
+                    <td class="text-center">%s</td>
+                </tr>
+            HTML;
+            $list = '';
+            $cameras = (new Camera)->cameras();
+            /** @var User $user */
+            foreach ($users as $user) {
+                $list .= sprintf(
+                    $tpl,
+                    $user->id, $user->realname, $user->username,
+                    $face->uploader($user), $face->selector($cameras, $user),
+                    $face->state(
+                        $user->face ? $user->face->state : 1,
+                        $user->id
+                    )
+                );
+            }
+            
+            return $list;
+        }
+    
+        return $face->store();
         
     }
     
@@ -531,6 +566,23 @@ HTML;
         }
         
         return $nodes ?? [];
+        
+    }
+    
+    /**
+     * @param $deptId
+     * @return \Illuminate\Support\Collection
+     */
+    private function users($deptId) {
+    
+        $userIds = DepartmentUser::whereDepartmentId($deptId)
+            ->pluck('user_id')->toArray();
+        
+        return User::whereIn('id', $userIds)->get()->filter(
+            function (User $user) {
+                return !in_array($user->group->name, ['监护人', '学生']);
+            }
+        );
         
     }
     

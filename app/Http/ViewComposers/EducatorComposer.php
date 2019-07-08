@@ -39,7 +39,7 @@ class EducatorComposer {
     
         $action = explode('/', Request::path())[1];
         switch ($action) {
-            case 'index':
+            case 'index':       # 列表
                 $departments = Department::whereIn('id', $this->departmentIds(Auth::id()))
                     ->pluck('name', 'id')->toArray();
                 $data = [
@@ -63,6 +63,11 @@ class EducatorComposer {
                             'id'    => 'grant',
                             'label' => '一卡通授权',
                             'icon'  => 'fa fa-credit-card',
+                        ],
+                        'face' => [
+                            'id'    => 'face',
+                            'label' => '人脸设置',
+                            'icon'  => 'fa fa-camera',
                         ],
                     ],
                     'batch'          => true,
@@ -108,31 +113,35 @@ class EducatorComposer {
                     'title'          => '导出教职员工',
                 ];
                 break;
-            case 'issue':
-                $departments = Department::whereIn('id', $this->departmentIds())
-                    ->get()->pluck('name', 'id')->toArray();
+            case 'issue':       # 批量发卡
                 $titles = <<<HTML
-<th>#</th>
-<th class="text-center">姓名</th>
-<th class="text-center">员工编号/用户名</th>
-<th>卡号</th>
-HTML;
-                $data = [
-                    'prompt' => '教师列表',
-                    'formId' => 'formEducator',
-                    'classes' => [0 => '(请选择一个部门)'] + $departments,
-                    'titles' => $titles,
-                    'columns' => 4
-                ];
+                    <th>#</th>
+                    <th class="text-center">姓名</th>
+                    <th class="text-center">员工编号/用户名</th>
+                    <th>卡号</th>
+                HTML;
+                $data = $this->data($titles);
                 break;
-            case 'grant':
+            case 'grant':       # 一卡通批量授权
                 $data = (new Card)->compose('Educator');
                 break;
-            default:
+            case 'face':        # 人脸识别设置
+                $titles = <<<HTML
+                    <th>#</th>
+                    <th class="text-center">姓名</th>
+                    <th class="text-center">员工编号/用户名</th>
+                    <th>人脸</th>
+                    <th>设备</th>
+                    <th class="text-center">状态</th>
+                HTML;
+                $data = $this->data($titles);
+                break;
+            default:            # 编辑
                 $data = array_combine(
                     [
-                        'educator', 'squads', 'subjects', 'groups', 'selectedDepartmentIds',
-                        'selectedDepartments', 'mobiles'
+                        'educator', 'squads', 'subjects', 'groups',
+                        'selectedDepartmentIds', 'selectedDepartments',
+                        'mobiles'
                     ],
                     $this->educator->compose()
                 );
@@ -140,6 +149,25 @@ HTML;
         }
         
         $view->with($data);
+        
+    }
+    
+    /**
+     * @param $titles
+     * @return array
+     */
+    private function data($titles) {
+    
+        $departments = Department::whereIn('id', $this->departmentIds())
+            ->get()->pluck('name', 'id')->toArray();
+        
+        return [
+            'prompt' => '教师列表',
+            'formId' => 'formEducator',
+            'classes' => [0 => '(请选择一个部门)'] + $departments,
+            'titles' => $titles,
+            'columns' => 4
+        ];
         
     }
     

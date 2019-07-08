@@ -2,15 +2,12 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
+use App\Helpers\{HttpStatusCode, ModelTrait};
 use Eloquent;
 use Exception;
 use GuzzleHttp\Client;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsToMany};
+use Illuminate\Support\{Carbon, Facades\DB};
 use Throwable;
 
 /**
@@ -27,6 +24,7 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $status 状态(0-离线，1-在线)
+ * @property-read Collection|Face[] $faces
  * @method static Builder|Camera newModelQuery()
  * @method static Builder|Camera newQuery()
  * @method static Builder|Camera query()
@@ -56,6 +54,17 @@ class Camera extends Model {
         'cameraid', 'school_id', 'name', 'ip',
         'mac', 'location', 'direction', 'status'
     ];
+    
+    /**
+     * 返回指定设备所包含的所有人脸对象
+     *
+     * @return BelongsToMany
+     */
+    function faces() {
+        
+        return $this->belongsToMany('App\Models\Face', 'camera_face');
+        
+    }
     
     /**
      * 人脸识别设备列表
@@ -130,6 +139,17 @@ class Camera extends Model {
     }
     
     /**
+     * 返回人脸是设备列表
+     *
+     * @return array
+     */
+    function cameras() {
+    
+        return [0 => '【所有设备】'] + $this->all()->pluck('name', 'id')->toArray();
+        
+    }
+    
+    /**
      * 调用接口
      *
      * @param string $uri - 接口名称
@@ -137,7 +157,7 @@ class Camera extends Model {
      * @return mixed
      * @throws Throwable
      */
-    function invoke($uri, array $params = []) {
+    function invoke($uri, $params = null) {
         
         try {
             $client = new Client;
@@ -156,7 +176,7 @@ class Camera extends Model {
             $response = $client->post(
                 self::BASE_URI . $uri, [
                     'headers'     => ['Authorization' => 'Bearer ' . $token],
-                    'form_params' => $params,
+                    'form_params' => $params ?? [],
                 ]
             );
             $body = json_decode($response->getBody(), true);

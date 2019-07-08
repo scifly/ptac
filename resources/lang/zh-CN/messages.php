@@ -74,6 +74,10 @@ return [
         'switch_school_not_allowed' => '不得切换学校',
         'role_nonexistent' => '基本角色不存在'
     ],
+    'face' => [
+        'title' => '人脸识别',
+        'config_completed' => '设置成功'
+    ],
     'grade'                    => [
         'title'     => '年级管理',
         'not_found' => '未找到该年级的相关信息',

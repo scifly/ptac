@@ -5,7 +5,10 @@ use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany, Relations\HasOne};
+use Illuminate\Database\Eloquent\{
+    Builder, Collection, Model, Relations\BelongsTo,
+    Relations\HasMany, Relations\HasOne
+};
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\{DB, Request, Storage};
 use Throwable;

@@ -361,44 +361,28 @@ class Custodian extends Model {
         
         $card = new Card;
         if (Request::has('sectionId')) {
-            $class = Squad::find(Request::input('sectionId'));
-            $userIds = DepartmentUser::whereDepartmentId($class->department_id)->pluck('user_id')->toArray();
-            $contacts = User::whereIn('id', $userIds)->get()->filter(
-                function (User $user) { return $user->group->name == '监护人'; }
-            );
             $snHtml = $card->input();
-            $record = <<<HTML
-<tr>
-    <td>%s</td>
-    <td class="text-center">%s</td>
-    <td class="text-center">%s</td>
-    <td class="text-center">%s</td>
-    <td>$snHtml</td>
-</tr>
-HTML;
-            $list = '';
-            $i = 0;
+            $tpl = <<<HTML
+                <tr>
+                    <td>%s</td>
+                    <td class="text-center">%s</td>
+                    <td class="text-center">%s</td>
+                    <td class="text-center">%s</td>
+                    <td>$snHtml</td>
+                </tr>
+            HTML;
+            $list = ''; $i = 0;
+            [$class, $contacts] = $this->custodians(Request::input('sectionId'));
             /** @var User $contact */
             foreach ($contacts as $contact) {
-                $students = $contact->custodian->students;
-                if ($students->count() > 1) {
-                    $students = $students->filter(
-                        function (Student $student) use ($class) {
-                            return $student->class_id == $class->id;
-                        }
-                    );
-                }
-                $student = $students->first();
+                $student = $this->student($contact, $class);
                 $sn = $contact->card ? $contact->card->sn : null;
                 $list .= sprintf(
-                    $record,
-                    $contact->id,
-                    $contact->realname,
+                    $tpl,
+                    $contact->id, $contact->realname,
                     $student->user->realname,
-                    $student->sn,
-                    $contact->id,
-                    $i,
-                    $sn
+                    $student->sn, $contact->id,
+                    $i, $sn
                 );
                 $i++;
             }
@@ -420,6 +404,50 @@ HTML;
     function grant() {
         
         return (new Card)->grant('Custodian');
+        
+    }
+    
+    /**
+     * 批量设置人脸识别
+     *
+     * @return bool|JsonResponse|string
+     * @throws Throwable
+     */
+    function face() {
+        
+        $face = new Face;
+        if (Request::has('sectionId')) {
+            [$class, $users] = $this->custodians(Request::input('sectionId'));
+            $list = '';
+            $tpl = <<<HTML
+                <tr>
+                    <td>%s</td>
+                    <td class="text-center">%s</td>
+                    <td class="text-center">%s</td>
+                    <td class="text-center">%s</td>
+                    <td>%s</td><td>%s</td>
+                    <td class="text-center">%s</td>
+                </tr>
+            HTML;
+            $cameras = (new Camera)->cameras();
+            /** @var User $user */
+            foreach ($users as $user) {
+                $student = $this->student($user, $class);
+                $list .= sprintf(
+                    $tpl,
+                    $user->id, $user->realname, $student->user->realname, $student->sn,
+                    $face->uploader($user), $face->selector($cameras, $user),
+                    $face->state(
+                        $user->face ? $user->face->state : 1,
+                        $user->id
+                    )
+                );
+            }
+            
+            return $list;
+        }
+        
+        return $face->store();
         
     }
     
@@ -514,6 +542,45 @@ HTML;
             $relations ?? collect([]),
             $mobiles ?? [],
         ];
+        
+    }
+    
+    /**
+     * @param $classId
+     * @return array
+     */
+    private function custodians($classId) {
+    
+        $class = Squad::find($classId);
+        $userIds = DepartmentUser::whereDepartmentId($class->department_id)
+            ->pluck('user_id')->toArray();
+        
+        return [
+            $class,
+            User::whereIn('id', $userIds)->get()->filter(
+                function (User $user) { return $user->group->name == '监护人'; }
+            ),
+        ];
+        
+    }
+    
+    /**
+     * @param User $user
+     * @param Squad $class
+     * @return mixed
+     */
+    private function student(User $user, Squad $class) {
+    
+        $students = $user->custodian->students;
+        if ($students->count() > 1) {
+            $students = $students->filter(
+                function (Student $student) use ($class) {
+                    return $student->class_id == $class->id;
+                }
+            );
+        }
+        
+        return $students->first();
         
     }
     

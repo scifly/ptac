@@ -1,3 +1,3 @@
-$.getMultiScripts(['js/shared/card.js']).done(
-    function () { $.card().grant('custodians', 'formCustodian'); }
+$.getMultiScripts(['js/shared/cf.js']).done(
+    function () { $.cf().grant('custodians', 'formCustodian'); }
 );

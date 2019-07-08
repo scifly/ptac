@@ -43,7 +43,7 @@ class FaceController extends Controller {
     }
     
     /**
-     * 批量设置人脸识别数据
+     * 设置人脸识别
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -55,7 +55,7 @@ class FaceController extends Controller {
     }
     
     /**
-     * 保存设置结果
+     * 保存人脸识别
      *
      * @return JsonResponse|string
      * @throws Throwable
@@ -69,7 +69,7 @@ class FaceController extends Controller {
     }
     
     /**
-     * 编辑人脸识别数据
+     * 编辑人脸识别
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -81,7 +81,7 @@ class FaceController extends Controller {
     }
     
     /**
-     * 修改人脸识别数据
+     * 修改人脸识别
      *
      * @return JsonResponse|string
      * @throws Throwable
@@ -95,7 +95,7 @@ class FaceController extends Controller {
     }
     
     /**
-     * 清除人脸识别数据
+     * 删除人脸识别
      *
      * @return JsonResponse|string
      * @throws Throwable

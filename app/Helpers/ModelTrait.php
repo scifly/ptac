@@ -488,7 +488,7 @@ trait ModelTrait {
      * @throws Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    function upload($removeTitles = true) {
+    function uploader($removeTitles = true) {
         
         $code = HttpStatusCode::INTERNAL_SERVER_ERROR;
         abort_if(

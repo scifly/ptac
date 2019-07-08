@@ -1,11 +1,11 @@
-//# sourceURL=card.js
+//# sourceURL=cf.js
 (function ($) {
-    $.card = function (options) {
-        var card = {
+    $.cf = function (options) {
+        var cf = {
             options: $.extend({}, options),
             index: function (table) {
                 $.map(
-                    ['issue', 'grant'],
+                    ['issue', 'grant', 'face'],
                     function (action) {
                         $('#' + action).off().on('click', function () {
                             page.getTabContent(
@@ -22,20 +22,20 @@
                     empty = $list.html();
 
                 if (typeof action === 'undefined') {
-                    card.onSectionChange($sectionId, empty, 'issue');
+                    cf.onSectionChange($sectionId, empty, 'issue');
                 }
-                card.onIssue(formId, action);
+                cf.onIssue(formId, action);
                 page.initBackBtn(table);
                 page.initSelect2();
-                card.onInput();
+                cf.onInput();
             },
             grant: function (table, formId) {
                 var $sectionId = $('#section_id'),
                     $list = $('tbody'),
                     empty = $list.html();
 
-                card.onSectionChange($sectionId, empty, 'grant');
-                card.onGrant(table, formId);
+                cf.onSectionChange($sectionId, empty, 'grant');
+                cf.onGrant(table, formId);
                 page.initSelect2();
                 page.initICheck();
                 page.initBackBtn(table);
@@ -82,6 +82,19 @@
                     }
                 );
             },
+            face: function (table, formId, action) {
+                var $sectionId = $('#section_id'),
+                    $list = $('tbody'),
+                    empty = $list.html();
+
+                if (typeof action === 'undefined') {
+                    cf.onSectionChange($sectionId, empty, 'face');
+                }
+                cf.onUpload(action, table);
+                cf.onConfig(formId, action);
+                page.initBackBtn(table);
+                page.initSelect2();
+            },
             onSectionChange: function ($sectionId, empty, action) {
                 // 选择班级
                 $sectionId.on('change', function () {
@@ -115,9 +128,11 @@
             },
             onIssue: function (formId, action) {
                 var $issue = $('#issue');
-                $('#' + formId).on('submit', function () {
-                    return false;
-                });
+                $('#' + formId).on(
+                    'submit', function () {
+                        return false;
+                    }
+                );
                 $(document).keypress(function (e) {
                     if (e.which === 13) return false;
                 });
@@ -173,6 +188,48 @@
                     );
                 });
             },
+            onConfig: function (formId, action) {
+                var $config = $('#config');
+                $('#' + formId).on(
+                    'submit', function () {
+                        return false;
+                    }
+                );
+                $config.on('click', function () {
+                    var data = {}, type = 'POST', url = 'face';
+                    $('.medias').each(function () {
+                        var $this = $(this),
+                            media_id = $this.val(),
+                            uid = $this.attr('id').split('-')[2],
+                            cameraids = $('#cameraids-' + uid).val(),
+                            state = $('#state-' + uid).val();
+
+                        data[uid] = {
+                            'media_id': media_id,
+                            'cameraids': cameraids,
+                            'state': state
+                        };
+                        if (typeof action !== 'undefined') {
+                            url = page.siteRoot() + 'faces/' + (action === 'create' ? 'store' : 'update');
+                            if (action === 'edit') type = 'PUT';
+                        }
+                        $('.overlay').show();
+                        $.ajax({
+                            type: type,
+                            dataType: 'json',
+                            url: url,
+                            data: {_token: page.token(), faces: data},
+                            success: function (result) {
+                                $('.overlay').hide();
+                                page.inform(result['title'], result['message'], page.success);
+                            },
+                            error: function (e) {
+                                page.errorHandler(e);
+                            }
+                        });
+                    });
+                });
+            },
             onInput: function () {
                 $(document).on('keyup', 'input', function () {
                     if ($(this).val().length === parseInt($(this).attr('maxlength'))) {
@@ -180,13 +237,49 @@
                         $('input[data-seq=' + i + ']').focus();
                     }
                 });
+            },
+            onUpload: function (action, table) {
+                $(document).on('change', '.face-upload', function () {
+                    var title = '设置人脸识别',
+                        $this = $(this),
+                        uid = $this.attr('id')[1],
+                        file = $this[0].files[0],
+                        id = action === 'edit' ? '/' + $('#id').val() : '',
+                        data = new FormData();
+
+                    data.append('file', file);
+                    data.append('_token', page.token());
+                    page.inform(title, '图片上传中...', page.info);
+                    $('.overlay').show();
+                    $.ajax({
+                        type: 'POST',
+                        url: page.siteRoot() + table + '/' + action + id,
+                        data: data,
+                        contentType: false,
+                        processData: false,
+                        success: function (result) {
+                            var $preview = $('.preview-' + uid),
+                                imgAttrs = {
+                                    'src': '../../' + result['path'],
+                                    'title': '文件名：' + result['filename']
+                                };
+
+                            $('#media-id-' + uid).val(result['id']);
+                            $preview.find('img').remove();
+                            $preview.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
+                            $('.overlay').hide();
+                            page.inform(title, '图片上传成功', page.success)
+                        }
+                    });
+                });
             }
         };
 
         return {
-            index: card.index,
-            issue: card.issue,
-            grant: card.grant
+            index: cf.index,
+            issue: cf.issue,
+            grant: cf.grant,
+            face: cf.face
         };
     }
 })(jQuery);

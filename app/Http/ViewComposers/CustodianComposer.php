@@ -4,6 +4,7 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\{Card, Custodian, Educator, Grade, Squad};
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -30,8 +31,10 @@ class CustodianComposer {
     
     /**
      * @param View $view
+     * @return void
      */
     public function compose(View $view) {
+        
         $action = explode('/', Request::path())[1];
         switch ($action) {
             case 'index':
@@ -54,6 +57,11 @@ class CustodianComposer {
                             'id'    => 'grant',
                             'label' => '一卡通授权',
                             'icon'  => 'fa fa-credit-card',
+                        ],
+                        'face' => [
+                            'id'    => 'face',
+                            'label' => '人脸设置',
+                            'icon'  => 'fa fa-camera',
                         ],
                     ],
                     'batch'   => true,
@@ -100,26 +108,29 @@ class CustodianComposer {
                 ];
                 break;
             case 'issue':
-                $classes = Squad::whereIn('id', $this->classIds())
-                    ->get()->pluck('name', 'id')->toArray();
                 $titles = <<<HTML
-<th>#</th>
-<th class="text-center">家长</th>
-<th class="text-center">学生</th>
-<th class="text-center">学号</th>
-<th>卡号</th>
-HTML;
-    
-                $data = [
-                    'prompt' => '家长列表',
-                    'formId' => 'formCustodian',
-                    'classes' => [0 => '(请选择一个班级)'] + $classes,
-                    'titles' => $titles,
-                    'columns' => 5
-                ];
+                    <th>#</th>
+                    <th class="text-center">家长</th>
+                    <th class="text-center">学生</th>
+                    <th class="text-center">学号</th>
+                    <th>卡号</th>
+                HTML;
+                $data = $this->data($titles);
                 break;
             case 'grant':
                 $data = (new Card)->compose('Custodian');
+                break;
+            case 'face':
+                $titles = <<<HTML
+                    <th>#</th>
+                    <th class="text-center">家长</th>
+                    <th class="text-center">学生</th>
+                    <th class="text-center">学号</th>
+                    <th>人脸</th>
+                    <th>设备</th>
+                    <th class="text-center">状态</th>
+                HTML;
+                $data = $this->data($titles);
                 break;
             default:
                 $data = array_combine(
@@ -133,6 +144,27 @@ HTML;
         }
         
         $view->with($data);
+        
+    }
+    
+    /**
+     * 返回view所需数据
+     *
+     * @param string $titles
+     * @return array
+     */
+    private function data(string $titles): array {
+    
+        $classes = Squad::whereIn('id', $this->classIds())
+            ->get()->pluck('name', 'id')->toArray();
+        
+        return [
+            'prompt' => '家长列表',
+            'formId' => 'formCustodian',
+            'classes' => [0 => '(请选择一个班级)'] + $classes,
+            'titles' => $titles,
+            'columns' => 5
+        ];
         
     }
     

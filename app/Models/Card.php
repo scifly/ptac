@@ -170,11 +170,9 @@ class Card extends Model {
                         if (!$card = Card::whereUserId($userId)->first()) {
                             $inserts[] = array_combine($this->fillable, [$userId, $sn, 1]);
                             $userIds[] = $userId;
-                        } else {
-                            if ($card->sn != $sn) {
-                                $this->exists($sn);
-                                $replaces[$userId] = $sn;
-                            }
+                        } elseif ($card->sn != $sn) {
+                            $this->exists($sn);
+                            $replaces[$userId] = $sn;
                         }
                     } else {
                         !User::find($userId)->card ?: $purges[] = $userId;
@@ -385,12 +383,12 @@ class Card extends Model {
      */
     function status($selected) {
         
-        $items = [1 => '正常', 2 => '挂失'];
+        $options = [1 => '正常', 2 => '挂失'];
         
-        return Form::select('status', $items, $selected, [
+        return Form::select('status', $options, $selected, [
             'class'    => 'form-control select2 input-sm',
             'style'    => 'width: 100%;',
-            'disabled' => sizeof($items) <= 1,
+            'disabled' => sizeof($options) <= 1,
         ])->toHtml();
         
     }

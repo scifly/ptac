@@ -64,6 +64,11 @@ class StudentComposer {
                             'label' => '一卡通授权',
                             'icon'  => 'fa fa-credit-card',
                         ],
+                        'face' => [
+                            'id'    => 'face',
+                            'label' => '人脸设置',
+                            'icon'  => 'fa fa-camera',
+                        ],
                     ],
                     'titles'         => [
                         '#', '姓名', '头像',
@@ -116,24 +121,27 @@ class StudentComposer {
                 ];
                 break;
             case 'issue':
-                $classes = Squad::whereIn('id', $this->classIds())
-                    ->get()->pluck('name', 'id')->toArray();
                 $titles = <<<HTML
-<th>#</th>
-<th class="text-center">姓名</th>
-<th class="text-center">学号</th>
-<th>卡号</th>
-HTML;
-                $data = [
-                    'prompt'  => '学生列表',
-                    'formId'  => 'formStudent',
-                    'classes' => [0 => '(请选择一个班级)'] + $classes,
-                    'titles'  => $titles,
-                    'columns' => 4,
-                ];
+                    <th>#</th>
+                    <th class="text-center">姓名</th>
+                    <th class="text-center">学号</th>
+                    <th>卡号</th>
+                HTML;
+                $data = $this->data($titles);
                 break;
             case 'grant':
                 $data = (new Card)->compose('Student');
+                break;
+            case 'face':
+                $titles = <<<HTML
+                    <th>#</th>
+                    <th class="text-center">姓名</th>
+                    <th class="text-center">学号</th>
+                    <th>人脸</th>
+                    <th>设备</th>
+                    <th class="text-center">状态</th>
+                HTML;
+                $data = $this->data($titles);
                 break;
             default:
                 $data = array_combine(
@@ -144,6 +152,24 @@ HTML;
         }
         
         $view->with($data);
+        
+    }
+    
+    /**
+     * @param $titles
+     * @return array
+     */
+    private function data($titles) {
+    
+        $classes = Squad::whereIn('id', $this->classIds())
+            ->get()->pluck('name', 'id')->toArray();
+        return [
+            'prompt'  => '学生列表',
+            'formId'  => 'formStudent',
+            'classes' => [0 => '(请选择一个班级)'] + $classes,
+            'titles'  => $titles,
+            'columns' => 4,
+        ];
         
     }
     

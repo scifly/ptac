@@ -629,7 +629,7 @@ class Score extends Model {
      */
     function import() {
         
-        $records = $this->upload(false);
+        $records = $this->uploader(false);
         $titles = $records[0];
         array_shift($records);
         $subjectNames = [];

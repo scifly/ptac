@@ -194,6 +194,7 @@ class EducatorController extends Controller {
      * 批量发卡
      *
      * @return bool|JsonResponse|string
+     *
      * @throws Throwable
      */
     public function issue() {
@@ -214,6 +215,20 @@ class EducatorController extends Controller {
         
         return Request::method() == 'POST'
             ? $this->educator->grant()
+            : $this->output();
+        
+    }
+    
+    /**
+     * 设置人脸识别
+     *
+     * @return bool|JsonResponse|string
+     * @throws Throwable
+     */
+    public function face() {
+        
+        return Request::method() == 'POST'
+            ? $this->educator->face()
             : $this->output();
         
     }

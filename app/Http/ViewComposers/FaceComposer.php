@@ -2,8 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\Face;
-use App\Models\User;
+use App\Models\{Camera, Face, User};
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Request;
@@ -27,19 +26,19 @@ class FaceComposer {
                 'buttons' => [
                     'create' => [
                         'id'    => 'batch-create',
-                        'label' => '设置人脸识别',
-                        'icon'  => 'fa fa-user-md',
+                        'label' => '批量设置',
+                        'icon'  => 'fa fa-camera-retro',
                         'title' => '设置',
                     ],
                     'edit'   => [
                         'id'    => 'batch-edit',
-                        'label' => '修改(黑名单/白名单)',
-                        'icon'  => 'fa fa-asterisk',
+                        'label' => '批量修改',
+                        'icon'  => 'fa fa-camera-retro',
                         'title' => '更新',
                     ],
                 ],
                 'titles'  => [
-                    '#', 'faceid', '头像', '姓名', '角色',
+                    '#', '人脸', '姓名', '角色',
                     [
                         'title' => '创建于',
                         'html'  => $this->inputDateTimeRange('创建于'),
@@ -67,45 +66,38 @@ class FaceComposer {
                 $ids = session('ids');
             }
             $users = User::whereIn('id', $ids)->get()->when(
-                $action == 'create', function (Collection $users) {
-                   return $users->where('face_id', 0);
+                in_array($action, ['create', 'edit']),
+                function (Collection $users) use ($action) {
+                    return $users->where('face_id', $action == 'create' ? '=' : '<>', 0);
                 }
             );
             $face = new Face;
-            $row = <<<HTML
+            $tpl = <<<HTML
                 <tr>
                     <td>%s</td>
                     <td class="text-center">%s</td>
                     <td class="text-center">%s</td>
                     <td class="text-center">%s</td>
-                    <td class="text-center">%s</td>%s
+                    <td>%s</td><td>%s</td>
+                    <td class="text-center">%s</td>
                 </tr>
             HTML;
-            $list = ''; $i = 0;
+            $list = '';
+            $cameras = (new Camera)->cameras();
+            /** @var User $user */
             foreach ($users as $user) {
-                $state = $action == 'create' ? ''
-                    : '<td>' . $face->status($user->card ? $user->card->status : 1) . '</td>';
                 $default = $user->mobiles->where('isdefault', 1)->first();
-                $record = sprintf(
-                    $row,
-                    $user->id,
-                    $user->realname,
-                    $user->group->name,
+                $list .= sprintf(
+                    $tpl,
+                    $user->id, $user->realname, $user->group->name,
                     $default ? $default->mobile : 'n/a',
-                    $user->id, $i,
-                    $user->card ? $user->card->sn : '',
-                    $state
+                    $face->uploader($user), $face->selector($cameras, $user),
+                    $face->state($user->face ? $user->face->state : 1, $user->id)
                 );
-        
-                $list .= $record;
-                $i++;
             }
-            !empty($list)
-                ?: $list = '<tr><td colspan="6" class="text-center text-red">- 已设置人脸识别 -</td></tr>';
-            $data = [
-                'list' => $list,
-                'edit' => $action == 'edit' ? true : null
-            ];
+            !empty($list) ?:
+                $list = '<tr><td colspan="6" class="text-center text-red">- 已设置人脸识别 -</td></tr>';
+            $data = ['list' => $list];
         }
         
         $view->with($data);

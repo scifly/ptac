@@ -41,6 +41,7 @@ class CustodianController extends Controller {
         return Request::get('draw')
             ? response()->json($this->custodian->index())
             : $this->output();
+        
     }
     
     /**
@@ -147,6 +148,20 @@ class CustodianController extends Controller {
         
         return Request::method() == 'POST'
             ? $this->custodian->grant()
+            : $this->output();
+        
+    }
+    
+    /**
+     * 批量设置人脸识别
+     *
+     * @return bool|JsonResponse|string
+     * @throws Throwable
+     */
+    public function face() {
+        
+        return Request::method() == 'POST'
+            ? $this->custodian->face()
             : $this->output();
         
     }

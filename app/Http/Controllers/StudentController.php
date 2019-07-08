@@ -190,4 +190,18 @@ class StudentController extends Controller {
     
     }
     
+    /**
+     * 批量设置人脸识别
+     *
+     * @return bool|JsonResponse|string
+     * @throws Throwable
+     */
+    public function face() {
+        
+        return Request::method() == 'POST'
+            ? $this->student->face()
+            : $this->output();
+        
+    }
+    
 }

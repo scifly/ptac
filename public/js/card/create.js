@@ -1,4 +1,4 @@
 page.loadCss('css/card/card.css');
-$.getMultiScripts(['js/shared/card.js']).done(
-    function () { $.card().issue('cards', 'formCard', 'create'); }
+$.getMultiScripts(['js/shared/cf.js']).done(
+    function () { $.cf().issue('cards', 'formCard', 'create'); }
 );

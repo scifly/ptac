@@ -1,4 +1,4 @@
 page.loadCss('css/custodian/issue.css');
-$.getMultiScripts(['js/shared/card.js']).done(
-    function () { $.card().issue('custodians', 'formCustodian'); }
+$.getMultiScripts(['js/shared/cf.js']).done(
+    function () { $.cf().issue('custodians', 'formCustodian'); }
 );

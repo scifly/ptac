@@ -350,7 +350,7 @@ class Student extends Model {
      */
     function import() {
         
-        $records = $this->upload();
+        $records = $this->uploader();
         $ns = array_count_values(
             array_map('strval', Arr::pluck($records, 'G'))
         );
@@ -419,28 +419,23 @@ class Student extends Model {
             $classId = Request::input('sectionId');
             $students = Student::whereClassId($classId)->orderBy('sn')->get();
             $snHtml = $card->input();
-            $record = <<<HTML
-<tr>
-    <td>%s</td>
-    <td class="text-center">%s</td>
-    <td class="text-center">%s</td>
-    <td>$snHtml</td>
-</tr>
-HTML;
-            $list = '';
-            $i = 0;
+            $tpl = <<<HTML
+                <tr>
+                    <td>%s</td>
+                    <td class="text-center">%s</td>
+                    <td class="text-center">%s</td>
+                    <td>$snHtml</td>
+                </tr>
+            HTML;
+            $list = ''; $i = 0;
             foreach ($students as $student) {
                 $user = $student->user;
                 $card = $user->card;
                 $sn = $card ? $card->sn : null;
                 $list .= sprintf(
-                    $record,
-                    $user->id,
-                    $user->realname,
-                    $student->sn,
-                    $user->id,
-                    $i,
-                    $sn
+                    $tpl,
+                    $user->id, $user->realname,
+                    $student->sn, $user->id, $i, $sn
                 );
                 $i++;
             }
@@ -461,6 +456,49 @@ HTML;
     function grant() {
         
         return (new Card)->grant('Student');
+        
+    }
+    
+    /**
+     * 批量设置人脸识别
+     *
+     * @return bool|JsonResponse|string
+     * @throws Throwable
+     */
+    function face() {
+        
+        $face = new Face;
+        if (Request::has('sectionId')) {
+            $students = Student::whereClassId(Request::input('sectionId'))->get();
+            $tpl = <<<HTML
+                <tr>
+                    <td>%s</td>
+                    <td class="text-center">%s</td>
+                    <td class="text-center">%s</td>
+                    <td>%s</td><td>%s</td>
+                    <td class="text-center">%s</td>
+                </tr>
+            HTML;
+            $cameras = (new Camera)->cameras();
+            $list = '';
+            /** @var Student $student */
+            foreach ($students as $student) {
+                $user = $student->user;
+                $list .= sprintf(
+                    $tpl,
+                    $user->id, $user->realname, $student->sn,
+                    $face->uploader($user), $face->selector($cameras, $user),
+                    $face->state(
+                        $user->face ? $user->face->state : 1,
+                        $user->id
+                    )
+                );
+            }
+            
+            return $list;
+        }
+    
+        return $face->store();
         
     }
     
