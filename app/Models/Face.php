@@ -94,11 +94,11 @@ class Face extends Model {
             ['db' => 'User.realname', 'dt' => 2],
             ['db' => 'Groups.name', 'dt' => 3],
             [
-                'db'        => 'Card.created_at', 'dt' => 4, 'dr' => true,
+                'db'        => 'Face.created_at', 'dt' => 4, 'dr' => true,
                 'formatter' => function ($d) { return $d ?? ' - '; },
             ],
             [
-                'db'        => 'Card.updated_at', 'dt' => 5, 'dr' => true,
+                'db'        => 'Face.updated_at', 'dt' => 5, 'dr' => true,
                 'formatter' => function ($d) { return $d ?? ' - '; },
             ],
             [
