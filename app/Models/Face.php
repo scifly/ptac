@@ -116,7 +116,7 @@ class Face extends Model {
                         $colors[$d ?? 0][0], $colors[$d ?? 0][1]
                     );
                     
-                    return Datatable::status($state, $row, false);
+                    return $state; // Datatable::status($state, $row, false);
                 },
             ],
         ];
