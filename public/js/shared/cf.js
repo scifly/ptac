@@ -284,14 +284,15 @@
                     });
                 });
                 $(document).off('click', '.fa-remove');
-                $(document).on('click', '.fa-remove', function () {
+                $(document).on('click', '.fa-remove', function (e) {
+                    e.stopPropagation();
                     var $this = $(this),
                         uid = $this.parent().prev().attr('class').split('-')[1],
                         $mediaId = $('#media-id-' + uid);
 
                     $mediaId.val('');
                     $mediaId.next().remove();
-                    $this.hide();
+                    $this.hide(); return false;
                 });
             }
         };
