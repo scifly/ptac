@@ -42,7 +42,7 @@
 @include('shared.site_footer')
 @include('home.profile')
 </div>
-{!! Html::script('js/query.min.js') !!}
+{!! Html::script('js/jquery.min.js') !!}
 {{--<script src="{{ URL::asset('js/jquery.min.js') }}"></script>--}}
 <script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
 <script src="{{ URL::asset('js/pusher.min.js') }}"></script>
