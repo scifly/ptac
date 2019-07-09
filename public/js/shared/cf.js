@@ -121,7 +121,7 @@
                             page.initSelect2();
                             page.initICheck();
                             var $contacts = $('input[name=contacts]');
-                            if (typeof $contacts !== 'undefined') $contacts.iCheck('check');
+                            if ($contacts.length !== 0) $contacts.iCheck('check');
                         },
                         error: function (e) {
                             page.errorHandler(e);
