@@ -8,7 +8,7 @@
                 {!! Form::label('name', '用户列表', [
                     'class' => 'col-sm-2 control-label'
                 ]) !!}
-                <div class="col-sm-7">
+                <div class="col-sm-8">
                     <table id="simple-table" style="width: 100%"
                            class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead>
