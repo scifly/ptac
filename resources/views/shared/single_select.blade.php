@@ -3,9 +3,9 @@
      @if (isset($style)) style="{{ $style }}" @endif
 >
     {!! Form::label($id, $label, [
-        'class' => 'col-sm-3 control-label',
+        'class' => (isset($wl) ? $wl : 'col-sm-3') . ' control-label',
     ]) !!}
-    <div class="col-sm-6">
+    <div class="{!! isset($wr) ? $wr : 'col-sm-6' !!}">
         <div class="input-group">
             <div class="input-group-addon">
                 <i class="{{ $icon ?? 'fa fa-list' }}" style="width: 20px;"></i>

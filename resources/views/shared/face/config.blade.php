@@ -13,11 +13,13 @@
                 'label' => '部门',
                 'id' => 'section_id',
                 'items' => $classes,
-                'icon' => 'fa fa-users'
+                'icon' => 'fa fa-users',
+                'wl' => 'col-sm-2',
+                'wr' => 'col-sm-8'
             ])
             <div class="form-group">
                 {!! Form::label('name', $prompt, [
-                    'class' => 'col-sm-8 control-label'
+                    'class' => 'col-sm-2 control-label'
                 ]) !!}
                 <div class="col-sm-8">
                     <table id="simple-table" style="width: 100%"
