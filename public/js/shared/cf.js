@@ -88,7 +88,8 @@
                     empty = $list.html();
 
                 if (typeof action === 'undefined') {
-                    cf.onSectionChange($sectionId, empty, 'face');
+                    action = 'face';
+                    cf.onSectionChange($sectionId, empty, action);
                 }
                 cf.onUpload(action, table);
                 cf.onConfig(formId, action);
@@ -242,6 +243,7 @@
                 });
             },
             onUpload: function (action, table) {
+                $(document).off('change', '.face-upload');
                 $(document).on('change', '.face-upload', function () {
                     var title = '设置人脸识别',
                         $this = $(this),
