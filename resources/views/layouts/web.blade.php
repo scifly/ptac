@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-{{--    <meta name="csrf-token" content="{{ csrf_token() }}" id="csrf_token">--}}
+    {!! Html::meta(null, null, ['charset' => 'utf-8']) !!}
+    {!! Html::meta(null, 'IE=edge', ['http-equiv' => 'X-UA-Compatible']) !!}
+{{--    <meta http-equiv="X-UA-Compatible" content="IE=edge">--}}
     {!! Html::meta('csrf-token', csrf_token(), ['id' => 'csrf_token']) !!}
-    <meta name="pusher-key" content="{{ config('broadcasting.connections.pusher.key') }}">
-    <meta name="pusher-cluster" content="{{ config('broadcasting.connections.pusher.options.cluster') }}">
+    {!! Html::meta('pusher-key', config('broadcasting.connections.pusher.key')) !!}
+    {!! Html::meta('pusher-cluster', config('broadcasting.connections.pusher.options.cluster')) !!}
     <title>{!! config('app.name') !!}</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
