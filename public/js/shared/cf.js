@@ -264,16 +264,21 @@
                         processData: false,
                         success: function (result) {
                             var $preview = $('.preview-' + uid),
+                                $mediaId = $('#media-id-' + uid),
                                 imgAttrs = {
                                     'src': '../../' + result['path'],
-                                    'title': '文件名：' + result['filename']
+                                    'title': '文件名：' + result['filename'],
+                                    'height': 32
                                 };
 
-                            $('#media-id-' + uid).val(result['id']);
+                            $mediaId.val(result['id']);
                             $preview.find('img').remove();
                             $preview.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
                             $('.overlay').hide();
                             page.inform(title, '图片上传成功', page.success)
+                        },
+                        error: function (e) {
+                            page.errorHandler(e);
                         }
                     });
                 });
