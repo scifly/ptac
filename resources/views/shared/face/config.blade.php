@@ -17,9 +17,9 @@
             ])
             <div class="form-group">
                 {!! Form::label('name', $prompt, [
-                    'class' => 'col-sm-3 control-label'
+                    'class' => 'col-sm-8 control-label'
                 ]) !!}
-                <div class="col-sm-6">
+                <div class="col-sm-8">
                     <table id="simple-table" style="width: 100%"
                            class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead><tr>{!! $titles !!}</tr></thead>
