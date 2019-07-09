@@ -120,7 +120,8 @@
                             );
                             page.initSelect2();
                             page.initICheck();
-                            $('input[name=contacts]').iCheck('check');
+                            var $contacts = $('input[name=contacts]');
+                            if (typeof $contacts !== 'undefined') $contacts.iCheck('check');
                         },
                         error: function (e) {
                             page.errorHandler(e);
