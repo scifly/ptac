@@ -333,7 +333,7 @@ class Face extends Model {
             ['id' => $id, 'class' => 'medias']
         )->toHtml() . $image;
         # 上传/删除
-        $upload = '<i class="fa fa-cloud-upload"></i> 上传';
+        $upload = '<i class="fa fa-cloud-upload" title="上传"></i>';
         $remove = $media ? '<i class="fa fa-remove"></i> 删除' : '';
         $actions = Form::label(
             'face-' . $uid, $upload . $remove,
