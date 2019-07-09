@@ -9,3 +9,6 @@ input[type="file"] {
 .preview img {
     height: 200px;
 }
+#simple-table td {
+    vertical-align: middle;
+}
