@@ -445,6 +445,8 @@ class Custodian extends Model {
             }
             
             return $list;
+        } elseif (Request::file('file')) {
+            return $face->import();
         }
         
         return $face->store();

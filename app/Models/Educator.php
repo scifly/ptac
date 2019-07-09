@@ -479,6 +479,8 @@ class Educator extends Model {
             }
             
             return $list;
+        } elseif (Request::file()) {
+            return $face->import();
         }
     
         return $face->store();

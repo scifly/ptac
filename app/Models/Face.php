@@ -290,6 +290,32 @@ class Face extends Model {
     }
     
     /**
+     * 上传应用模块图标
+     *
+     * @return JsonResponse
+     */
+    function import() {
+        
+        $file = Request::file('file');
+        abort_if(
+            empty($file),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.empty_file')
+        );
+        $uploadedFile = (new Media)->import(
+            $file, __('messages.wap_site_module.title')
+        );
+        abort_if(
+            !$uploadedFile,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            __('messages.file_upload_failed')
+        );
+        
+        return response()->json($uploadedFile);
+        
+    }
+    
+    /**
      * 人脸照片上传html
      *
      * @param User $user

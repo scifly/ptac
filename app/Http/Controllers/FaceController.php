@@ -50,7 +50,9 @@ class FaceController extends Controller {
      */
     public function create() {
     
-        return $this->output();
+        return Request::method() == 'POST'
+            ? $this->face->import()
+            : $this->output();
     
     }
     
@@ -76,7 +78,9 @@ class FaceController extends Controller {
      */
     public function edit() {
     
-        return $this->output();
+        return Request::method() == 'POST'
+            ? $this->face->import()
+            : $this->output();
     
     }
     
