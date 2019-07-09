@@ -6,9 +6,9 @@
         <div class="form-horizontal">
             <div class="form-group">
                 {!! Form::label('name', '用户列表', [
-                    'class' => 'col-sm-3 control-label'
+                    'class' => 'col-sm-2 control-label'
                 ]) !!}
-                <div class="col-sm-9">
+                <div class="col-sm-7">
                     <table id="simple-table" style="width: 100%"
                            class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead>
