@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
-	<meta id="csrf_token" name="csrf_token" content="{!! csrf_token() !!}">
-	<meta id="pusher_key" content="{!! config('broadcasting.connections.pusher.key') !!}">
-	<meta id="pusher_cluster" content="{!! config('broadcasting.connections.pusher.options.cluster') !!}">
+    {!! Html::meta(null, null, ['charset' => 'utf-8']) !!}
+    {!! Html::meta('viewport', 'width=device-width,initial-scale=1,user-scalable=0') !!}
+    {!! Html::meta('csrf-token', csrf_token()) !!}
+    {!! Html::meta('pusher-key', config('broadcasting.connections.pusher.key')) !!}
+    {!! Html::meta('pusher-cluster', config('broadcasting.connections.pusher.options.cluster')) !!}
     <title>@yield('title')</title>
-    <link rel="stylesheet" href="{!! asset('/css/wechat/weui.min.css') !!}">
-    <link rel="stylesheet" href="{!! asset('/css/wechat/jquery-weui.min.css') !!}">
-    <link rel="stylesheet" href="{!! asset('/css/wechat/iconfont.css') !!}">
-    <link rel="stylesheet" href="{!! asset('/css/wechat/wechat.css') !!}">
+    {!! Html::style('/css/wechat/weui.min.css') !!}
+    {!! Html::style('/css/wechat/jquery-weui.min.css') !!}
+    {!! Html::style('/css/wechat/iconfont.css') !!}
+    {!! Html::style('/css/wechat/wechat.css') !!}
     @yield('css')
 </head>
 <body ontouchstart>
@@ -19,14 +19,14 @@
     @yield('content')
 </div>
 @yield('search')
-<script src="{!! asset('/js/jquery.min.js') !!}"></script>
-<script src="{!! asset('/js/pusher.min.js') !!}"></script>
-<script src="{!! asset('/js/plugins/echarts/echarts.common.min.js') !!}"></script>
-<script src="{!! asset('/js/wechat/fastclick.js') !!}"></script>
-<script src="{!! asset('/js/wechat/jquery-weui.min.js') !!}"></script>
-<script src="{!! asset('/js/wechat/swiper.js') !!}"></script>
-<script src="{!! asset('/js/wechat/jweixin.js') !!}"></script>
-<script src="{!! asset('/js/wechat/wap.js') !!}"></script>
+{!! Html::script('/js/jquery.min.js') !!}
+{!! Html::script('/js/pusher.min.js') !!}
+{!! Html::script('/js/plugins/echarts/echarts.common.min.js') !!}
+{!! Html::script('/js/wechat/fastclick.js') !!}
+{!! Html::script('/js/wechat/jquery-weui.min.js') !!}
+{!! Html::script('/js/wechat/swiper.js') !!}
+{!! Html::script('/js/wechat/jweixin.js') !!}
+{!! Html::script('/js/wechat/wap.js') !!}
 @yield('script')
 </body>
 </html>

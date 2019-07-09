@@ -54,7 +54,7 @@ var page = {
         };
     },
     token: function () {
-        return $('#csrf_token').attr('content');
+        return $('meta[name="csrf-token"]').attr('content');
     },
     backToList: function (table) {
         var $activeTabPane = $('#tab_' + page.getActiveTabId());

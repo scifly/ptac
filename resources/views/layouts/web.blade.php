@@ -3,7 +3,7 @@
 <head>
     {!! Html::meta(null, null, ['charset' => 'utf-8']) !!}
     {!! Html::meta(null, 'IE=edge', ['http-equiv' => 'X-UA-Compatible']) !!}
-    {!! Html::meta('csrf-token', csrf_token(), ['id' => 'csrf_token']) !!}
+    {!! Html::meta('csrf-token', csrf_token()) !!}
     {!! Html::meta('pusher-key', config('broadcasting.connections.pusher.key')) !!}
     {!! Html::meta('pusher-cluster', config('broadcasting.connections.pusher.options.cluster')) !!}
     <title>{!! config('app.name') !!}</title>

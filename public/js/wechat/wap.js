@@ -7,7 +7,7 @@ var wap = {
         $.toptip(message, statusCode <= 300 ? 'warning' : 'error');
     },
     token: function () {
-        return $('#csrf_token').attr('content');
+        return $('meta[name="csrf-token"]').attr('content');
     },
     today: function () {
         var today = new Date(),
@@ -21,8 +21,8 @@ var wap = {
         return yyyy + '-' + mm + '-' + dd;
     }
 };
-var pusherKey = $('#pusher_key').attr('content'),
-    pusherCluster = $('#pusher_cluster').attr('content'),
+var pusherKey = $('meta[name="pusher-key"]').attr('content'),
+    pusherCluster = $('meta[name="pusher-cluster"]').attr('content'),
     memberId = $('#member_id').val(),
     pusher = new Pusher(pusherKey, {cluster: pusherCluster, encrypted: true}),
     channel = pusher.subscribe('member.' + memberId);
