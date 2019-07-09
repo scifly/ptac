@@ -334,7 +334,7 @@ class Face extends Model {
         )->toHtml() . $image;
         # 上传/删除
         $upload = '<i class="fa fa-cloud-upload" title="上传"></i>';
-        $remove = '<i class="fa fa-remove text-red" title="删除" style="display: '
+        $remove = '<i class="fa fa-remove text-red" title="删除" style="margin-left:5px; display: '
             . ($media ? 'block' : 'none') . '"></i>';
         $actions = Form::label(
             'face-' . $uid, $upload . $remove,
