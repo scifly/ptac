@@ -274,6 +274,7 @@
                             $mediaId.val(result['id']);
                             $preview.find('img').remove();
                             $preview.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
+                            $($('label[for=face-' + uid + ']').children()[1]).show();
                             $('.overlay').hide();
                             page.inform(title, '图片上传成功', page.success)
                         },
