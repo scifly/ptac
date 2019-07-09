@@ -118,9 +118,9 @@
                                 result !== '' ? result
                                     : '<tr><td class="text-center" colspan="' + cols + '">- 暂无数据 -</td></tr>'
                             );
+                            page.initSelect2();
                             page.initICheck();
                             $('input[name=contacts]').iCheck('check');
-                            page.initSelect2();
                         },
                         error: function (e) {
                             page.errorHandler(e);
