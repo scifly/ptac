@@ -248,6 +248,8 @@
                     var title = '设置人脸识别',
                         $this = $(this),
                         uid = $this.attr('id')[1],
+                        $preview = $('.preview-' + uid),
+                        $mediaId = $('#media-id-' + uid),
                         file = $this[0].files[0],
                         id = action === 'edit' ? '/' + $('#id').val() : '',
                         data = new FormData();
@@ -263,9 +265,7 @@
                         contentType: false,
                         processData: false,
                         success: function (result) {
-                            var $preview = $('.preview-' + uid),
-                                $mediaId = $('#media-id-' + uid),
-                                imgAttrs = {
+                            var imgAttrs = {
                                     'src': '../../' + result['path'],
                                     'title': '文件名：' + result['filename'],
                                     'height': 32
