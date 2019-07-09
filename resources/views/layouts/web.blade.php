@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}" id="csrf_token">
+{{--    <meta name="csrf-token" content="{{ csrf_token() }}" id="csrf_token">--}}
+    {!! Html::meta('csrf-token', csrf_token(), ['id' => 'csrf_token']) !!}
     <meta name="pusher-key" content="{{ config('broadcasting.connections.pusher.key') }}">
     <meta name="pusher-cluster" content="{{ config('broadcasting.connections.pusher.options.cluster') }}">
     <title>{!! config('app.name') !!}</title>
@@ -24,8 +25,6 @@
     <![endif]-->
     <!-- Google Font -->
     {!! Html::style('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic') !!}
-{{--    <link rel="stylesheet"--}}
-{{--      href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">--}}
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
