@@ -377,7 +377,6 @@ class Face extends Model {
             'style' => '%s'
         ])->toHtml();
 
-        
         return sprintf($tpl, $name, $id, 'width: 100%;', $options);
         
     }

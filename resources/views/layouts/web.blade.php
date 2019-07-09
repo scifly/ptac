@@ -17,7 +17,8 @@
     {!! Html::style('css/AdminLTE.min.css') !!}
     {!! Html::style('css/skins/_all-skins.min.css') !!}
     {!! Html::style('css/page.css') !!}
-    <link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">
+    {!! Html::link('favicon.ico') !!}
+{{--    <link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">--}}
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
