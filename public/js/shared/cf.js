@@ -283,6 +283,15 @@
                         }
                     });
                 });
+                $(document).off('click', '.fa-remove');
+                $(document).on('click', '.fa-remove', function () {
+                    var $this = $(this),
+                        uid = $this.parent().prev().attr('class').split('-')[1],
+                        $mediaId = $('#media-id-' + uid);
+
+                    $mediaId.val('');
+                    $mediaId.next().remove();
+                });
             }
         };
 
