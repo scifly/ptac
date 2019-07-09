@@ -6,7 +6,7 @@
     {!! Html::meta('csrf-token', csrf_token(), ['id' => 'csrf_token']) !!}
     {!! Html::meta('pusher-key', config('broadcasting.connections.pusher.key')) !!}
     {!! Html::meta('pusher-cluster', config('broadcasting.connections.pusher.options.cluster')) !!}
-    {!! Html::tag('title', config('app.name')) !!}
+    <title>{!! config('app.name') !!}</title>
     <!-- Tell the browser to be responsive to screen width -->
     {!! Html::meta('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no') !!}
     {!! Html::style('css/bootstrap.min.css') !!}
@@ -18,7 +18,6 @@
     {!! Html::style('css/skins/_all-skins.min.css') !!}
     {!! Html::style('css/page.css') !!}
     {!! Html::link('favicon.ico') !!}
-{{--    <link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">--}}
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -43,7 +42,8 @@
 @include('shared.site_footer')
 @include('home.profile')
 </div>
-<script src="{{ URL::asset('js/jquery.min.js') }}"></script>
+{!! Html::script('js/query.min.js') !!}
+{{--<script src="{{ URL::asset('js/jquery.min.js') }}"></script>--}}
 <script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
 <script src="{{ URL::asset('js/pusher.min.js') }}"></script>
 <script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
