@@ -162,7 +162,7 @@ class EducatorComposer {
             'formId' => 'formEducator',
             'classes' => [0 => '(请选择一个部门)'] + $departments,
             'titles' => $titles,
-            'columns' => 4
+            'columns' => 6
         ];
         
     }

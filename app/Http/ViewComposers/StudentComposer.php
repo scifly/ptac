@@ -168,7 +168,7 @@ class StudentComposer {
             'formId'  => 'formStudent',
             'classes' => [0 => '(请选择一个班级)'] + $classes,
             'titles'  => $titles,
-            'columns' => 4,
+            'columns' => 6,
         ];
         
     }

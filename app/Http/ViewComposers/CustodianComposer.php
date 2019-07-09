@@ -163,7 +163,7 @@ class CustodianComposer {
             'formId' => 'formCustodian',
             'classes' => [0 => '(请选择一个班级)'] + $classes,
             'titles' => $titles,
-            'columns' => 5
+            'columns' => 7
         ];
         
     }
