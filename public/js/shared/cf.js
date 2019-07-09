@@ -291,6 +291,7 @@
 
                     $mediaId.val('');
                     $mediaId.next().remove();
+                    $this.hide();
                 });
             }
         };
