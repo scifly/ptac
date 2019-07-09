@@ -99,7 +99,7 @@
                 // 选择班级
                 $sectionId.on('change', function () {
                     if ($sectionId.val() === '0') {
-                        $list.html(empty);
+                        $('tbody').html(empty);
                         return false;
                     }
                     $('.overlay').show();
@@ -112,10 +112,11 @@
                             sectionId: $sectionId.val()
                         },
                         success: function (result) {
+                            var cols = $('thead').find('tr')[0].cells.length;
                             $('.overlay').hide();
                             $('#section').html(
                                 result !== '' ? result
-                                    : '<tr><td class="text-center" colspan="5">- 暂无数据 -</td></tr>'
+                                    : '<tr><td class="text-center" colspan="' + cols + '">- 暂无数据 -</td></tr>'
                             );
                             page.initICheck();
                             $('input[name=contacts]').iCheck('check');
