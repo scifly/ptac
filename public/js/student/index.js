@@ -14,6 +14,6 @@ $.getMultiScripts([
         $.dtrange().dRange('.dtrange');
         $.dtrange().dRange('.drange');
         $.contact().index('students');
-        $.card().index('students');
+        $.cf().index('students');
     }
 );

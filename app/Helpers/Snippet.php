@@ -20,22 +20,22 @@ class Snippet {
         SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> <span>%s</span></a></li>';
     # 包含子菜单的HTML模板
     const TREE = <<<HTML
-            <li class="treeview%s">
-                <a href="#">
-                    <i class="%s"></i> <span>%s</span>
-                    <span class="pull-right-container">
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </span>
-                </a>
-                <ul class="treeview-menu">
-HTML;
+        <li class="treeview%s">
+            <a href="#">
+                <i class="%s"></i> <span>%s</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+    HTML;
     const TREE_NODE = <<<HTML
-            <button type="button" class="btn btn-flat" style="margin-right: 5px; margin-bottom: 5px;">
-                <i class="%s">&nbsp;%s</i>&nbsp;
-                <i class="fa fa-close remove-selected"></i>
-                <input type="hidden" name="selectedDepartments[]" value="%s" />
-            </button>
-HTML;
+        <button type="button" class="btn btn-flat" style="margin-right: 5px; margin-bottom: 5px;">
+            <i class="%s">&nbsp;%s</i>&nbsp;
+            <i class="fa fa-close remove-selected"></i>
+            <input type="hidden" name="selectedDepartments[]" value="%s" />
+        </button>
+    HTML;
     # 性别符号
     const MALE = '<i class="fa fa-mars"></i>';
     const FEMALE = '<i class="fa fa-venus"></i>';
