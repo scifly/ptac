@@ -120,6 +120,7 @@
                             );
                             page.initICheck();
                             $('input[name=contacts]').iCheck('check');
+                            page.initSelect2();
                         },
                         error: function (e) {
                             page.errorHandler(e);
