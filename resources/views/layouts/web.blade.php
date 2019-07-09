@@ -19,40 +19,39 @@
     {!! Html::style('css/page.css') !!}
     {!! Html::link('favicon.ico') !!}
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        {!! Html::script('https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js') !!}
+        {!! Html::script('https://oss.maxcdn.com/respond/1.4.2/respond.min.js') !!}
     <![endif]-->
     <!-- Google Font -->
     {!! Html::style('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic') !!}
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-<!-- 页面头部 -->
-@include('shared.site_header')
-<!-- 页面左侧边栏 -->
-@include('shared.site_main_sidebar')
-<!-- 页面内容 -->
-<div class="content-wrapper">
-@include('shared.site_content_header')
-<div class="content clearfix">
-    @include('shared.site_content')
-</div>
-</div>
-<!-- 页面尾部 -->
-@include('shared.site_footer')
-@include('home.profile')
+    <!-- 页面头部 -->
+    @include('shared.site_header')
+    <!-- 页面左侧边栏 -->
+    @include('shared.site_main_sidebar')
+    <!-- 页面内容 -->
+    <div class="content-wrapper">
+        @include('shared.site_content_header')
+        <div class="content clearfix">
+            @include('shared.site_content')
+        </div>
+    </div>
+    <!-- 页面尾部 -->
+    @include('shared.site_footer')
+    @include('home.profile')
 </div>
 {!! Html::script('js/jquery.min.js') !!}
-{{--<script src="{{ URL::asset('js/jquery.min.js') }}"></script>--}}
-<script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
-<script src="{{ URL::asset('js/pusher.min.js') }}"></script>
-<script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
-<script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
-<script src="{{ URL::asset('js/shared/plugins.js') }}"></script>
-<script src="{{ URL::asset('js/shared/page.js') }}"></script>
+{!! Html::script('js/jquery-ui.min.js') !!}
+{!! Html::script('js/pusher.min.js') !!}
+{!! Html::script('js/bootstrap.min.js') !!}
+{!! Html::script('js/adminlte.min.js') !!}
+{!! Html::script('js/plugins/gritter/js/jquery.gritter.min.js') !!}
+{!! Html::script('js/plugins/parsley/parsley.min.js') !!}
+{!! Html::script('js/plugins/parsley/i18n/zh_cn.js') !!}
+{!! Html::script('js/plugins/parsley/i18n/zh_cn.extra.js') !!}
+{!! Html::script('js/shared/plugins.js') !!}
+{!! Html::script('js/shared/page.js') !!}
 </body>
 </html>
