@@ -10,40 +10,38 @@
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     {!! Html::style('css/bootstrap.min.css')->toHtml() !!}
-{{--    <link rel="stylesheet" href="{{ URL::asset('css/bootstrap.min.css') }}">--}}
-    {{--<link rel="stylesheet" href="{{ URL::asset('css/app.css') }}">--}}
-    <link rel="stylesheet" href="{{ URL::asset('css/font-awesome.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('css/ionicons.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/gritter/css/jquery.gritter.css') }}" id="cip">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('css/page.css') }}">
-    <link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <!-- Google Font -->
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+    {!! Html::style('css/font-awesome.min.css')->toHtml() !!}
+    {!! Html::style('css/ionicons.min.css')->toHtml() !!}
+    {!! Html::style('js/plugins/gritter/css/jquery.gritter.css', ['id' => 'cip'])->toHtml() !!}
+<link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
+<link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
+<link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
+<link rel="stylesheet" href="{{ URL::asset('css/page.css') }}">
+<link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+<!-- Google Font -->
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-    <!-- 页面头部 -->
-    @include('shared.site_header')
-    <!-- 页面左侧边栏 -->
-    @include('shared.site_main_sidebar')
-    <!-- 页面内容 -->
-    <div class="content-wrapper">
-        @include('shared.site_content_header')
-        <div class="content clearfix">
-            @include('shared.site_content')
-        </div>
-    </div>
-    <!-- 页面尾部 -->
-    @include('shared.site_footer')
-    @include('home.profile')
+<!-- 页面头部 -->
+@include('shared.site_header')
+<!-- 页面左侧边栏 -->
+@include('shared.site_main_sidebar')
+<!-- 页面内容 -->
+<div class="content-wrapper">
+@include('shared.site_content_header')
+<div class="content clearfix">
+    @include('shared.site_content')
+</div>
+</div>
+<!-- 页面尾部 -->
+@include('shared.site_footer')
+@include('home.profile')
 </div>
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
