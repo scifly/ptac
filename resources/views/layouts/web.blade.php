@@ -3,13 +3,12 @@
 <head>
     {!! Html::meta(null, null, ['charset' => 'utf-8']) !!}
     {!! Html::meta(null, 'IE=edge', ['http-equiv' => 'X-UA-Compatible']) !!}
-{{--    <meta http-equiv="X-UA-Compatible" content="IE=edge">--}}
     {!! Html::meta('csrf-token', csrf_token(), ['id' => 'csrf_token']) !!}
     {!! Html::meta('pusher-key', config('broadcasting.connections.pusher.key')) !!}
     {!! Html::meta('pusher-cluster', config('broadcasting.connections.pusher.options.cluster')) !!}
-    <title>{!! config('app.name') !!}</title>
+    {!! Html::tag('title', config('app.name')) !!}
     <!-- Tell the browser to be responsive to screen width -->
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {!! Html::meta('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no') !!}
     {!! Html::style('css/bootstrap.min.css') !!}
     {!! Html::style('css/font-awesome.min.css') !!}
     {!! Html::style('css/ionicons.min.css') !!}
