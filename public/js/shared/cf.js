@@ -265,7 +265,6 @@
                         success: function (result) {
                             var $mediaId = $('#media-id-' + uid),
                                 $preview = $('.preview-' + uid),
-                                $label = $('label[for=face-' + uid + ']'),
                                 imgAttrs = {
                                     'src': '../../' + result['path'],
                                     'title': '文件名：' + result['filename'],
