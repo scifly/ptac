@@ -44,6 +44,6 @@
             }
         };
 
-        return { init: upload.upload }
+        return {init: upload.upload}
     }
 })(jQuery);
