@@ -17,7 +17,7 @@
     {!! Html::style('css/AdminLTE.min.css') !!}
     {!! Html::style('css/skins/_all-skins.min.css') !!}
     {!! Html::style('css/page.css') !!}
-    {!! Html::link('favicon.ico') !!}
+    {!! Html::style('favicon.ico', ['rel' => 'shortcut icon', 'type' => null, 'media' => null]) !!}
     <!--[if lt IE 9]>
         {!! Html::script('https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js') !!}
         {!! Html::script('https://oss.maxcdn.com/respond/1.4.2/respond.min.js') !!}
