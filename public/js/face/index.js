@@ -6,5 +6,5 @@ page.index('faces', [
     {orderable: false, targets: [4]}
 ]);
 $.getMultiScripts(['js/shared/dtrange.js']).done(
-    function () { $.dtrange().init('.dtrange'); }
+    function () { $.dtrange().dRange('.dtrange'); }
 );
