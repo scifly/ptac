@@ -122,7 +122,14 @@ $routes = [
     'event'                  => $default,
     'exam'                   => $default,
     'exam_type'              => $default,
-    'face'                   => $default,
+    'face'                   => [
+        'index'   => ['get'],
+        'create'  => ['get', 'post'],
+        'store'   => ['post'],
+        'edit'    => ['{id?}' => 'get', 'post'],
+        'update'  => ['{id?}' => 'put'],
+        'destroy' => ['{id?}' => 'delete'],
+    ],
     'grade'                  => $default,
     'group'                  => [
         'index'   => ['get'],
