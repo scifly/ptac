@@ -55,6 +55,8 @@ class CameraFace extends Pivot {
         
         try {
             DB::transaction(function () use ($faceId, $cameraIds) {
+                !in_array(0, $cameraIds)
+                    ?: $cameraIds = Camera::pluck('id')->toArray();
                 $records = [];
                 foreach ($cameraIds as $cameraId) {
                     $this->whereFaceId($faceId)->delete();

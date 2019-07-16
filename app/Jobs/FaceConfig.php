@@ -57,7 +57,7 @@ class FaceConfig implements ShouldQueue {
                     foreach ($userIds as $userId) {
                         $user = User::find($userId);
                         switch ($action) {
-                            case 'insert':
+                            case 'insert':      # 新增人脸(自动获取参数)
                                 $params = [
                                     'uuid'         => $user->id,
                                     'name'         => $user->realname,
@@ -81,7 +81,7 @@ class FaceConfig implements ShouldQueue {
                                     }
                                 }
                                 break;
-                            case 'fmodify':
+                            case 'fmodify':     # 修改人脸
                                 $detail = $camera->invoke('detail', $this->image($user));
                                 Storage::disk('uploads')->put(
                                     $user->face->media->path, base64_decode($detail['csImage'])
@@ -106,7 +106,7 @@ class FaceConfig implements ShouldQueue {
                                     $camera->invoke(join('/', [$action, $cid]), $params);
                                 }
                                 break;
-                            case 'delete':
+                            case 'delete':      # 删除人脸
                                 foreach ($this->cids(User::find($userId)) as $cid) {
                                     $camera->invoke(join('/', [$action, $cid, $userId]));
                                 }

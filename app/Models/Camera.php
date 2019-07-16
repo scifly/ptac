@@ -175,7 +175,10 @@ class Camera extends Model {
             }
             $response = $client->post(
                 self::BASE_URI . $uri, [
-                    'headers'     => ['Authorization' => 'Bearer ' . $token],
+                    'headers'     => [
+                        'Authorization' => 'Bearer ' . $token,
+                        'Accept'        => 'application/json'
+                    ],
                     'form_params' => $params ?? [],
                 ]
             );

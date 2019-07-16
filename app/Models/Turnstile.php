@@ -181,7 +181,10 @@ class Turnstile extends Model {
             }
             $response = $client->post(
                 self::URL . $api, [
-                    'headers'     => ['Authorization' => 'Bearer ' . $token],
+                    'headers'     => [
+                        'Authorization' => 'Bearer ' . $token,
+                        'Accept'        => 'application/json'
+                    ],
                     'form_params' => $params,
                 ]
             );
