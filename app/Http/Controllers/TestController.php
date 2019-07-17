@@ -54,6 +54,8 @@ class TestController extends Controller {
      */
     public function index() {
         
+        dd(Request::input('abcdefg'));
+        
         if (Request::method() == 'POST') {
             $abc = Request::file('abc');
             $def = Request::file('def');
