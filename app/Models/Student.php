@@ -366,7 +366,9 @@ class Student extends Model {
                 '有重复，请检查后重试',
             ])
         );
-        ImportStudent::dispatch($records, Auth::id());
+        ImportStudent::dispatch(
+            $records, $this->schoolId(), Auth::id()
+        );
         
         return true;
         
