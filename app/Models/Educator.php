@@ -52,7 +52,7 @@ class Educator extends Model {
     
     const EXCEL_TITLES = [
         '姓名', '性别', '员工编号', '职务', '部门',
-        '学校', '手机号码', '年级主任', '班级主任', '班级科目',
+        '手机号码', '年级主任', '班级主任', '班级科目',
     ];
     protected $fillable = [
         'user_id', 'school_id', 'sms_quote', 'enabled',
@@ -384,7 +384,9 @@ class Educator extends Model {
             !$group = Group::where(['name' => '教职员工', 'school_id' => $this->schoolId()])->first(),
             HttpStatusCode::NOT_ACCEPTABLE, __('messages.educator.role_nonexistent')
         );
-        ImportEducator::dispatch($records, $this->schoolId(), $group->id, Auth::id());
+        ImportEducator::dispatch(
+            $records, $this->schoolId(), $group->id, Auth::id()
+        );
         
         return true;
         
