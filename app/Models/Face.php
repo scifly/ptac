@@ -169,7 +169,7 @@ class Face extends Model {
                 ]);
                 $faces = Request::input('faces');
                 $inserts = $replaces = $purges = [];
-                foreach ($faces as $userId => $face) {
+                foreach ($faces as $userId => &$face) {
                     if (!empty($face)) {
                         if (!$_face = Face::whereUserId($userId)->first()) {
                             $face['user_id'] = $userId;
