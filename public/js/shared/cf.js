@@ -88,7 +88,7 @@
                     empty = $list.html();
 
                 if (typeof action === 'undefined') {
-                    action = 'face';
+                    action = 'create';
                     cf.onSectionChange($sectionId, empty, action);
                 }
                 cf.onUpload(action, table);
@@ -200,7 +200,7 @@
                     }
                 );
                 $config.on('click', function () {
-                    var data = {}, type = 'POST', url = 'face';
+                    var data = {}, type = 'POST', url;
                     $('.medias').each(function () {
                         var $this = $(this),
                             media_id = $this.val(),
@@ -213,10 +213,8 @@
                             'cameraids': cameraids,
                             'state': state
                         };
-                        if (typeof action !== 'undefined') {
-                            url = page.siteRoot() + 'faces/' + (action === 'create' ? 'store' : 'update');
-                            if (action === 'edit') type = 'PUT';
-                        }
+                        url = page.siteRoot() + 'faces/' + (action === 'create' ? 'store' : 'update');
+                        if (action === 'edit') type = 'PUT';
                         $('.overlay').show();
                         $.ajax({
                             type: type,
