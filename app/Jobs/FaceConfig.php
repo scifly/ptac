@@ -156,7 +156,7 @@ class FaceConfig implements ShouldQueue {
     private function image(User $user) {
         
         return base64_encode(
-            Storage::disk('uploads')->get($user->face->media->path)
+            Storage::get($user->face->media->path)
         );
         
     }
