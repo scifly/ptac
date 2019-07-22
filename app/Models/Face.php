@@ -254,7 +254,11 @@ class Face extends Model {
                     $this->remove(false);
                 }
                 # 同步
-                !$api ?: FaceConfig::dispatch([$inserts, $replaces, $purges], Auth::id());
+                !$api ?: FaceConfig::dispatch([
+                    Arr::pluck($inserts, 'user_id'),
+                    Arr::pluck($replaces, 'user_id'),
+                    $purges
+                ], Auth::id());
             });
         } catch (Exception $e) {
             throw $e;

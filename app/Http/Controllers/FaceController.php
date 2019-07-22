@@ -90,7 +90,7 @@ class FaceController extends Controller {
      * @return JsonResponse|string
      * @throws Throwable
      */
-    public function modify() {
+    public function update() {
     
         return $this->result(
             $this->face->modify()
