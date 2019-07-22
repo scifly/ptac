@@ -242,12 +242,16 @@ class Face extends Model {
                     }
                 }
                 # 新增
-                $input['faces'] = $inserts;
-                Request::replace($input);
-                $this->store(null, false);
+                if (!empty($inserts)) {
+                    $input['faces'] = $inserts;
+                    Request::replace($input);
+                    $this->store(null, false);
+                }
                 # 删除
-                Request::merge(['ids' => $purges]);
-                $this->remove(false);
+                if (!empty($purges)) {
+                    Request::merge(['ids' => $purges]);
+                    $this->remove(false);
+                }
                 # 同步
                 !$api ?: FaceConfig::dispatch([$inserts, $replaces, $purges], Auth::id());
             });
