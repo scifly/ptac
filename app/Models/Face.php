@@ -186,19 +186,22 @@ class Face extends Model {
                     (new CameraFace)->storeByFaceId($face->id, $insert['cameraids']);
                 }
                 # 修改
-                $input['faces'] = $replaces;
-                Request::replace($input);
-                $this->modify(false);
+                if (!empty($replaces)) {
+                    $input['faces'] = $replaces;
+                    Request::replace($input);
+                    $this->modify(false);
+                }
                 # 清除
-                Request::merge(['ids' => $purges]);
-                $this->remove(false);
+                if (!empty($purges)) {
+                    Request::merge(['ids' => $purges]);
+                    $this->remove(false);
+                }
                 # 同步
                 !$api ?: FaceConfig::dispatch(
                     [array_keys($inserts), array_keys($replaces), $purges],
                     Auth::id()
                 );
             });
-            
         } catch (Exception $e) {
             throw $e;
         }
