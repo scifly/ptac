@@ -335,7 +335,7 @@ class Face extends Model {
         $media = $user->face ? $user->face->media : null;
         $uid = $user->id;
         # 图片预览
-        $image = $media ? Html::image('../../' . $media->path)->toHtml() : '';
+        $image = $media ? Html::image('../../' . $media->path, null, ['height' => 32])->toHtml() : '';
         $preview = Form::hidden(
                 $id = 'media-id-' . $uid,
                 $media ? $media->id : null,
