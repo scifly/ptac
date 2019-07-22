@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasOne};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Carbon, Facades\Auth, Facades\DB, Facades\Request};
+use Illuminate\Support\{Arr, Carbon, Facades\Auth, Facades\DB, Facades\Request};
 use Throwable;
 
 /**
@@ -168,8 +168,8 @@ class Face extends Model {
                 $inserts = $replaces = $purges = [];
                 foreach ($faces as $userId => &$face) {
                     if (!empty($face)) {
+                        $face['user_id'] = $userId;
                         if (!$_face = Face::whereUserId($userId)->first()) {
-                            $face['user_id'] = $userId;
                             $inserts[] = $face;
                         } elseif ($_face->media_id != $face['media_id']) {
                             $this->exists($face['media_id']);
@@ -197,10 +197,11 @@ class Face extends Model {
                     $this->remove(false);
                 }
                 # 同步
-                !$api ?: FaceConfig::dispatch(
-                    [array_keys($inserts), array_keys($replaces), $purges],
-                    Auth::id()
-                );
+                !$api ?: FaceConfig::dispatch([
+                    Arr::pluck($inserts, 'user_id'),
+                    Arr::pluck($replaces, 'user_id'),
+                    $purges,
+                ], Auth::id());
             });
         } catch (Exception $e) {
             throw $e;
@@ -332,10 +333,10 @@ class Face extends Model {
         # 图片预览
         $image = $media ? Html::image('../../' . $media->path)->toHtml() : '';
         $preview = Form::hidden(
-            $id = 'media-id-' . $uid,
-            $media ? $media->id : null,
-            ['id' => $id, 'class' => 'medias']
-        )->toHtml() . $image;
+                $id = 'media-id-' . $uid,
+                $media ? $media->id : null,
+                ['id' => $id, 'class' => 'medias']
+            )->toHtml() . $image;
         # 上传/删除
         $upload = '<i class="fa fa-cloud-upload" title="上传"></i>';
         $remove = '<i class="fa fa-remove text-red" title="删除" style="margin-left:5px; display: '
@@ -378,10 +379,10 @@ class Face extends Model {
         $name = $id . '[]';
         $tpl = Html::tag('select', '%s', [
             'multiple' => 'multiple', 'name' => '%s',
-            'id' => '%s', 'class' => 'form-control select2',
-            'style' => '%s'
+            'id'       => '%s', 'class' => 'form-control select2',
+            'style'    => '%s',
         ])->toHtml();
-
+        
         return sprintf($tpl, $name, $id, 'width: 100%;', $options);
         
     }
