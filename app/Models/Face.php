@@ -168,12 +168,12 @@ class Face extends Model {
                     'faces' => [$user->id => Request::input('face')],
                 ]);
                 $faces = Request::input('faces');
-                $inserts = $replaces = $purges = $userIds = [];
+                $inserts = $replaces = $purges = [];
                 foreach ($faces as $userId => $face) {
                     if (!empty($face)) {
                         if (!$_face = Face::whereUserId($userId)->first()) {
+                            $face['user_id'] = $userId;
                             $inserts[] = $face;
-                            $userIds[] = $userId;
                         } elseif ($_face->media_id != $face['media_id']) {
                             $this->exists($face['media_id']);
                             $replaces[$userId] = $face;
