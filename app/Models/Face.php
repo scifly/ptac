@@ -46,10 +46,7 @@ class Face extends Model {
     
     use ModelTrait;
     
-    protected $fillable = [
-        'faceid', 'user_id', 'v_type', 'v_start',
-        'v_end', 'wgid', 'url', 'state',
-    ];
+    protected $fillable = ['user_id', 'media_id', 'state'];
     
     /**
      * 返回指定人脸所属的所有人脸识别设备对象
