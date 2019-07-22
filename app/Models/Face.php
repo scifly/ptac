@@ -344,7 +344,7 @@ class Face extends Model {
         # 上传/删除
         $upload = '<i class="fa fa-cloud-upload" title="上传"></i>';
         $remove = '<i class="fa fa-remove text-red" title="删除" style="margin-left:5px; display: '
-            . ($media ? 'block' : 'none') . '"></i>';
+            . ($media ? 'inline' : 'none') . '"></i>';
         $actions = Form::label(
             'face-' . $uid, $upload . $remove,
             ['class' => 'custom-file-upload text-blue'], false
