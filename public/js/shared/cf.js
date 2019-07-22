@@ -88,7 +88,7 @@
                     empty = $list.html();
 
                 if (typeof action === 'undefined') {
-                    action = 'create';
+                    action = 'face';
                     cf.onSectionChange($sectionId, empty, action);
                 }
                 cf.onUpload(action, table);
@@ -213,7 +213,7 @@
                             'cameraids': cameraids,
                             'state': state
                         };
-                        url = page.siteRoot() + 'faces/' + (action === 'create' ? 'store' : 'update');
+                        url = page.siteRoot() + 'faces/' + (action === 'create' || action === 'face' ? 'store' : 'update');
                         if (action === 'edit') type = 'PUT';
                         $('.overlay').show();
                         $.ajax({
