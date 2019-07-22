@@ -182,7 +182,7 @@ class Face extends Model {
                 # 新增
                 foreach ($inserts as $insert) {
                     $face = $this->create($insert);
-                    $face->user->update(['face_id' => $face->id]);
+                    User::find($face->user_id)->update(['face_id' => $face->id]);
                     (new CameraFace)->storeByFaceId($face->id, $insert['cameraids']);
                 }
                 # 修改
