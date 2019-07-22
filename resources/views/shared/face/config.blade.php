@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     {!! Form::open([
-        'method' => 'post',
+        'method' => 'put',
         'id' => $formId,
         'data-parsley-validate' => 'true'
     ]) !!}
