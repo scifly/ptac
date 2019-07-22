@@ -127,7 +127,7 @@ $routes = [
         'create'  => ['get', 'post'],
         'store'   => ['post'],
         'edit'    => ['{id?}' => 'get', 'post'],
-        'update'  => ['{id?}' => 'put'],
+        'update'  => ['{id?}' => 'put', 'post'],
         'destroy' => ['{id?}' => 'delete'],
     ],
     'grade'                  => $default,
