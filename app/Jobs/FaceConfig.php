@@ -11,6 +11,7 @@ use Illuminate\{Bus\Queueable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
     Support\Facades\DB,
+    Support\Facades\Log,
     Support\Facades\Storage};
 use Pusher\PusherException;
 use Throwable;
@@ -79,6 +80,7 @@ class FaceConfig implements ShouldQueue {
                         } else {
                             $face->update($data);
                             $detail = $camera->invoke('detail', null, $this->image($user));
+                            Log::info('detail', $detail);
                             Storage::disk('uploads')->put(
                                 $user->face->media->path, base64_decode($detail['csImage'])
                             );

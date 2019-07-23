@@ -154,11 +154,11 @@ class Camera extends Model {
      *
      * @param string $uri - 接口名称
      * @param array $params - 调用参数
-     * @param null $body
+     * @param null $raw
      * @return mixed
      * @throws Throwable
      */
-    function invoke($uri, $params = null, $body = null) {
+    function invoke($uri, $params = null, $raw = null) {
         
         try {
             $client = new Client;
@@ -181,7 +181,7 @@ class Camera extends Model {
                 ],
             ];
             !$params ?: $options['form_params'] = $params;
-            !$body ?: $options['body'] = $body;
+            !$raw ?: $options['body'] = $raw;
             $response = $client->post(self::BASE_URI . $uri, $options);
             $body = json_decode($response->getBody(), true);
             $status = $response->getHeader('status');
