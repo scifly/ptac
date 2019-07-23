@@ -11,7 +11,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Support\Facades\{DB, Request};
+use Illuminate\Support\Facades\{DB, Request, Storage};
 use Illuminate\View\View;
 use Pusher\Pusher;
 use Pusher\PusherException;
@@ -53,6 +53,9 @@ class TestController extends Controller {
      * @throws Throwable
      */
     public function index() {
+    
+        echo base64_encode(Storage::disk('uploads')->get('2019/07/23/5d367afcc87a9-罗焱21级1班男.JPG'));
+        exit;
         
         dd(Request::input('abcdefg'));
         
