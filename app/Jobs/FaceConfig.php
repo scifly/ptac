@@ -11,7 +11,6 @@ use Illuminate\{Bus\Queueable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
     Support\Facades\DB,
-    Support\Facades\Log,
     Support\Facades\Storage};
 use Pusher\PusherException;
 use Throwable;
@@ -56,6 +55,7 @@ class FaceConfig implements ShouldQueue {
             DB::transaction(function () {
                 $camera = new Camera;
                 $cf = new CameraFace;
+                $failed = [];
                 foreach ($this->faces as $userId => $data) {
                     $user = User::find($userId);
                     if (isset($data['media_id'])) {
@@ -80,7 +80,11 @@ class FaceConfig implements ShouldQueue {
                         } else {
                             $face->update($data);
                             $detail = $camera->invoke('detail', null, $this->image($user));
-                            Log::info('detail', $detail);
+                            if(isset($detail['success'])) {
+                                $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                                $this->response['message'] = '获取人脸信息失败';
+                                break;
+                            }
                             Storage::disk('uploads')->put(
                                 $user->face->media->path, base64_decode($detail['csImage'])
                             );
@@ -104,16 +108,22 @@ class FaceConfig implements ShouldQueue {
                         }
                         $cf->storeByFaceId($face->id, $data['cameraids']);
                         foreach ($this->cids($user) as $cid) {
-                            $camera->invoke(join('/', [$action, $cid]), $params);
+                            $result = $camera->invoke(join('/', [$action, $cid]), $params);
+                            $result['success'] ?: $failed[] = [$userId, $cid];
                         }
                     } elseif ($user->face) {
                         foreach ($this->cids($user) as $cid) {
-                            $camera->invoke(join('/', ['delete', $cid, $userId]));
+                            $result = $camera->invoke(join('/', ['delete', $cid, $userId]));
+                            $result['success'] ?: $failed[] = [$userId, $cid];
                         }
                         CameraFace::whereFaceId($user->face_id)->delete();
                         $user->update(['face_id' => 0]);
                         $user->face->delete();
                     }
+                }
+                if (!empty($failed)) {
+                    $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                    $this->response['message'] = json_encode($failed);
                 }
             });
         } catch (Exception $e) {
