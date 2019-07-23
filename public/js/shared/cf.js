@@ -199,7 +199,7 @@
                         return false;
                     }
                 );
-                $config.off('click').on('click', function () {
+                $config.unbind('click').on('click', function () {
                     var data = {}, type = 'POST', url;
                     $('.medias').each(function () {
                         var $this = $(this),
