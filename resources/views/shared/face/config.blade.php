@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     {!! Form::open([
-        'method' => 'put',
+        'method' => 'post',
         'id' => $formId,
         'data-parsley-validate' => 'true'
     ]) !!}
@@ -11,11 +11,11 @@
         <div class="form-horizontal">
             @include('shared.single_select', [
                 'label' => '部门',
-                'id' => 'section_id',
+                'id'    => 'section_id',
                 'items' => $classes,
-                'icon' => 'fa fa-users',
-                'wl' => 'col-sm-2',
-                'wr' => 'col-sm-8'
+                'icon'  => 'fa fa-users',
+                'wl'    => 'col-sm-2',
+                'wr'    => 'col-sm-8'
             ])
             <div class="form-group">
                 {!! Form::label('name', $prompt, [
@@ -24,7 +24,9 @@
                 <div class="col-sm-8">
                     <table id="simple-table" style="width: 100%"
                            class="display nowrap table table-striped table-bordered table-hover table-condensed">
-                        <thead><tr>{!! $titles !!}</tr></thead>
+                        <thead>
+                        <tr>{!! $titles !!}</tr>
+                        </thead>
                         <tbody id="section">
                         <tr>
                             <td colspan="{!! $columns !!}" class="text-center">

@@ -76,6 +76,7 @@ return [
     ],
     'face' => [
         'title' => '人脸识别',
+        'config_started' => '已提交人脸识别设置请求...',
         'config_completed' => '设置成功'
     ],
     'grade'                    => [

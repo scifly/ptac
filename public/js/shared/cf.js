@@ -91,8 +91,8 @@
                     action = 'face';
                     cf.onSectionChange($sectionId, empty, action);
                 }
-                cf.onUpload(action, table);
-                cf.onConfig(formId, action);
+                cf.onUpload(table, action);
+                cf.onConfig(formId);
                 page.initBackBtn(table);
                 page.initSelect2();
             },
@@ -192,18 +192,14 @@
                     );
                 });
             },
-            onConfig: function (formId, action) {
+            onConfig: function (formId) {
                 $('#' + formId).on(
                     'submit', function () {
                         return false;
                     }
                 );
                 $('#config').on('click', function () {
-                    var data = {}, methods = {
-                        create: 'store',
-                        face: 'store',
-                        edit: 'update'
-                    };
+                    var data = {};
 
                     $('.medias').each(function () {
                         var $this = $(this),
@@ -217,9 +213,9 @@
                     });
                     $('.overlay').show();
                     $.ajax({
-                        type: action === 'edit' ? 'PUT' : 'POST',
+                        type: 'POST',
                         dataType: 'json',
-                        url: page.siteRoot() + 'faces/' + methods[action],
+                        url: page.siteRoot() + 'faces/store',
                         data: {_token: page.token(), faces: data},
                         success: function (result) {
                             $('.overlay').hide();
@@ -239,23 +235,21 @@
                     }
                 });
             },
-            onUpload: function (action, table) {
+            onUpload: function (table, action) {
                 $(document).off('change', '.face-upload');
                 $(document).on('change', '.face-upload', function () {
-                    var title = '设置人脸识别',
+                    var title = '人脸识别',
                         $this = $(this),
                         uid = $this.attr('id').split('-')[1],
-                        file = $this[0].files[0],
-                        id = action === 'edit' ? '/' + $('#id').val() : '',
                         data = new FormData();
 
-                    data.append('file', file);
+                    data.append('file', $this[0].files[0]);
                     data.append('_token', page.token());
                     page.inform(title, '图片上传中...', page.info);
                     $('.overlay').show();
                     $.ajax({
                         type: 'POST',
-                        url: page.siteRoot() + table + '/' + action + id,
+                        url: page.siteRoot() + table + '/' + action,
                         data: data,
                         contentType: false,
                         processData: false,

@@ -29,13 +29,7 @@ class FaceComposer {
                         'label' => '批量设置',
                         'icon'  => 'fa fa-camera-retro',
                         'title' => '设置',
-                    ],
-                    'edit'   => [
-                        'id'    => 'batch-edit',
-                        'label' => '批量修改',
-                        'icon'  => 'fa fa-camera-retro',
-                        'title' => '更新',
-                    ],
+                    ]
                 ],
                 'titles'  => [
                     '#', '人脸', '姓名', '角色',

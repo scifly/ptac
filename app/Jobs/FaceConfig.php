@@ -2,7 +2,7 @@
 namespace App\Jobs;
 
 use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
-use App\Models\{Camera, User};
+use App\Models\{Camera, CameraFace, Face, User};
 use Exception;
 use Illuminate\{Bus\Queueable,
     Contracts\Filesystem\FileNotFoundException,
@@ -10,6 +10,7 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
+    Support\Facades\DB,
     Support\Facades\Storage};
 use Pusher\PusherException;
 use Throwable;
@@ -23,18 +24,18 @@ class FaceConfig implements ShouldQueue {
     use Dispatchable, InteractsWithQueue, Queueable,
         SerializesModels, ModelTrait, JobTrait;
     
-    public $data, $userId, $response, $broadcaster;
+    public $faces, $userId, $response, $broadcaster;
     
     /**
      * Create a new job instance.
      *
-     * @param array $data
+     * @param array $faces
      * @param integer $userId
      * @throws PusherException
      */
-    function __construct(array $data, $userId) {
+    function __construct(array $faces, $userId) {
         
-        $this->data = $data;
+        $this->faces = $faces;
         $this->userId = $userId;
         $this->response = array_combine(Constant::BROADCAST_FIELDS, [
             $this->userId, __('messages.face.title'),
@@ -49,77 +50,74 @@ class FaceConfig implements ShouldQueue {
      * @throws Throwable
      */
     function handle() {
-        
-        $camera = new Camera;
+    
         try {
-            array_map(
-                function ($action, $userIds) use ($camera) {
-                    foreach ($userIds as $userId) {
-                        $user = User::find($userId);
-                        switch ($action) {
-                            case 'insert':      # 新增人脸(自动获取参数)
-                                $params = [
-                                    'uuid'         => $user->id,
-                                    'name'         => $user->realname,
-                                    'age'          => 0,
-                                    'sex'          => $user->gender,
-                                    'role'         => $user->face->state,
-                                    'identity_num' => '',
-                                    'csOther'      => '',
-                                    'csICCard'     => $user->card ? $user->card->sn : '',
-                                    'csTel'        => '',
-                                    'csDep'        => '',
-                                    'pStr'         => $this->image($user),
-                                ];
-                                $stored = false;
-                                foreach ($this->cids($user) as $cid) {
-                                    $face = $camera->invoke(join('/', [$action, $cid]), $params);
-                                    if (!$stored) {
-                                        Storage::disk('uploads')->put(
-                                            $user->face->media->path, base64_decode($face['pStr'])
-                                        );
-                                    }
-                                }
-                                break;
-                            case 'fmodify':     # 修改人脸
-                                $detail = $camera->invoke('detail', $this->image($user));
-                                Storage::disk('uploads')->put(
-                                    $user->face->media->path, base64_decode($detail['csImage'])
-                                );
-                                $params = [
-                                    'uuid'         => $user->id,
-                                    'name'         => $user->realname,
-                                    'age'          => 0,
-                                    'sex'          => $user->gender,
-                                    'role'         => $user->face->state,
-                                    'identity_num' => '',
-                                    'csOther'      => '',
-                                    'csICCard'     => $user->card ? $user->card->sn : '',
-                                    'csTel'        => '',
-                                    'x'            => $detail['face_x'],
-                                    'y'            => $detail['face_y'],
-                                    'w'            => $detail['face_w'],
-                                    'h'            => $detail['face_h'],
-                                    'csImage'      => $this->image($user),
-                                ];
-                                foreach ($this->cids($user) as $cid) {
-                                    $camera->invoke(join('/', [$action, $cid]), $params);
-                                }
-                                break;
-                            case 'delete':      # 删除人脸
-                                foreach ($this->cids(User::find($userId)) as $cid) {
-                                    $camera->invoke(join('/', [$action, $cid, $userId]));
-                                }
-                                break;
-                            default:
-                                break;
+            DB::transaction(function () {
+                $camera = new Camera;
+                $cf = new CameraFace;
+                foreach ($this->faces as $userId => $data) {
+                    $user = User::find($userId);
+                    if (isset($data['media_id'])) {
+                        $data['user_id'] = $userId;
+                        if (!$face = $user->face) {
+                            $face = Face::create($data);
+                            $user->update(['face_id' => $face->id]);
+                            $action = 'insert';
+                            $params = [
+                                'uuid'         => $user->id,
+                                'name'         => $user->realname,
+                                'age'          => 0,
+                                'sex'          => $user->gender,
+                                'role'         => $user->face->state,
+                                'identity_num' => '',
+                                'csOther'      => '',
+                                'csICCard'     => $user->card ? $user->card->sn : '',
+                                'csTel'        => '',
+                                'csDep'        => '',
+                                'pStr'         => $this->image($user),
+                            ];
+                        } else {
+                            $face->update($data);
+                            $detail = $camera->invoke('detail', $this->image($user));
+                            Storage::disk('uploads')->put(
+                                $user->face->media->path, base64_decode($detail['csImage'])
+                            );
+                            $action = 'fmodify';
+                            $params = [
+                                'uuid'         => $user->id,
+                                'name'         => $user->realname,
+                                'age'          => 0,
+                                'sex'          => $user->gender,
+                                'role'         => $user->face->state,
+                                'identity_num' => '',
+                                'csOther'      => '',
+                                'csICCard'     => $user->card ? $user->card->sn : '',
+                                'csTel'        => '',
+                                'x'            => $detail['face_x'],
+                                'y'            => $detail['face_y'],
+                                'w'            => $detail['face_w'],
+                                'h'            => $detail['face_h'],
+                                'csImage'      => $this->image($user),
+                            ];
                         }
+                        $cf->storeByFaceId($face->id, $data['cameraids']);
+                        foreach ($this->cids($user) as $cid) {
+                            $camera->invoke(join('/', [$action, $cid]), $params);
+                        }
+                    } elseif ($user->face) {
+                        foreach ($this->cids($user) as $cid) {
+                            $camera->invoke(join('/', ['delete', $cid, $userId]));
+                        }
+                        CameraFace::whereFaceId($user->face_id)->delete();
+                        $user->update(['face_id' => 0]);
+                        $user->face->delete();
                     }
-                }, ['insert', 'fmodify', 'delete'], $this->data
-            );
+                }
+            });
         } catch (Exception $e) {
             throw $e;
         }
+        
         $this->broadcaster->broadcast($this->response);
         
     }

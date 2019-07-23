@@ -415,8 +415,15 @@ class Custodian extends Model {
      */
     function face() {
         
-        $face = new Face;
-        if (Request::has('sectionId')) {
+        try {
+            $face = new Face;
+            # 上传人脸照片
+            if (Request::file('file')) return $face->import();
+            # 返回指定部门联系人列表
+            throw_if(
+                !Request::has('sectionId'),
+                new Exception(__('messages.bad_request'))
+            );
             [$class, $users] = $this->custodians(Request::input('sectionId'));
             $list = '';
             $tpl = <<<HTML
@@ -443,13 +450,11 @@ class Custodian extends Model {
                     )
                 );
             }
-            
+    
             return $list;
-        } elseif (Request::file('file')) {
-            return $face->import();
+        } catch (Exception $e) {
+            throw $e;
         }
-        
-        return $face->store();
         
     }
     

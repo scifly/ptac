@@ -453,8 +453,15 @@ class Educator extends Model {
      */
     function face() {
     
-        $face = new Face;
-        if (Request::has('sectionId')) {
+        try {
+            $face = new Face;
+            # 上传人脸照片
+            if (Request::file()) return $face->import();
+            # 返回指定部门联系人列表
+            throw_if(
+                !Request::has('sectionId'),
+                new Exception(__('messages.bad_request'))
+            );
             $users = $this->users(Request::input('sectionId'));
             $tpl = <<<HTML
                 <tr>
@@ -479,13 +486,11 @@ class Educator extends Model {
                     )
                 );
             }
-            
-            return $list;
-        } elseif (Request::file()) {
-            return $face->import();
-        }
     
-        return $face->store();
+            return $list;
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     

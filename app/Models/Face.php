@@ -5,7 +5,6 @@ use App\Facades\Datatable;
 use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
 use App\Jobs\FaceConfig;
 use Eloquent;
-use Exception;
 use Form;
 use Html;
 use Illuminate\Database\Eloquent\{Builder,
@@ -15,7 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasOne};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Arr, Carbon, Facades\Auth, Facades\DB, Facades\Request};
+use Illuminate\Support\{Carbon, Facades\Auth, Facades\Request};
 use Throwable;
 
 /**
@@ -101,7 +100,6 @@ class Face extends Model {
             [
                 'db'        => 'Face.state', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    // if (!isset($d)) return ' - ';
                     $colors = [
                         ['text-gray', '未设置'],
                         ['text-green', '白名单'],
@@ -112,8 +110,20 @@ class Face extends Model {
                         Snippet::BADGE,
                         $colors[$d ?? 0][0], $colors[$d ?? 0][1]
                     );
-                    
-                    return $state; // Datatable::status($state, $row, false);
+                    [$config, $remove] = array_map(
+                        function ($prefix, $title, $style) use ($row) {
+                            return sprintf(
+                                Snippet::DT_ANCHOR,
+                                $prefix . $row['id'], $title, $style
+                            );
+                        }, ['cfg_', ''], ['设置', '删除'],
+                        ['fa-pencil', 'fa-remove text-red']
+                    );
+                    $user = Auth::user();
+    
+                    return $state
+                        . (($user->can('act', $this->uris()['create'])) ? $config : '')
+                        . (($user->can('act', $this->uris()['destroy'])) ? $remove : '');
                 },
             ],
         ];
@@ -152,147 +162,37 @@ class Face extends Model {
     /**
      * 设置人脸识别 - (批量)设置、修改、清除
      *
-     * @param User|null $user
-     * @param bool $api - 是否同步
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    function store(User $user = null, $api = true) {
+    function config() {
         
-        try {
-            DB::transaction(function () use ($user, $api) {
-                !$user ?: Request::merge([
-                    'faces' => [$user->id => Request::input('face')],
-                ]);
-                $faces = Request::input('faces');
-                $inserts = $replaces = $purges = [];
-                foreach ($faces as $userId => &$face) {
-                    if (isset($face['media_id'])) {
-                        $face['user_id'] = $userId;
-                        if (!$_face = Face::whereUserId($userId)->first()) {
-                            $inserts[] = $face;
-                        } elseif ($_face->media_id != $face['media_id']) {
-                            $this->exists($face['media_id']);
-                            $replaces[$userId] = $face;
-                        }
-                    } else {
-                        !User::find($userId)->face ?: $purges[] = $userId;
-                    }
-                }
-                # 新增
-                foreach ($inserts as $insert) {
-                    $face = $this->create($insert);
-                    User::find($face->user_id)->update(['face_id' => $face->id]);
-                    (new CameraFace)->storeByFaceId($face->id, $insert['cameraids']);
-                }
-                # 修改
-                if (!empty($replaces)) {
-                    $input['faces'] = $replaces;
-                    Request::replace($input);
-                    $this->modify(false);
-                }
-                # 清除
-                if (!empty($purges)) {
-                    Request::merge(['ids' => $purges]);
-                    $this->remove(false);
-                }
-                # 同步
-                !$api ?: FaceConfig::dispatch([
-                    Arr::pluck($inserts, 'user_id'),
-                    Arr::pluck($replaces, 'user_id'),
-                    $purges,
-                ], Auth::id());
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        FaceConfig::dispatch(
+            Request::input('faces'), Auth::id()
+        );
         
-        return !$api ? true : response()->json([
-            'title'   => '批量设置人脸识别',
-            'message' => __('messages.ok'),
+        return response()->json([
+            'title' => __('messages.face.title'),
+            'message' => __('messages.face.config_started')
         ]);
-        
-    }
-    
-    /**
-     * 修改设置
-     *
-     * @param bool $api - 是否同步
-     * @return bool
-     * @throws Throwable
-     */
-    function modify($api = true) {
-        
-        $faces = Request::input('faces');
-        try {
-            DB::transaction(function () use ($faces, $api) {
-                $inserts = $replaces = $purges = [];
-                $cf = new CameraFace;
-                foreach ($faces as $userId => $face) {
-                    $user = User::find($userId);
-                    if ($mediaId = $face['media_id']) {
-                        if ($user->face && $mediaId != $user->face->media_id) {
-                            $user->face->update($face); # 修改
-                            $cf->storeByFaceId($user->face_id, $face['cameraids']);
-                            $replaces[] = $userId;
-                        } elseif (!$user->face) {
-                            $inserts[$userId] = $face;
-                        }
-                    } elseif ($user->face) {
-                        $purges[] = $userId;
-                    }
-                }
-                # 新增
-                if (!empty($inserts)) {
-                    $input['faces'] = $inserts;
-                    Request::replace($input);
-                    $this->store(null, false);
-                }
-                # 删除
-                if (!empty($purges)) {
-                    Request::merge(['ids' => $purges]);
-                    $this->remove(false);
-                }
-                # 同步
-                !$api ?: FaceConfig::dispatch([
-                    Arr::pluck($inserts, 'user_id'),
-                    Arr::pluck($replaces, 'user_id'),
-                    $purges
-                ], Auth::id());
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
         
     }
     
     /**
      * 清除人脸识别数据
      *
-     * @param bool $api - 是否同步
+     * @param null $userId
      * @return bool
-     * @throws Throwable
      */
-    function remove($api = true) {
+    function remove($userId = null) {
         
-        try {
-            DB::transaction(function () use ($api) {
-                $userIds = (Request::route('id') && stripos(Request::path(), 'delete') !== false)
-                    ? [Request::route('id')]
-                    : array_values(Request::input('ids'));
-                # 同步
-                !$api ?: FaceConfig::dispatch([[], [], $userIds], Auth::id());
-                # 删除
-                $users = User::whereIn('id', $userIds);
-                CameraFace::whereIn('face_id', $users->pluck('face_id')->toArray())->delete();
-                $this->whereIn('user_id', $userIds)->delete();
-                $users->update(['face_id' => 0]);
-            });
-        } catch (Exception $e) {
-            throw $e;
+        $userIds = $userId ? [$userId] : Request::input('ids');
+        foreach ($userIds as $userId) {
+            $faces[$userId] = null;
         }
+        FaceConfig::dispatch(
+            $faces ?? [], Auth::id()
+        );
         
         return true;
         

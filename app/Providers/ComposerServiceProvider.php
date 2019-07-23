@@ -38,7 +38,7 @@ class ComposerServiceProvider extends ServiceProvider {
             'event'                  => ['index', 'show'],
             'exam'                   => ['index', 'create_edit', 'show'],
             'exam_type'              => ['index'],
-            'face'                   => ['index', 'create_edit'],
+            'face'                   => ['index', 'create'],
             'grade'                  => ['index', 'create_edit'],
             'group'                  => ['index', 'create_edit', 'create', 'edit'],
             'icon'                   => ['index', 'create_edit'],

@@ -470,39 +470,40 @@ class Student extends Model {
     function face() {
         
         $face = new Face;
-        if (Request::has('sectionId')) {
-            $students = Student::whereClassId(Request::input('sectionId'))->get();
-            $tpl = <<<HTML
-                <tr>
-                    <td>%s</td>
-                    <td class="text-center">%s</td>
-                    <td class="text-center">%s</td>
-                    <td>%s</td><td>%s</td>
-                    <td class="text-center">%s</td>
-                </tr>
-            HTML;
-            $cameras = (new Camera)->cameras();
-            $list = '';
-            /** @var Student $student */
-            foreach ($students as $student) {
-                $user = $student->user;
-                $list .= sprintf(
-                    $tpl,
-                    $user->id, $user->realname, $student->sn,
-                    $face->uploader($user), $face->selector($cameras, $user),
-                    $face->state(
-                        $user->face ? $user->face->state : 1,
-                        $user->id
-                    )
-                );
-            }
-            
-            return $list;
-        } elseif (Request::file()) {
-            return $face->import();
+        # 上传人脸照片
+        if (Request::file()) return $face->import();
+        # 返回指定部门联系人列表
+        throw_if(
+            !Request::has('sectionId'),
+            new Exception(__('messages.bad_request'))
+        );
+        $students = Student::whereClassId(Request::input('sectionId'))->get();
+        $tpl = <<<HTML
+            <tr>
+                <td>%s</td>
+                <td class="text-center">%s</td>
+                <td class="text-center">%s</td>
+                <td>%s</td><td>%s</td>
+                <td class="text-center">%s</td>
+            </tr>
+        HTML;
+        $cameras = (new Camera)->cameras();
+        $list = '';
+        /** @var Student $student */
+        foreach ($students as $student) {
+            $user = $student->user;
+            $list .= sprintf(
+                $tpl,
+                $user->id, $user->realname, $student->sn,
+                $face->uploader($user), $face->selector($cameras, $user),
+                $face->state(
+                    $user->face ? $user->face->state : 1,
+                    $user->id
+                )
+            );
         }
-    
-        return $face->store();
+        
+        return $list;
         
     }
     

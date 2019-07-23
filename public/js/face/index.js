@@ -1,5 +1,5 @@
 page.index('faces', [
-    'create,edit',
+    'create',
     {className: 'text-center', targets: [1, 2, 3, 4, 5]},
     {className: 'searching_disabled', targets: [1]},
     {searchable: false, targets: [1]},
@@ -8,3 +8,10 @@ page.index('faces', [
 $.getMultiScripts(['js/shared/dtrange.js']).done(
     function () { $.dtrange().dRange('.dtrange'); }
 );
+$(document).off('click', '.fa-pencil');
+$(document).on('click', '.fa-pencil', function () {
+    page.getTabContent(
+        $('#tab_' + page.getActiveTabId()), 'faces/create',
+        [$(this).parents().eq(0).attr('id').split('_')[1]]
+    );
+});

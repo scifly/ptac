@@ -64,37 +64,7 @@ class FaceController extends Controller {
      */
     public function store() {
     
-        return $this->result(
-            $this->face->store()
-        );
-    
-    }
-    
-    /**
-     * 编辑人脸识别
-     *
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function edit() {
-    
-        return Request::method() == 'POST'
-            ? $this->face->import()
-            : $this->output();
-    
-    }
-    
-    /**
-     * 修改人脸识别
-     *
-     * @return JsonResponse|string
-     * @throws Throwable
-     */
-    public function update() {
-    
-        return $this->result(
-            $this->face->modify()
-        );
+        return $this->face->config();
     
     }
     
@@ -107,7 +77,8 @@ class FaceController extends Controller {
     public function destroy() {
     
         return $this->result(
-            $this->face->remove()
+            $this->face->remove(),
+            __('messages.face.config_started')
         );
     
     }
