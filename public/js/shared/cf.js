@@ -193,42 +193,41 @@
                 });
             },
             onConfig: function (formId, action) {
-                var $config = $('#config');
                 $('#' + formId).on(
                     'submit', function () {
                         return false;
                     }
                 );
-                $config.unbind('click').on('click', function () {
-                    var data = {}, type = 'POST', url;
+                $('#config').on('click', function () {
+                    var data = {}, methods = {
+                        create: 'store',
+                        face: 'store',
+                        edit: 'update'
+                    };
+
                     $('.medias').each(function () {
                         var $this = $(this),
-                            media_id = $this.val(),
-                            uid = $this.attr('id').split('-')[2],
-                            cameraids = $('#cameraids-' + uid).val(),
-                            state = $('#state-' + uid).val();
+                            uid = $this.attr('id').split('-')[2];
 
                         data[uid] = {
-                            'media_id': media_id,
-                            'cameraids': cameraids,
-                            'state': state
+                            'media_id': $this.val(),
+                            'cameraids': $('#cameraids-' + uid).val(),
+                            'state': $('#state-' + uid).val()
                         };
-                        url = page.siteRoot() + 'faces/' + (action === 'create' || action === 'face' ? 'store' : 'update');
-                        if (action === 'edit') type = 'PUT';
-                        $('.overlay').show();
-                        $.ajax({
-                            type: type,
-                            dataType: 'json',
-                            url: url,
-                            data: {_token: page.token(), faces: data},
-                            success: function (result) {
-                                $('.overlay').hide();
-                                page.inform(result['title'], result['message'], page.success);
-                            },
-                            error: function (e) {
-                                page.errorHandler(e);
-                            }
-                        });
+                    });
+                    $('.overlay').show();
+                    $.ajax({
+                        type: action === 'edit' ? 'PUT' : 'POST',
+                        dataType: 'json',
+                        url: page.siteRoot() + 'faces/' + methods[action],
+                        data: {_token: page.token(), faces: data},
+                        success: function (result) {
+                            $('.overlay').hide();
+                            page.inform(result['title'], result['message'], page.success);
+                        },
+                        error: function (e) {
+                            page.errorHandler(e);
+                        }
                     });
                 });
             },
@@ -290,7 +289,8 @@
 
                     $mediaId.val('');
                     $mediaId.next().remove();
-                    $this.hide(); return false;
+                    $this.hide();
+                    return false;
                 });
             }
         };
