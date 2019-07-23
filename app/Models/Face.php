@@ -84,7 +84,8 @@ class Face extends Model {
             [
                 'db'        => 'Media.path', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return isset($d) ? Snippet::avatar($d) : ' - ';
+                    return '<img class="img-circle" style="height:32px;" src="' .
+                        (!empty($d) ? '/' . $d : '/img/default.png') . '"> ';
                 },
             ],
             ['db' => 'User.realname', 'dt' => 2],
