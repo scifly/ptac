@@ -52,7 +52,7 @@ class Camera extends Model {
     
     protected $fillable = [
         'cameraid', 'school_id', 'name', 'ip',
-        'mac', 'location', 'direction', 'status'
+        'mac', 'location', 'direction', 'status',
     ];
     
     /**
@@ -80,19 +80,19 @@ class Camera extends Model {
             ['db' => 'Camera.mac', 'dt' => 3],
             ['db' => 'Camera.location', 'dt' => 4],
             [
-                'db' => 'Camera.direction', 'dt' => 5,
+                'db'        => 'Camera.direction', 'dt' => 5,
                 'formatter' => function ($d) {
                     return $d ? '出' : '进';
-                }
+                },
             ],
             ['db' => 'Camera.created_at', 'dt' => 6, 'dr' => true],
             ['db' => 'Camera.updated_at', 'dt' => 7, 'dr' => true],
             [
-                'db' => 'Camera.status', 'dt' => 8,
+                'db'        => 'Camera.status', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false, false, false);
-                }
-            ]
+                },
+            ],
         ];
         $condition = 'Camera.school_id = ' . $this->schoolId();
         
@@ -111,7 +111,7 @@ class Camera extends Model {
     function store() {
         
         try {
-            DB::transaction(function() {
+            DB::transaction(function () {
                 $devices = $this->invoke('flist');
                 $records = [];
                 foreach ($devices as $device) {
@@ -119,7 +119,7 @@ class Camera extends Model {
                     $record = array_combine($this->fillable, [
                             $device['id'], $this->schoolId(), $device['name'],
                             $device['ip'], $mac, $device['location'],
-                            $device['direction'], $device['status']
+                            $device['direction'], $device['status'],
                         ]
                     );
                     if ($camera = $this->whereMac($mac)->first()) {
@@ -144,7 +144,7 @@ class Camera extends Model {
      * @return array
      */
     function cameras() {
-    
+        
         return [0 => '【所有设备】'] + $this->all()->pluck('name', 'id')->toArray();
         
     }
@@ -154,10 +154,11 @@ class Camera extends Model {
      *
      * @param string $uri - 接口名称
      * @param array $params - 调用参数
+     * @param null $body
      * @return mixed
      * @throws Throwable
      */
-    function invoke($uri, $params = null) {
+    function invoke($uri, $params = null, $body = null) {
         
         try {
             $client = new Client;
@@ -173,22 +174,22 @@ class Camera extends Model {
                 $token = json_decode($response, true)['token'];
                 session(['token' => $token]);
             }
-            $response = $client->post(
-                self::BASE_URI . $uri, [
-                    'headers'     => [
-                        'Authorization' => 'Bearer ' . $token,
-                        'Accept'        => 'application/json'
-                    ],
-                    'form_params' => $params ?? [],
-                ]
-            );
+            $options = [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token,
+                    'Accept'        => 'application/json',
+                ],
+            ];
+            !$params ?: $options['form_params'] = $params;
+            !$body ?: $options['body'] = $body;
+            $response = $client->post(self::BASE_URI . $uri, $options);
             $body = json_decode($response->getBody(), true);
             $status = $response->getHeader('status');
             throw_if(
                 $status == HttpStatusCode::INTERNAL_SERVER_ERROR,
                 new Exception($body['msg'])
             );
-    
+            
             return $body['data'];
         } catch (Exception $e) {
             throw $e;

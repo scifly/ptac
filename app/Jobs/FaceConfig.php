@@ -78,7 +78,7 @@ class FaceConfig implements ShouldQueue {
                             ];
                         } else {
                             $face->update($data);
-                            $detail = $camera->invoke('detail', $this->image($user));
+                            $detail = $camera->invoke('detail', null, $this->image($user));
                             Storage::disk('uploads')->put(
                                 $user->face->media->path, base64_decode($detail['csImage'])
                             );
