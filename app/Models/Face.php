@@ -124,7 +124,7 @@ class Face extends Model {
     
                     return $state
                         . (($user->can('act', $this->uris()['create'])) ? $config : '')
-                        . (($user->can('act', $this->uris()['destroy'])) ? $remove : '');
+                        . ($d ? (($user->can('act', $this->uris()['destroy'])) ? $remove : '') : '');
                 },
             ],
         ];
