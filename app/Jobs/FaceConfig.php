@@ -88,7 +88,7 @@ class FaceConfig implements ShouldQueue {
                                 break;
                             }
                             Storage::disk('uploads')->put(
-                                $user->face->media->path, base64_decode($detail['csImage'])
+                                $this->path($user), base64_decode($detail['csImage'])
                             );
                             $action = 'fmodify';
                             $params = [
@@ -171,12 +171,24 @@ class FaceConfig implements ShouldQueue {
      */
     private function image(User $user) {
         
+        return base64_encode(
+            Storage::disk('uploads')->get($this->path($user))
+        );
+        
+    }
+    
+    /**
+     * 返回人脸图片相对路径
+     *
+     * @param User $user
+     * @return string
+     */
+    private function path(User $user) {
+    
         $paths = explode('/', $user->face->media->path);
         unset($paths[0]);
         
-        return base64_encode(
-            Storage::disk('uploads')->get(join('/', $paths))
-        );
+        return join('/', $paths);
         
     }
     
