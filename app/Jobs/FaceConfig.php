@@ -66,11 +66,11 @@ class FaceConfig implements ShouldQueue {
                             $user->update(['face_id' => $face->id]);
                             $action = 'insert';
                             $params = [
-                                'uuid'         => $user->id,
+                                'uuid'         => $userId,
                                 'name'         => $user->realname,
                                 'age'          => 0,
                                 'sex'          => $user->gender,
-                                'role'         => $user->face->state,
+                                'role'         => $data['state'],
                                 'identity_num' => '',
                                 'csOther'      => '',
                                 'csICCard'     => $user->card ? $user->card->sn : '',
@@ -91,11 +91,11 @@ class FaceConfig implements ShouldQueue {
                             );
                             $action = 'fmodify';
                             $params = [
-                                'uuid'         => $user->id,
+                                'uuid'         => $userId,
                                 'name'         => $user->realname,
                                 'age'          => 0,
                                 'sex'          => $user->gender,
-                                'role'         => $user->face->state,
+                                'role'         => $data['state'],
                                 'identity_num' => '',
                                 'csOther'      => '',
                                 'csICCard'     => $user->card ? $user->card->sn : '',
