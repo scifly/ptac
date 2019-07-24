@@ -132,6 +132,9 @@ class FaceConfig implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
+            $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $this->response['message'] = $e->getMessage();
+            $this->broadcaster->broadcast($this->response);
             throw $e;
         }
         
