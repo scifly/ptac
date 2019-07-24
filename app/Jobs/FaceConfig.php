@@ -2,7 +2,7 @@
 namespace App\Jobs;
 
 use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
-use App\Models\{Camera, CameraFace, Face, User};
+use App\Models\{Camera, CameraFace, Face, Media, User};
 use Exception;
 use Illuminate\{Bus\Queueable,
     Contracts\Filesystem\FileNotFoundException,
@@ -76,12 +76,14 @@ class FaceConfig implements ShouldQueue {
                                 'csICCard'     => $user->card ? $user->card->sn : '',
                                 'csTel'        => '',
                                 'csDep'        => '',
-                                'pStr'         => $this->image($user),
+                                'pStr'         => $this->image($data['media_id']),
                             ];
                         } else {
                             # 更新
                             $face->update($data);
-                            $detail = $camera->invoke('detail', $this->image($user));
+                            $detail = $camera->invoke(
+                                'detail', $this->image($data['media_id'])
+                            );
                             throw_if(
                                 isset($detail['success']),
                                 new Exception(__('messages.face.detail_not_found'))
@@ -104,7 +106,7 @@ class FaceConfig implements ShouldQueue {
                                 'y'            => $detail['face_y'],
                                 'w'            => $detail['face_w'],
                                 'h'            => $detail['face_h'],
-                                'csImage'      => $this->image($user),
+                                'csImage'      => $this->image($data['media_id']),
                             ];
                         }
                         $cf->storeByFaceId($face->id, $data['cameraids']);
@@ -167,14 +169,14 @@ class FaceConfig implements ShouldQueue {
     }
     
     /**
-     * @param User $user
+     * @param $mediaId
      * @return string
      * @throws FileNotFoundException
      */
-    private function image(User $user) {
+    private function image($mediaId) {
         
         return base64_encode(
-            Storage::disk('uploads')->get($this->path($user))
+            Storage::disk('uploads')->get($this->path($mediaId))
         );
         
     }
@@ -182,12 +184,12 @@ class FaceConfig implements ShouldQueue {
     /**
      * 返回人脸图片相对路径
      *
-     * @param User $user
+     * @param $mediaId
      * @return string
      */
-    private function path(User $user) {
+    private function path($mediaId) {
     
-        $paths = explode('/', $user->face->media->path);
+        $paths = explode('/', Media::find($mediaId)->path);
         unset($paths[0]);
         
         return join('/', $paths);
