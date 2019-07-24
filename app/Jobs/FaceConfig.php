@@ -61,6 +61,7 @@ class FaceConfig implements ShouldQueue {
                     if (isset($data['media_id'])) {
                         $data['user_id'] = $userId;
                         if (!$face = $user->face) {
+                            # 新增
                             $face = Face::create($data);
                             $user->update(['face_id' => $face->id]);
                             $action = 'insert';
@@ -78,8 +79,9 @@ class FaceConfig implements ShouldQueue {
                                 'pStr'         => $this->image($user),
                             ];
                         } else {
+                            # 更新
                             $face->update($data);
-                            $detail = $camera->invoke('detail', null, $this->image($user));
+                            $detail = $camera->invoke('detail', $this->image($user));
                             if(isset($detail['success'])) {
                                 $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                                 $this->response['message'] = '获取人脸信息失败';
@@ -112,6 +114,7 @@ class FaceConfig implements ShouldQueue {
                             $result['success'] ?: $failed[] = [$userId, $cid];
                         }
                     } elseif ($user->face) {
+                        # 删除
                         foreach ($this->cids($user) as $cid) {
                             $result = $camera->invoke(join('/', ['delete', $cid, $userId]));
                             $result['success'] ?: $failed[] = [$userId, $cid];
