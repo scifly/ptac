@@ -58,6 +58,9 @@ class FaceConfig implements ShouldQueue {
                 $failed = [];
                 foreach ($this->faces as $userId => $data) {
                     $user = User::find($userId);
+                    $cids = $data['cameraids'];
+                    !in_array(0, $cids)
+                        ?: $cids = $camera->all()->pluck('id')->toArray();
                     if (isset($data['media_id'])) {
                         $data['user_id'] = $userId;
                         if (!$face = $user->face) {
@@ -110,13 +113,13 @@ class FaceConfig implements ShouldQueue {
                             ];
                         }
                         $cf->storeByFaceId($face->id, $data['cameraids']);
-                        foreach ($this->cids($user) as $cid) {
+                        foreach ($cids as $cid) {
                             $result = $camera->invoke(join('/', [$action, $cid]), $params);
                             $result['success'] ?: $failed[] = [$user->realname, $camera->find($cid)->name];
                         }
                     } elseif ($user->face) {
                         # 删除
-                        foreach ($this->cids($user) as $cid) {
+                        foreach ($cids($user) as $cid) {
                             $result = $camera->invoke(join('/', ['delete', $cid, $userId]));
                             $result['success'] ?: $failed[] = [$user->realname, $camera->find($cid)->name];
                         }
@@ -153,18 +156,6 @@ class FaceConfig implements ShouldQueue {
     function failed(Exception $exception) {
         
         $this->eHandler($exception, $this->response);
-        
-    }
-    
-    /**
-     * @param User $user
-     * @return array
-     */
-    private function cids(User $user) {
-        
-        return Camera::whereIn(
-            'id', $user->face->cameras->pluck('id')->toArray()
-        )->pluck('cameraid')->toArray();
         
     }
     
