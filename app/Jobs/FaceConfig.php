@@ -82,11 +82,10 @@ class FaceConfig implements ShouldQueue {
                             # 更新
                             $face->update($data);
                             $detail = $camera->invoke('detail', $this->image($user));
-                            if(isset($detail['success'])) {
-                                $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                                $this->response['message'] = '获取人脸信息失败';
-                                break;
-                            }
+                            throw_if(
+                                isset($detail['success']),
+                                new Exception(__('messages.face.detail_not_found'))
+                            );
                             Storage::disk('uploads')->put(
                                 $this->path($user), base64_decode($detail['csImage'])
                             );
@@ -111,23 +110,26 @@ class FaceConfig implements ShouldQueue {
                         $cf->storeByFaceId($face->id, $data['cameraids']);
                         foreach ($this->cids($user) as $cid) {
                             $result = $camera->invoke(join('/', [$action, $cid]), $params);
-                            $result['success'] ?: $failed[] = [$userId, $cid];
+                            $result['success'] ?: $failed[] = [$user->realname, $camera->find($cid)->name];
                         }
                     } elseif ($user->face) {
                         # 删除
                         foreach ($this->cids($user) as $cid) {
                             $result = $camera->invoke(join('/', ['delete', $cid, $userId]));
-                            $result['success'] ?: $failed[] = [$userId, $cid];
+                            $result['success'] ?: $failed[] = [$user->realname, $camera->find($cid)->name];
                         }
-                        CameraFace::whereFaceId($user->face_id)->delete();
+                        $cf->whereFaceId($user->face_id)->delete();
                         $user->update(['face_id' => 0]);
                         $user->face->delete();
                     }
                 }
-                if (!empty($failed)) {
-                    $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                    $this->response['message'] = json_encode($failed);
-                }
+                throw_if(
+                    !empty($failed),
+                    new Exception(sprintf(
+                        __('messages.face.config_failed'),
+                        json_encode($failed)
+                    ))
+                );
             });
         } catch (Exception $e) {
             $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;

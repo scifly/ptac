@@ -43,7 +43,7 @@ return [
         'configured' => '应用设置成功',
         'not_found'  => '找不到指定的应用',
     ],
-    'turnstile'       => [
+    'turnstile'                => [
         'title'     => '门禁管理',
         'not_found' => '该门禁没有注册',
     ],
@@ -52,44 +52,46 @@ return [
         'not_found'          => '未找到该班级的相关信息',
         'no_related_classes' => '您尚未绑定任何班级',
     ],
-    'custodian'                 => [
-        'title'                   => '监护人',
-        'not_found'               => '没有这个监护人',
-        'export_completed'        => '监护人导出完毕，请打开下载的excel文件查看详情',
+    'custodian'                => [
+        'title'            => '监护人',
+        'not_found'        => '没有这个监护人',
+        'export_completed' => '监护人导出完毕，请打开下载的excel文件查看详情',
     ],
     'department'               => [
-        'title'           => '部门管理',
-        'department_sync' => '%s部门',
-        'has_children'    => '请先删除子部门',
-        'not_found'       => '没有这个部门',
+        'title'             => '部门管理',
+        'department_sync'   => '%s部门',
+        'has_children'      => '请先删除子部门',
+        'not_found'         => '没有这个部门',
         'request_submitted' => '已提交部门删除请求',
-        'deleted' => '部门已删除，请重新加载部门树查看操作结果'
+        'deleted'           => '部门已删除，请重新加载部门树查看操作结果',
     ],
     'educator'                 => [
-        'title'                   => '教职员工',
-        'not_found'               => '没有这个教职员工',
-        'import_validation_error' => '学校/部门名称错误',
-        'import_completed'        => '教职员工导入完毕',
-        'export_completed'        => '教职员工导出完毕，请打开下载的excel文件查看详情',
+        'title'                     => '教职员工',
+        'not_found'                 => '没有这个教职员工',
+        'import_validation_error'   => '学校/部门名称错误',
+        'import_completed'          => '教职员工导入完毕',
+        'export_completed'          => '教职员工导出完毕，请打开下载的excel文件查看详情',
         'switch_school_not_allowed' => '不得切换学校',
-        'role_nonexistent' => '基本角色不存在'
+        'role_nonexistent'          => '基本角色不存在',
     ],
-    'face' => [
-        'title' => '人脸识别',
-        'config_started' => '已提交人脸识别设置请求...',
-        'config_completed' => '设置成功'
+    'face'                     => [
+        'title'            => '人脸识别设置',
+        'config_started'   => '已提交人脸识别设置请求...',
+        'config_completed' => '设置成功',
+        'config_failed'    => '人脸识别设置失败：%s',
+        'detail_not_found' => '获取人脸信息失败',
     ],
     'grade'                    => [
         'title'     => '年级管理',
         'not_found' => '未找到该年级的相关信息',
     ],
     'group'                    => [
-        'title'         => '角色/权限',
-        'not_found'     => '没有这个角色',
+        'title'     => '角色/权限',
+        'not_found' => '没有这个角色',
     ],
     'menu'                     => [
-        'title'        => '菜单管理',
-        'has_children' => '请先删除子菜单',
+        'title'         => '菜单管理',
+        'has_children'  => '请先删除子菜单',
         'misconfigured' => '菜单配置错误',
     ],
     'message'                  => [
@@ -105,10 +107,10 @@ return [
         'submitted'        => '已提交消息发送请求',
         'preview'          => '消息预览已发送至你的手机微信，请打开相关应用查看',
     ],
-    'passage_log' => [
-        'title' => '通行记录',
+    'passage_log'              => [
+        'title'     => '通行记录',
         'submitted' => '已发送采集请求。数据采集完成后请重新加载当前页面',
-        'gathered' => '采集完毕'
+        'gathered'  => '采集完毕',
     ],
     'school'                   => [
         'title'        => '学校管理',
