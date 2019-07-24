@@ -67,7 +67,7 @@ class TestController extends Controller {
             'csDep'        => '',
             'pStr'         => base64_encode(Storage::disk('uploads')->get('2019/07/23/5d367afcc87a9-罗焱21级1班男.JPG'))
         ];
-        echo json_encode($params);
+        echo json_encode($params, JSON_UNESCAPED_UNICODE);
         exit;
         
         dd(Request::input('abcdefg'));
