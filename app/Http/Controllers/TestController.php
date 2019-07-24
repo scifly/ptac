@@ -54,7 +54,20 @@ class TestController extends Controller {
      */
     public function index() {
     
-        echo base64_encode(Storage::disk('uploads')->get('2019/07/23/5d367afcc87a9-罗焱21级1班男.JPG'));
+        $params = [
+            'uuid'         => 113,
+            'name'         => '测试人员',
+            'age'          => 0,
+            'sex'          => 1,
+            'role'         => 1,
+            'identity_num' => '',
+            'csOther'      => '',
+            'csICCard'     => '',
+            'csTel'        => '',
+            'csDep'        => '',
+            'pStr'         => base64_encode(Storage::disk('uploads')->get('2019/07/23/5d367afcc87a9-罗焱21级1班男.JPG'))
+        ];
+        echo json_encode($params);
         exit;
         
         dd(Request::input('abcdefg'));
