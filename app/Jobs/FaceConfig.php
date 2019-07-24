@@ -11,6 +11,7 @@ use Illuminate\{Bus\Queueable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
     Support\Facades\DB,
+    Support\Facades\Log,
     Support\Facades\Storage};
 use Pusher\PusherException;
 use Throwable;
@@ -115,6 +116,7 @@ class FaceConfig implements ShouldQueue {
                         $cf->storeByFaceId($face->id, $data['cameraids']);
                         foreach ($cids as $cid) {
                             $result = $camera->invoke(join('/', [$action, $cid]), $params);
+                            Log::info('result', $result);
                             $result['success'] ?: $failed[] = [$user->realname, $camera->find($cid)->name];
                         }
                     } elseif ($user->face) {
