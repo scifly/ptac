@@ -115,13 +115,13 @@ class FaceConfig implements ShouldQueue {
                         $cf->storeByFaceId($face->id, $data['cameraids']);
                         foreach ($cids as $cid) {
                             $result = $camera->invoke(join('/', [$action, $cid]), $params);
-                            $result['success'] ?: $failed[] = [$user->realname, $camera->find($cid)->name];
+                            $result['success'] ?: $failed[] = $this->err($user, $cid, $result);
                         }
                     } elseif ($user->face) {
                         # 删除
                         foreach ($cids($user) as $cid) {
                             $result = $camera->invoke(join('/', ['delete', $cid, $userId]));
-                            $result['success'] ?: $failed[] = [$user->realname, $camera->find($cid)->name];
+                            $result['success'] ?: $failed[] = $this->err($user, $cid, $result);
                         }
                         $cf->whereFaceId($user->face_id)->delete();
                         $user->update(['face_id' => 0]);
@@ -132,7 +132,7 @@ class FaceConfig implements ShouldQueue {
                     !empty($failed),
                     new Exception(sprintf(
                         __('messages.face.config_failed'),
-                        json_encode($failed)
+                        json_encode($failed, JSON_UNESCAPED_UNICODE)
                     ))
                 );
             });
@@ -184,6 +184,24 @@ class FaceConfig implements ShouldQueue {
         unset($paths[0]);
         
         return join('/', $paths);
+        
+    }
+    
+    /**
+     * 返回错误消息
+     *
+     * @param User $user
+     * @param $cid
+     * @param array $result
+     * @return array
+     */
+    private function err(User $user, $cid, array $result) {
+        
+        return  [
+            $user->realname,
+            Camera::find($cid)->name,
+            $result['result'] . ':' . $result['msg']
+        ];
         
     }
     
