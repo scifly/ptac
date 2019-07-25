@@ -113,7 +113,7 @@ class User extends Authenticatable {
         'position', 'enabled', 'email',
         'card_id', 'avatar_url', 'english_name',
         'isleader', 'telephone', 'order',
-        'synced', 'subscribed',
+        'synced', 'subscribed', 'face_id'
     ];
     
     /**
