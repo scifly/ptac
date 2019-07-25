@@ -55,7 +55,7 @@ class TestController extends Controller {
     public function index() {
     
         $params = [
-            'uuid'         => 113,
+            'uuid'         => '113',
             'name'         => '测试人员',
             'age'          => 0,
             'sex'          => 1,
