@@ -96,7 +96,7 @@ class FaceConfig implements ShouldQueue {
                             );
                             $action = 'fmodify';
                             $params = [
-                                'uuid'         => $userId,
+                                'uuid'         => strval($userId),
                                 'name'         => $user->realname,
                                 'age'          => 0,
                                 'sex'          => $user->gender,
