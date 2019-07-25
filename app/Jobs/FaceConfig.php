@@ -58,7 +58,7 @@ class FaceConfig implements ShouldQueue {
                 $failed = [];
                 foreach ($this->faces as $userId => $data) {
                     $user = User::find($userId);
-                    $cids = $data['cameraids'];
+                    $cids = $data['cameraids'] ?? [];
                     !in_array(0, $cids)
                         ?: $cids = $camera->all()->pluck('id')->toArray();
                     if (isset($data['media_id'])) {
