@@ -11,7 +11,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Support\Facades\{DB, Request, Storage};
+use Illuminate\Support\Facades\{DB, Storage};
 use Illuminate\View\View;
 use Pusher\Pusher;
 use Pusher\PusherException;
@@ -68,27 +68,7 @@ class TestController extends Controller {
             'pStr'         => base64_encode(Storage::disk('uploads')->get('2019/07/23/5d367afcc87a9-罗焱21级1班男.JPG'))
         ];
         echo json_encode($params, JSON_UNESCAPED_UNICODE);
-        exit;
-        
-        dd(Request::input('abcdefg'));
-        
-        if (Request::method() == 'POST') {
-            $abc = Request::file('abc');
-            $def = Request::file('def');
-            echo $abc->getFilename() . ' : ' . $def->getFilename();
-            return dd(Request::all());
-        } else {
-            return view('user.test');
-        }
-        $client = new Client;
-        $response = $client->post(
-            'http://127.0.0.1:18080/GetDeviceList?username=admin&password=admin'
-        );
-        dd(json_decode($response->getBody(), true));
-        (new Corp)->index();
-        phpinfo();
-        exit;
-        dd(ucfirst(Inflector::camelize('passage_rule')));
+        // dd(ucfirst(Inflector::camelize('passage_rule')));
         // return view('user.index');
         // $server = "120.78.55.152";
         // $port = 9933;

@@ -120,7 +120,7 @@ class FaceConfig implements ShouldQueue {
                         }
                     } elseif ($user->face) {
                         # 删除
-                        foreach ($cids($user) as $cid) {
+                        foreach ($cids as $cid) {
                             $result = $camera->invoke(join('/', ['delete', $cid, $userId]));
                             $result['success'] ?: $failed[] = $this->err($user, $cid, $result);
                         }

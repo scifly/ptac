@@ -189,7 +189,10 @@ class Face extends Model {
         
         $userIds = $userId ? [$userId] : Request::input('ids');
         foreach ($userIds as $userId) {
-            $faces[$userId] = null;
+            $user = User::find($userId);
+            $faces[$userId] = [
+                'cameraids' => $user->face->cameras->pluck('id')->toArray()
+            ];
         }
         FaceConfig::dispatch(
             $faces ?? [], Auth::id()
