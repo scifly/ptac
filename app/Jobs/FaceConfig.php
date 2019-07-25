@@ -69,7 +69,7 @@ class FaceConfig implements ShouldQueue {
                             $user->update(['face_id' => $face->id]);
                             $action = 'insert';
                             $params = [
-                                'uuid'         => $userId,
+                                'uuid'         => strval($userId),
                                 'name'         => $user->realname,
                                 'age'          => 0,
                                 'sex'          => $user->gender,
