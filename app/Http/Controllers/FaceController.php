@@ -71,13 +71,13 @@ class FaceController extends Controller {
     /**
      * 删除人脸识别
      *
+     * @param null $id
      * @return JsonResponse|string
-     * @throws Throwable
      */
-    public function destroy() {
+    public function destroy($id = null) {
     
         return $this->result(
-            $this->face->remove(),
+            $this->face->remove($id),
             __('messages.face.config_started')
         );
     
