@@ -52,20 +52,11 @@ class FaceComposer {
                 'filter'  => true,
             ];
         } else {
-            $action = Request::route()->getActionMethod();
-            $ids = Request::route('id') ? [Request::route('id')] : Request::get('ids');
-            if ($ids) {
+            if ($ids = Request::get('ids')) {
                 session(['ids' => $ids]);
             } else {
                 $ids = session('ids');
             }
-            $users = User::whereIn('id', $ids)->get()->when(
-                in_array($action, ['create', 'edit']),
-                function (Collection $users) use ($action) {
-                    return $users->where('face_id', $action == 'create' ? '=' : '<>', 0);
-                }
-            );
-            $face = new Face;
             $tpl = <<<HTML
                 <tr>
                     <td>%s</td>
@@ -77,20 +68,16 @@ class FaceComposer {
                 </tr>
             HTML;
             $list = '';
-            $cameras = (new Camera)->cameras();
-            /** @var User $user */
-            foreach ($users as $user) {
+            $face = new Face;
+            foreach (User::whereIn('id', $ids)->get() as $user) {
                 $default = $user->mobiles->where('isdefault', 1)->first();
                 $list .= sprintf(
-                    $tpl,
-                    $user->id, $user->realname, $user->group->name,
-                    $default ? $default->mobile : 'n/a',
-                    $face->uploader($user), $face->selector($cameras, $user),
+                    $tpl, $user->id, $user->realname, $user->group->name,
+                    $default ? $default->mobile : 'n/a', $face->uploader($user),
+                    $face->selector((new Camera)->cameras(), $user),
                     $face->state($user->face ? $user->face->state : 1, $user->id)
                 );
             }
-            !empty($list) ?:
-                $list = '<tr><td colspan="6" class="text-center text-red">- 已设置人脸识别 -</td></tr>';
             $data = ['list' => $list];
         }
         
