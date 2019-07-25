@@ -84,15 +84,14 @@ class FaceConfig implements ShouldQueue {
                         } else {
                             # 更新
                             $face->update($data);
-                            $detail = $camera->invoke(
-                                'detail', $this->image($data['media_id'])
-                            );
+                            $mediaId = $data['media_id'];
+                            $detail = $camera->invoke('detail', $this->image($mediaId));
                             throw_if(
                                 isset($detail['success']),
                                 new Exception(__('messages.face.detail_not_found'))
                             );
                             Storage::disk('uploads')->put(
-                                $this->path($user), base64_decode($detail['csImage'])
+                                $this->path($mediaId), base64_decode($detail['csImage'])
                             );
                             $action = 'fmodify';
                             $params = [
