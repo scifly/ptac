@@ -11,7 +11,6 @@ use Illuminate\{Bus\Queueable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
     Support\Facades\DB,
-    Support\Facades\Log,
     Support\Facades\Storage};
 use Pusher\PusherException;
 use Throwable;
@@ -67,7 +66,6 @@ class FaceConfig implements ShouldQueue {
                         if (!$face = $user->face) {
                             # 新增
                             $face = Face::create($data);
-                            Log::debug($face->id);
                             $user->update(['face_id' => $face->id]);
                             $action = 'insert';
                             $params = [
