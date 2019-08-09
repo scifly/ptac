@@ -1,7 +1,6 @@
 <?php
 namespace App\Console;
 
-use App\Jobs\GatherPassageLog;
 use App\Jobs\SendScheduledMessage;
 use App\Models\Event;
 use Illuminate\Console\Scheduling\Schedule;

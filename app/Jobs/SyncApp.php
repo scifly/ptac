@@ -62,7 +62,8 @@ class SyncApp implements ShouldQueue {
             'isreportenter' => $this->app->isreportenter,
             'home_url' => $this->app->home_url,
         ];
-        $token = Wechat::getAccessToken(
+        $token = Wechat::token(
+            'ent',
             Corp::find($this->app->corp_id)->corpid,
             $this->app->secret
         );
@@ -74,7 +75,10 @@ class SyncApp implements ShouldQueue {
         }
         
         $result = json_decode(
-            Wechat::configApp($token['access_token'], $app)
+            Wechat::invoke(
+                'ent', 'agent', 'set',
+                [$token['access_token']], $app
+            )
         );
         if ($result->{'errcode'}) {
             $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;

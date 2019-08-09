@@ -283,16 +283,17 @@ class SyncController extends Controller {
      */
     private function member() {
         
-        $token = Wechat::getAccessToken(
+        $token = Wechat::token(
             $this->corp->corpid,
             $this->corp->contact_sync_secret,
             true
         );
         if ($token['errcode']) return $token['errcode'];
         $member = json_decode(
-            Wechat::getUser(
-                $token['access_token'],
-                $this->event->{'UserID'}
+            Wechat::invoke(
+                'ent', 'user', 'get',
+                [$token['access_token']],
+                ['userid' => $this->event->{'UserID'}]
             ), true
         );
         

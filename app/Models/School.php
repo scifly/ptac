@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{ModelTrait, Snippet};
 use App\Jobs\CreateSchool;
 use Carbon\Carbon;
 use Eloquent;
@@ -29,6 +29,7 @@ use Throwable;
  * @property string $user_ids 第三方接口对应的用户id列表
  * @property float|null $longitude 学校所处经度
  * @property float|null $latitude 学校所处纬度
+ * @property int|null $app_id 所属公众号对应的应用id
  * @property int $corp_id 学校所属企业ID
  * @property int|null $sms_max_cnt 学校短信配额
  * @property int|null $sms_used 短信已使用量
@@ -57,12 +58,16 @@ use Throwable;
  * @property-read Collection|Tag[] $tags
  * @property-read WapSite $wapSite
  * @property-read Collection|WapSiteModule[] $wapSiteModules
+ * @property-read Collection|PassageLog[] $passageLogs
+ * @property-read Collection|PassageRule[] $passageRules
+ * @property-read App|null $app
  * @method static Builder|School whereAddress($value)
  * @method static Builder|School whereCorpId($value)
  * @method static Builder|School whereCreatedAt($value)
  * @method static Builder|School whereDepartmentId($value)
  * @method static Builder|School whereEnabled($value)
  * @method static Builder|School whereId($value)
+ * @method static Builder|School whereAppId($value)
  * @method static Builder|School whereLatitude($value)
  * @method static Builder|School whereLongitude($value)
  * @method static Builder|School whereMenuId($value)
@@ -77,8 +82,6 @@ use Throwable;
  * @method static Builder|School newQuery()
  * @method static Builder|School query()
  * @mixin Eloquent
- * @property-read Collection|PassageLog[] $passageLogs
- * @property-read Collection|PassageRule[] $passageRules
  */
 class School extends Model {
     
@@ -86,7 +89,7 @@ class School extends Model {
     
     protected $fillable = [
         'name', 'address', 'school_type_id', 'menu_id', 'signature', 'corp_id',
-        'longitude', 'latitude', 'department_id', 'user_ids', 'enabled',
+        'longitude', 'latitude', 'department_id', 'user_ids', 'app_id', 'enabled',
     ];
     
     /**
@@ -116,6 +119,13 @@ class School extends Model {
      * @return BelongsTo
      */
     function corp() { return $this->belongsTo('App\Models\Corp'); }
+    
+    /**
+     * 返回所属应用对象
+     *
+     * @return BelongsTo
+     */
+    function app() { return $this->belongsTo('App\Models\App'); }
     
     /**
      * 获取隶属指定学校的所有角色对象
@@ -392,10 +402,9 @@ class School extends Model {
                 if ($id) {
                     $school = $this->find($id);
                     $corpChanged = $school->corp_id != $data['corp_id'];
-                    abort_if(
+                    throw_if(
                         $corpChanged && !$this->removable($school),
-                        HttpStatusCode::INTERNAL_SERVER_ERROR,
-                        __('messages.school.corp_changed')
+                        new Exception(__('messages.school.corp_changed'))
                     );
                     if (!$corpChanged) {
                         $school->update($data);

@@ -230,7 +230,6 @@ class SyncDepartment implements ShouldQueue {
         
         $accessToken = $this->accessToken();
         if (!$deptIds) {
-            $action = $this->action == 'create' ? 'createDept' : 'updateDept';
             $d = (new Department)->find($this->departmentIds[0]);
             $parentid = $d->departmentType->name == '学校'
                 ? $d->school->corp->departmentid
@@ -240,11 +239,17 @@ class SyncDepartment implements ShouldQueue {
                 [$d->id, $d->name, $parentid, $d->order]
             );
             $result = json_decode(
-                Wechat::$action($accessToken, $params), true
+                Wechat::invoke(
+                    'ent', 'department', $this->action,
+                    [$accessToken], $params
+                ), true
             );
             # 如果在更新部门时返回"部门ID不存在"
             $result['errcode'] != 60003 ?: $result = json_decode(
-                Wechat::createDept($accessToken, $params), true
+                Wechat::invoke(
+                    'ent', 'department', 'create',
+                    [$accessToken], $params
+                ), true
             );
             $this->response['statusCode'] = $result['errcode']
                 ? HttpStatusCode::INTERNAL_SERVER_ERROR
@@ -254,7 +259,10 @@ class SyncDepartment implements ShouldQueue {
         } else {
             foreach ($deptIds as $id) {
                 $result = json_decode(
-                    Wechat::deleteDept($accessToken, $id), true
+                    Wechat::invoke(
+                        'ent', 'department',
+                        'delete', [$accessToken, $id]
+                    ), true
                 );
                 if (($result['errcode'] && $result['errcode'] == 60123) || !$result['errcode']) {
                     $deleted[] = $id;
@@ -276,7 +284,7 @@ class SyncDepartment implements ShouldQueue {
      */
     private function accessToken() {
         
-        $token = Wechat::getAccessToken(
+        $token = Wechat::token(
             $this->corp->corpid,
             $this->corp->contact_sync_secret,
             true

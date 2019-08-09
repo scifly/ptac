@@ -55,7 +55,7 @@ class JsApiPay {
             //触发微信返回code码
             // $baseUrl = urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . $_SERVER['QUERY_STRING']);
             // $url = $this->_createOauthUrlForCode($baseUrl);
-            $url = Wechat::getCodeUrl('wwefd1c6553e218347', '1000002', Request::url());
+            $url = Wechat::code('wwefd1c6553e218347', '1000002', Request::url());
             Header("Location: $url");
             exit();
         } else {
@@ -77,7 +77,8 @@ class JsApiPay {
      */
     public function getOpenidFromMp($code) {
     
-        $token = Wechat::getAccessToken(
+        $token = Wechat::token(
+            'ent',
             'wwefd1c6553e218347',
             'EfS77mm40eYEJgLVJSeuWQgx0odW2vumk2rOxSBvnvg'
         );
@@ -89,7 +90,7 @@ class JsApiPay {
         }
         $accessToken = $token['access_token'];
         $result = json_decode(
-            Wechat::getUserInfo($accessToken, $code),
+            Wechat::invoke('ent', 'user', 'getuserinfo', [$accessToken, $code]),
             JSON_UNESCAPED_UNICODE
         );
         abort_if(
@@ -98,7 +99,10 @@ class JsApiPay {
             Constant::WXERR[$result['errcode']]
         );
         $result = json_decode(
-            Wechat::convertToOpenid($accessToken, $result['UserId']), true
+            Wechat::invoke(
+                'ent', 'user', 'convert_to_openid',
+                [$accessToken], ['userid' => $result['UserId']]
+            ), true
         );
         abort_if(
             $result['errcode'],

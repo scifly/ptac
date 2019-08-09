@@ -4,7 +4,6 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\{Camera, Face, User};
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Request;
 
 /**

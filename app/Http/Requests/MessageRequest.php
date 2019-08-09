@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 use App\Helpers\{Constant, ModelTrait};
 use App\Models\{CommType, MediaType, School, User};
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class MessageRequest

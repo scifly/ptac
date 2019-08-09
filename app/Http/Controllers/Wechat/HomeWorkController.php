@@ -188,7 +188,7 @@ class HomeWorkController extends Controller {
         $corp = Corp::find(session('corpId'));
         $paths = explode('/', Request::path());
         $app = App::whereCorpId($corp->id)->where('name', Constant::APPS[$paths[1]])->first();
-        $token = Wechat::getAccessToken($corp->corpid, $app->secret);
+        $token = Wechat::token('ent', $corp->corpid, $app->secret);
         abort_if(
             $token['errcode'],
             HttpStatusCode::INTERNAL_SERVER_ERROR,
@@ -196,7 +196,10 @@ class HomeWorkController extends Controller {
         );
         $user = Auth::user();
         $result = json_decode(
-            Wechat::convertToOpenid($token['access_token'], $user->userid), true
+            Wechat::invoke(
+                'ent', 'user', 'convert_to_openid',
+                [$token['access_token']], ['userid' => $user->userid]
+            ), true
         );
         abort_if(
             $result['errcode'],

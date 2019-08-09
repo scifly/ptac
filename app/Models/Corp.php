@@ -142,7 +142,6 @@ class Corp extends Model {
      */
     function index() {
         
-        dd(debug_backtrace()[1]['function']);
         $columns = [
             ['db' => 'Corp.id', 'dt' => 0],
             [

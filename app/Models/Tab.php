@@ -48,7 +48,7 @@ use Throwable;
  * @method static Builder|Tab newQuery()
  * @method static Builder|Tab query()
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Group[] $groups
+ * @property-read Collection|Group[] $groups
  */
 class Tab extends Model {
     

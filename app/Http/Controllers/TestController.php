@@ -5,7 +5,6 @@ use App\Facades\Wechat;
 use App\Helpers\{Broadcaster, HttpStatusCode, ModelTrait};
 use App\Models\{Corp, Department};
 use Auth;
-use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -308,9 +307,14 @@ class TestController extends Controller {
         try {
             DB::transaction(function () use ($pusher) {
                 $corp = Corp::find(3);
-                $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
+                $token = Wechat::token($corp->corpid, $corp->contact_sync_secret, true);
                 $accessToken = $token['access_token'];
-                $result = json_decode(Wechat::getDeptList($accessToken), true);
+                $result = json_decode(
+                    Wechat::invoke(
+                        'ent', 'department', 'list',
+                        [$accessToken, null]
+                    ), true
+                );
                 $deparmtents = $result['department'];
                 usort($deparmtents, function($a, $b) {
                     return $a['id'] <=> $b['id'];
@@ -336,7 +340,7 @@ class TestController extends Controller {
     
     
         // $corp = Corp::find(3);
-        // $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
+        // $token = Wechat::token($corp->corpid, $corp->contact_sync_secret, true);
         // $accessToken = $token['access_token'];
         // // $result = json_decode(Wechat::getDeptList($accessToken), true);
         // // $deparmtents = $result['department'];

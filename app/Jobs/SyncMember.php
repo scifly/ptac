@@ -114,7 +114,7 @@ class SyncMember implements ShouldQueue {
     private function sync(Corp $corp, $params, $action) {
         
         # 获取access_token
-        $token = Wechat::getAccessToken(
+        $token = Wechat::token(
             $corp->corpid,
             $corp->contact_sync_secret,
             true
@@ -122,22 +122,30 @@ class SyncMember implements ShouldQueue {
         if ($token['errcode']) return array_values($token);
         $accessToken = $token['access_token'];
         if ($action != 'delete') unset($params['corpIds']);
-        $api = $action . 'User';
-        $data = $api == 'deleteUser' ? $params['userid'] : $params;
+        $data = $action == 'delete' ? $params['userid'] : $params;
         $result = json_decode(
-            Wechat::$api($accessToken, $data), true
+            Wechat::invoke(
+                'ent', 'user', $action,
+                [$accessToken], $data
+            ), true
         );
         # 企业微信通讯录不存在指定的会员，则创建该会员
-        if ($result['errcode'] == 60111 && $api == 'updateUser') {
+        if ($result['errcode'] == 60111 && $action == 'update') {
             $result = json_decode(
-                Wechat::createUser($accessToken, $params), true
+                Wechat::invoke(
+                    'ent', 'user', 'create',
+                    [$accessToken], $params
+                ), true
             );
         }
-        if (!$result['errcode'] && $api != 'deleteUser') {
+        if (!$result['errcode'] && $action != 'delete') {
             User::whereUserid($params['userid'])->first()->update(['synced' => 1]);
-            if ($api == 'updateUser') {
+            if ($action == 'update') {
                 $member = json_decode(
-                    Wechat::getUser($accessToken, $params['userid']), true
+                    Wechat::invoke(
+                        'ent', 'user', 'get',
+                        [$accessToken, $params['userid']]
+                    ), true
                 );
                 if (!$member['errcode'] && $member['status'] == 1) {
                     User::whereUserid($params['userid'])->first()->update([

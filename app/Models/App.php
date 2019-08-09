@@ -31,6 +31,8 @@ use Throwable;
  * @property string $allow_userinfos 企业应用可见范围（人员），其中包括userid
  * @property string $allow_partys 企业应用可见范围（部门）
  * @property string $allow_tags 企业应用可见范围（标签）
+ * @property string|null $token 公众号服务器配置：令牌
+ * @property string|null $encoding_aes_key 公众号服务器配置：消息加解密密钥
  * @property string|null $access_token
  * @property string|null $expire_at
  * @property Carbon|null $created_at
@@ -38,6 +40,7 @@ use Throwable;
  * @property int $enabled
  * @property-read Corp $corp
  * @property-read Collection|Message[] $messages
+ * @property-read Collection|School[] $schools
  * @method static Builder|App whereAccessToken($value)
  * @method static Builder|App whereAgentid($value)
  * @method static Builder|App whereAllowPartys($value)
@@ -45,6 +48,8 @@ use Throwable;
  * @method static Builder|App whereAllowUserinfos($value)
  * @method static Builder|App whereCorpId($value)
  * @method static Builder|App whereCreatedAt($value)
+ * @method static Builder|App whereEncodingAesKey($value)
+ * @method static Builder|App whereToken($value)
  * @method static Builder|App whereDescription($value)
  * @method static Builder|App whereEnabled($value)
  * @method static Builder|App whereExpireAt($value)
@@ -68,12 +73,14 @@ class App extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'corp_id', 'name', 'description', 'agentid',
-        'token', 'secret', 'report_location_flag',
-        'square_logo_url', 'allow_userinfos',
-        'allow_partys', 'allow_tags', 'redirect_domain',
-        'isreportenter', 'home_url', 'menu',
-        'access_token', 'expire_at', 'enabled',
+        'corp_id', 'name', 'agentid', 'secret',
+        'token', 'encoding_aes_key', 'menu',
+        'description', 'report_location_flag',
+        'square_logo_url', 'redirect_domain',
+        'isreportenter', 'home_url',
+        'allow_userinfos', 'allow_partys',
+        'allow_tags', 'access_token',
+        'expire_at', 'enabled'
     ];
     
     /**
@@ -89,6 +96,13 @@ class App extends Model {
      * @return HasMany
      */
     function messages() { return $this->hasMany('App\Models\Message'); }
+    
+    /**
+     * 返回指定公众号应用对应的所有学校对象
+     *
+     * @return HasMany
+     */
+    function schools() { return $this->hasMany('App\Models\School'); }
     
     /**
      * 返回指定企业对应的应用列表
@@ -164,14 +178,22 @@ class App extends Model {
         $action = !$app ? 'create' : 'update';
         # 获取应用
         $corpid = Corp::find($app ? $app->corp_id : $corpId)->corpid;
-        $token = Wechat::getAccessToken($corpid, $app ? $app->secret : $secret);
+        $token = Wechat::token(
+            'ent', $corpid,
+            $app ? $app->secret : $secret
+        );
         if ($token['errcode']) {
             abort(
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
                 $token['errmsg']
             );
         }
-        $result = json_decode(Wechat::getApp($token['access_token'], $app ? $app->agentid : $agentid));
+        $result = json_decode(
+            Wechat::invoke(
+                'ent', 'agent', 'get',
+                [$token['access_token'], $app ? $app->agentid : $agentid]
+            )
+        );
         abort_if(
             $result->{'errcode'},
             HttpStatusCode::INTERNAL_SERVER_ERROR,

@@ -718,10 +718,13 @@ class Message extends Model {
      */
     function sendWx(App $app, array $message) {
         
-        $token = Wechat::getAccessToken($app->corp->corpid, $app['secret']);
+        $token = Wechat::token('ent', $app->corp->corpid, $app['secret']);
         if ($token['errcode']) return $token;
         $result = json_decode(
-            Wechat::sendMessage($token['access_token'], $message), true
+            Wechat::invoke(
+                'ent', 'message', 'send',
+                [$token['access_token']], $message
+            ), true
         );
         
         return [
@@ -743,12 +746,13 @@ class Message extends Model {
      */
     function sendSms($mobiles, $content) {
         
-        $signature = '【成都外国语】';
-        $result = Wechat::batchSend(
-            'LKJK004923', "654321@",
-            implode(',', $mobiles),
-            $content . $signature
-        );
+        // $signature = '【成都外国语】';
+        $result = '';
+        // Wechat::batchSend(
+        //     'LKJK004923', "654321@",
+        //     implode(',', $mobiles),
+        //     $content . $signature
+        // );
         
         return json_encode($result);
         
@@ -1104,7 +1108,7 @@ class Message extends Model {
         );
         # 上传到企业号后台
         list($corpid, $secret) = $this->tokenParams();
-        $token = Wechat::getAccessToken($corpid, $secret);
+        $token = Wechat::token('ent', $corpid, $secret);
         if ($token['errcode']) {
             abort(
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
@@ -1113,7 +1117,9 @@ class Message extends Model {
         }
         $type = Request::input('type');
         $result = json_decode(
-            Wechat::uploadMedia($token['access_token'], $type == 'audio' ? 'voice' : $type, [
+            Wechat::invoke(
+                'ent', 'media', 'upload',
+                [$token['access_token'], $type == 'audio' ? 'voice' : $type], [
                 'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
                 'filename'      => $uploadedFile['filename'],
                 'content-type'  => Constant::CONTENT_TYPE[$type],
