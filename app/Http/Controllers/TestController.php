@@ -216,7 +216,7 @@ class TestController extends Controller {
                 'get'               => [1, 'next_openid']
             ],
         ],
-        'dat' => [
+        'svc' => [
             'datacube' => [
                 'getusersummary'          => 1,
                 'getusercumulate'         => 1,
@@ -235,14 +235,14 @@ class TestController extends Controller {
                 'getupstreammsgdiskmoth'  => 1,
                 'getinterfacesummary'     => 1,
                 'getinterfacesummaryhour' => 1,
+            ],
+            'customservice' => [
+                'kfaccount/add'           => 1,
+                'kfaccount/update'        => 1,
+                'kfaccount/del'           => 1,
+                'kfaccount/uploadheadimg' => [1, 'kf_account'],
+                'getkflist'               => 1,
             ]
-        ],
-        'svc' => [
-            'kfaccount/add'           => 1,
-            'kfaccount/update'        => 1,
-            'kfaccount/del'           => 1,
-            'kfaccount/uploadheadimg' => [1, 'kf_account'],
-            'getkflist'               => 1,
         ],
     ];
     
