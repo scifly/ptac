@@ -7,7 +7,7 @@
             @if (!empty($app['id']))
                 {{ Form::hidden('id', $app['id'], ['id' => 'id']) }}
             @endif
-            {!! Form::hidden('corp_id', $corpId) !!}
+            {!! Form::hidden('corp_id', $corpId, ['id' => 'corp_id']) !!}
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
