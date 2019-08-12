@@ -107,20 +107,20 @@ class Custodian extends Model {
             ['db' => 'Mobile.mobile', 'dt' => 5],
             ['db' => 'Custodian.created_at', 'dt' => 6, 'dr' => true],
             ['db' => 'Custodian.updated_at', 'dt' => 7, 'dr' => true],
+            // [
+            //     'db'        => 'User.synced', 'dt' => 8,
+            //     'formatter' => function ($d) {
+            //         return $this->synced($d);
+            //     },
+            // ],
+            // [
+            //     'db'        => 'User.subscribed', 'dt' => 9,
+            //     'formatter' => function ($d) {
+            //         return $this->subscribed($d);
+            //     },
+            // ],
             [
-                'db'        => 'User.synced', 'dt' => 8,
-                'formatter' => function ($d) {
-                    return $this->synced($d);
-                },
-            ],
-            [
-                'db'        => 'User.subscribed', 'dt' => 9,
-                'formatter' => function ($d) {
-                    return $this->subscribed($d);
-                },
-            ],
-            [
-                'db'        => 'Custodian.enabled', 'dt' => 10,
+                'db'        => 'Custodian.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 },

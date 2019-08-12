@@ -122,20 +122,20 @@ class Educator extends Model {
             ['db' => 'Mobile.mobile', 'dt' => 5],
             ['db' => 'Educator.created_at', 'dt' => 6, 'dr' => true],
             ['db' => 'Educator.updated_at', 'dt' => 7, 'dr' => true],
+            // [
+            //     'db'        => 'User.synced', 'dt' => 8,
+            //     'formatter' => function ($d) {
+            //         return $this->synced($d);
+            //     },
+            // ],
+            // [
+            //     'db'        => 'User.subscribed', 'dt' => 9,
+            //     'formatter' => function ($d) {
+            //         return $this->subscribed($d);
+            //     },
+            // ],
             [
-                'db'        => 'User.synced', 'dt' => 8,
-                'formatter' => function ($d) {
-                    return $this->synced($d);
-                },
-            ],
-            [
-                'db'        => 'User.subscribed', 'dt' => 9,
-                'formatter' => function ($d) {
-                    return $this->subscribed($d);
-                },
-            ],
-            [
-                'db'        => 'Educator.enabled', 'dt' => 10,
+                'db'        => 'Educator.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     $rechargeLink = sprintf(
                         Snippet::DT_ANCHOR,

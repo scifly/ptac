@@ -85,18 +85,18 @@ class EducatorComposer {
                             'title' => '更新于',
                             'html'  => $this->inputDateTimeRange('更新于')
                         ],
-                        [
-                            'title' => '同步状态',
-                            'html' => $this->singleSelectList(
-                                [null => '全部', 0 => '未同步', 1 => '已同步'], 'filter_synced'
-                            ),
-                        ],
-                        [
-                            'title' => '关注状态',
-                            'html' => $this->singleSelectList(
-                                [null => '全部', 0 => '未关注', 1 => '已关注'], 'filter_subscribed'
-                            )
-                        ],
+                        // [
+                        //     'title' => '同步状态',
+                        //     'html' => $this->singleSelectList(
+                        //         [null => '全部', 0 => '未同步', 1 => '已同步'], 'filter_synced'
+                        //     ),
+                        // ],
+                        // [
+                        //     'title' => '关注状态',
+                        //     'html' => $this->singleSelectList(
+                        //         [null => '全部', 0 => '未关注', 1 => '已关注'], 'filter_subscribed'
+                        //     )
+                        // ],
                         [
                             'title' => '状态 . 操作',
                             'html' => $this->singleSelectList(
