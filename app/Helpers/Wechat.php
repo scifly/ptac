@@ -25,14 +25,13 @@ class Wechat {
         'ent' => 'https://qyapi.weixin.qq.com/cgi-bin/',                    # 企业微信
         'red' => 'https://api.mch.weixin.qq.com/',                          # 企业微信 - 企业支付
         'url' => 'https://open.weixin.qq.com/connect/oauth2/authorize?',    # 企业微信 - 获取code
-
         'pub' => 'https://api.weixin.qq.com/cgi-bin/',                      # 微信公众号
         'svc' => 'https://api.weixin.qq.com/',                              # 微信公众号 - 数据统计、客服账号管理
     ];
     /** api url配置，1 = access_token, 0 = 无参数 */
     const APIS = [
         'ent' => [
-            'agent' => [
+            'agent'           => [
                 'get' => [1, 'agentid'],
                 'set' => 1,
             ],
@@ -188,7 +187,7 @@ class Wechat {
                 'members/batchtagging'   => 1,
                 'members/batchuntagging' => 1,
                 'getidlist'              => 1,
-                'members/getblacklist'   => 1
+                'members/getblacklist'   => 1,
             ],
             'template'                  => [
                 'api_set_industry'         => 1,
@@ -201,11 +200,18 @@ class Wechat {
                 'tag/get'           => 1,
                 'info/updateremark' => 1,
                 'info'              => [1, 'openid', 'lang'],
-                'get'               => [1, 'next_openid']
+                'get'               => [1, 'next_openid'],
             ],
         ],
         'svc' => [
-            'datacube' => [
+            'customservice' => [
+                'kfaccount/add'           => 1,
+                'kfaccount/update'        => 1,
+                'kfaccount/del'           => 1,
+                'kfaccount/uploadheadimg' => [1, 'kf_account'],
+                'getkflist'               => 1,
+            ],
+            'datacube'      => [
                 'getusersummary'          => 1,
                 'getusercumulate'         => 1,
                 'getarticlesummary'       => 1,
@@ -224,15 +230,7 @@ class Wechat {
                 'getinterfacesummary'     => 1,
                 'getinterfacesummaryhour' => 1,
             ],
-            'customservice' => [
-                'kfaccount/add'           => 1,
-                'kfaccount/update'        => 1,
-                'kfaccount/del'           => 1,
-                'kfaccount/uploadheadimg' => [1, 'kf_account'],
-                'getkflist'               => 1,
-            ],
         ],
-        
     ];
     # 错误代码 & 消息
     const ERRMSGS = [
@@ -535,6 +533,7 @@ class Wechat {
         9001035 => '设备申请参数非法',
         9001036 => '查询起始值(begin)非法',
     ];
+    
     /**
      * 获取access_token
      *
@@ -593,13 +592,12 @@ class Wechat {
                     'code',
                     self::USERINFO,
                     $agentid,
-                    'getcodeblahblah#wechat_redirect'
+                    'getcodeblahblah#wechat_redirect',
                 ])
-            )
+            ),
         ]);
         
         // return "window.location = \"{$url}\"";
-        
     }
     
     /**
@@ -626,7 +624,6 @@ class Wechat {
         );
         $path = $categoy == $method ? $method : join('/', [$categoy, $method]);
         $url = join([self::BASEURI[$base], $path, '?', $qStr]);
-        return $url;
         !is_array($data) ?: $data = json_encode($data);
         
         return $data
