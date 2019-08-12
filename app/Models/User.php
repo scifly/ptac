@@ -262,25 +262,25 @@ class User extends Authenticatable {
             ['db' => 'User.email', 'dt' => 6],
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
+            // [
+            //     'db'        => 'User.synced', 'dt' => 9,
+            //     'formatter' => function ($d) {
+            //         return $this->synced($d);
+            //     },
+            // ],
+            // [
+            //     'db'        => 'User.subscribed', 'dt' => 10,
+            //     'formatter' => function ($d) {
+            //         return $this->subscribed($d);
+            //     },
+            // ],
             [
-                'db'        => 'User.synced', 'dt' => 9,
-                'formatter' => function ($d) {
-                    return $this->synced($d);
-                },
-            ],
-            [
-                'db'        => 'User.subscribed', 'dt' => 10,
-                'formatter' => function ($d) {
-                    return $this->subscribed($d);
-                },
-            ],
-            [
-                'db'        => 'User.enabled', 'dt' => 11,
+                'db'        => 'User.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 },
             ],
-            ['db' => 'Groups.remark as remark', 'dt' => 12],
+            ['db' => 'Groups.remark as remark', 'dt' => 10],
         ];
         $joins = [
             [
@@ -293,15 +293,14 @@ class User extends Authenticatable {
             ],
         ];
         $sql = 'User.group_id IN (%s)';
-        list($rootGId, $corpGId, $schoolGId) = array_map(
+        [$rootGId, $corpGId, $schoolGId] = array_map(
             function ($name) { return Group::whereName($name)->first()->id; },
             ['运营', '企业', '学校']
         );
         $rootMenu = Menu::find((new Menu)->rootId(true));
         switch ($rootMenu->menuType->name) {
             case '根':
-                $allowedGIds = [$rootGId, $corpGId, $schoolGId];
-                $condition = sprintf($sql, implode(',', $allowedGIds));
+                $condition = sprintf($sql, join(',', [$rootGId, $corpGId, $schoolGId]));
                 break;
             case '企业':
                 $corp = Corp::whereMenuId($rootMenu->id)->first();
@@ -313,16 +312,16 @@ class User extends Authenticatable {
                         Department::find($school->department_id)->users->pluck('id')->toArray()
                     );
                 }
-                if (empty($userIds)) $userIds = [0];
-                $condition = sprintf($sql, implode(',', [$corpGId, $schoolGId])) .
-                    ' AND User.id IN (' . implode(',', array_unique($userIds)) . ')';
+                !empty($userIds) ?: $userIds = [0];
+                $condition = sprintf($sql, join(',', [$corpGId, $schoolGId])) .
+                    ' AND User.id IN (' . join(',', array_unique($userIds)) . ')';
                 break;
             case '学校':
                 $userIds = Department::find(School::whereMenuId($rootMenu->id)->first()->department_id)
                     ->users->pluck('id')->toArray();
-                if (empty($userIds)) $userIds = [0];
-                $condition = sprintf($sql, implode(',', [$schoolGId])) .
-                    ' AND User.id IN (' . implode(',', $userIds) . ')';
+                !empty($userIds) ?: $userIds = [0];
+                $condition = sprintf($sql, join(',', [$schoolGId])) .
+                    ' AND User.id IN (' . join(',', $userIds) . ')';
                 break;
             default:
                 break;

@@ -36,18 +36,15 @@ class OperatorComposer {
             $data = [
                 'batch'  => true,
                 'titles' => [
-                    '#', '用户名', '角色', '真实姓名', '头像', '性别', '电子邮件',
-                    '创建于', '更新于', '同步状态', '关注状态', '状态 . 操作',
+                    '#', '用户名', '角色', '真实姓名', '头像', '性别',
+                    '电子邮件', '创建于', '更新于', '状态 . 操作',
                 ],
             ];
         } else {
-            list($mobiles, $groups, $corps, $schools) = $this->user->compose();
-            $data = [
-                'mobiles' => $mobiles,
-                'groups'  => $groups,
-                'corps'   => $corps,
-                'schools' => $schools,
-            ];
+            $data = array_combine(
+                ['mobiles', 'groups', 'corps', 'schools'],
+                $this->user->compose()
+            );
         }
         
         $view->with($data);

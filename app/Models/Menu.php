@@ -341,7 +341,6 @@ class Menu extends Model {
                 return !$subRoot ? $rootMId : ($smId ?? ($cmId ?? $rootMId));
             case '企业':
                 $cmId = $cmId ?? Corp::whereDepartmentId($departmentId)->first()->menu_id;
-                
                 return !$subRoot ? $cmId : ($smId ?? $cmId);
             case '学校':
                 return $smId ?? School::whereDepartmentId($departmentId)->first()->menu_id;
