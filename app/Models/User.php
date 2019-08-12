@@ -697,7 +697,7 @@ class User extends Authenticatable {
             $corpId = $value;
         }
         $condition = ['corp_id' => $corpId ?? 0, 'enabled' => 1];
-        $schools = !($corpId ?? 0) ? [] : School::where($condition)->pluck('name', 'id');
+        $schools = !($corpId ?? 0) ? collect([]) : School::where($condition)->pluck('name', 'id');
         $result['schoolList'] = $this->selectList($schools->toArray(), 'school_id');
         
         return response()->json($result);
