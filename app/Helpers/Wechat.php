@@ -27,8 +27,7 @@ class Wechat {
         'url' => 'https://open.weixin.qq.com/connect/oauth2/authorize?',    # 企业微信 - 获取code
 
         'pub' => 'https://api.weixin.qq.com/cgi-bin/',                      # 微信公众号
-        'dat' => 'https://api.weixin.qq.com/',                              # 微信公众号 - 数据统计
-        'svc' => 'https://api.weixin.qq.com/customservice/',                # 微信公众号 - 客服账号管理
+        'svc' => 'https://api.weixin.qq.com/',                              # 微信公众号 - 数据统计、客服账号管理
     ];
     /** api url配置，1 = access_token, 0 = 无参数 */
     const APIS = [
@@ -205,7 +204,7 @@ class Wechat {
                 'get'               => [1, 'next_openid']
             ],
         ],
-        'dat' => [
+        'svc' => [
             'datacube' => [
                 'getusersummary'          => 1,
                 'getusercumulate'         => 1,
@@ -224,15 +223,16 @@ class Wechat {
                 'getupstreammsgdiskmoth'  => 1,
                 'getinterfacesummary'     => 1,
                 'getinterfacesummaryhour' => 1,
-            ]
+            ],
+            'customservice' => [
+                'kfaccount/add'           => 1,
+                'kfaccount/update'        => 1,
+                'kfaccount/del'           => 1,
+                'kfaccount/uploadheadimg' => [1, 'kf_account'],
+                'getkflist'               => 1,
+            ],
         ],
-        'svc' => [
-            'kfaccount/add'           => 1,
-            'kfaccount/update'        => 1,
-            'kfaccount/del'           => 1,
-            'kfaccount/uploadheadimg' => [1, 'kf_account'],
-            'getkflist'               => 1,
-        ],
+        
     ];
     # 错误代码 & 消息
     const ERRMSGS = [
