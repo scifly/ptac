@@ -280,7 +280,7 @@ class TestController extends Controller {
                         $data[$param] = rand(5, 15);
                     }
                     $urls[] = join([
-                        $baseUri, $category, $method, '?', http_build_query($data)
+                        $baseUri, $category, '/', $method, '?', http_build_query($data)
                     ]);
                 }
             }
