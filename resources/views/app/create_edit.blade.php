@@ -9,7 +9,23 @@
             @endif
             {!! Form::hidden('corp_id', $corpId) !!}
             <div class="form-group">
-                {!! Form::label('agentid', 'agentid', [
+                {!! Form::label('name', '名称', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        @include('shared.icon_addon', ['class' => 'fa-weixin text-green'])
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control text-blue',
+                            'required' => 'true',
+                            'placeholder' => '(不超过12个汉字)',
+                            'maxlength' => '12'
+                        ]) !!}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('agentid', '应用ID', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
@@ -64,22 +80,6 @@
                         {!! Form::text('encoding_aes_key', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(如为公众号，此项必填)',
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-weixin text-green'])
-                        {!! Form::text('name', null, [
-                            'class' => 'form-control text-blue',
-                            'required' => 'true',
-                            'placeholder' => '(不超过12个汉字)',
-                            'maxlength' => '12'
                         ]) !!}
                     </div>
                 </div>

@@ -3,10 +3,7 @@
 namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
-use App\Models\App;
-use App\Models\Corp;
-use App\Models\Menu;
-use App\Models\User;
+use App\Models\{App, Corp, Menu, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
