@@ -33,6 +33,218 @@ class TestController extends Controller {
     const KEY = '4e759473d69a97307905';
     const SECRET = 'e51dbcffbb1250a2d98e';
     const CLUSTER = 'eu';
+    const BASEURI = [
+        'ent' => 'https://qyapi.weixin.qq.com/cgi-bin/',                    # 企业微信
+        'red' => 'https://api.mch.weixin.qq.com/',                          # 企业微信 - 企业支付
+        'url' => 'https://open.weixin.qq.com/connect/oauth2/authorize?',    # 企业微信 - 获取code
+        
+        'pub' => 'https://api.weixin.qq.com/cgi-bin/',                      # 微信公众号
+        'dat' => 'https://api.weixin.qq.com/',                              # 微信公众号 - 数据统计
+        'svc' => 'https://api.weixin.qq.com/customservice/',                # 微信公众号 - 客服账号管理
+    ];
+    const APIS = [
+        'ent' => [
+            'agent' => [
+                'get' => [1, 'agentid'],
+                'set' => 1,
+            ],
+            'appchat'         => [
+                'create' => 1,
+                'update' => 1,
+                'get'    => 1,
+                'send'   => 1,
+            ],
+            'card'            => [
+                'invoice/reimburse/getinvoiceinfo'      => 1,
+                'invoice/reimburse/updateinvoicestatus' => 1,
+                'invoice/reimburse/updatestatusbatch'   => 1,
+                'invoice/reimburse/getinvoiceinfobatch' => 1,
+            ],
+            'checkin'         => [
+                'getcheckindata'   => 1,
+                'getcheckinoption' => 1,
+            ],
+            'batch'           => [
+                'invite'       => 1,
+                'syncuser'     => 1,
+                'replaceuser'  => 1,
+                'replaceparty' => 1,
+                'getresult'    => 1,
+            ],
+            'corp'            => [
+                'get_join_qrcode' => [1, 'size_type'],
+                'getapprovaldata' => 1,
+            ],
+            'department'      => [
+                'create' => 1,
+                'update' => 1,
+                'delete' => [1, 'id'],
+                'list'   => [1, 'id'],
+            ],
+            'dial'            => [
+                'get_dial_record' => 1,
+            ],
+            'externalcontact' => [
+                'get_fellow_user_list'   => 1,
+                'list'                   => [1, 'userid'],
+                'get'                    => [1, 'external_userid'],
+                'add_contact_way'        => 1,
+                'add_msg_template'       => 1,
+                'get_group_msg_result'   => 1,
+                'get_user_behavior_data' => 1,
+                'send_welcome_msg'       => 1,
+                'get_unassigned_list'    => 1,
+                'transfer'               => 1,
+                'get_corp_tag_list'      => 1,
+                'mark_tag'               => 1,
+            ],
+            'gettoken'        => [
+                'gettoken' => ['corpid', 'corpsecret'],
+            ],
+            'linkedcorp'      => [
+                'message/send' => 1,
+            ],
+            'media'           => [
+                'upload'    => [1, 'type'],
+                'uploadimg' => 1,
+                'get'       => [1, 'media_id'],
+                'get/jssdk' => [1, 'media_id'],
+            ],
+            'menu'            => [
+                'create' => [1, 'agentid'],
+                'get'    => [1, 'agentid'],
+                'delete' => [1, 'agentid'],
+            ],
+            'message'         => [
+                'send' => 1,
+            ],
+            'tag'             => [
+                'create'      => 1,
+                'update'      => 1,
+                'delete'      => [1, 'tagid'],
+                'get'         => [1, 'tagid'],
+                'addtagusers' => 1,
+                'deltagusers' => 1,
+                'list'        => 1,
+            ],
+            'user'            => [
+                'create'            => 1,
+                'get'               => [1, 'userid'],
+                'update'            => 1,
+                'delete'            => [1, 'userid'],
+                'batchdelete'       => 1,
+                'simplelist'        => [1, 'department_id', 'fetch_child'],
+                'list'              => [1, 'department_id', 'fetch_child'],
+                'convert_to_openid' => 1,
+                'convert_to_userid' => 1,
+                'authsucc'          => [1, 'userid'],
+                'getuserinfo'       => [1, 'code'],
+            ],
+        ],
+        'red' => [
+            'mmpaymkttransfers' => [
+                'sendworkwxredpack'     => 0,
+                'queryworkwxredpack'    => 0,
+                'paywwsptrans2pocket'   => 0,
+                'querywwsptrans2pocket' => 0,
+            ],
+        ],
+        'pub' => [
+            'token'                     => [
+                'token' => ['grant_type', 'appid', 'secret'],
+            ],
+            'menu'                      => [
+                'create'         => 1,
+                'get'            => 1,
+                'delete'         => 1,
+                'addconditional' => 1,
+            ],
+            'get_current_selfmenu_info' => [
+                'get_current_selfmenu_info' => 1,
+            ],
+            'material'                  => [
+                'add_news'          => 1,
+                'update_news'       => 1,
+                'get_material'      => ['accesstoken'],
+                'batchget_material' => ['accesstoken'],
+                'get_materialcount' => ['accesstoken'],
+                'del_material'      => ['accesstoken'],
+            ],
+            'media'                     => [
+                'uploadimg'  => 1,
+                'uploadnews' => 1,
+                'upload'     => [1, 'type'],
+                'get'        => [1, 'media_id'],
+            ],
+            'message'                   => [
+                'mass/sendall'       => 1,
+                'mass/send'          => 1,
+                'mass/delete'        => 1,
+                'mass/preview'       => 1,
+                'mass/get'           => 1,
+                'mass/speed/get'     => 1,
+                'template/send'      => 1,
+                'template/subscribe' => 1,
+            ],
+            'qrcode'                    => [
+                'create' => 1,
+            ],
+            'shorturl'                  => [
+                'shorturl' => 1,
+            ],
+            'tags'                      => [
+                'create'                 => 1,
+                'get'                    => 1,
+                'update'                 => 1,
+                'delete'                 => 1,
+                'members/batchtagging'   => 1,
+                'members/batchuntagging' => 1,
+                'getidlist'              => 1,
+                'members/getblacklist'   => 1
+            ],
+            'template'                  => [
+                'api_set_industry'         => 1,
+                'get_industry'             => 1,
+                'api_add_template'         => 1,
+                'get_all_private_template' => 1,
+                'del_private_template'     => 1,
+            ],
+            'user'                      => [
+                'tag/get'           => 1,
+                'info/updateremark' => 1,
+                'info'              => [1, 'openid', 'lang'],
+                'get'               => [1, 'next_openid']
+            ],
+        ],
+        'dat' => [
+            'datacube' => [
+                'getusersummary'          => 1,
+                'getusercumulate'         => 1,
+                'getarticlesummary'       => 1,
+                'getarticletotal'         => 1,
+                'getuserread'             => 1,
+                'getuserreadhour'         => 1,
+                'getusershare'            => 1,
+                'getusersharehour'        => 1,
+                'getupstreammsg'          => 1,
+                'getupstreammsghour'      => 1,
+                'getupstreammsgweek'      => 1,
+                'getupstreammsgmonth'     => 1,
+                'getupstreammsgdist'      => 1,
+                'getupstreammsgdiskweek'  => 1,
+                'getupstreammsgdiskmoth'  => 1,
+                'getinterfacesummary'     => 1,
+                'getinterfacesummaryhour' => 1,
+            ]
+        ],
+        'svc' => [
+            'kfaccount/add'           => 1,
+            'kfaccount/update'        => 1,
+            'kfaccount/del'           => 1,
+            'kfaccount/uploadheadimg' => [1, 'kf_account'],
+            'getkflist'               => 1,
+        ],
+    ];
     
     /**
      * TestController constructor.
@@ -53,87 +265,28 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $params = [
-            'uuid'         => '113',
-            'name'         => '测试人员',
-            'age'          => 0,
-            'sex'          => 1,
-            'role'         => 1,
-            'identity_num' => '',
-            'csOther'      => '',
-            'csICCard'     => '',
-            'csTel'        => '',
-            'csDep'        => '',
-            'pStr'         => base64_encode(Storage::disk('uploads')->get('2019/07/23/5d367afcc87a9-罗焱21级1班男.JPG'))
-        ];
-        echo json_encode($params, JSON_UNESCAPED_UNICODE);
-        // dd(ucfirst(Inflector::camelize('passage_rule')));
-        // return view('user.index');
-        // $server = "120.78.55.152";
-        // $port = 9933;
-        // if (!($sock = socket_create(AF_INET, SOCK_DGRAM, 0))) {
-        //     $errcode = socket_last_error();
-        //     $errmsg = socket_strerror($errcode);
-        //     die ("Couldn't create socket: [$errcode] $errmsg\n");
-        // }
-        // echo "Socket created \n";
-        // $input = 'abcdefg';
-        // if( ! socket_sendto($sock, $input , strlen($input) , 0 , $server , $port)) {
-        //     $errorcode = socket_last_error();
-        //     $errormsg = socket_strerror($errorcode);
-        //
-        //     die("Could not send data: [$errorcode] $errormsg \n");
-        // }
-        // // # Now receive reply from server and print it
-        // if(socket_recv($sock , $reply , 2045 , MSG_PEEK ) === FALSE) {
-        //     $errorcode = socket_last_error();
-        //     $errormsg = socket_strerror($errorcode);
-        //
-        //     die("Could not receive data: [$errorcode] $errormsg \n");
-        // }
-        //
-        // echo "Reply : $reply";
-        error_reporting(~E_WARNING);
-        $server = '119.23.73.0';
-        $port = 10000;
-    
-        if(!($sock = socket_create(AF_INET, SOCK_DGRAM, 0)))
-        {
-            $errorcode = socket_last_error();
-            $errormsg = socket_strerror($errorcode);
-        
-            die("Couldn't create socket: [$errorcode] $errormsg \n");
-        }
-    
-        echo "Socket created \n";
-    
-        while(1)
-        {
-            //Take some input to send
-            // echo 'Enter a message to send : ';
-            // $input = fgets(STDIN);
-
-            //Send the message to the server
-            $input = 'abcdefg';
-            if( ! socket_sendto($sock, $input , strlen($input) , 0 , $server , $port))
-            {
-                $errorcode = socket_last_error();
-                $errormsg = socket_strerror($errorcode);
-            
-                die("Could not send data: [$errorcode] $errormsg \n");
+        $urls = [];
+        foreach (self::APIS as $platform => $apis) {
+            $baseUri = self::BASEURI[$platform];
+            foreach ($apis as $category => $methods) {
+                foreach ($methods as $method => $params) {
+                    if (is_array($params)) {
+                        $params[0] = 'access_token';
+                    } else {
+                        $params = !$params ? [] :  ['access_token'];
+                    }
+                    $data = [];
+                    foreach ($params as $param) {
+                        $data[$param] = rand(5, 15);
+                    }
+                    $urls[] = join([
+                        $baseUri, $category, $method, '?', http_build_query($data)
+                    ]);
+                }
             }
-
-            //Now receive reply from server and print it
-            if(socket_recv ( $sock , $reply , 2045 , MSG_PEEK ) === FALSE)
-            {
-                $errorcode = socket_last_error();
-                $errormsg = socket_strerror($errorcode);
-            
-                die("Could not receive data: [$errorcode] $errormsg \n");
-            }
-        
-            echo "Reply : $reply";
         }
+        
+        dd($urls);
         
     }
     
