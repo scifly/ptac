@@ -21,7 +21,7 @@ class ComposerServiceProvider extends ServiceProvider {
         $composers = [
             'init'                   => ['index'],
             'action'                 => ['index', 'create_edit'],
-            'app'                    => ['index'],
+            'app'                    => ['index', 'create_edit'],
             'camera'                 => ['index'],
             'card'                   => ['index', 'create_edit'],
             'class'                  => ['index', 'create_edit'],
