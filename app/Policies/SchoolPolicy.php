@@ -37,7 +37,7 @@ class SchoolPolicy {
             __('messages.not_found')
         );
         $role = $user->role();
-        if ($role == '运营') { return true; }
+        if ($role == '运营')  return true;
         $isSchoolAllowed = false;
         $isSuperRole = in_array($role, Constant::SUPER_ROLES);
         $action = explode('/', Request::path())[1];

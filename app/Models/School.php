@@ -300,21 +300,15 @@ class School extends Model {
             ['db' => 'School.address', 'dt' => 2],
             ['db' => 'SchoolType.name as typename', 'dt' => 3],
             [
-                'db'        => 'Corp.name as corpname', 'dt' => 4,
+                'db'        => 'App.name as appname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return Snippet::icon($d, 'corp');
+                    return $d ?? 'n/a';
                 },
             ],
             ['db' => 'School.created_at', 'dt' => 5],
             ['db' => 'School.updated_at', 'dt' => 6],
             [
-                'db'        => 'Department.synced as synced', 'dt' => 7,
-                'formatter' => function ($d) {
-                    return $this->synced($d);
-                },
-            ],
-            [
-                'db'        => 'School.enabled', 'dt' => 8,
+                'db'        => 'School.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 },
@@ -330,28 +324,17 @@ class School extends Model {
                 ],
             ],
             [
-                'table'      => 'corps',
-                'alias'      => 'Corp',
-                'type'       => 'INNER',
+                'table'      => 'apps',
+                'alias'      => 'App',
+                'type'       => 'LEFT',
                 'conditions' => [
-                    'Corp.id = School.corp_id',
+                    'App.id = School.app_id',
                 ],
-            ],
-            [
-                'table'      => 'departments',
-                'alias'      => 'Department',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Department.id = School.department_id',
-                ],
-            ],
+            ]
         ];
-        # 仅在企业级显示学校列表
-        $rootMenuId = (new Menu)->rootId(true);
-        $condition = 'Corp.id = ' . Corp::whereMenuId($rootMenuId)->first()->id;
         
         return Datatable::simple(
-            $this, $columns, $joins, $condition
+            $this, $columns, $joins, 'School.corp_id = ' . (new Corp)->corpId()
         );
         
     }

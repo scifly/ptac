@@ -38,6 +38,7 @@ class SchoolRequest extends FormRequest {
             'menu_id'        => 'required|integer',
             'school_type_id' => 'required|integer',
             'enabled'        => 'required|boolean',
+            'app_id'         => 'nullable|integer',
             'user_ids'       => 'nullable|string'
         ];
         $this->batchRules($rules);
@@ -50,28 +51,20 @@ class SchoolRequest extends FormRequest {
         
         if (!$this->has('ids')) {
             $input = $this->all();
-            # 保存 - store
             if ($this->method() == 'POST') {
-                if (!isset($input['department_id'])) {
-                    $input['department_id'] = 0;
-                }
-                if (!isset($input['menu_id'])) {
-                    $input['menu_id'] = 0;
-                }
-                # 更新 - update
+                # 保存 - store
+                $input['department_id'] = $input['department_id'] ?? 0;
+                $input['menu_id'] = $input['menu_id'] ?? 0;
             } else {
+                # 更新 - update
                 if ($this->has('id')) {
                     $school = School::find($this->input('id'));
                     $input['department_id'] = $school->department_id;
                     $input['menu_id'] = $school->menu_id;
                 }
             }
-            if (!isset($input['school_type_id'])) {
-                $input['school_type_id'] = School::find($this->schoolId())->school_type_id;
-            }
-            if (isset($input['user_ids'])) {
-                $input['user_ids'] = implode(',', $input['user_ids']);
-            }
+            $input['school_type_id'] = $input['school_type_id'] ?? School::find($this->schoolId())->school_type_id;
+            $input['user_ids'] = $input['user_ids'] ?? implode(',', $input['user_ids']);
             if (!isset($input['corp_id'])) {
                 $departmentId = $this->topDeptId();
                 $input['corp_id'] = $this->user()->role() == '企业'
