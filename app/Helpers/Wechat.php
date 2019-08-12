@@ -626,6 +626,7 @@ class Wechat {
         );
         $path = $categoy == $method ? $method : join('/', [$categoy, $method]);
         $url = join([self::BASEURI[$base], $path, '?', $qStr]);
+        return $url;
         !is_array($data) ?: $data = json_encode($data);
         
         return $data

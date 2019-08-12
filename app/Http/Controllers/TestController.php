@@ -267,7 +267,6 @@ class TestController extends Controller {
     
         $urls = [];
         foreach (self::APIS as $platform => $apis) {
-            $baseUri = self::BASEURI[$platform];
             foreach ($apis as $category => $methods) {
                 foreach ($methods as $method => $params) {
                     if (is_array($params)) {
@@ -275,13 +274,8 @@ class TestController extends Controller {
                     } else {
                         $params = !$params ? [] :  ['access_token'];
                     }
-                    $data = [];
-                    foreach ($params as $param) {
-                        $data[$param] = rand(5, 15);
-                    }
-                    $urls[] = join([
-                        $baseUri, $category, '/', $method, '?', http_build_query($data)
-                    ]);
+                    $values = array_fill(0, sizeof($params), rand(5, 15));
+                    $urls[] = Wechat::invoke($platform, $category, $method, $values);
                 }
             }
         }
