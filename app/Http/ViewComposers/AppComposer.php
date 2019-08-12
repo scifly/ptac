@@ -2,9 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\App;
 use App\Models\Corp;
-use App\Models\Menu;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
@@ -16,17 +14,15 @@ class AppComposer {
     
     use ModelTrait;
     
-    protected $corp, $menu;
+    protected $corp;
     
     /**
      * AppComposer constructor.
      * @param Corp $corp
-     * @param Menu $menu
      */
-    function __construct(Corp $corp, Menu $menu) {
+    function __construct(Corp $corp) {
         
         $this->corp = $corp;
-        $this->menu = $menu;
         
     }
     
@@ -37,37 +33,16 @@ class AppComposer {
     
         $action = explode('/', Request::path())[1];
         if ($action == 'index') {
-            $rootMenuId = $this->menu->menuId(session('menuId'), '企业');
-            if (!$rootMenuId) {
-                $corps = Corp::all()->pluck('name', 'id')->toArray();
-            } else {
-                $corp = Corp::whereMenuId($rootMenuId)->first();
-                $corps = [$corp->id => $corp->name];
-            }
-            $apps = App::whereCorpId(array_key_first($corps))->get()->toArray();
-            $this->formatDateTime($apps);
-            $view->with([
-                'corps' => $corps,
-                'apps'  => $apps,
-            ]);
+            $data = [
+                'titles' => [
+                    '#', '名称', '类型', '所属企业', '描述', '创建于', '更新于', '状态 . 操作'
+                ]
+            ];
+        } else {
+            $data = ['corpId' => $this->corp->corpId()];
         }
         
-    }
-    
-    /**
-     * @param $apps
-     */
-    private function formatDateTime(&$apps) {
-        
-        for ($i = 0; $i < sizeof($apps); $i++) {
-            if ($apps[$i]['created_at']) {
-                $apps[$i]['created_at'] = $this->humanDate($apps[$i]['created_at']);
-            }
-            if ($apps[$i]['updated_at']) {
-                $apps[$i]['updated_at'] = $this->humanDate($apps[$i]['updated_at']);
-            }
-            
-        }
+        $view->with($data);
         
     }
     

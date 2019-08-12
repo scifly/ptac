@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
- * 微信企业应用
+ * 应用
  *
  * Class AppController
  * @package App\Http\Controllers
@@ -30,25 +30,49 @@ class AppController extends Controller {
     }
     
     /**
-     * 微信应用列表/同步
+     * 应用列表
      *
-     * @param AppRequest $request
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function index(AppRequest $request) {
+    public function index() {
         
-        return Request::method() == 'GET'
-            ? ($request->query('corpId')
-                ? $this->app->index($request)
-                : $this->output()
-            )
-            : $this->app->sync($request);
+        return Request::get('draw')
+            ? response()->json($this->app->index())
+            : $this->output();
         
     }
     
     /**
-     * 编辑微信应用
+     * 创建应用
+     *
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    public function create() {
+        
+        return $this->output();
+        
+    }
+    
+    /**
+     * 保存应用
+     *
+     * @param AppRequest $request
+     * @return JsonResponse|string
+     */
+    public function store(AppRequest $request) {
+        
+        return $this->result(
+            $this->app->store(
+                $request->all()
+            ), __('messages.app.submitted')
+        );
+        
+    }
+    
+    /**
+     * 编辑应用
      *
      * @param $id
      * @return bool|JsonResponse
@@ -57,7 +81,7 @@ class AppController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'app' => $this->app->find($id),
+            'app' => $this->app->find($id)
         ]);
         
     }

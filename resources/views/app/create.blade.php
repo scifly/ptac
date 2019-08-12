@@ -1,5 +1,5 @@
-{!! Form::model($app, [
-    'method' => 'put',
+{!! Form::open([
+    'method' => 'post',
     'id' => 'formApp',
     'data-parsley-validate' => 'true'
 ]) !!}

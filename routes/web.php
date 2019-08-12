@@ -58,12 +58,7 @@ $routes = [
         'edit'   => ['{id}' => 'get'],
         'update' => ['{id}' => 'put'],
     ],
-    'app'                    => [
-        'index'   => ['get', 'post'],
-        'edit'    => ['{id}' => 'get'],
-        'update'  => ['{id}' => 'put'],
-        'destroy' => ['{id}' => 'delete'],
-    ],
+    'app'                    => $default,
     'camera'                 => [
         'index' => ['get'],
         'store' => ['post'],

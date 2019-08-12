@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
 use App\Facades\Wechat;
 use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
 use App\Http\Requests\AppRequest;
@@ -105,61 +106,101 @@ class App extends Model {
     function schools() { return $this->hasMany('App\Models\School'); }
     
     /**
-     * 返回指定企业对应的应用列表
+     * 应用列表
      *
-     * @param AppRequest $request
-     * @return JsonResponse
+     * @return array|JsonResponse
      */
-    function index(AppRequest $request) {
+    function index() {
         
-        $corpId = $request->query('corpId');
-        $apps = App::whereCorpId($corpId)->get()->toArray();
-        if (empty($apps)) {
-            return response()->json([
-                'apps' => '<tr id="na"><td colspan="8" style="text-align: center;">( n/a )</td></tr>',
-            ]);
-        }
-        /** @noinspection HtmlUnknownTarget */
-        $tr =
-            '<tr id="app%s">
-                <td>%s</td>
-                <td class="text-center">%s</td>
-                <td class="text-center">%s</td>
-                <td class="text-center"><img class="img-circle" style="height: 16px;" src="%s" alt="" /></td>
-                <td class="text-center">%s</td>
-                <td class="text-center">%s</td>
-                <td class="text-center">%s</td>
-                <td class="text-right">
-                    %s
-                    &nbsp;&nbsp;&nbsp;
-                    <a href="#"><i class="fa fa-pencil" title="修改"></i></a>
-                    &nbsp;&nbsp;
-                    <a href="#"><i class="fa fa-remove text-red" title="删除"</a>
-                </td>
-            </tr>';
-        $html = '';
-        foreach ($apps as $app) {
-            $html .= sprintf(
-                $tr,
-                $app['agentid'],
-                $app['id'],
-                $app['agentid'],
-                $app['name'],
-                $app['square_logo_url'],
-                $app['secret'],
-                $this->humanDate($app['created_at']),
-                $this->humanDate($app['updated_at']),
-                $app['enabled']
-                    ? '<i class="fa fa-circle text-green" title="已启用"></i>'
-                    : '<i class="fa fa-circle text-gray" title="未启用"></i>'
-            );
-        }
+        $columns = [
+            ['db' => 'App.id', 'dt' => 0],
+            ['db' => 'App.name', 'dt' => 1],
+            [
+                'db' => 'App.token', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return empty($d) ? '企业应用' : '公众号';
+                }
+            ],
+            ['db' => 'Corp.name as corpname', 'dt' => 3],
+            ['db' => 'App.description', 'dt' => 4],
+            ['db' => 'App.created_at', 'dt' => 5],
+            ['db' => 'App.updated_at', 'dt' => 6],
+            [
+                'db' => 'App.enabled', 'dt' => 7,
+                'formatter' => function ($d, $row) {
+                    return Datatable::status($d, $row, false);
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'corps',
+                'alias' => 'Corp',
+                'type'  => 'INNER',
+                'conditions' => [
+                    'Corp.id = App.corp_id'
+                ]
+            ]
+        ];
         
-        return response()->json([
-            'apps' => $html,
-        ]);
+        return Datatable::simple(
+            $this, $columns, $joins,
+            'App.corp_id = ' . (new Corp)->corpId()
+        );
         
     }
+    
+    /**
+     * 保存新创建的app
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        SyncApp::dispatch($data, Auth::id());
+        
+        return true;
+        
+    }
+    
+    /**
+     * 更新App
+     *
+     * @param array $data
+     * @param $id
+     * @return bool|Collection|Model|null|static|static[]
+     */
+    function modify(array $data, $id) {
+        
+        SyncApp::dispatch($data, Auth::id(), $id);
+        
+        return true;
+        
+    }
+    
+    /**
+     * 移除应用
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                $this->purge(['Message'], 'app_id', 'reset', $id);
+                $this->purge(['App'], 'id', 'purge', $id);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
     
     /**
      * 保存App
@@ -230,59 +271,7 @@ class App extends Model {
         
     }
     
-    /**
-     * 更新App
-     *
-     * @param array $data
-     * @param $id
-     * @return bool|Collection|Model|null|static|static[]
-     */
-    function modify(array $data, $id) {
-        
-        $app = $this->find($id);
-        $updated = $app->update($data);
-        if ($updated) {
-            SyncApp::dispatch($this->find($id), Auth::id());
-        }
-        
-        return $updated ? $this->find($id) : false;
-        
-    }
-    
-    /**
-     * 保存新创建的app
-     *
-     * @param array $data
-     * @return $this|bool|Model
-     */
-    private function store(array $data) {
-        
-        return $this->create($data) ?? false;
-        
-    }
-    
     /** Helper functions -------------------------------------------------------------------------------------------- */
 
-    /**
-     * 移除应用
-     *
-     * @param $id
-     * @return bool|null
-     * @throws Throwable
-     */
-    function remove($id = null) {
-        
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge(['Message'], 'app_id', 'reset', $id);
-                $this->purge(['App'], 'id', 'purge', $id);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
     
 }

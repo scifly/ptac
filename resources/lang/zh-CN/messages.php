@@ -39,9 +39,10 @@ return [
         'stored' => '保存超级管理员',
     ],
     'app'                      => [
-        'title'      => '企业应用管理',
+        'title'      => '应用管理',
         'configured' => '应用设置成功',
         'not_found'  => '找不到指定的应用',
+        'submitted'  => '已提交应用设置请求'
     ],
     'turnstile'                => [
         'title'     => '门禁管理',
