@@ -7,7 +7,7 @@
             <ul class="nav nav-tabs pull-right">
                 <li class="action-type">
                     <a href="#tab02" data-toggle="tab">
-                        <i class="fa fa-list-ul"></i>&nbsp;发送记录
+                        <i class="fa fa-list"></i>&nbsp;发送记录
                     </a>
                 </li>
                 <li class="action-type">
@@ -16,7 +16,7 @@
                     </a>
                 </li>
                 <li class="pull-left header">
-                    <i class="fa fa-send"></i>短信充值 & 查询
+                    <i class="fa fa-money"></i>短信充值 & 查询
                 </li>
             </ul>
             <div class="tab-content">
