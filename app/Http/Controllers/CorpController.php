@@ -107,7 +107,7 @@ class CorpController extends Controller {
     }
     
     /**
-     * 短信充值
+     * 短信充值 & 查询
      *
      * @param $id
      * @return bool|JsonResponse

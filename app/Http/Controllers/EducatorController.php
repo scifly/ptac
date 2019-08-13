@@ -128,7 +128,7 @@ class EducatorController extends Controller {
     }
     
     /**
-     * 增加短信额度（充值）
+     * 短信充值 & 查询
      *
      * @param $id
      * @return bool|JsonResponse
