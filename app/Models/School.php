@@ -34,6 +34,7 @@ use Throwable;
  * @property int $corp_id 学校所属企业ID
  * @property int|null $sms_balance 短信余额
  * @property int|null $sms_used 短信已使用量
+ * @property int|null $sms_len 短信计费长度
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
@@ -77,6 +78,7 @@ use Throwable;
  * @method static Builder|School whereSignature($value)
  * @method static Builder|School whereSmsBalance($value)
  * @method static Builder|School whereSmsUsed($value)
+ * @method static Builder|School whereSmsLen($value)
  * @method static Builder|School whereUpdatedAt($value)
  * @method static Builder|School whereUserIds($value)
  * @method static Builder|School newModelQuery()
@@ -93,7 +95,7 @@ class School extends Model {
         'menu_id', 'signature', 'corp_id',
         'longitude', 'latitude', 'department_id',
         'user_ids', 'app_id', 'sms_balance',
-        'sms_used', 'enabled',
+        'sms_used', 'sms_len', 'enabled',
     ];
     
     /**

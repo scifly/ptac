@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\{Datatable, Wechat};
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Sms, Snippet};
 use App\Jobs\SendMessage;
 use Carbon\Carbon;
 use Eloquent;
@@ -789,21 +789,37 @@ class Message extends Model {
     /**
      * 发送短信消息
      *
-     * @param $mobiles
-     * @param $content
-     * @return string
+     * @param array $mobiles
+     * @param string $content
      * @throws Throwable
      */
-    function sendSms($mobiles, $content) {
+    function sendSms(array $mobiles, $content) {
         
-        // $signature = '【成都外国语】';
-        $result = '';
-        // Wechat::batchSend(
-        //     'LKJK004923', "654321@",
-        //     implode(',', $mobiles),
-        //     $content . $signature
-        // );
-        return json_encode($result);
+        try {
+            DB::transaction(function () use ($mobiles, $content) {
+                throw_if(
+                    !$educator = Educator::whereUserId(Auth::id())->first(),
+                    new Exception(__('messages.message.sms_send_failed'))
+                );
+                $school = $educator->school;
+                $content .= $school->signature;
+                $count = sizeof($mobiles) * ceil(mb_strlen($content) / $school->sms_len);
+                $submitted = (new Sms)->invoke('BatchSend2', [
+                    join(',', $mobiles),
+                    $content, 'cell', '', '',
+                ]);
+                // 提交成功后扣减(教职员工、所属学校、所属企业)余额
+                $submitted < 0 ?: array_map(
+                    function (Model $model) use ($count) {
+                        $model->decrement('sms_balance', $count);
+                    }, [$educator, $school, $school->corp]
+                );
+                
+                return $submitted;
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     

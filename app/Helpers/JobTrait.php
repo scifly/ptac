@@ -42,7 +42,7 @@ trait JobTrait {
                      * @var Collection|User[] $wxTargets
                      * @var Collection|User[] $realTargetUsers
                      */
-                    list($mobiles, $wxTargets, $realTargetUsers) = $message->wxTargets($userIds, $departmentIds);
+                    [$mobiles, $wxTargets, $realTargetUsers] = $message->wxTargets($userIds, $departmentIds);
                     # step 1: 向已关注的用户（监护人、教职员工）发送微信
                     if ($realTargetUsers->where('subscribed', 1)->count()) {
                         $userids = $wxTargets->where('subscribed', 1)->pluck('userid')->toArray();

@@ -31,20 +31,19 @@ class Sms {
      */
     function invoke($api, $values = null) {
         
-        $url = join([
-            self::BASE_URI,
-            $api . '.aspx?',
-            http_build_query(
-                array_merge(
-                    self::CREDENTIAL,
-                    array_combine(
-                        self::APIS[$api], $values ?? []
+        return $this->curlGet(
+            join([
+                self::BASE_URI, $api . '.aspx?',
+                http_build_query(
+                    array_merge(
+                        self::CREDENTIAL,
+                        array_combine(
+                            self::APIS[$api], $values ?? []
+                        )
                     )
-                )
-            )
-        ]);
-        
-        return $this->curlGet($url);
+                ),
+            ])
+        );
         
     }
     

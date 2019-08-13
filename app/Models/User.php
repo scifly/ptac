@@ -471,7 +471,7 @@ class User extends Authenticatable {
     function sync(array $contacts, $id = null) {
         
         foreach ($contacts as $contact) {
-            list($userId, $role, $method) = $contact;
+            [$userId, $role, $method] = $contact;
             if ($role == '学生') continue;
             $user = $this->find($userId);
             $params = [
