@@ -11,7 +11,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <span id="quote" style="margin-top: 6px; display: block;">
-                        {!! $record['sms_balance'] !!} 条
+                        {!! $record['sms_balance'] ?? 0 !!} 条
                     </span>
                 </div>
             </div>
