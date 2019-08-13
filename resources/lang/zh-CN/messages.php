@@ -155,8 +155,8 @@ return [
         'not_found' => '没有找到相关的考勤规则',
     ],
     'sms_charge'               => [
-        'title'      => '短信充值',
-        'not_enough' => '余额不足',
+        'title'        => '短信充值',
+        'insufficient' => '上级(代理人/学校)余额不足',
     ],
     'user'                     => [
         'not_found' => '没有这个用户',

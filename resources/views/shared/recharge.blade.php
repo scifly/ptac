@@ -3,33 +3,64 @@
         @include('shared.form_header')
     </div>
     <div class="box-body">
-        <div class="form-horizontal">
-            {{ Form::hidden('id', $record['id'], ['id' => 'id']) }}
-            <div class="form-group">
-                {!! Form::label('sms_balance', '余额', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <span id="quote" style="margin-top: 6px; display: block;">
-                        {!! $record['sms_balance'] ?? 0 !!} 条
-                    </span>
+        <div class="nav-tabs pull-right">
+            <ul class="nav nav-tabs pull-right">
+                <li class="action-type">
+                    <a href="#tab02" data-toggle="tab">
+                        <i class="fa fa-th-large"></i>&nbsp;发送记录
+                    </a>
+                </li>
+                <li class="action-type">
+                    <a href="#tab01" data-toggle="tab">
+                        <i class="fa fa-archive"></i>&nbsp;短信充值
+                    </a>
+                </li>
+                <li class="pull-left header">
+                    <i class="fa fa-send"></i>短信充值 & 查询
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab01">
+                    <div class="form-horizontal">
+                        {!! Form::model($model, [
+                            'method' => 'put',
+                            'id' => $formId,
+                            'data-parsley-validate' => 'true'
+                        ]) !!}
+                        {!! Form::hidden('id', $model['id'], ['id' => 'id']) !!}
+                        <div class="form-group">
+                            {!! Form::label('sms_balance', '余额', [
+                                'class' => 'col-sm-3 control-label'
+                            ]) !!}
+                            <div class="col-sm-6">
+                                <span id="quote" style="margin-top: 6px; display: block;">
+                                    {!! $model['sms_balance'] ?? 0 !!} 条
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('charge', '条数', [
+                                'class' => 'col-sm-3 control-label'
+                            ]) !!}
+                            <div class="col-sm-6">
+                                {!! Form::text('charge', null, [
+                                    'id' => 'charge',
+                                    'class' => 'form-control text-blue',
+                                    'placeholder' => '(请输入充值条数)',
+                                    'required' => 'true',
+                                    'maxlength' => '255'
+                                ]) !!}
+                            </div>
+                        </div>
+                        {!! Form::close() !!}
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('charge', '充值条数', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('charge', null, [
-                        'id' => 'charge',
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '(请输入充值条数)',
-                        'required' => 'true',
-                        'maxlength' => '255'
-                    ]) !!}
+                <div class="tab-pane" id="tab02">
+                    43789328392
                 </div>
             </div>
         </div>
+
     </div>
-    @include('shared.form_buttons')
+
 </div>

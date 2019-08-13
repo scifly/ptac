@@ -81,7 +81,7 @@ class SmsCharge extends Model {
                 throw_if(
                     $target != 'corp' &&
                     ($data['charge'] > $record->{$target == 'school' ? 'corp' : 'school'}->{'sms_balance'}),
-                    new Exception(__('messages.sms_charge.not_enough'))
+                    new Exception(__('messages.sms_charge.insufficient'))
                 );
                 $record->{'increment'}('sms_balance', $data['charge']);
                 $this->store($target, $id, $data['charge']);
