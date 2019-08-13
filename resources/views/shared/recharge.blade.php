@@ -6,7 +6,7 @@
         <div class="form-horizontal">
             {{ Form::hidden('id', $record['id'], ['id' => 'id']) }}
             <div class="form-group">
-                {!! Form::label('sms_quote', '余额', [
+                {!! Form::label('sms_balance', '余额', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
