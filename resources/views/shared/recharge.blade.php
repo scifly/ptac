@@ -10,7 +10,7 @@
                         <i class="fa fa-list"></i>&nbsp;发送记录
                     </a>
                 </li>
-                <li class="action-type">
+                <li class="active action-type">
                     <a href="#tab01" data-toggle="tab">
                         <i class="fa fa-money"></i>&nbsp;短信充值
                     </a>
