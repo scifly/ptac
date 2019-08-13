@@ -77,8 +77,14 @@ class SmsCharge extends Model {
         try {
             DB::transaction(function () use ($model, $id, $data) {
                 $record = $model->{'find'}($id);
+                $target = lcfirst(class_basename($model));
+                throw_if(
+                    $target != 'corp' &&
+                    ($data['charge'] > $record->{$target == 'school' ? 'corp' : 'school'}->{'sms_balance'}),
+                    new Exception(__('messages.sms_charge.not_enough'))
+                );
                 $record->{'increment'}('sms_balance', $data['charge']);
-                $this->store(lcfirst(class_basename($model)), $id, $data['charge']);
+                $this->store($target, $id, $data['charge']);
             });
         } catch (Exception $e) {
             throw $e;

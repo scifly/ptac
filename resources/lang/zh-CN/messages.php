@@ -42,7 +42,7 @@ return [
         'title'      => '应用管理',
         'configured' => '应用设置成功',
         'not_found'  => '找不到指定的应用',
-        'submitted'  => '已提交应用设置请求'
+        'submitted'  => '已提交应用设置请求',
     ],
     'turnstile'                => [
         'title'     => '门禁管理',
@@ -154,8 +154,9 @@ return [
         'title'     => '学生考勤规则',
         'not_found' => '没有找到相关的考勤规则',
     ],
-    'sms_charge' => [
-        'title' => '短信充值'
+    'sms_charge'               => [
+        'title'      => '短信充值',
+        'not_enough' => '余额不足',
     ],
     'user'                     => [
         'not_found' => '没有这个用户',
