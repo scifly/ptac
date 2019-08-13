@@ -7,12 +7,12 @@
             <ul class="nav nav-tabs pull-right">
                 <li class="action-type">
                     <a href="#tab02" data-toggle="tab">
-                        <i class="fa fa-th-large"></i>&nbsp;发送记录
+                        <i class="fa fa-list-ul"></i>&nbsp;发送记录
                     </a>
                 </li>
                 <li class="action-type">
                     <a href="#tab01" data-toggle="tab">
-                        <i class="fa fa-archive"></i>&nbsp;短信充值
+                        <i class="fa fa-money"></i>&nbsp;短信充值
                     </a>
                 </li>
                 <li class="pull-left header">
@@ -52,6 +52,7 @@
                                 ]) !!}
                             </div>
                         </div>
+                        @include('shared.form_buttons')
                         {!! Form::close() !!}
                     </div>
                 </div>
