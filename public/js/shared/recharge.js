@@ -16,7 +16,7 @@
                 page.initBackBtn(table);
                 page.initDatatable(
                     table, [
-                        {className: 'text-center', targets: [1, 2, 3]},
+                        {className: 'text-center', targets: [1, 2]},
                         {className: 'text-left', targets: [3]}
                     ], 'recharge/' + id
                 );
