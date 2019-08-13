@@ -360,7 +360,7 @@ var page = {
                     autoWidth: true,
                     columnDefs: options,
                     scrollX: true,
-                    language: {url: '../files/ch.json'},
+                    language: {url: '/files/ch.json'},
                     lengthMenu: [[15, 25, 50, -1], [15, 25, 50, '所有']],
                     // dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
                     // buttons: ['pdf', 'csv']
