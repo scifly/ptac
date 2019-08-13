@@ -17,6 +17,12 @@
                 page.initDatatable(
                     table, [{className: 'text-center', targets: [1, 2]}], 'recharge/' + id
                 );
+                $.getMultiScripts(['js/shared/dtrange.js']).done(
+                    function () {
+                        $.dtrange().dRange('.dtrange');
+                        // page.initSelect2();
+                    }
+                );
                 $form.parsley().on('form:validated', function () {
                     if ($('.parsley-error').length === 0) {
                         $('.overlay').show();
