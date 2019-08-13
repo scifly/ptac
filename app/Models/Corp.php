@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\HasMany,
     Relations\HasManyThrough};
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Auth, DB, Request, Session};
 use Throwable;
 
@@ -34,6 +35,8 @@ use Throwable;
  * @property string $token 接收消息服务器配置项，用于生成签名
  * @property string|null $access_token 通讯录同步应用access_token
  * @property int $departmentid 企业微信后台通讯录的根部门id
+ * @property int $sms_balance 短信余额
+ * @property int $sms_used 已使用的短信数量
  * @property string|null $mchid 微信支付商户号
  * @property string|null $apikey 微信支付商户支付密钥
  * @property-read Company $company
@@ -60,6 +63,8 @@ use Throwable;
  * @method static Builder|Corp whereMenuId($value)
  * @method static Builder|Corp whereApikey($value)
  * @method static Builder|Corp whereMchid($value)
+ * @method static Builder|Corp whereSmsBalance($value)
+ * @method static Builder|Corp whereSmsUsed($value)
  * @method static Builder|Corp whereAccessToken($value)
  * @method static Builder|Corp newModelQuery()
  * @method static Builder|Corp newQuery()
@@ -75,7 +80,7 @@ class Corp extends Model {
         'corpid', 'contact_sync_secret', 'access_token',
         'encoding_aes_key', 'token', 'menu_id',
         'department_id', 'departmentid', 'mchid',
-        'apikey', 'enabled',
+        'apikey', 'sms_balance', 'sms_used', 'enabled',
     ];
     
     /**
@@ -165,7 +170,14 @@ class Corp extends Model {
             [
                 'db'        => 'Corp.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return Datatable::status($d, $row, false);
+                    $rechargeLink = sprintf(
+                        Snippet::DT_ANCHOR,
+                        'recharge_' . $row['id'],
+                        '短信充值 & 查询', 'fa-money'
+                    );
+                    
+                    return Datatable::status($d, $row, false) .
+                        (Auth::user()->can('act', self::uris()['recharge']) ? $rechargeLink : '');
                 },
             ],
         ];
@@ -237,6 +249,20 @@ class Corp extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 短信充值
+     *
+     * @param $id
+     * @param array $data
+     * @return JsonResponse
+     * @throws Throwable
+     */
+    function recharge($id, array $data) {
+        
+        return (new SmsCharge)->recharge($this, $id, $data);
         
     }
     

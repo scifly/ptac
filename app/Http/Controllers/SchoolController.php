@@ -107,6 +107,21 @@ class SchoolController extends Controller {
     }
     
     /**
+     * 短信充值
+     *
+     * @param $id
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    public function recharge($id) {
+        
+        return Request::method() == 'PUT'
+            ? $this->school->recharge($id, Request::all())
+            : $this->output(['school' => $this->school->find($id)]);
+        
+    }
+    
+    /**
      * 删除学校
      *
      * @param $id

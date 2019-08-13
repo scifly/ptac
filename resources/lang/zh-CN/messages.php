@@ -154,6 +154,9 @@ return [
         'title'     => '学生考勤规则',
         'not_found' => '没有找到相关的考勤规则',
     ],
+    'sms_charge' => [
+        'title' => '短信充值'
+    ],
     'user'                     => [
         'not_found' => '没有这个用户',
     ],

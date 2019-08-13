@@ -23,7 +23,8 @@ use Throwable;
  * @property int $id
  * @property int $user_id 教职员工用户ID
  * @property int $school_id 所属学校ID
- * @property int $sms_quote 可用短信条数
+ * @property int $sms_balance 可用短信条数
+ * @property int $sms_used 已使用短信条数
  * @property int $singular 是否为单角色
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -37,7 +38,8 @@ use Throwable;
  * @method static Builder|Educator whereEnabled($value)
  * @method static Builder|Educator whereId($value)
  * @method static Builder|Educator whereSchoolId($value)
- * @method static Builder|Educator whereSmsQuote($value)
+ * @method static Builder|Educator whereSmsBalance($value)
+ * @method static Builder|Educator whereSmsUsed($value)
  * @method static Builder|Educator whereUpdatedAt($value)
  * @method static Builder|Educator whereUserId($value)
  * @method static Builder|Educator whereSingular($value)
@@ -55,7 +57,7 @@ class Educator extends Model {
         '手机号码', '年级主任', '班级主任', '班级科目',
     ];
     protected $fillable = [
-        'user_id', 'school_id', 'sms_quote', 'enabled',
+        'user_id', 'school_id', 'sms_balance', 'sms_used', 'enabled',
     ];
     
     /**
@@ -140,7 +142,7 @@ class Educator extends Model {
                     $rechargeLink = sprintf(
                         Snippet::DT_ANCHOR,
                         'recharge_' . $row['id'],
-                        '充值', 'fa-money'
+                        '短信充值 & 查询', 'fa-money'
                     );
                     
                     return Datatable::status($d, $row, false) .
@@ -269,34 +271,18 @@ class Educator extends Model {
     }
     
     /**
-     * 短信条数充值
+     * 短信充值
      *
      * @param $id
      * @param array $data
      * @return JsonResponse
+     * @throws Throwable
      */
     function recharge($id, array $data) {
         
-        $educator = $this->find($id);
-        abort_if(
-            !$educator,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.educator.not_found')
+        return (new SmsCharge)->recharge(
+            $this, $id, $data
         );
-        $updated = $educator->update([
-            'sms_quote' => $educator->sms_quote + $data['charge'],
-        ]);
-        abort_if(
-            !$updated,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            __('messages.fail')
-        );
-        
-        return response()->json([
-            'title'   => __('messages.educator.title'),
-            'message' => __('messages.ok'),
-            'quote'   => $this->find($id)->sms_quote,
-        ]);
         
     }
     
@@ -344,7 +330,7 @@ class Educator extends Model {
                 Request::replace(['ids' => $ids]);
                 $this->purge([
                     class_basename($this), 'ConferenceParticipant',
-                    'EducatorAppeal', 'ClassEducator', 'Event', 'SmsEducator',
+                    'EducatorAppeal', 'ClassEducator', 'Event',
                 ], 'educator_id');
             });
         } catch (Exception $e) {

@@ -80,7 +80,9 @@ $routes = [
         'store' => ['post'],
         'show'  => ['{id}' => 'get'],
     ],
-    'corp'                   => $default,
+    'corp'                   => array_merge(
+        $default, ['recharge' => ['{id}' => ['get', 'put']]],
+    ),
     'custodian'              => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
@@ -181,7 +183,9 @@ $routes = [
         $default,
         ['issue' => ['post']]
     ),
-    'school'                 => $default,
+    'school'                 => array_merge(
+        $default, ['recharge' => ['{id}' => ['get', 'put']]]
+    ),
     'score'                  => [
         'index'   => ['get'],
         'create'  => ['{examId?}' => 'get'],

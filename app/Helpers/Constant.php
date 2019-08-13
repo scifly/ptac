@@ -192,6 +192,11 @@ class Constant {
         'mobile_sites'    => '微网站',
         'home_works'      => '应用测试',
     ];
+    const SMS_CHARGE_TARGET = [
+        'corp'     => 1,
+        'school'   => 2,
+        'educator' => 3,
+    ];
     # 错误代码 & 消息
     const WXERR = [
         -1      => '系统繁忙',

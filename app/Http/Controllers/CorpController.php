@@ -107,6 +107,21 @@ class CorpController extends Controller {
     }
     
     /**
+     * 短信充值
+     *
+     * @param $id
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    public function recharge($id) {
+        
+        return Request::method() == 'PUT'
+            ? $this->corp->recharge($id, Request::all())
+            : $this->output(['corp' => $this->corp->find($id)]);
+        
+    }
+    
+    /**
      * 删除企业
      *
      * @param $id

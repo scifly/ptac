@@ -230,12 +230,11 @@ trait ModelTrait {
                 ['route', '<>', null],
             ])->pluck('route', 'method')->toArray();
         }
-        $uris = [];
         foreach ($routes as $key => $value) {
             $uris[$key] = new Route($value);
         }
         
-        return $uris;
+        return $uris ?? [];
         
     }
     

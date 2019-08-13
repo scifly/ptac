@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany,
     Relations\HasManyThrough,
     Relations\HasOne};
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
@@ -31,7 +32,7 @@ use Throwable;
  * @property float|null $latitude 学校所处纬度
  * @property int|null $app_id 所属公众号对应的应用id
  * @property int $corp_id 学校所属企业ID
- * @property int|null $sms_max_cnt 学校短信配额
+ * @property int|null $sms_balance 短信余额
  * @property int|null $sms_used 短信已使用量
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -74,7 +75,7 @@ use Throwable;
  * @method static Builder|School whereName($value)
  * @method static Builder|School whereSchoolTypeId($value)
  * @method static Builder|School whereSignature($value)
- * @method static Builder|School whereSmsMaxCnt($value)
+ * @method static Builder|School whereSmsBalance($value)
  * @method static Builder|School whereSmsUsed($value)
  * @method static Builder|School whereUpdatedAt($value)
  * @method static Builder|School whereUserIds($value)
@@ -88,8 +89,11 @@ class School extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'name', 'address', 'school_type_id', 'menu_id', 'signature', 'corp_id',
-        'longitude', 'latitude', 'department_id', 'user_ids', 'app_id', 'enabled',
+        'name', 'address', 'school_type_id',
+        'menu_id', 'signature', 'corp_id',
+        'longitude', 'latitude', 'department_id',
+        'user_ids', 'app_id', 'sms_balance',
+        'sms_used', 'enabled',
     ];
     
     /**
@@ -310,7 +314,14 @@ class School extends Model {
             [
                 'db'        => 'School.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::status($d, $row, false);
+                    $rechargeLink = sprintf(
+                        Snippet::DT_ANCHOR,
+                        'recharge_' . $row['id'],
+                        '短信充值 & 查询', 'fa-money'
+                    );
+    
+                    return Datatable::status($d, $row, false) .
+                        (Auth::user()->can('act', self::uris()['recharge']) ? $rechargeLink : '');
                 },
             ],
         ];
@@ -407,6 +418,20 @@ class School extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 短信充值
+     *
+     * @param $id
+     * @param array $data
+     * @return JsonResponse
+     * @throws Throwable
+     */
+    function recharge($id, array $data) {
+        
+        return (new SmsCharge)->recharge($this, $id, $data);
         
     }
     
