@@ -1,4 +1,6 @@
 @include('shared.recharge', [
     'model' => $corp,
-    'formId' => 'formCorp'
+    'formId' => 'formCorp',
+    'titles' => $titles,
+    'filter' => $filter
 ])
