@@ -15,7 +15,7 @@
 
                 page.initBackBtn(table);
                 page.initDatatable(
-                    table, [{className: 'text-center', targets: [1, 2]}], 'recharge'
+                    table, [{className: 'text-center', targets: [1, 2]}], 'recharge/' + id
                 );
                 $form.parsley().on('form:validated', function () {
                     if ($('.parsley-error').length === 0) {
