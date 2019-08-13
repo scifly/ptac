@@ -316,6 +316,56 @@ class Message extends Model {
     }
     
     /**
+     * 返回短消息列表
+     *
+     * @param $sender
+     * @param $senderid
+     * @return array
+     */
+    function sms($sender, $senderid) {
+        
+        $columns = [
+            ['db' => 'Message.id', 'dt' => 0],
+            ['db' => 'User.realname', 'dt' => 1],
+            ['db' => 'Message.created_at', 'dt' => 2, 'dr' => true],
+            [
+                'db'        => 'Message.content', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return json_decode($d, true)['sms'];
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = Message.s_user_id',
+                ],
+            ],
+        ];
+        switch ($sender) {
+            case 'corp':
+                $builder = Corp::find($senderid)->educators;
+                break;
+            case 'school':
+                $builder = School::find($senderid)->educators;
+                break;
+            default:
+                $builder = Educator::whereIn('id', $senderid)->get();
+                break;
+        }
+        $condition = 'Message.comm_type_id = 2 AND s_user_id IN ('
+            . join(',', $builder->pluck('user_id')->toArray()) . ')';
+        
+        return Datatable::simple(
+            $this, $columns, $joins, $condition
+        );
+        
+    }
+    
+    /**
      * 编辑消息
      *
      * @param $id
@@ -753,7 +803,6 @@ class Message extends Model {
         //     implode(',', $mobiles),
         //     $content . $signature
         // );
-        
         return json_encode($result);
         
     }
@@ -1141,7 +1190,6 @@ class Message extends Model {
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
-
     /**
      * 获取当前请求对应的企业号id和“通讯录同步”Secret
      *
@@ -1398,20 +1446,237 @@ class Message extends Model {
     }
     
     /**
+     * 返回Message相关view数据
+     *
+     * @param string $path
      * @return array
      */
-    function compose() {
+    function compose($path) {
         
-        $role = Auth::user()->role();
-        $part = session('part');
-        if (isset($part) && $part == 'custodian') $role = '监护人';
+        switch ($path) {
+            case 'messages/index':
+                [$optionAll, $htmlCommType, $htmlMediaType, $htmlMessageType] = $this->messageFilters();
+                $titles = [
+                    '#', '标题', '批次',
+                    ['title' => '通信方式', 'html' => $htmlCommType],
+                    ['title' => '格式', 'html' => $htmlMediaType],
+                    ['title' => '类型', 'html' => $htmlMessageType],
+                ];
+                
+                return [
+                    'titles'       => array_merge($titles, [
+                        '接收人数',
+                        ['title' => '发送于', 'html' => $this->inputDateTimeRange('发送于')],
+                        [
+                            'title' => '状态',
+                            'html'  => $this->singleSelectList(
+                                array_merge($optionAll, [0 => '草稿', 1 => '已发', 2 => '定时']), 'filter_sent'
+                            ),
+                        ],
+                    ]),
+                    'rTitles'      => array_merge($titles, [
+                        '发送者',
+                        ['title' => '接收于', 'html' => $this->inputDateTimeRange('接收于')],
+                        [
+                            'title' => '状态',
+                            'html'  => $this->singleSelectList(
+                                array_merge($optionAll, [0 => '未读', 1 => '已读']), 'filter_read'
+                            ),
+                        ],
+                    ]),
+                    'smsMaxLength' => 300,
+                    'messageTypes' => MessageType::whereEnabled(1)->pluck('name', 'id')->toArray(),
+                    'batch'        => true,
+                    'filter'       => true,
+                ];
+            case 'messages/edit':
+            case 'messages/show':
+                return [
+                    'users'        => User::pluck('realname', 'id'),
+                    'messageTypes' => MessageType::pluck('name', 'id'),
+                    'commtypes'    => CommType::pluck('name', 'id'),
+                    'apps'         => App::pluck('name', 'id'),
+                ];
+            case 'message_centers/index':
+                $role = Auth::user()->role();
+                $part = session('part');
+                if (isset($part) && $part == 'custodian') $role = '监护人';
+                
+                return array_combine(
+                    ['messageTypes', 'mediaTypes', 'acronym', 'canSend'],
+                    [
+                        array_merge([0 => '全部'], MessageType::pluck('name', 'id')->toArray()),
+                        array_merge([0 => '全部'], MediaType::pluck('remark', 'id')->toArray()),
+                        School::find(session('schoolId'))->corp->acronym,
+                        !in_array($role, ['监护人', '学生']),
+                    ]);
+            case 'message_centers/show':
+                $id = Request::route('id');
+                $detail = $id ? $this->detail($id) : null;
+                $type = $detail['type'];
+                $content = json_decode($detail[$type], true);
+                
+                return [
+                    'detail'  => $detail,
+                    'content' => $content[$type],
+                    'replies' => $id ? $this->replies($id, $this->find($id)->msl_id) : null,
+                ];
+            case 'message_centers/create':
+            case 'message_centers/edit':
+                $user = Auth::user();
+                $chosenTargetsHtml = '';
+                $detail = $selectedDepartmentIds = $selectedUserIds = null;
+                $title = $text = $url = $btntxt = $mediaId = $accept = null;
+                $filename = $filepath = $mpnewsList = $timing = null;
+                if (Request::route('id')) {
+                    $messageId = Request::route('id');
+                    $detail = $this->detail($messageId);
+                    $timing = $this->find($messageId)->event_id;
+                    $type = $detail['type'];
+                    $message = json_decode($detail[$type]);
+                    $content = $message->{$type};
+                    switch ($type) {
+                        case 'text':
+                            $text = $content->{'content'};
+                            break;
+                        case 'image':
+                            list($mediaId, $filename, $filepath) = $this->fileAttrs($content);
+                            $accept = 'image/*';
+                            break;
+                        case 'voice':
+                            list($mediaId, $filename, $filepath) = $this->fileAttrs($content);
+                            $accept = 'audio/*';
+                            break;
+                        case 'video':
+                            $title = $content->{'title'};
+                            $text = $content->{'description'};
+                            list($mediaId, $filename, $filepath) = $this->fileAttrs($content);
+                            $accept = 'video/mp4';
+                            break;
+                        case 'file':
+                            list($mediaId, $filename, $filepath) = $this->fileAttrs($content);
+                            $accept = '*';
+                            break;
+                        case 'textcard':
+                            $title = $content->{'title'};
+                            $text = $content->{'description'};
+                            $url = $content->{'url'};
+                            $btntxt = $content->{'btntxt'};
+                            break;
+                        case 'mpnews':
+                            $articles = $content->{'articles'};
+                            $tpl = <<<HTML
+                                <li id="mpnews-%s" class="weui-uploader__file" style="background-image: %s"
+                                data-media-id="%s" data-author="%s" data-content="%s" data-digest="%s"
+                                data-filename="%s" data-url="%s" data-image="%s" data-title="%s"></li>
+                            HTML;
+                            for ($i = 0; $i < sizeof($articles); $i++) {
+                                $article = $articles[$i];
+                                $mpnewsList .= sprintf(
+                                    $tpl, $i,
+                                    'url(/' . $article->{'image_url'} . ')',
+                                    $article->{'thumb_media_id'},
+                                    $article->{'author'},
+                                    $article->{'content'},
+                                    $article->{'digest'},
+                                    $article->{'filename'},
+                                    $article->{'content_source_url'},
+                                    $article->{'image_url'},
+                                    $article->{'title'}
+                                );
+                            }
+                            break;
+                        case 'sms':
+                            $text = $content;
+                            break;
+                        default:
+                            break;
+                    }
+                    $selectedDepartmentIds = !empty($message->{'toparty'})
+                        ? explode('|', $message->{'toparty'}) : [];
+                    $touser = !empty($message->{'touser'})
+                        ? explode('|', $message->{'touser'}) : [];
+                    $selectedUserIds = User::whereIn('userid', $touser)->pluck('id')->toArray();
+                    list($departmentHtml, $userHtml) = array_map(
+                        function ($ids, $type) {
+                            /** @noinspection HtmlUnknownTarget */
+                            $tpl = '<a id="%s" class="chosen-results-item" data-uid="%s" data-type="%s">' .
+                                '<img src="%s" style="%s" alt="" /></a>';
+                            $html = '';
+                            $imgName = $type == 'department' ? 'department.png' : 'personal.png';
+                            $imgStyle = $type == 'department' ? '' : 'border-radius: 50%;';
+                            foreach ($ids as $id) {
+                                $html .= sprintf(
+                                    $tpl, $type . '-' . $id,
+                                    $id, $type, '/img/' . $imgName,
+                                    $imgStyle
+                                );
+                            }
+                            
+                            return $html;
+                        },
+                        [$selectedDepartmentIds, $selectedUserIds], ['department', 'user']
+                    );
+                    $chosenTargetsHtml = $departmentHtml . $userHtml;
+                }
+                # 对当前用户可见的所有部门id
+                $departmentIds = $this->departmentIds($user->id, session('schoolId'));
+                
+                return [
+                    'departments'           => Department::whereIn('id', $departmentIds)->get(),
+                    'messageTypes'          => MessageType::pluck('name', 'id'),
+                    'msgTypes'              => [
+                        'text'     => '文本',
+                        'image'    => '图片',
+                        'voice'    => '语音',
+                        'video'    => '视频',
+                        'file'     => '文件',
+                        'textcard' => '卡片',
+                        'mpnews'   => '图文',
+                        'sms'      => '短信',
+                    ],
+                    'selectedMsgTypeId'     => $detail ? $detail['type'] : null,
+                    'selectedDepartmentIds' => $selectedDepartmentIds,
+                    'selectedUserIds'       => $selectedUserIds,
+                    'chosenTargetsHtml'     => $chosenTargetsHtml,
+                    'title'                 => $title,
+                    'content'               => $text,
+                    'url'                   => $url,
+                    'btntxt'                => $btntxt,
+                    'mediaId'               => $mediaId,
+                    'filepath'              => $filepath,
+                    'accept'                => $accept,
+                    'filename'              => $filename,
+                    'mpnewsList'            => $mpnewsList,
+                    'timing'                => $timing,
+                ];
+            default:    // 短信充值 & 查询
+                return [
+                    'filter' => true,
+                    'titles' => [
+                        '#', '发送者',
+                        ['title' => '发送于', 'html' => $this->inputDateTimeRange('发送于')],
+                        '内容',
+                    ],
+                ];
+        }
         
-        return [
-            array_merge([0 => '全部'], MessageType::pluck('name', 'id')->toArray()),
-            array_merge([0 => '全部'], MediaType::pluck('remark', 'id')->toArray()),
-            School::find(session('schoolId'))->corp->acronym,
-            !in_array($role, ['监护人', '学生']),
-        ];
+    }
+    
+    /**
+     * 获取文件类消息的mediaId及filename属性值
+     *
+     * @param $msg
+     * @return array
+     */
+    private function fileAttrs($msg) {
+        
+        $mediaId = $msg->{'media_id'};
+        $filepath = $msg->{'path'};
+        $paths = explode('/', $msg->{'path'});
+        $filename = $paths[sizeof($paths) - 1];
+        
+        return [$mediaId, $filename, $filepath];
         
     }
     

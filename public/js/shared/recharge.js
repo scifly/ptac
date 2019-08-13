@@ -14,6 +14,9 @@
                     $charge = $('#charge');
 
                 page.initBackBtn(table);
+                page.initDatatable(
+                    table, [{className: 'text-center', targets: [1, 2]}], 'recharge'
+                );
                 $form.parsley().on('form:validated', function () {
                     if ($('.parsley-error').length === 0) {
                         $('.overlay').show();

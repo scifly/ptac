@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorRequest;
-use App\Models\{Custodian, Department, Educator, School};
+use App\Models\{Custodian, Department, Educator, Message, School};
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -17,7 +17,7 @@ use Throwable;
  */
 class EducatorController extends Controller {
     
-    protected $educator, $department, $school, $custodian;
+    protected $educator, $department, $school, $custodian, $message;
     
     /**
      * EducatorController constructor.
@@ -25,12 +25,14 @@ class EducatorController extends Controller {
      * @param Department $department
      * @param School $school
      * @param Custodian $custodian
+     * @param Message $message
      */
     public function __construct(
         Educator $educator,
         Department $department,
         School $school,
-        Custodian $custodian
+        Custodian $custodian,
+        Message $message
     ) {
         
         $this->middleware(['auth', 'checkrole']);
@@ -38,6 +40,7 @@ class EducatorController extends Controller {
         $this->department = $department;
         $this->school = $school;
         $this->custodian = $custodian;
+        $this->message = $message;
         Request::has('ids') ?: $this->approve($educator);
         
     }
@@ -135,10 +138,14 @@ class EducatorController extends Controller {
      * @throws Throwable
      */
     public function recharge($id) {
-        
-        return Request::method() == 'PUT'
-            ? $this->educator->recharge($id, Request::all())
-            : $this->output(['educator' => $this->educator->find($id)]);
+    
+        return Request::get('draw')
+            ? response()->json($this->message->sms('educator', $id))
+            : (
+            Request::method() == 'PUT'
+                ? $this->educator->recharge($id, Request::all())
+                : $this->output(['educator' => $this->educator->find($id)])
+            );
         
     }
     

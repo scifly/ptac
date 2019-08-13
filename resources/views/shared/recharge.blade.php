@@ -57,7 +57,7 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="tab02">
-                    43789328392
+                    @include('message.list_sent')
                 </div>
             </div>
         </div>

@@ -1,7 +1,4 @@
-{!! Form::model($corp, [
-    'method' => 'put',
-    'id' => 'formCorp',
-    'data-parsley-validate' => 'true'
-]) !!}
-@include('shared.recharge', ['record' => $corp])
-{!! Form::close() !!}
+@include('shared.recharge', [
+    'model' => $corp,
+    'formId' => 'formCorp'
+])

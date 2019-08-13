@@ -42,6 +42,7 @@ use Throwable;
  * @property-read Company $company
  * @property-read Collection|Department[] $departments
  * @property-read Collection|Grade[] $grades
+ * @property-read Collection|Educator[] $educators
  * @property-read Collection|School[] $schools
  * @property-read Collection|Tag[] $tags
  * @property-read Department $department
@@ -117,6 +118,17 @@ class Corp extends Model {
      * @return HasMany
      */
     function schools() { return $this->hasMany('App\Models\School'); }
+    
+    /**
+     * 通过School中间对象获取所有教职员工对象
+     *
+     * @return HasManyThrough
+     */
+    function educators() {
+        
+        return $this->hasManyThrough('App\Models\Educator', 'App\Models\School');
+        
+    }
     
     /**
      * 通过School中间对象获取所有年级对象
@@ -333,6 +345,47 @@ class Corp extends Model {
         }
         
         return $corpId;
+        
+    }
+    
+    /**
+     * 返回composer所需view数据
+     *
+     * @return array
+     */
+    function compose() {
+        
+        switch (explode('/', Request::path())[1]) {
+            case 'index':
+                return [
+                    'titles' => [
+                        '#', '名称', '缩写', '所属运营', '企业号ID', '通讯录同步Secret',
+                        '创建于', '更新于', '状态 . 操作',
+                    ],
+                ];
+            case 'create':
+            case 'edit':
+                $companies = Company::pluck('name', 'id');
+                if ((new Menu)->menuId(session('menuId'), '企业')) {
+                    # disabled - 是否显示'返回列表'和'取消'按钮
+                    if (Request::route('id')) {
+                        $corp = Corp::find(Request::route('id'));
+                        $companies = [$corp->company_id => $corp->company->name];
+                        $disabled = true;
+                    }
+                    
+                    return [
+                        'companies' => $companies,
+                        'disabled'  => $disabled ?? null,
+                    ];
+                } else {
+                    return [
+                        'companies' => $companies,
+                    ];
+                }
+            default:
+                return (new Message)->compose('recharge');
+        }
         
     }
     

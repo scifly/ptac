@@ -2,8 +2,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SchoolRequest;
+use App\Models\Message;
 use App\Models\School as School;
 use Exception;
+use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -16,16 +18,18 @@ use Throwable;
  */
 class SchoolController extends Controller {
     
-    protected $school;
+    protected $school, $message;
     
     /**
      * SchoolController constructor.
      * @param School $school
+     * @param Message $message
      */
-    function __construct(School $school) {
+    function __construct(School $school, Message $message) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->school = $school;
+        $this->message = $message;
         Request::has('ids') ?: $this->approve($school);
         
     }
@@ -115,9 +119,13 @@ class SchoolController extends Controller {
      */
     public function recharge($id) {
         
-        return Request::method() == 'PUT'
-            ? $this->school->recharge($id, Request::all())
-            : $this->output(['school' => $this->school->find($id)]);
+        return Request::get('draw')
+            ? response()->json($this->message->sms('school', $id))
+            : (
+            Request::method() == 'PUT'
+                ? $this->school->recharge($id, Request::all())
+                : $this->output(['school' => $this->school->find($id)])
+            );
         
     }
     

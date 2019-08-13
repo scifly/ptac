@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CorpRequest;
 use App\Models\Corp;
+use App\Models\Message;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -16,16 +17,18 @@ use Throwable;
  */
 class CorpController extends Controller {
     
-    protected $corp;
+    protected $corp, $message;
     
     /**
      * CorpController constructor.
      * @param Corp $corp
+     * @param Message $message
      */
-    function __construct(Corp $corp) {
+    function __construct(Corp $corp, Message $message) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->corp = $corp;
+        $this->message = $message;
         $this->approve($corp);
         
     }
@@ -115,9 +118,13 @@ class CorpController extends Controller {
      */
     public function recharge($id) {
         
-        return Request::method() == 'PUT'
-            ? $this->corp->recharge($id, Request::all())
-            : $this->output(['corp' => $this->corp->find($id)]);
+        return Request::get('draw')
+            ? response()->json($this->message->sms('corp', $id))
+            : (
+            Request::method() == 'PUT'
+                ? $this->corp->recharge($id, Request::all())
+                : $this->output(['corp' => $this->corp->find($id)])
+            );
         
     }
     

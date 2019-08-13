@@ -319,7 +319,7 @@ class School extends Model {
                         'recharge_' . $row['id'],
                         '短信充值 & 查询', 'fa-money'
                     );
-    
+                    
                     return Datatable::status($d, $row, false) .
                         (Auth::user()->can('act', self::uris()['recharge']) ? $rechargeLink : '');
                 },
@@ -341,7 +341,7 @@ class School extends Model {
                 'conditions' => [
                     'App.id = School.app_id',
                 ],
-            ]
+            ],
         ];
         
         return Datatable::simple(
@@ -477,6 +477,48 @@ class School extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 返回composer所需view数据
+     *
+     * @return array
+     */
+    function compose() {
+        
+        switch (explode('/', Request::path())[1]) {
+            case 'index':
+                return [
+                    'titles' => ['#', '名称', '地址', '类型', '公众号', '创建于', '更新于', '状态 . 操作'],
+                    'batch'  => true,
+                ];
+            case 'create':
+            case 'edit':
+                $params = [
+                    'schoolTypes'  => SchoolType::whereEnabled(1)
+                        ->pluck('name', 'id')->toArray(),
+                    'apps'         => [null => '[所属公众号]'] + App::where('token', '<>', null)
+                            ->pluck('name', 'id')->toArray(),
+                    'corpId'       => (new Corp)->corpId(),
+                    'uris'         => $this->uris(),
+                    'apis'         => User::where(['group_id' => Group::whereName('api')->first()->id, 'enabled' => 1])
+                        ->pluck('realname', 'id')->toArray(),
+                    'selectedApis' => null,
+                    'disabled'     => null,   # disabled - 是否显示'返回列表'和'取消'按钮
+                ];
+                if (Request::route('id')) {
+                    $school = School::find(Request::route('id'));
+                    if ($school->user_ids) {
+                        $params['selectedApis'] = User::whereIn('id', explode(',', $school->user_ids))
+                            ->pluck('realname', 'id')->toArray();
+                    }
+                }
+                
+                return $params;
+            default:
+                return (new Message)->compose('recharge');
+        }
         
     }
     
