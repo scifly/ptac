@@ -3,7 +3,7 @@
         @include('shared.form_header')
     </div>
     <div class="box-body">
-        <div class="nav-tabs pull-right">
+        <div class="nav-tabs-custom">
             <ul class="nav nav-tabs pull-right">
                 <li class="action-type">
                     <a href="#tab02" data-toggle="tab">
@@ -60,7 +60,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
 </div>
