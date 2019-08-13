@@ -508,6 +508,7 @@ class Action extends Model {
             case 'create':
             case 'edit':
             case 'show':
+            case 'recharge':
                 $prefix = Str::singular($this->tableName($controller));
                 $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
                 $viewPath = $prefix . '.' . $action;
