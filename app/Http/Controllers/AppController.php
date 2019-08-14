@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
- * 应用
+ * 公众号(企业应用)
  *
  * Class AppController
  * @package App\Http\Controllers
@@ -30,7 +30,7 @@ class AppController extends Controller {
     }
     
     /**
-     * 应用列表
+     * 公众号(应用)列表
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -44,7 +44,7 @@ class AppController extends Controller {
     }
     
     /**
-     * 创建应用
+     * 创建公众号(应用)
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -56,7 +56,7 @@ class AppController extends Controller {
     }
     
     /**
-     * 保存应用
+     * 保存公众号(应用)
      *
      * @param AppRequest $request
      * @return JsonResponse|string
@@ -72,7 +72,7 @@ class AppController extends Controller {
     }
     
     /**
-     * 编辑应用
+     * 编辑公众号(应用)
      *
      * @param $id
      * @return bool|JsonResponse
@@ -87,7 +87,7 @@ class AppController extends Controller {
     }
     
     /**
-     * 更新微信应用
+     * 更新公众号(应用)
      *
      * @param AppRequest $request
      * @param $id
@@ -104,7 +104,7 @@ class AppController extends Controller {
     }
     
     /**
-     * 移除应用
+     * 移除公众号(应用)
      *
      * @param $id
      * @return JsonResponse|string

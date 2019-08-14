@@ -194,7 +194,7 @@ class App extends Model {
         
         try {
             DB::transaction(function () use ($id) {
-                $this->purge(['Message'], 'app_id', 'reset', $id);
+                $this->purge(['Message', 'School'], 'app_id', 'reset', $id);
                 $this->purge(['App'], 'id', 'purge', $id);
             });
         } catch (Exception $e) {
