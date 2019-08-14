@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -70,6 +71,38 @@ class ApiMessage extends Model {
     function messageSendingLog() {
         
         return $this->belongsTo('App\Models\MessageSendingLog');
+        
+    }
+    
+    /**
+     * api发送的短消息列表
+     *
+     * @param $userId
+     * @return array
+     */
+    function index($userId) {
+    
+        $columns = [
+            ['db' => 'ApiMessage.id', 'dt' => 0],
+            ['db' => 'User.realname', 'dt' => 1],
+            ['db' => 'ApiMessage.created_at', 'dt' => 2, 'dr' => true],
+            ['db' => 'ApiMessage.content', 'dt' => 3],
+        ];
+        $joins = [
+            [
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = ApiMessage.s_user_id',
+                ],
+            ],
+        ];
+        $condition = 'ApiMessage.s_user_id = ' . $userId;
+        
+        return Datatable::simple(
+            $this, $columns, $joins, $condition
+        );
         
     }
     

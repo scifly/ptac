@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PartnerRequest;
+use App\Models\ApiMessage;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -17,12 +18,13 @@ use Throwable;
 class PartnerController extends Controller {
     
     protected $partner, $message;
+    
     /**
      * OperatorController constructor.
      * @param User $partner
-     * @param Message $message
+     * @param ApiMessage $message
      */
-    function __construct(User $partner, Message $message) {
+    function __construct(User $partner, ApiMessage $message) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->partner = $partner;
@@ -133,7 +135,7 @@ class PartnerController extends Controller {
     public function recharge($id) {
         
         return Request::get('draw')
-            ? response()->json($this->message->sms('partner', $id))
+            ? response()->json($this->message->index($id))
             : (
             Request::method() == 'PUT'
                 ? $this->partner->recharge($id, Request::all())

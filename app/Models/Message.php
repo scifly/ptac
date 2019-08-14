@@ -325,53 +325,40 @@ class Message extends Model {
     function sms($sender, $senderid) {
         
         
-        if ($sender == 'partner') {
-            $columns = [
-                ['db' => 'ApiMessage.id', 'dt' => 0],
-                ['db' => 'User.realname', 'dt' => 1],
-                ['db' => 'ApiMessage.created_at', 'dt' => 2, 'dr' => true],
-                ['db' => 'ApiMessage.content', 'dt' => 3],
-            ];
-        } else {
-            $columns = [
-                ['db' => 'Message.id', 'dt' => 0],
-                ['db' => 'User.realname', 'dt' => 1],
-                ['db' => 'Message.created_at', 'dt' => 2, 'dr' => true],
-                [
-                    'db'        => 'Message.content', 'dt' => 3,
-                    'formatter' => function ($d) {
-                        return json_decode($d, true)['sms'];
-                    },
-                ],
-            ];
-        }
+        $columns = [
+            ['db' => 'Message.id', 'dt' => 0],
+            ['db' => 'User.realname', 'dt' => 1],
+            ['db' => 'Message.created_at', 'dt' => 2, 'dr' => true],
+            [
+                'db'        => 'Message.content', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return json_decode($d, true)['sms'];
+                },
+            ],
+        ];
         $joins = [
             [
                 'table'      => 'users',
                 'alias'      => 'User',
                 'type'       => 'INNER',
                 'conditions' => [
-                     'User.id = ' . ($sender == 'partner' ? 'Api' : '') . 'Message.s_user_id',
+                     'User.id = Message.s_user_id',
                 ],
             ],
         ];
-        if ($sender != 'partner') {
-            switch ($sender) {
-                case 'corp':
-                    $builder = Corp::find($senderid)->educators;
-                    break;
-                case 'school':
-                    $builder = School::find($senderid)->educators;
-                    break;
-                default:
-                    $builder = Educator::whereIn('id', [$senderid])->get();
-                    break;
-            }
-            $condition = 'Message.comm_type_id = 2 AND s_user_id IN ('
-                . join(',', $builder->pluck('user_id')->toArray()) . ')';
-        } else {
-            $condition = 'ApiMessage.s_user_id = ' . $senderid;
+        switch ($sender) {
+            case 'corp':
+                $builder = Corp::find($senderid)->educators;
+                break;
+            case 'school':
+                $builder = School::find($senderid)->educators;
+                break;
+            default:
+                $builder = Educator::whereIn('id', [$senderid])->get();
+                break;
         }
+        $condition = 'Message.comm_type_id = 2 AND s_user_id IN ('
+            . join(',', $builder->pluck('user_id')->toArray()) . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition
