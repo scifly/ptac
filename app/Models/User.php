@@ -768,6 +768,7 @@ class User extends Authenticatable {
         switch(Request::route()->uri) {
             case '/':
             case 'home':
+            case 'pages/{id}':
             case 'users/edit':
                 $user = Auth::user();
                 return [

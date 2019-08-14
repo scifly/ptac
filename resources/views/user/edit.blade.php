@@ -117,14 +117,6 @@
             ])
         </div>
     </div>
-    <div class="box-footer">
-        <div class="form-group">
-            <div class="col-sm-6 col-sm-offset-3">
-                <button class="btn btn-primary" id="store" type="submit">
-                    <i class="fa fa-save">保存</i>
-                </button>
-            </div>
-        </div>
-    </div>
+    @include('shared.form_buttons', ['id' => 'store'])
 </div>
 {!! Form::close() !!}
