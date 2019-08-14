@@ -1,9 +1,8 @@
 <?php
 namespace App\Models;
 
-use App\Facades\{Datatable, Wechat};
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
-use App\Http\Requests\AppRequest;
+use App\Facades\Datatable;
+use App\Helpers\{ModelTrait, Snippet};
 use App\Jobs\SyncApp;
 use Carbon\Carbon;
 use Eloquent;
@@ -174,7 +173,7 @@ class App extends Model {
      *
      * @param array $data
      * @param $id
-     * @return bool|Collection|Model|null|static|static[]
+     * @return bool
      */
     function modify(array $data, $id) {
         
@@ -206,77 +205,5 @@ class App extends Model {
         
     }
     
-    
-    /**
-     * 保存App
-     *
-     * @param AppRequest $request
-     * @return JsonResponse
-     * @throws Throwable
-     */
-    function sync(AppRequest $request) {
-        
-        $agentid = $request->input('agentid');
-        $secret = $request->input('secret');
-        $corpId = $request->input('corp_id');
-        $app = $this->where('agentid', $agentid)
-            ->where('secret', $secret)->first();
-        $action = !$app ? 'create' : 'update';
-        # 获取应用
-        $corpid = Corp::find($app ? $app->corp_id : $corpId)->corpid;
-        $token = Wechat::token(
-            'ent', $corpid,
-            $app ? $app->secret : $secret
-        );
-        if ($token['errcode']) {
-            abort(
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                $token['errmsg']
-            );
-        }
-        $result = json_decode(
-            Wechat::invoke(
-                'ent', 'agent', 'get',
-                [$token['access_token'], $app ? $app->agentid : $agentid]
-            )
-        );
-        abort_if(
-            $result->{'errcode'},
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            Constant::WXERR[$result->{'errcode'}]
-        );
-        # 更新/创建本地应用记录
-        $data = [
-            'name'                 => $result->{'name'},
-            'menu'                 => '0',
-            'allow_tags'           => '0',
-            'corp_id'              => $corpId,
-            'agentid'              => $agentid,
-            'secret'               => $secret,
-            'description'          => $result->{'description'},
-            'report_location_flag' => $result->{'report_location_flag'},
-            'square_logo_url'      => $result->{'square_logo_url'},
-            'redirect_domain'      => $result->{'redirect_domain'},
-            'isreportenter'        => $result->{'isreportenter'},
-            'home_url'             => $result->{'home_url'},
-            'allow_userinfos'      => json_encode($result->{'allow_userinfos'}),
-            'allow_partys'         => json_encode($result->{'allow_partys'}),
-            'enabled'              => !$result->{'close'},
-        ];
-        $app = $app
-            ? $this->modify($data, $app->id)->toArray()
-            : $this->store($data)->toArray();
-        $app['created_at'] = $this->humanDate($app['created_at']);
-        $app['updated_at'] = $this->humanDate($app['updated_at']);
-        
-        return response()->json([
-            'app'    => $app,
-            'action' => $action,
-        ]);
-        
-    }
-    
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-
     
 }

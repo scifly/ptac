@@ -91,8 +91,10 @@ class SyncApp implements ShouldQueue {
                         ];
                     }
                     $result = json_decode(
-                        Wechat::invoke('ent', 'agent', $method, $values, $data ?? null),
-                        true
+                        Wechat::invoke(
+                            'ent', 'agent', $method,
+                            $values, $data ?? null
+                        ), true
                     );
                     throw_if(
                         $result['errcode'],
