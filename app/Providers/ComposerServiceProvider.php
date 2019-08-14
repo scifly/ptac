@@ -50,7 +50,7 @@ class ComposerServiceProvider extends ServiceProvider {
             'operator'               => ['index', 'create_edit'],
             'passage_log'            => ['index'],
             'passage_rule'           => ['index', 'create_edit'],
-            'partner'                => ['index'],
+            'partner'                => ['index', 'create_edit', 'recharge'],
             'pq_choice'              => ['index', 'create_edit'],
             'pq_subject'             => ['index', 'create_edit'],
             'procedure'              => ['index', 'create_edit'],
