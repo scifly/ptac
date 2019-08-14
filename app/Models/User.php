@@ -765,7 +765,7 @@ class User extends Authenticatable {
             return Group::whereIn('name', $names)->pluck('name', 'id')->toArray();
         }
         
-        switch(Request::path()) {
+        switch(Request::route()->uri) {
             case '/':
             case 'home':
             case 'users/edit':
@@ -815,7 +815,7 @@ class User extends Authenticatable {
                     ],
                 ];
             case 'operators/create':
-            case 'operators/edit':
+            case 'operators/edit/{id}':
                 $operator = $departmentId = $corps = $schools = null;
                 $rootMenu = Menu::find((new Menu)->rootId(true));
                 if (Request::route('id')) {
@@ -882,7 +882,7 @@ class User extends Authenticatable {
                     ],
                 ];
             case 'partners/create':    # api用户创建/编辑
-            case 'partners/edit':
+            case 'partners/edit/{id?}':
                 return ['schools' => School::whereCorpId((new Corp)->corpId())->pluck('name', 'id')->toArray()];
             default:                   # api用户短信充值/查询
                 return (new Message)->compose('recharge');
