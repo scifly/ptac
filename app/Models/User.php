@@ -881,8 +881,11 @@ class User extends Authenticatable {
                         '电子邮箱', '创建于', '更新于', '状态',
                     ],
                 ];
-            default:    # api用户创建/编辑
+            case 'partners/create':    # api用户创建/编辑
+            case 'partners/edit':
                 return ['schools' => School::whereCorpId((new Corp)->corpId())->pluck('name', 'id')->toArray()];
+            default:                   # api用户短信充值/查询
+                return (new Message)->compose('recharge');
         }
         
     }
