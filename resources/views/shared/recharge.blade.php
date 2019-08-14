@@ -48,7 +48,7 @@
                                     'class' => 'form-control text-blue',
                                     'placeholder' => '(请输入充值条数)',
                                     'required' => 'true',
-                                    'maxlength' => '255'
+                                    'type' => 'number'
                                 ]) !!}
                             </div>
                         </div>
