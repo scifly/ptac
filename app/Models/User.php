@@ -352,7 +352,13 @@ class User extends Authenticatable {
             [
                 'db'        => 'User.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return Datatable::status($d, $row, false);
+                    $rechargeLink = sprintf(
+                        Snippet::DT_ANCHOR,
+                        'recharge_' . $row['id'],
+                        '短信充值 & 查询', 'fa-money'
+                    );
+                    return Datatable::status($d, $row, false) .
+                        (Auth::user()->can('act', self::uris()['recharge']) ? $rechargeLink : '');
                 },
             ],
         ];
@@ -386,8 +392,8 @@ class User extends Authenticatable {
         
         try {
             DB::transaction(function () use ($data) {
-                # 创建超级用户(运营/企业/学校)
                 if ($data['group_id'] != Group::whereName('api')->first()->id) {
+                    # 创建超级用户(运营/企业/学校)
                     $data['user']['password'] = bcrypt($data['user']['password']);
                     $mobiles = $data['mobile'];
                     unset($data['user']['mobile']);
@@ -404,9 +410,11 @@ class User extends Authenticatable {
                     $this->sync([
                         [$user->id, $group->name, 'create'],
                     ]);
-                    # 创建合作伙伴(api用户)
                 } else {
+                    # 创建合作伙伴(api用户)
                     $partner = $this->create($data);
+                    $data['user_id'] = $partner->id;
+                    Educator::create($data);
                     MessageType::create([
                         'name'    => $partner->realname,
                         'user_id' => $partner->id,
@@ -536,8 +544,8 @@ class User extends Authenticatable {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                # 更新超级用户(运营/企业/学校)
                 if ($data['group_id'] != Group::whereName('api')->first()->id) {
+                    # 更新超级用户(运营/企业/学校)
                     $ids = $id ? [$id] : array_values(Request::input('ids'));
                     if (!$id) {
                         !Request::has('action')
@@ -577,8 +585,8 @@ class User extends Authenticatable {
                             }, $ids
                         )
                     );
-                    # 更新合作伙伴(api)
                 } else {
+                    # 更新合作伙伴(api)
                     if ($id) {
                         $this->find($id)->update($data);
                         MessageType::whereUserId($id)->first()->update([
@@ -672,6 +680,22 @@ class User extends Authenticatable {
     }
     
     /**
+     * 短信充值 & 查询
+     *
+     * @param $id
+     * @param array $data
+     * @return JsonResponse
+     * @throws Throwable
+     */
+    function recharge($id, array $data) {
+        
+        return (new SmsCharge)->recharge(
+            $this, $id, $data
+        );
+        
+    }
+    
+    /**
      * 返回指定角色对应的企业/学校列表HTML
      * 或返回指定企业对应的学校列表HTML
      *
@@ -701,42 +725,6 @@ class User extends Authenticatable {
         $result['schoolList'] = $this->selectList($schools->toArray(), 'school_id');
         
         return response()->json($result);
-        
-    }
-    
-    /**
-     * 获取Select HTML
-     *
-     * @param array $items
-     * @param $field
-     * @return string
-     */
-    private function selectList(array $items, $field) {
-        
-        $html = str_replace('ID', $field, self::SELECT_HTML);
-        foreach ($items as $key => $value) {
-            $html .= '<option value="' . $key . '">' . $value . '</option>';
-        }
-        
-        return $html . '</select>';
-        
-    }
-    
-    /**
-     * @return array
-     */
-    private function corps() {
-        
-        switch (Auth::user()->role()) {
-            case '运营':
-                return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
-            case '企业':
-                $corp = Corp::whereDepartmentId($this->topDeptId())->first();
-                
-                return [$corp->id => $corp->name];
-            default:
-                return [];
-        }
         
     }
     
@@ -777,60 +765,161 @@ class User extends Authenticatable {
             return Group::whereIn('name', $names)->pluck('name', 'id')->toArray();
         }
         
-        $operator = $departmentId = $corps = $schools = null;
-        $rootMenu = Menu::find((new Menu)->rootId(true));
-        if (Request::route('id')) {
-            $operator = $this->find(Request::route('id'));
-            $departmentId = $this->topDeptId($operator);
-        }
-        switch ($rootMenu->menuType->name) {
-            case '根':
-                $groups = groups(['运营', '企业', '学校']);
+        switch(Request::path()) {
+            case '/':
+            case 'home':
+            case 'users/edit':
+                $user = Auth::user();
+                return [
+                    'mobile'   => $user->mobiles->isNotEmpty()
+                        ? $user->mobiles->where('isdefault', 1)->first()->mobile
+                        : '(n/a)',
+                    'disabled' => true,
+                ];
+            case 'users/event':
+                return [
+                    'titles' => [
+                        '#', '名称', '备注', '地点', '开始时间', '结束时间',
+                        '公共事件', '课程', '提醒', '创建者', '更新于',
+                    ],
+                ];
+            case 'users/message':
+                [$optionAll, $htmlCommType, $htmlApp, $htmlMessageType] = $this->messageFilters();
+                return [
+                    'titles'    => [
+                        '#',
+                        ['title' => '通信方式', 'html' => $htmlCommType],
+                        ['title' => '应用', 'html' => $htmlApp],
+                        '消息批次', '发送者',
+                        ['title' => '类型', 'html' => $htmlMessageType],
+                        ['title' => '接收于', 'html' => $this->inputDateTimeRange('接收于')],
+                        [
+                            'title' => '状态',
+                            'html'  => $this->singleSelectList(
+                                array_merge($optionAll, [0 => '未读', 1 => '已读']), 'filter_read'
+                            ),
+                        ],
+                    ],
+                    'batch'     => true,
+                    'removable' => true,
+                    'filter'    => true,
+                ];
+            case 'users/reset':
+                return ['disabled' => true];
+            case 'operators/index':
+                return [
+                    'batch'  => true,
+                    'titles' => [
+                        '#', '用户名', '角色', '真实姓名', '头像', '性别',
+                        '电子邮件', '创建于', '更新于', '状态 . 操作',
+                    ],
+                ];
+            case 'operators/create':
+            case 'operators/edit':
+                $operator = $departmentId = $corps = $schools = null;
+                $rootMenu = Menu::find((new Menu)->rootId(true));
                 if (Request::route('id')) {
-                    $role = $operator->role($operator->id);
-                    $role == '运营' ?: $corps = Corp::all()->pluck('name', 'id')->toArray();
-                    $role != '学校' ?: $schools = School::whereCorpId($operator->educator->school->corp_id)
-                        ->pluck('name', 'id')->toArray();
+                    $operator = $this->find(Request::route('id'));
+                    $departmentId = $this->topDeptId($operator);
                 }
-                break;
-            case '企业':
-                $groups = groups(['企业', '学校']);
-                $corp = null;
-                if (Request::route('id')) {
-                    switch ($operator->role($operator->id)) {
-                        case '企业':
-                            $corp = Corp::whereDepartmentId($departmentId)->first();
-                            break;
-                        case '学校':
-                            $corpId = head($this->corpIds($operator->id)); // $operator->educator->school->corp_id;
-                            $corp = Corp::find($corpId);
-                            $schools = School::whereCorpId($corpId)->pluck('name', 'id')->toArray();
-                            break;
-                        default:
-                            break;
-                    }
-                } else {
-                    $corp = Corp::whereMenuId($rootMenu->id)->first();
+                switch ($rootMenu->menuType->name) {
+                    case '根':
+                        $groups = groups(['运营', '企业', '学校']);
+                        if (Request::route('id')) {
+                            $role = $operator->role($operator->id);
+                            $role == '运营' ?: $corps = Corp::all()->pluck('name', 'id')->toArray();
+                            $role != '学校' ?: $schools = School::whereCorpId($operator->educator->school->corp_id)
+                                ->pluck('name', 'id')->toArray();
+                        }
+                        break;
+                    case '企业':
+                        $groups = groups(['企业', '学校']);
+                        $corp = null;
+                        if (Request::route('id')) {
+                            switch ($operator->role($operator->id)) {
+                                case '企业':
+                                    $corp = Corp::whereDepartmentId($departmentId)->first();
+                                    break;
+                                case '学校':
+                                    $corpId = head($this->corpIds($operator->id)); // $operator->educator->school->corp_id;
+                                    $corp = Corp::find($corpId);
+                                    $schools = School::whereCorpId($corpId)->pluck('name', 'id')->toArray();
+                                    break;
+                                default:
+                                    break;
+                            }
+                        } else {
+                            $corp = Corp::whereMenuId($rootMenu->id)->first();
+                        }
+                        $corps = [$corp->id => $corp->name];
+                        break;
+                    case '学校':
+                        $groups = groups(['学校']);
+                        $school = Request::route('id')
+                            ? School::whereDepartmentId($departmentId)->first()
+                            : School::whereMenuId($rootMenu->id)->first();
+                        $corp = Corp::find($school->corp_id);
+                        $corps = [$corp->id => $corp->name];
+                        $schools = [$school->id => $school->name];
+                        break;
+                    default:
+                        break;
                 }
-                $corps = [$corp->id => $corp->name];
-                break;
-            case '学校':
-                $groups = groups(['学校']);
-                $school = Request::route('id')
-                    ? School::whereDepartmentId($departmentId)->first()
-                    : School::whereMenuId($rootMenu->id)->first();
-                $corp = Corp::find($school->corp_id);
-                $corps = [$corp->id => $corp->name];
-                $schools = [$school->id => $school->name];
-                break;
-            default:
-                break;
+        
+                return array_combine(
+                    ['mobiles', 'groups', 'corps', 'schools'],
+                    [
+                        Request::route('id') ? $this->find(Request::route('id'))->mobiles : [],
+                        $groups ?? [], $corps, $schools,
+                    ]
+                );
+            case 'partners/index':
+                return [
+                    'batch'  => true,
+                    'titles' => [
+                        '#', '全称', '接口用户名', '接口密码', '联系人',
+                        '电子邮箱', '创建于', '更新于', '状态',
+                    ],
+                ];
+            default:    # api用户创建/编辑
+                return ['schools' => School::whereCorpId((new Corp)->corpId())->pluck('name', 'id')->toArray()];
         }
         
-        return [
-            Request::route('id') ? $this->find(Request::route('id'))->mobiles : [],
-            $groups ?? [], $corps, $schools,
-        ];
+    }
+    
+    /**
+     * @return array
+     */
+    private function corps() {
+        
+        switch (Auth::user()->role()) {
+            case '运营':
+                return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
+            case '企业':
+                $corp = Corp::whereDepartmentId($this->topDeptId())->first();
+                
+                return [$corp->id => $corp->name];
+            default:
+                return [];
+        }
+        
+    }
+    
+    /**
+     * 获取Select HTML
+     *
+     * @param array $items
+     * @param $field
+     * @return string
+     */
+    private function selectList(array $items, $field) {
+        
+        $html = str_replace('ID', $field, self::SELECT_HTML);
+        foreach ($items as $key => $value) {
+            $html .= '<option value="' . $key . '">' . $value . '</option>';
+        }
+        
+        return $html . '</select>';
         
     }
     

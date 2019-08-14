@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\ViewComposers;
 
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 
 /**
@@ -9,18 +10,26 @@ use Illuminate\Contracts\View\View;
  */
 class PartnerComposer {
     
+    protected $partner;
+    
+    /**
+     * PartnerComposer constructor.
+     * @param User $partner
+     */
+    function __construct(User $partner) {
+        
+        $this->partner = $partner;
+        
+    }
+    
     /**
      * @param View $view
      */
     public function compose(View $view) {
         
-        $view->with([
-            'batch'  => true,
-            'titles' => [
-                '#', '全称', '接口用户名', '接口密码', '联系人',
-                '电子邮箱', '创建于', '更新于', '状态',
-            ],
-        ]);
+        $view->with(
+            $this->partner->compose()
+        );
         
     }
     

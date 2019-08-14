@@ -173,7 +173,9 @@ $routes = [
         'update'  => ['{id?}' => 'get'],
         'destroy' => ['{id?}' => 'delete'],
     ],
-    'partner'                => $default,
+    'partner'                => array_merge(
+        $default, ['recharge' => ['{id}' => ['get', 'put']]],
+    ),
     'passage_log'            => [
         'index'  => ['get'],
         'store'  => ['post'],

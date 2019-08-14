@@ -87,15 +87,15 @@ class SendMessageApi implements ShouldQueue {
                 # 发送短信
                 $mobiles = array_diff($targets, array_keys($contacts));
                 $result = $message->sendSms(
-                    $mobiles, $this->content . $school->signature
+                    $mobiles, $this->content, $this->partner->id
                 );
                 $data = [
                     'msl_id'          => $msl->id,
                     'message_type_id' => $messageType->id,
-                    's_user_id'       => 0,
+                    's_user_id'       => $this->partner->id,
                     'content'         => $this->content,
                     'read'            => 0,
-                    'sent'            => $result > 0 ? 0 : 1,
+                    'sent'            => $result > 0 ? 1 : 0,
                 ];
                 $apiMessage->log($mobiles, $data);
                 # 发送微信

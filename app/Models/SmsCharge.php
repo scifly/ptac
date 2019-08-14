@@ -76,8 +76,9 @@ class SmsCharge extends Model {
         
         try {
             DB::transaction(function () use ($model, $id, $data) {
-                $record = $model->{'find'}($id);
                 $target = lcfirst(class_basename($model));
+                $record = $model->{'find'}($id);
+                $target != 'user' ?: $record = $record->{'educator'};
                 throw_if(
                     $target != 'corp' &&
                     ($data['charge'] > $record->{$target == 'school' ? 'corp' : 'school'}->{'sms_balance'}),

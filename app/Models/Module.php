@@ -325,31 +325,93 @@ class Module extends Model {
      * @return array
      */
     function compose() {
-        
-        switch (Auth::user()->role()) {
-            case '运营':
-                $builder = School::whereEnabled(1)->get();
-                break;
-            case '企业':
-                $builder = School::where(['corp_id' => (new Corp)->corpId(), 'enabled' => 1])->get();
-                break;
-            default:
-                $builder = School::find($this->schoolId());
-                break;
+    
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            $optionAll = [null => '全部'];
+            $role = Auth::user()->role();
+            if ($role == '运营') {
+                $schools = $optionAll + School::whereEnabled(1);
+            } elseif ($role == '企业') {
+                $schools = $optionAll + School::where([
+                        'enabled' => 1, 'corp_id' => (new Corp)->corpId(),
+                    ]);
+            }
+            $tabs = $optionAll + Tab::where(['enabled' => 1, 'category' => 1])
+                    ->pluck('comment', 'id')->toArray();
+            $types = $optionAll + [0 => '基本', 1 => '增值'];
+            $statuses = $optionAll + [0 => '未启用', 1 => '已启用'];
+            $groups = $optionAll + [0 => '公用'] +
+                Group::whereIn('name', ['监护人', '教职员工'])
+                    ->pluck('name', 'id')->toArray();
+            return [
+                'titles' => [
+                    '#', '名称',
+                    isset($schools) ? [
+                        'title' => '所属学校',
+                        'html'  => $this->singleSelectList(
+                            $optionAll + $schools->pluck('name', 'id'),
+                            'filter_school'
+                        ),
+                    ] : '学校',
+                    [
+                        'title' => '控制器',
+                        'html'  => $this->singleSelectList($tabs, 'filter_tab_id'),
+                    ],
+                    'uri',
+                    [
+                        'title' => '所属角色',
+                        'html'  => $this->singleSelectList($groups, 'filter_group_id'),
+                    ],
+                    [
+                        'title' => '类型',
+                        'html'  => $this->singleSelectList($types, 'filter_isfree'),
+                    ],
+                    [
+                        'title' => '创建于',
+                        'html'  => $this->inputDateTimeRange('创建于'),
+                    ],
+                    [
+                        'title' => '更新于',
+                        'html'  => $this->inputDateTimeRange('更新于'),
+                    ],
+                    '排序',
+                    [
+                        'title' => '状态 . 操作',
+                        'html'  => $this->singleSelectList($statuses, 'filter_enabled'),
+                    ],
+                ],
+                'filter' => true,
+            ];
+        } else {
+            switch (Auth::user()->role()) {
+                case '运营':
+                    $builder = School::whereEnabled(1)->get();
+                    break;
+                case '企业':
+                    $builder = School::where(['corp_id' => (new Corp)->corpId(), 'enabled' => 1])->get();
+                    break;
+                default:
+                    $builder = School::find($this->schoolId());
+                    break;
+            }
+            $schoolList = $builder->pluck('name', 'id')->toArray();
+            ksort($schoolList);
+            $groups = $this->groupList(key($schoolList));
+            $tabs = Tab::where(['enabled' => 1, 'category' => 1])->get();
+            if (Request::route('id')) {
+                $media = $this->find(Request::route('id'))->media;
+            }
+            
+            return array_combine(
+                ['schools', 'groups', 'tabs', 'media'],
+                [
+                    $schoolList, $groups,
+                    [null => ''] + $tabs->pluck('comment', 'id')->toArray(),
+                    $media ?? null,
+                ]
+            );
         }
-        $schoolList = $builder->pluck('name', 'id')->toArray();
-        ksort($schoolList);
-        $groups = $this->groupList(key($schoolList));
-        $tabs = Tab::where(['enabled' => 1, 'category' => 1])->get();
-        if (Request::route('id')) {
-            $media = $this->find(Request::route('id'))->media;
-        }
-        
-        return [
-            $schoolList, $groups,
-            [null => ''] + $tabs->pluck('comment', 'id')->toArray(),
-            $media ?? null,
-        ];
         
     }
     

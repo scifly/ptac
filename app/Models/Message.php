@@ -324,40 +324,54 @@ class Message extends Model {
      */
     function sms($sender, $senderid) {
         
-        $columns = [
-            ['db' => 'Message.id', 'dt' => 0],
-            ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'Message.created_at', 'dt' => 2, 'dr' => true],
-            [
-                'db'        => 'Message.content', 'dt' => 3,
-                'formatter' => function ($d) {
-                    return json_decode($d, true)['sms'];
-                },
-            ],
-        ];
+        
+        if ($sender == 'partner') {
+            $columns = [
+                ['db' => 'ApiMessage.id', 'dt' => 0],
+                ['db' => 'User.realname', 'dt' => 1],
+                ['db' => 'ApiMessage.created_at', 'dt' => 2, 'dr' => true],
+                ['db' => 'ApiMessage.content', 'dt' => 3],
+            ];
+        } else {
+            $columns = [
+                ['db' => 'Message.id', 'dt' => 0],
+                ['db' => 'User.realname', 'dt' => 1],
+                ['db' => 'Message.created_at', 'dt' => 2, 'dr' => true],
+                [
+                    'db'        => 'Message.content', 'dt' => 3,
+                    'formatter' => function ($d) {
+                        return json_decode($d, true)['sms'];
+                    },
+                ],
+            ];
+        }
         $joins = [
             [
                 'table'      => 'users',
                 'alias'      => 'User',
                 'type'       => 'INNER',
                 'conditions' => [
-                    'User.id = Message.s_user_id',
+                     'User.id = ' . ($sender == 'partner' ? 'Api' : '') . 'Message.s_user_id',
                 ],
             ],
         ];
-        switch ($sender) {
-            case 'corp':
-                $builder = Corp::find($senderid)->educators;
-                break;
-            case 'school':
-                $builder = School::find($senderid)->educators;
-                break;
-            default:
-                $builder = Educator::whereIn('id', $senderid)->get();
-                break;
+        if ($sender != 'partner') {
+            switch ($sender) {
+                case 'corp':
+                    $builder = Corp::find($senderid)->educators;
+                    break;
+                case 'school':
+                    $builder = School::find($senderid)->educators;
+                    break;
+                default:
+                    $builder = Educator::whereIn('id', [$senderid])->get();
+                    break;
+            }
+            $condition = 'Message.comm_type_id = 2 AND s_user_id IN ('
+                . join(',', $builder->pluck('user_id')->toArray()) . ')';
+        } else {
+            $condition = 'ApiMessage.s_user_id = ' . $senderid;
         }
-        $condition = 'Message.comm_type_id = 2 AND s_user_id IN ('
-            . join(',', $builder->pluck('user_id')->toArray()) . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition
@@ -791,22 +805,26 @@ class Message extends Model {
      *
      * @param array $mobiles
      * @param string $content
+     * @param $userId
      * @throws Throwable
      */
-    function sendSms(array $mobiles, $content) {
+    function sendSms(array $mobiles, $content, $userId) {
         
         try {
-            DB::transaction(function () use ($mobiles, $content) {
+            DB::transaction(function () use ($mobiles, $content, $userId) {
                 throw_if(
-                    !$educator = Educator::whereUserId(Auth::id())->first(),
+                    !$educator = Educator::whereUserId($userId)->first(),
                     new Exception(__('messages.message.sms_send_failed'))
                 );
                 $school = $educator->school;
                 $content .= $school->signature;
                 $count = sizeof($mobiles) * ceil(mb_strlen($content) / $school->sms_len);
+                throw_if(
+                    $educator->sms_balance < $count,
+                    new Exception(__('messages.sms_charge.insufficient'))
+                );
                 $submitted = (new Sms)->invoke('BatchSend2', [
-                    join(',', $mobiles),
-                    $content, 'cell', '', '',
+                    join(',', $mobiles), $content, 'cell', '', '',
                 ]);
                 // 提交成功后扣减(教职员工、所属学校、所属企业)余额
                 $submitted < 0 ?: array_map(

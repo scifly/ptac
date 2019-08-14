@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PartnerRequest;
+use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -15,16 +16,17 @@ use Throwable;
  */
 class PartnerController extends Controller {
     
-    protected $partner;
-    
+    protected $partner, $message;
     /**
      * OperatorController constructor.
      * @param User $partner
+     * @param Message $message
      */
-    function __construct(User $partner) {
+    function __construct(User $partner, Message $message) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->partner = $partner;
+        $this->message = $message;
         
     }
     
@@ -79,9 +81,11 @@ class PartnerController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        
+       
+        $partner = $this->partner->find($id);
+        $partner->{'school_id'} = $partner->educator->school_id;
         return $this->output([
-            'partner' => $this->partner->find($id),
+            'partner' => $partner,
         ]);
         
     }
@@ -116,6 +120,25 @@ class PartnerController extends Controller {
         return $this->result(
             $this->partner->remove($id, true)
         );
+        
+    }
+    
+    /**
+     * 短信充值 & 查询
+     *
+     * @param $id
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    public function recharge($id) {
+        
+        return Request::get('draw')
+            ? response()->json($this->message->sms('partner', $id))
+            : (
+            Request::method() == 'PUT'
+                ? $this->partner->recharge($id, Request::all())
+                : $this->output(['educator' => $this->partner->find($id)->educator])
+            );
         
     }
     

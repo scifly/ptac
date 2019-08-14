@@ -18,11 +18,7 @@ class PartnerRequest extends FormRequest {
      *
      * @return bool
      */
-    public function authorize() {
-        
-        return $this->user()->role() == '运营';
-        
-    }
+    public function authorize() { return true; }
     
     /**
      * Get the validation rules that apply to the request.
@@ -43,6 +39,7 @@ class PartnerRequest extends FormRequest {
             'enabled'               => 'required|boolean',
             'synced'                => 'required|boolean',
             'subscribed'            => 'required|boolean',
+            'school_id'             => 'required|integer'
         ];
         $this->batchRules($rules);
         

@@ -65,7 +65,7 @@ trait JobTrait {
                 if (!empty($mobiles)) {
                     $chunks = array_chunk($mobiles, $targetSize['sms']);
                     foreach ($chunks as $chunk) {
-                        $result = $message->sendSms($chunk, $sms ?? '');
+                        $result = $message->sendSms($chunk, $sms ?? '', $message->s_user_id);
                         $userIds = Mobile::whereIn('mobile', $chunk)->pluck('user_id');
                         $users = User::whereIn('id', $userIds)->get();
                         $message->log($users, $message, $result, $urlcode ?? null);

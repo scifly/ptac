@@ -25,6 +25,13 @@
                     </div>
                 </div>
             </div>
+            <!-- 所属学校 -->
+            @include('shared.single_select', [
+                'label' => '所属学校',
+                'id' => 'school_id',
+                'items' => $schools,
+                'icon' => 'fa fa-university text-purple'
+            ])
             <!-- 接口用户名 -->
             <div class="form-group">
                 {!! Form::label('username', '接口用户名', [

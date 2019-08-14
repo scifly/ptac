@@ -156,7 +156,7 @@ return [
     ],
     'sms_charge'               => [
         'title'        => '短信充值',
-        'insufficient' => '上级(代理人/学校)余额不足',
+        'insufficient' => '(上级)余额不足',
     ],
     'user'                     => [
         'not_found' => '没有这个用户',
