@@ -331,11 +331,9 @@ class Module extends Model {
             $optionAll = [null => '全部'];
             $role = Auth::user()->role();
             if ($role == '运营') {
-                $schools = $optionAll + School::whereEnabled(1);
+                $schools = School::whereEnabled(1);
             } elseif ($role == '企业') {
-                $schools = $optionAll + School::where([
-                        'enabled' => 1, 'corp_id' => (new Corp)->corpId(),
-                    ]);
+                $schools = School::where(['enabled' => 1, 'corp_id' => (new Corp)->corpId()]);
             }
             $tabs = $optionAll + Tab::where(['enabled' => 1, 'category' => 1])
                     ->pluck('comment', 'id')->toArray();
@@ -350,7 +348,7 @@ class Module extends Model {
                     isset($schools) ? [
                         'title' => '所属学校',
                         'html'  => $this->singleSelectList(
-                            $optionAll + $schools->pluck('name', 'id'),
+                            $optionAll + $schools->pluck('name', 'id')->toArray(),
                             'filter_school'
                         ),
                     ] : '学校',
