@@ -357,8 +357,9 @@ class Message extends Model {
                 $builder = Educator::whereIn('id', [$senderid])->get();
                 break;
         }
-        $condition = 'Message.comm_type_id = 2 AND s_user_id IN ('
-            . join(',', $builder->pluck('user_id')->toArray()) . ')';
+        $userIds = join(',', $builder->pluck('user_id')->toArray());
+        !empty($userIds) ?: $userIds = 0;
+        $condition = 'Message.comm_type_id = 2 AND s_user_id IN (' . $userIds  . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition
