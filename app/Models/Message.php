@@ -1469,12 +1469,12 @@ class Message extends Model {
     /**
      * 返回Message相关view数据
      *
-     * @param string $path
+     * @param string $uri
      * @return array
      */
-    function compose($path) {
+    function compose($uri) {
         
-        switch ($path) {
+        switch ($uri) {
             case 'messages/index':
                 [$optionAll, $htmlCommType, $htmlMediaType, $htmlMessageType] = $this->messageFilters();
                 $titles = [
@@ -1510,8 +1510,8 @@ class Message extends Model {
                     'batch'        => true,
                     'filter'       => true,
                 ];
-            case 'messages/edit':
-            case 'messages/show':
+            case 'messages/edit/{id}':
+            case 'messages/show/{id}':
                 return [
                     'users'        => User::pluck('realname', 'id'),
                     'messageTypes' => MessageType::pluck('name', 'id'),
@@ -1531,7 +1531,7 @@ class Message extends Model {
                         School::find(session('schoolId'))->corp->acronym,
                         !in_array($role, ['监护人', '学生']),
                     ]);
-            case 'message_centers/show':
+            case 'message_centers/show/{id}':
                 $id = Request::route('id');
                 $detail = $id ? $this->detail($id) : null;
                 $type = $detail['type'];
@@ -1543,7 +1543,7 @@ class Message extends Model {
                     'replies' => $id ? $this->replies($id, $this->find($id)->msl_id) : null,
                 ];
             case 'message_centers/create':
-            case 'message_centers/edit':
+            case 'message_centers/edit/{id?}':
                 $user = Auth::user();
                 $chosenTargetsHtml = '';
                 $detail = $selectedDepartmentIds = $selectedUserIds = null;

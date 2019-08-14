@@ -1,4 +1,5 @@
 @include('shared.recharge', [
     'model' => $educator,
-    'formId' => 'formEducator'
+    'formId' => 'formEducator',
+    'name' => $educator->user->realname
 ])

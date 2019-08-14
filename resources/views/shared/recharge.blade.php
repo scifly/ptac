@@ -16,7 +16,7 @@
                     </a>
                 </li>
                 <li class="pull-left header">
-                    <i class="fa fa-money"></i>短信充值 & 查询
+                    <i class="fa fa-money"></i>{!! $name !!}
                 </li>
             </ul>
             <div class="tab-content">

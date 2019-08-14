@@ -33,7 +33,7 @@ class MessageCenterComposer {
     
         $view->with(
             $this->message->compose(
-                join('/', array_slice(explode('/', Request::path()), 1))
+                join('/', array_slice(explode('/', Request::route()->uri), 1))
             )
         );
         
