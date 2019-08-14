@@ -343,14 +343,21 @@ class User extends Authenticatable {
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'User.username', 'dt' => 2],
-            ['db' => 'User.english_name', 'dt' => 3],
-            ['db' => 'User.telephone', 'dt' => 4],
-            ['db' => 'User.email', 'dt' => 5],
-            ['db' => 'User.created_at', 'dt' => 6],
-            ['db' => 'User.updated_at', 'dt' => 7],
             [
-                'db'        => 'User.enabled', 'dt' => 8,
+                'db' => 'School.name', 'dt' => 2,
+                'formatter' => function($d) {
+                    return sprintf(Snippet::ICON, 'fa-university text-purple', '') .
+                        '<span class="text-purple">' . $d . '</span>';
+                }
+            ],
+            ['db' => 'User.username', 'dt' => 3],
+            ['db' => 'User.english_name', 'dt' => 4],
+            ['db' => 'User.telephone', 'dt' => 5],
+            ['db' => 'User.email', 'dt' => 6],
+            ['db' => 'User.created_at', 'dt' => 7],
+            ['db' => 'User.updated_at', 'dt' => 8],
+            [
+                'db'        => 'User.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     $rechargeLink = sprintf(
                         Snippet::DT_ANCHOR,
@@ -369,6 +376,22 @@ class User extends Authenticatable {
                 'type'       => 'INNER',
                 'conditions' => [
                     'Groups.id = User.group_id',
+                ],
+            ],
+            [
+                'table'      => 'educators',
+                'alias'      => 'Educator',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = Educator.user_id',
+                ],
+            ],
+            [
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'School.id = Educator.school_id',
                 ],
             ],
         ];
@@ -878,8 +901,8 @@ class User extends Authenticatable {
                 return [
                     'batch'  => true,
                     'titles' => [
-                        '#', '全称', '接口用户名', '接口密码', '联系人',
-                        '电子邮箱', '创建于', '更新于', '状态',
+                        '#', '全称', '所属学校', '接口用户名', '接口密码',
+                        '联系人', '电子邮箱', '创建于', '更新于', '状态',
                     ],
                 ];
             case 'partners/create':    # api用户创建/编辑
