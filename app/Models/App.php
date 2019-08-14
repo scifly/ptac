@@ -1,9 +1,8 @@
 <?php
 namespace App\Models;
 
-use App\Facades\Datatable;
-use App\Facades\Wechat;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
+use App\Facades\{Datatable, Wechat};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
 use App\Http\Requests\AppRequest;
 use App\Jobs\SyncApp;
 use Carbon\Carbon;
@@ -121,7 +120,13 @@ class App extends Model {
                     return empty($d) ? '企业应用' : '公众号';
                 }
             ],
-            ['db' => 'Corp.name as corpname', 'dt' => 3],
+            [
+                'db' => 'Corp.name as corpname', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
+                        '<span class="text-green">' . $d . '</span>';
+                }
+            ],
             ['db' => 'App.description', 'dt' => 4],
             ['db' => 'App.created_at', 'dt' => 5],
             ['db' => 'App.updated_at', 'dt' => 6],
