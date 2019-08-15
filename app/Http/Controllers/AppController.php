@@ -98,7 +98,7 @@ class AppController extends Controller {
         return $this->result(
             $this->app->modify(
                 $request->all(), $id
-            )
+            ), __('messages.app.submitted')
         );
         
     }
