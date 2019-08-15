@@ -8,7 +8,7 @@ var $name = $('.name'),
     $eak = $('.eak');
 
 $('#category').on('change', function () {
-    switch($(this).val()) {
+    switch(parseInt($(this).val())) {
         case 1:
             $name.hide(); $url.hide(); $token.hide(); $eak.hide();
             $appid.show(); $appsecret.show();
