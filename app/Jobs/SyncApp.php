@@ -40,7 +40,7 @@ class SyncApp implements ShouldQueue {
         $this->response = [
             'userId'     => $this->userId,
             'title'      => __('messages.app.title'),
-            'message'    => __('messages.app.app_configured'),
+            'message'    => __('messages.app.configured'),
             'statusCode' => HttpStatusCode::OK,
         ];
         $this->broadcaster = new Broadcaster();
