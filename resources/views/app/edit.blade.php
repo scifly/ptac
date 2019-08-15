@@ -36,14 +36,13 @@
                         'class' => 'col-sm-3 control-label'
                     ]) !!}
                     <div class="col-sm-6">
-{{--                        {!! $app['appid'] !!}--}}
                         <div class="input-group" style="width: 100%;">
                             <div class="input-group-addon" style="width: 45px;">
                                 <strong>ID</strong>
                             </div>
                             {!! Form::text('appid', null, [
                                 'class' => 'form-control text-blue',
-                                'disabled' => 'disabled'
+                                'disabled' => false
                             ]) !!}
                         </div>
                     </div>
