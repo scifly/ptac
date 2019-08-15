@@ -32,7 +32,7 @@
                 </div>
             </div>
             @if ($app['appid'])
-                <div class="appid form-group">
+                <div class="form-group">
                     {!! Form::label('appid', 'appid', [
                         'class' => 'col-sm-3 control-label'
                     ]) !!}
@@ -80,7 +80,7 @@
                 </div>
             @endif
             @if (isset($token))
-                <div class="form-group" style="display: none;">
+                <div class="form-group">
                     {!! Form::label('token', 'token', [
                         'class' => 'col-sm-3 control-label'
                     ]) !!}
@@ -95,7 +95,7 @@
                 </div>
             @endif
             @if (isset($encoding_aes_key))
-                <div class="eak form-group" style="display: none;">
+                <div class="form-group">
                     {!! Form::label('encoding_aes_key', 'encoding_aes_key', [
                         'class' => 'col-sm-3 control-label'
                     ]) !!}
