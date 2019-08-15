@@ -15,19 +15,18 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    @if ($app['category'] == 1)
-                        <div class="input-group">
-                            @include('shared.icon_addon', ['class' => 'fa-weixin text-green'])
-                            {!! Form::text('name', null, [
-                                'class' => 'form-control text-blue',
-                                'required' => 'true',
-                                'placeholder' => '(不超过12个汉字)',
-                                'maxlength' => '12'
-                            ]) !!}
-                        </div>
-                    @else
-                        {!! $app['name'] !!}
-                    @endif
+                    <div class="input-group">
+                        @include('shared.icon_addon', [
+                            'class' => 'fa-weixin text-green'
+                        ])
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control text-blue',
+                            'required' => 'true',
+                            'disabled' => $app['category'] != 1,
+                            'placeholder' => '(不超过12个汉字)',
+                            'maxlength' => '12'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             @if ($app['appid'])
