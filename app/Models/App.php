@@ -205,7 +205,9 @@ class App extends Model {
             default:    # 编辑应用
                 return array_merge(
                     ['corpId' => $corpId],
-                    json_decode($this->find(Request::route('id'))->properties, true)
+                    json_decode(
+                        $this->find(Request::route('id'))->properties, true
+                    ) ?? []
                 );
         }
         
