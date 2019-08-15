@@ -63,7 +63,7 @@ class AppRequest extends FormRequest {
 
         $input = $this->input();
         $input['enabled'] = $input['enabled'] ?? 1;
-        $input['category'] != 2 ?: $input['name'] = '通讯录同步';
+        $input['category'] != 3 ?: $input['name'] = '通讯录同步';
         
         $this->replace($input);
         
