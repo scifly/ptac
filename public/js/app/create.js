@@ -1,3 +1,4 @@
+//# sourceURL=create.js
 page.create('formApp', 'apps');
 var $name = $('.name'),
     $appid = $('.appid'),
