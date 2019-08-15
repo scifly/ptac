@@ -564,7 +564,7 @@ var page = {
     },
     edit: function (formId, table, options) {
         var $id = $('#id');
-        id = $id.length > 0 ? $id.val() : '';
+        var id = $id.length > 0 ? $id.val() : '';
         page.initForm(table, formId, table + '/update/' + id, 'PUT', options);
     },
     show: function (table) {

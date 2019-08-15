@@ -24,7 +24,6 @@
                         @include('shared.icon_addon', ['class' => 'fa-weixin text-green'])
                         {!! Form::text('name', null, [
                             'class' => 'form-control text-blue',
-                            'required' => 'true',
                             'placeholder' => '(不超过12个汉字)',
                             'maxlength' => '12'
                         ]) !!}
