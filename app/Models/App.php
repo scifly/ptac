@@ -4,67 +4,48 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\{ModelTrait, Snippet};
 use App\Jobs\SyncApp;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\{Auth, DB};
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
- * App\Models\App
+ * Class App - 应用
  *
+ * @package App\Models
  * @property int $id
  * @property int $corp_id 所属企业id
- * @property string $name 应用名称
- * @property string $secret 应用Secret
- * @property string $description 应用备注
- * @property string $agentid 应用id
- * @property int $report_location_flag 企业应用是否打开地理位置上报 0：不上报；1：进入会话上报；2：持续上报
- * @property string $square_logo_url 企业应用方形头像
- * @property string $redirect_domain 企业应用可信域名
- * @property int $isreportenter 是否上报用户进入应用事件。0：不接收；1：接收。
- * @property string $home_url 主页型应用url。url必须以http或者https开头。消息型应用无需该参数
- * @property string $menu 应用菜单
- * @property string $allow_userinfos 企业应用可见范围（人员），其中包括userid
- * @property string $allow_partys 企业应用可见范围（部门）
- * @property string $allow_tags 企业应用可见范围（标签）
- * @property string|null $token 公众号服务器配置：令牌
- * @property string|null $encoding_aes_key 公众号服务器配置：消息加解密密钥
- * @property string|null $access_token
- * @property string|null $expire_at
+ * @property int $category 应用类型：1 - 企业应用；2 - 公众号
+ * @property string $name 企业应用 / 公众号名称
+ * @property string|null $appid 企业应用agentid / 公众号appid；null - 通讯录同步(企业微信)
+ * @property string $appsecret 企业应用secret / 公众号appsecret
+ * @property mixed|null $menu 企业应用 / 公众号菜单
+ * @property mixed $properties 企业应用 / 公众号参数(token, encoding_aes_key ...)
+ * @property string|null $description 企业应用 / 公众号描述
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read Corp $corp
  * @property-read Collection|Message[] $messages
  * @property-read Collection|School[] $schools
- * @method static Builder|App whereAccessToken($value)
- * @method static Builder|App whereAgentid($value)
- * @method static Builder|App whereAllowPartys($value)
- * @method static Builder|App whereAllowTags($value)
- * @method static Builder|App whereAllowUserinfos($value)
- * @method static Builder|App whereCorpId($value)
- * @method static Builder|App whereCreatedAt($value)
- * @method static Builder|App whereEncodingAesKey($value)
- * @method static Builder|App whereToken($value)
- * @method static Builder|App whereDescription($value)
- * @method static Builder|App whereEnabled($value)
- * @method static Builder|App whereExpireAt($value)
- * @method static Builder|App whereHomeUrl($value)
- * @method static Builder|App whereId($value)
- * @method static Builder|App whereIsreportenter($value)
- * @method static Builder|App whereMenu($value)
- * @method static Builder|App whereName($value)
- * @method static Builder|App whereRedirectDomain($value)
- * @method static Builder|App whereReportLocationFlag($value)
- * @method static Builder|App whereSecret($value)
- * @method static Builder|App whereSquareLogoUrl($value)
- * @method static Builder|App whereUpdatedAt($value)
  * @method static Builder|App newModelQuery()
  * @method static Builder|App newQuery()
  * @method static Builder|App query()
+ * @method static Builder|App whereAppid($value)
+ * @method static Builder|App whereAppsecret($value)
+ * @method static Builder|App whereCategory($value)
+ * @method static Builder|App whereCorpId($value)
+ * @method static Builder|App whereCreatedAt($value)
+ * @method static Builder|App whereDescription($value)
+ * @method static Builder|App whereEnabled($value)
+ * @method static Builder|App whereId($value)
+ * @method static Builder|App whereMenu($value)
+ * @method static Builder|App whereName($value)
+ * @method static Builder|App whereProperties($value)
+ * @method static Builder|App whereUpdatedAt($value)
  * @mixin Eloquent
  */
 class App extends Model {
@@ -72,14 +53,8 @@ class App extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'corp_id', 'name', 'agentid', 'secret',
-        'token', 'encoding_aes_key', 'menu',
-        'description', 'report_location_flag',
-        'square_logo_url', 'redirect_domain',
-        'isreportenter', 'home_url',
-        'allow_userinfos', 'allow_partys',
-        'allow_tags', 'access_token',
-        'expire_at', 'enabled'
+        'corp_id', 'category', 'name', 'appid', 'appsecret',
+        'menu', 'properties', 'description', 'enabled'
     ];
     
     /**
@@ -114,9 +89,9 @@ class App extends Model {
             ['db' => 'App.id', 'dt' => 0],
             ['db' => 'App.name', 'dt' => 1],
             [
-                'db' => 'App.token', 'dt' => 2,
+                'db' => 'App.category', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return empty($d) ? '企业应用' : '公众号';
+                    return $d == 1 ? '企业应用' : '公众号';
                 }
             ],
             [
@@ -202,6 +177,37 @@ class App extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * @return array
+     */
+    function compose() {
+
+        $corpId = (new Corp)->corpId();
+        switch (Request::route()->uri) {
+            case 'apps/index':
+                return [
+                    'titles' => [
+                        '#', '名称', '类型', '所属企业', '描述', '创建于', '更新于', '状态 . 操作'
+                    ]
+                ];
+            case 'apps/create':
+                return [
+                    'corpId' => $corpId,
+                    'categories' => [
+                        1 => '企业应用',
+                        2 => '公众号',
+                        3 => '通讯录同步'
+                    ]
+                ];
+            default:    # 编辑应用
+                return array_merge(
+                    ['corpId' => $corpId],
+                    json_decode($this->find(Request::route('id'))->properties, true)
+                );
+        }
         
     }
     

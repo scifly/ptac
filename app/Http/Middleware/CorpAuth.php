@@ -33,15 +33,21 @@ class CorpAuth {
             if (!Auth::id()) {
                 $acronym = $paths[0];
                 $corp = Corp::whereAcronym($acronym)->first();
+                $gzh = $paths[2] ?? null;   # 是否为公众号
                 $app = $this->app($corp->id);
-                $agentid = $app->agentid;
-                $secret = $app->secret;
                 if (!$code = Request::input('code')) {
                     return redirect(
-                        Wechat::code($corp->corpid, $agentid, Request::url())
+                        Wechat::code(
+                            $gzh ? $app->agentid : $corp->corpid,
+                            Request::url(), $app->agentid
+                        )
                     );
                 }
-                $token = Wechat::token('ent', $corp->corpid, $secret);
+                $token = Wechat::token(
+                    $gzh ? 'pub' : 'ent',
+                    $gzh ? $app->agentid : $corp->corpid,
+                    $app->secret
+                );
                 if ($token['errcode']) {
                     abort(
                         HttpStatusCode::INTERNAL_SERVER_ERROR,

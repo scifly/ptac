@@ -20,7 +20,7 @@ class Wechat {
     const USERINFO = 'snsapi_userinfo';
     # 需用户手动授权，可获取成员的详细信息（包括手机和邮箱地址）
     const PRIVATEINFO = 'snsapi_privateinfo';
-    const CODE_PARAM = ['appid', 'redirect_uri', 'response_type', 'scope', 'agentid', 'state'];
+    const CODE_PARAM = ['appid', 'redirect_uri', 'response_type', 'scope', 'state'];
     const BASEURI = [
         'ent' => 'https://qyapi.weixin.qq.com/cgi-bin/',                    # 企业微信
         'red' => 'https://api.mch.weixin.qq.com/',                          # 企业微信 - 企业支付
@@ -576,24 +576,28 @@ class Wechat {
     /**
      * 生成“获取Code”的链接地址，并返回封装后的页面跳转javascript脚本
      *
-     * @param string $corpId 企业号ID
-     * @param integer $agentid 企业应用ID
+     * @param string $id 企业号ID / 公众号appid
+     * @param integer $agentid 企业应用id
      * @param string $redirectUri 授权后重定向的回调链接地址
      * @return string 返回回调地址跳转javascript脚本字符串
      */
-    function code($corpId, $agentid, $redirectUri) {
+    function code($id, $redirectUri, $agentid = null) {
+        
+        $params = self::CODE_PARAM;
+        $values = [
+            $id, urlencode($redirectUri),
+            'code', self::USERINFO,
+            'STATE#wechat_redirect',
+        ];
+        if ($agentid) {
+            $params = array_merge($params, ['agentid']);
+            $values = array_merge($values, [$agentid]);
+        }
         
         return join([
             self::BASEURI['url'],
             http_build_query(
-                array_combine(self::CODE_PARAM, [
-                    $corpId,
-                    urlencode($redirectUri),
-                    'code',
-                    self::USERINFO,
-                    $agentid,
-                    'getcodeblahblah#wechat_redirect',
-                ])
+                array_combine($params, $values)
             ),
         ]);
         

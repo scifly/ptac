@@ -2,9 +2,8 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\Corp;
+use App\Models\App;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class AppComposer
@@ -14,15 +13,15 @@ class AppComposer {
     
     use ModelTrait;
     
-    protected $corp;
+    protected $app;
     
     /**
      * AppComposer constructor.
-     * @param Corp $corp
+     * @param App $app
      */
-    function __construct(Corp $corp) {
+    function __construct(App $app) {
         
-        $this->corp = $corp;
+        $this->app = $app;
         
     }
     
@@ -31,18 +30,9 @@ class AppComposer {
      */
     public function compose(View $view) {
     
-        $action = explode('/', Request::path())[1];
-        if ($action == 'index') {
-            $data = [
-                'titles' => [
-                    '#', '名称', '类型', '所属企业', '描述', '创建于', '更新于', '状态 . 操作'
-                ]
-            ];
-        } else {
-            $data = ['corpId' => $this->corp->corpId()];
-        }
-        
-        $view->with($data);
+        $view->with(
+            $this->app->compose()
+        );
         
     }
     

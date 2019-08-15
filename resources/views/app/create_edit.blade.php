@@ -8,6 +8,13 @@
                 {{ Form::hidden('id', $app['id'], ['id' => 'id']) }}
             @endif
             {!! Form::hidden('corp_id', $corpId, ['id' => 'corp_id']) !!}
+            @if (empty($app['id']))
+                @include('shared.single_select', [
+                     'label' => '应用类型',
+                     'id' => 'category',
+                     'items' => $categories,
+                 ])
+            @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
@@ -25,7 +32,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('agentid', '应用ID', [
+                {!! Form::label('appid', 'agentid/appid', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
@@ -36,7 +43,7 @@
                         {!! Form::text('agentid', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
-                            'placeholder' => '请输入应用id / 公众号appid',
+                            'placeholder' => '(必填)',
                         ]) !!}
                     </div>
                 </div>

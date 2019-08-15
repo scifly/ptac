@@ -115,6 +115,7 @@ class SyncMember implements ShouldQueue {
         
         # 获取access_token
         $token = Wechat::token(
+            'ent',
             $corp->corpid,
             $corp->contact_sync_secret,
             true
