@@ -70,7 +70,7 @@
                     </div>
                 </div>
             @endif
-            @if ($token)
+            @if (isset($token))
                 <div class="form-group" style="display: none;">
                     {!! Form::label('token', 'token', [
                         'class' => 'col-sm-3 control-label'
@@ -85,7 +85,7 @@
                     </div>
                 </div>
             @endif
-            @if ($encoding_aes_key)
+            @if (isset($encoding_aes_key))
                 <div class="eak form-group" style="display: none;">
                     {!! Form::label('encoding_aes_key', 'encoding_aes_key', [
                         'class' => 'col-sm-3 control-label'
