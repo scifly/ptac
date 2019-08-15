@@ -67,7 +67,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
-                        @include('shared.icon_addon', ['class' => 'fa-key'])
+                        @include('shared.icon_addon', ['class' => 'fa-link'])
                         {!! Form::text('url', null, [
                             'class' => 'form-control text-blue',
                         ]) !!}
