@@ -55,7 +55,7 @@
                     </div>
                 </div>
             </div>
-            @if ($url)
+            @if (isset($url))
                 <div class="form-group">
                     {!! Form::label('url', 'url', [
                         'class' => 'col-sm-3 control-label'
