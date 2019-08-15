@@ -32,6 +32,7 @@ class AppRequest extends FormRequest {
             'category'    => 'required|integer|between:1,3',
             'appsecret'   => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
+            'enabled'     => 'required|boolean'
         ];
         switch ($this->input('category')) {
             case 1:
@@ -63,8 +64,11 @@ class AppRequest extends FormRequest {
 
         $input = $this->input();
         $input['enabled'] = $input['enabled'] ?? 1;
-        $input['category'] != 3 ?: $input['name'] = '通讯录同步';
-        
+        if ($input['category'] == 3) {
+            $input['name'] = '通讯录同步';
+            $input['appid'] = 0;
+        }
+    
         $this->replace($input);
         
     }
