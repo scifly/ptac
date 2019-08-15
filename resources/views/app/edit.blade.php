@@ -42,7 +42,7 @@
                             </div>
                             {!! Form::text('appid', null, [
                                 'class' => 'form-control text-blue',
-                                'disabled' => false
+                                'disabled' => true
                             ]) !!}
                         </div>
                     </div>
