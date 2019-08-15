@@ -38,9 +38,9 @@ class SyncApp implements ShouldQueue {
         $this->userId = $userId;
         $this->id = $id;
         $this->response = [
-            'userId' => $this->userId,
-            'title' => __('messages.app.title'),
-            'message' => __('messages.app.app_configured'),
+            'userId'     => $this->userId,
+            'title'      => __('messages.app.title'),
+            'message'    => __('messages.app.app_configured'),
             'statusCode' => HttpStatusCode::OK,
         ];
         $this->broadcaster = new Broadcaster();
@@ -58,36 +58,32 @@ class SyncApp implements ShouldQueue {
         
         try {
             DB::transaction(function () {
-                if ($this->data['token']) {
-                    # 创建 / 更新公众号记录
-                    !$this->id
-                        ? App::create($this->data)
-                        : App::find($this->id)->update($this->data);
-                } else {
-                    # 同步并创建 / 更新企业应用记录
+                $category = $this->data['category'];
+                if ($category == 1) {
+                    # 企业应用
                     $token = Wechat::token(
                         'ent',
                         Corp::find($this->data['corp_id'])->corpid,
-                        $this->data['secret']
+                        $this->data['appsecret']
                     );
                     throw_if(
                         $token['errcode'],
                         new Exception(Constant::WXERR[$token['errcode']])
                     );
-                    if (!$this->id) {
+                    if (!$this->id || !(App::find($this->id)->properties)) {
                         $method = 'get';
-                        $values = [$token, $this->data['agentid']];
+                        $values = [$token, $this->data['appid']];
                     } else {
                         $method = 'set';
                         $values = [$token];
                         $data = [
-                            'agentid' => $this->data['agentid'],
+                            'agentid'              => $this->data['appid'],
+                            'name'                 => $this->data['name'],
                             'report_location_flag' => $this->data['report_location_flag'],
-                            'name' => $this->data['name'],
-                            'description' => $this->data['description'],
-                            'redirect_domain' => $this->data['redirect_domain'],
-                            'isreportenter' => $this->data['isreportenter'],
-                            'home_url' => $this->data['home_url'],
+                            'description'          => $this->data['description'],
+                            'redirect_domain'      => $this->data['redirect_domain'],
+                            'isreportenter'        => $this->data['isreportenter'],
+                            'home_url'             => $this->data['home_url'],
                         ];
                     }
                     $result = json_decode(
@@ -100,22 +96,46 @@ class SyncApp implements ShouldQueue {
                         $result['errcode'],
                         new Exception(Constant::WXERR[$result['errcode']])
                     );
-                    if (!$this->id) {
-                        $this->data['name'] = $result['name'];
-                        $this->data['square_logo_url'] = $result['square_logo_url'];
-                        $this->data['allow_userinfos'] = json_encode(
-                            $result['allow_userinofs'], JSON_UNESCAPED_UNICODE
+                    if ($method == 'get') {
+                        unset($result['errcode']);
+                        unset($result['errmsg']);
+                        unset($result['name']);
+                        $this->data['properties'] = json_encode(
+                            $result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
                         );
-                        $this->data['allow_partys'] = json_encode($result['allow_partys']);
-                        $this->data['allow_tags'] = json_encode($result['allow_tags']);
-                        $this->data['close'] = $result['close'];
-                        $this->data['redirect_domain'] = $result['redirect_domain'];
-                        $this->data['report_location_flag'] = $result['report_location_flag'];
-                        $this->data['home_url'] = $result['home_url'];
+                    }
+                    if (!$this->id) {
                         App::create($this->data);
                     } else {
-                        App::find($this->id)->update($this->data);
+                        $app = App::find($this->id);
+                        !$app->properties
+                            ?: $this->data = array_merge(
+                            $this->data, [
+                                'properties->report_location_flag' => $this->data['report_location_flag'],
+                                'properties->redirect_domain'      => $this->data['redirect_domain'],
+                                'properties->isreportenter'        => $this->data['isreportenter'],
+                                'properties->home_url'             => $this->data['home_url'],
+                            ]
+                        );
+                        $app->update($this->data);
                     }
+                } else {
+                    # "公众号"或"通讯录同步"
+                    $this->data['properties'] = [
+                        'token'            => $this->data['token'],
+                        'encoding_aes_key' => $this->data['encoding_aes_key'],
+                    ];
+                    $category != 3 ?: $this->data['properties'] = array_merge(
+                        ['url' => $this->data['url']],
+                        $this->data['properties']
+                    );
+                    $this->data['properties'] = json_encode(
+                        $this->data['properties'],
+                        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                    );
+                    !$this->id
+                        ? App::create($this->data)
+                        : App::find($this->id)->update($this->data);
                 }
             });
         } catch (Exception $e) {
@@ -124,7 +144,6 @@ class SyncApp implements ShouldQueue {
             $this->broadcaster->broadcast($this->response);
             throw $e;
         }
-        
         $this->broadcaster->broadcast($this->response);
         
         return true;

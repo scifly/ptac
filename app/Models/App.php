@@ -54,7 +54,17 @@ class App extends Model {
     
     protected $fillable = [
         'corp_id', 'category', 'name', 'appid', 'appsecret',
-        'menu', 'properties', 'description', 'enabled'
+        'menu', 'properties', 'description', 'enabled',
+        'properties->redirect_domain',
+        'properties->report_location_flag',
+        'properties->isreportenter',
+        'properties->home_url',
+    ];
+    
+    const CATEGORY = [
+        1 => '企业应用',
+        2 => '公众号',
+        3 => '管理工具'
     ];
     
     /**
@@ -91,7 +101,7 @@ class App extends Model {
             [
                 'db' => 'App.category', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return $d == 1 ? '企业应用' : '公众号';
+                    return self::CATEGORY[$d];
                 }
             ],
             [
@@ -196,11 +206,7 @@ class App extends Model {
             case 'apps/create':
                 return [
                     'corpId' => $corpId,
-                    'categories' => [
-                        1 => '企业应用',
-                        2 => '公众号',
-                        3 => '通讯录同步'
-                    ]
+                    'categories' => self::CATEGORY
                 ];
             default:    # 编辑应用
                 return array_merge(

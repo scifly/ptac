@@ -9,7 +9,9 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
+            {!! Form::hidden('id', $app['id'], ['id' => 'id']) !!}
             {!! Form::hidden('corp_id', $corpId, ['id' => 'corp_id']) !!}
+            {!! Form::hidden('category', $app['category'], ['id' => 'category']) !!}
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
