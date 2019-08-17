@@ -315,6 +315,7 @@ class Module extends Model {
         
         return view('wechat.schools', [
             'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
+            'appId' => session('appId') ? '/' . session('appId') : ''
         ]);
         
     }

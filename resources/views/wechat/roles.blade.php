@@ -6,13 +6,13 @@
 @section('content')
     <div class="weui-cells__title">请选择</div>
     <div class="weui-cells" style="margin-top: 0;">
-        <a class="weui-cell weui-cell_access" href="../wechat?part=educator">
+        <a class="weui-cell weui-cell_access" href="{!! '../wechat' . $appId . '?part=educator' !!}">
             <div class="weui-cell__bd">
-                <p>{!! Auth::user()->group->name !!}</p>
+                <p>{!! Auth::user()->{'group'}->name !!}</p>
             </div>
             <div class="weui-cell__ft"></div>
         </a>
-        <a class="weui-cell weui-cell_access" href="../wechat?part=custodian">
+        <a class="weui-cell weui-cell_access" href="{!! '../wechat' . $appId . '?part=custodian' !!}">
             <div class="weui-cell__bd">
                 <p>监护人</p>
             </div>

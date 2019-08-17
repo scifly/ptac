@@ -66,10 +66,6 @@ class SyncApp implements ShouldQueue {
                         Corp::find($this->data['corp_id'])->corpid,
                         $this->data['appsecret']
                     );
-                    throw_if(
-                        $token['errcode'],
-                        new Exception(Constant::WXERR[$token['errcode']])
-                    );
                     if (!$this->id || !(App::find($this->id)->properties)) {
                         $method = 'get';
                         $values = [$token, $this->data['appid']];

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Wechat;
 use App\Facades\Wechat;
 use App\Helpers\{Wechat\WXBizMsgCrypt};
 use App\Http\Controllers\Controller;
-use App\Models\{Corp, Department, DepartmentType, DepartmentUser, Educator, Group, Mobile, School, User};
+use App\Models\{App, Corp, Department, DepartmentType, DepartmentUser, Educator, Group, Mobile, School, User};
 use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model};
@@ -283,21 +283,22 @@ class SyncController extends Controller {
      */
     private function member() {
         
-        $token = Wechat::token(
-            $this->corp->corpid,
-            $this->corp->contact_sync_secret,
-            true
-        );
-        if ($token['errcode']) return $token['errcode'];
-        $member = json_decode(
-            Wechat::invoke(
-                'ent', 'user', 'get',
-                [$token['access_token']],
-                ['userid' => $this->event->{'UserID'}]
-            ), true
-        );
-        
-        return $member['errcode'] ?? $member;
+        try {
+            $token = Wechat::token(
+                'ent', $this->corp->corpid,
+                Wechat::syncSecret($this->corp->id)
+            );
+            $member = json_decode(
+                Wechat::invoke(
+                    'ent', 'user', 'get',
+                    [$token], ['userid' => $this->event->{'UserID'}]
+                ), true
+            );
+    
+            return $member['errcode'] ?? $member;
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     

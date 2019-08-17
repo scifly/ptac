@@ -492,15 +492,17 @@ class School extends Model {
         switch (explode('/', Request::path())[1]) {
             case 'index':
                 return [
-                    'titles' => ['#', '名称', '地址', '类型', '公众号', '创建于', '更新于', '状态 . 操作'],
+                    'titles' => [
+                        '#', '名称', '地址', '类型', '公众号',
+                        '创建于', '更新于', '状态 . 操作'
+                    ],
                     'batch'  => true,
                 ];
             case 'create':
             case 'edit':
                 $params = [
-                    'schoolTypes'  => SchoolType::whereEnabled(1)
-                        ->pluck('name', 'id')->toArray(),
-                    'apps'         => [null => '[所属公众号]'] + App::where('token', '<>', null)
+                    'schoolTypes'  => SchoolType::whereEnabled(1)->pluck('name', 'id')->toArray(),
+                    'apps'         => [null => '[所属公众号]'] + App::where('category', 2)
                             ->pluck('name', 'id')->toArray(),
                     'corpId'       => (new Corp)->corpId(),
                     'uris'         => $this->uris(),

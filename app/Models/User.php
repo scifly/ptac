@@ -2,11 +2,12 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Sms, Snippet};
 use App\Jobs\SyncMember;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Relations\BelongsTo,
@@ -17,6 +18,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Notifications\{DatabaseNotification, DatabaseNotificationCollection, Notifiable};
 use Illuminate\Support\Facades\{Auth, DB, Hash, Request};
+use Illuminate\View\View;
 use Laravel\Passport\{Client, HasApiTokens, Token};
 use Throwable;
 
@@ -93,6 +95,7 @@ use Throwable;
  * @method static Builder|User newQuery()
  * @method static Builder|User query()
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Openid[] $openids
  */
 class User extends Authenticatable {
     
@@ -113,7 +116,7 @@ class User extends Authenticatable {
         'position', 'enabled', 'email',
         'card_id', 'avatar_url', 'english_name',
         'isleader', 'telephone', 'order',
-        'synced', 'subscribed', 'face_id'
+        'synced', 'subscribed', 'face_id',
     ];
     
     /**
@@ -207,6 +210,13 @@ class User extends Authenticatable {
      * @return HasMany
      */
     function events() { return $this->hasMany('App\Models\Event'); }
+    
+    /**
+     * 返回指定用户对应的所有openid
+     *
+     * @return HasMany
+     */
+    function openids() { return $this->hasMany('App\Models\Openid'); }
     
     /**
      * 获取指定用户发起的所有调查问卷对象
@@ -344,11 +354,11 @@ class User extends Authenticatable {
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
             [
-                'db' => 'School.name', 'dt' => 2,
-                'formatter' => function($d) {
+                'db'        => 'School.name', 'dt' => 2,
+                'formatter' => function ($d) {
                     return sprintf(Snippet::ICON, 'fa-university text-purple', '') .
                         '<span class="text-purple">' . $d . '</span>';
-                }
+                },
             ],
             ['db' => 'User.username', 'dt' => 3],
             ['db' => 'User.english_name', 'dt' => 4],
@@ -364,6 +374,7 @@ class User extends Authenticatable {
                         'recharge_' . $row['id'],
                         '短信充值 & 查询', 'fa-money'
                     );
+                    
                     return Datatable::status($d, $row, false) .
                         (Auth::user()->can('act', self::uris()['recharge']) ? $rechargeLink : '');
                 },
@@ -537,7 +548,6 @@ class User extends Authenticatable {
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
-
     /**
      * 返回指定用户所属的所有企业id
      *
@@ -788,12 +798,13 @@ class User extends Authenticatable {
             return Group::whereIn('name', $names)->pluck('name', 'id')->toArray();
         }
         
-        switch(Request::route()->uri) {
+        switch (Request::route()->uri) {
             case '/':
             case 'home':
             case 'pages/{id}':
             case 'users/edit':
                 $user = Auth::user();
+                
                 return [
                     'mobile'   => $user->mobiles->isNotEmpty()
                         ? $user->mobiles->where('isdefault', 1)->first()->mobile
@@ -809,6 +820,7 @@ class User extends Authenticatable {
                 ];
             case 'users/message':
                 [$optionAll, $htmlCommType, $htmlApp, $htmlMessageType] = $this->messageFilters();
+                
                 return [
                     'titles'    => [
                         '#',
@@ -889,7 +901,7 @@ class User extends Authenticatable {
                     default:
                         break;
                 }
-        
+                
                 return array_combine(
                     ['mobiles', 'groups', 'corps', 'schools'],
                     [
@@ -947,6 +959,83 @@ class User extends Authenticatable {
         }
         
         return $html . '</select>';
+        
+    }
+    
+    /**
+     * 公众号用户注册
+     *
+     * @param $appId - 公众号应用id
+     * @return Factory|JsonResponse|View
+     * @throws Throwable
+     */
+    function signup($appId) {
+        
+        try {
+            throw_if(
+                !$app = App::find($appId),
+                new Exception(__('messages.not_found'))
+            );
+            if (Request::method() == 'GET') {
+                return view('wechat.wechat.signup', [
+                    'openid' => Request::query('openid'),
+                ]);
+            }
+            $mobile = Request::has('openid')
+                ? session('mobile')
+                : Request::input('mobile');
+            throw_if(
+                !$default = Mobile::where([
+                    'mobile' => $mobile, 'isdefault' => 1,
+                ])->first(),
+                new Exception(__('messages.user.not_found'))
+            );
+            if (Request::has('openid')) {
+                # 注册
+                $vericode = Request::input('vericode');
+                $code = session('code');
+                $expiredAt = session('expiredAt');
+                throw_if(
+                    !isset($code, $expiredAt) ||
+                    time() - $expiredAt > 30 * 60 ||
+                    $vericode != $code ||
+                    $mobile != Request::input('mobile'),
+                    new Exception(__('messages.user.v_invalid'))
+                );
+                Openid::create([
+                    'user_id' => $default->user_id,
+                    'app_id'  => $appId,
+                    'openid'  => Request::input('openid'),
+                ]);
+                
+                return response()->json([
+                    'message' => __('messages.user.registered'),
+                    'url'     => $app->corp->acronym . '/wechat/' . $appId,
+                ]);
+            } else {
+                # 发送短信验证码
+                session([
+                    'mobile'    => $default->mobile,
+                    'code'      => $code = mt_rand(1000, 9999),
+                    'expiredAt' => time() + 30 * 60,
+                ]);
+                $sent = (new Sms)->invoke(
+                    'BatchSend2',
+                    [$default->mobile, urlencode(
+                        mb_convert_encoding(
+                            __('messages.user.vericode') . $code,
+                            'gb2312', 'utf-8'
+                        )
+                    ), '', '']
+                );
+                
+                return response()->json([
+                    'message' => __('messages.user.v_' . ($sent ? 'sent' : 'failed')),
+                ]);
+            }
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     

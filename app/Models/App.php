@@ -31,6 +31,7 @@ use Throwable;
  * @property-read Corp $corp
  * @property-read Collection|Message[] $messages
  * @property-read Collection|School[] $schools
+ * @property-read Collection|Openid[] $openids
  * @method static Builder|App newModelQuery()
  * @method static Builder|App newQuery()
  * @method static Builder|App query()
@@ -53,8 +54,13 @@ class App extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'corp_id', 'category', 'name', 'appid', 'appsecret',
-        'menu', 'properties', 'description', 'enabled',
+        'corp_id', 'category', 'name', 'appid',
+        'appsecret', 'menu', 'properties',
+        'description', 'access_token',
+        'expire_at', 'enabled',
+        'properties->url',
+        'properties->token',
+        'properties->encoding_aes_key',
         'properties->redirect_domain',
         'properties->report_location_flag',
         'properties->isreportenter',
@@ -64,7 +70,7 @@ class App extends Model {
     const CATEGORY = [
         1 => '企业应用',
         2 => '公众号',
-        3 => '管理工具'
+        3 => '管理工具',
     ];
     
     /**
@@ -89,6 +95,13 @@ class App extends Model {
     function schools() { return $this->hasMany('App\Models\School'); }
     
     /**
+     * 返回指定公众号所包含的所有openid
+     *
+     * @return HasMany
+     */
+    function openids() { return $this->hasMany('App\Models\Openid'); }
+    
+    /**
      * 应用列表
      *
      * @return array|JsonResponse
@@ -99,37 +112,37 @@ class App extends Model {
             ['db' => 'App.id', 'dt' => 0],
             ['db' => 'App.name', 'dt' => 1],
             [
-                'db' => 'App.category', 'dt' => 2,
+                'db'        => 'App.category', 'dt' => 2,
                 'formatter' => function ($d) {
                     return self::CATEGORY[$d];
-                }
+                },
             ],
             [
-                'db' => 'Corp.name as corpname', 'dt' => 3,
+                'db'        => 'Corp.name as corpname', 'dt' => 3,
                 'formatter' => function ($d) {
                     return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
                         '<span class="text-green">' . $d . '</span>';
-                }
+                },
             ],
             ['db' => 'App.description', 'dt' => 4],
             ['db' => 'App.created_at', 'dt' => 5],
             ['db' => 'App.updated_at', 'dt' => 6],
             [
-                'db' => 'App.enabled', 'dt' => 7,
+                'db'        => 'App.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'corps',
-                'alias' => 'Corp',
-                'type'  => 'INNER',
+                'table'      => 'corps',
+                'alias'      => 'Corp',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Corp.id = App.corp_id'
-                ]
-            ]
+                    'Corp.id = App.corp_id',
+                ],
+            ],
         ];
         
         return Datatable::simple(
@@ -194,19 +207,19 @@ class App extends Model {
      * @return array
      */
     function compose() {
-
+        
         $corpId = (new Corp)->corpId();
         switch (Request::route()->uri) {
             case 'apps/index':
                 return [
                     'titles' => [
-                        '#', '名称', '类型', '所属企业', '描述', '创建于', '更新于', '状态 . 操作'
-                    ]
+                        '#', '名称', '类型', '所属企业', '描述', '创建于', '更新于', '状态 . 操作',
+                    ],
                 ];
             case 'apps/create':
                 return [
-                    'corpId' => $corpId,
-                    'categories' => self::CATEGORY
+                    'corpId'     => $corpId,
+                    'categories' => self::CATEGORY,
                 ];
             default:    # 编辑应用
                 return array_merge(
@@ -218,6 +231,5 @@ class App extends Model {
         }
         
     }
-    
     
 }

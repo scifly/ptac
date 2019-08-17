@@ -59,12 +59,12 @@ class SyncMember implements ShouldQueue {
             DB::transaction(function () {
                 $results = [];
                 foreach ($this->members as $member) {
-                    list($params, $action) = $member;
+                    [$params, $action] = $member;
                     $corps = Corp::whereIn('id', $params['corpIds'])->get();
                     foreach ($corps as $corp) {
                         !in_array($params['position'], ['运营', '企业'])
                             ?: $params['department'] = [$corp->departmentid];
-                        list($errcode, $errmsg) = $this->sync($corp, $params, $action);
+                        [$errcode, $errmsg] = $this->sync($corp, $params, $action);
                         !$errcode ?: $results[] = array_values(
                             array_merge($params, ['result' => $errmsg])
                         );
@@ -114,40 +114,18 @@ class SyncMember implements ShouldQueue {
     private function sync(Corp $corp, $params, $action) {
         
         # 获取access_token
-        $token = Wechat::token(
-            'ent',
-            $corp->corpid,
-            $corp->contact_sync_secret,
-            true
-        );
-        if ($token['errcode']) return array_values($token);
-        $accessToken = $token['access_token'];
+        $token = Wechat::token('ent', $corp->corpid, Wechat::syncSecret($corp->id));
         if ($action != 'delete') unset($params['corpIds']);
         $data = $action == 'delete' ? $params['userid'] : $params;
-        $result = json_decode(
-            Wechat::invoke(
-                'ent', 'user', $action,
-                [$accessToken], $data
-            ), true
-        );
+        $result = $this->invoke($action, [$token], $data);
         # 企业微信通讯录不存在指定的会员，则创建该会员
         if ($result['errcode'] == 60111 && $action == 'update') {
-            $result = json_decode(
-                Wechat::invoke(
-                    'ent', 'user', 'create',
-                    [$accessToken], $params
-                ), true
-            );
+            $result = $this->invoke('create', [$token], $params);
         }
         if (!$result['errcode'] && $action != 'delete') {
             User::whereUserid($params['userid'])->first()->update(['synced' => 1]);
             if ($action == 'update') {
-                $member = json_decode(
-                    Wechat::invoke(
-                        'ent', 'user', 'get',
-                        [$accessToken, $params['userid']]
-                    ), true
-                );
+                $member = $this->invoke('get', [$token, $params['userid']]);
                 if (!$member['errcode'] && $member['status'] == 1) {
                     User::whereUserid($params['userid'])->first()->update([
                         'avatar_url' => $member['avatar'],
@@ -164,6 +142,24 @@ class SyncMember implements ShouldQueue {
             ]);
         
         return [$result['errcode'], $errmsg];
+        
+    }
+    
+    /**
+     * 调用微信接口
+     *
+     * @param string $method
+     * @param array $values
+     * @param null|string|array $data
+     * @return mixed
+     */
+    private function invoke($method, array $values, $data = null) {
+        
+        return json_decode(
+            Wechat::invoke(
+                'ent', 'user', $method, $values, $data
+            ), true
+        );
         
     }
     

@@ -33,13 +33,10 @@ class CorpRequest extends FormRequest {
             'company_id'          => 'required|integer',
             'acronym'             => 'required|string|between:3,20|unique:corps,acronym,' .
                 $this->input('id') . ',id',
-            'department_id'       => 'required|integer',
-            'menu_id'             => 'required|integer',
+            'department_id'       => 'nullable|integer',
+            'menu_id'             => 'nullable|integer',
             'corpid'              => 'required|string|max:18',
-            'contact_sync_secret' => 'required|string|max:43',
-            'encoding_aes_key'    => 'required|string',
-            'token'               => 'required|string',
-            'departmentid'        => 'required|integer',
+            'departmentid'        => 'nullable|integer',
             'mchid'               => 'nullable|string|max:10',
             'apikey'              => 'nullable|string|max:32',
             'enabled'             => 'required|boolean'
@@ -50,31 +47,9 @@ class CorpRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (!isset($input['department_id'])) {
-            $input['department_id'] = 0;
-        }
-        if (!isset($input['menu_id'])) {
-            $input['menu_id'] = 0;
-        }
-        if (!isset($input['company_id'])) {
-            $input['company_id'] = Corp::whereDepartmentId($this->topDeptId($this->user()))->first()->company_id;
-        }
-        if (empty($input['encoding_aes_key'])) {
-            $input['encoding_aes_key'] = '0';
-        }
-        if (empty($input['token'])) {
-            $input['token'] = '0';
-        }
-        if (empty($input['departmentid'])) {
-            $input['departmentid'] = 1;
-        }
-        if (empty($input['mchid'])) {
-            $input['mchid'] = '0';
-        }
-        if (empty($input['apikey'])) {
-            $input['apikey'] = '0';
-        }
-        
+        $input['company_id'] = $input['company_id']
+            ?? Corp::whereDepartmentId($this->topDeptId($this->user()))->first()->company_id;
+
         $this->replace($input);
         
     }

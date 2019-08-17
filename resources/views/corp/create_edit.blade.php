@@ -43,7 +43,7 @@
                     </div>
                 </div>
             </div>
-            @if (Auth::user()->group->name == '运营')
+            @if (Auth::user()->{'group'}->name == '运营')
                 @include('shared.single_select', [
                     'label' => '所属运营者',
                     'id' => 'company_id',
@@ -66,54 +66,6 @@
                             'required' => 'true',
                             'data-parsley-type' => 'alphanum',
                             'data-parsley-length' => '[18, 18]'
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('contact_sync_secret', '"通讯录同步"应用Secret', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group" style="width: 100%;">
-                        <div class="input-group-addon" style="width: 45px;">
-                            <strong>通</strong>
-                        </div>
-                        {!! Form::text('contact_sync_secret', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(43个小写字母与阿拉伯数字)',
-                            'required' => 'true',
-                            'data-parsley-length' => '[43, 43]'
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('encoding_aes_key', 'EncodingAESKey', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group" style="width: 100%;">
-                        @include('shared.icon_addon', ['class' => 'fa-key'])
-                        {!! Form::text('encoding_aes_key', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(请从企业微信后台复制粘贴到此处)',
-                            'data-parsley-length' => '[43, 43]'
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('token', 'token', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group" style="width: 100%;">
-                        @include('shared.icon_addon', ['class' => 'fa-key'])
-                        {!! Form::text('token', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(请从企业微信后台复制粘贴到此处)',
-                            'data-parsley-length' => '[0, 255]'
                         ]) !!}
                     </div>
                 </div>

@@ -160,6 +160,11 @@ return [
     ],
     'user'                     => [
         'not_found' => '没有这个用户',
+        'vericode' => '注册验证码：',
+        'v_invalid' => '验证码无效',
+        'registered' => '注册成功',
+        'v_sent'    => '验证码已发送，请在30分钟内输入',
+        'v_failed'  => '短信发送失败'
     ],
     'wap_site'                 => [
         'title' => '微网站',

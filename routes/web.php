@@ -313,9 +313,10 @@ foreach (Corp::pluck('acronym')->toArray() as $acronym) {
     /** 应用入口 */
     Route::group(['prefix' => $acronym . '/wechat'], function () {
         $c = 'Wechat\WechatController';
-        Route::get('/', $c . '@index');
-        Route::get('schools', $c . '@schools');
-        Route::get('roles', $c . '@roles');
+        Route::get('/{id?}', $c . '@index');
+        Route::get('schools/{id?}', $c . '@schools');
+        Route::get('roles/{id?}', $c . '@roles');
+        Route::get('/signup/{id}', $c . '@signup');
     });
     Route::match(
         ['get', 'post'], $acronym . '/sync',

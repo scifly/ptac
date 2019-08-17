@@ -770,12 +770,11 @@ class Message extends Model {
      */
     function sendWx(App $app, array $message) {
         
-        $token = Wechat::token('ent', $app->corp->corpid, $app['secret']);
-        if ($token['errcode']) return $token;
         $result = json_decode(
             Wechat::invoke(
                 'ent', 'message', 'send',
-                [$token['access_token']], $message
+                [Wechat::token('ent', $app->corp->corpid, $app['appsecret'])],
+                $message
             ), true
         );
         
@@ -1178,19 +1177,12 @@ class Message extends Model {
             __('messages.file_upload_failed')
         );
         # 上传到企业号后台
-        list($corpid, $secret) = $this->tokenParams();
-        $token = Wechat::token('ent', $corpid, $secret);
-        if ($token['errcode']) {
-            abort(
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                $token['errmsg']
-            );
-        }
+        [$corpid, $secret] = $this->tokenParams();
         $type = Request::input('type');
         $result = json_decode(
             Wechat::invoke(
                 'ent', 'media', 'upload',
-                [$token['access_token'], $type == 'audio' ? 'voice' : $type], [
+                [Wechat::token('ent', $corpid, $secret), $type == 'audio' ? 'voice' : $type], [
                 'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
                 'filename'      => $uploadedFile['filename'],
                 'content-type'  => Constant::CONTENT_TYPE[$type],
@@ -1231,7 +1223,7 @@ class Message extends Model {
         
         return [
             $corp->corpid,
-            $corp->contact_sync_secret,
+            Wechat::syncSecret($corp->id),
         ];
         
     }

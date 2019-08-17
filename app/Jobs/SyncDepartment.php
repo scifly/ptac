@@ -3,7 +3,7 @@ namespace App\Jobs;
 
 use App\Facades\Wechat;
 use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
-use App\Models\{Corp, Department, DepartmentUser, User};
+use App\Models\{App, Corp, Department, DepartmentUser, User};
 use Exception;
 use Illuminate\{Bus\Queueable,
     Contracts\Queue\ShouldQueue,
@@ -195,18 +195,18 @@ class SyncDepartment implements ShouldQueue {
      * @param $members
      * @param $method
      * @return array
-     * @throws PusherException
      * @throws Throwable
      */
     private function syncMember($members, $method) {
         
-        $accessToken = $this->accessToken();
         $data = $method == 'update' ? $members : array_chunk($members, 200);
-        $api = $method == 'update' ? 'updateUser' : 'batchDelUser';
         $succeeded = [];
+        $token = $this->token();
         foreach ($data as $datum) {
             $result = json_decode(
-                Wechat::$api($accessToken, $datum), true
+                Wechat::invoke(
+                    'ent', 'user', $method, [$token], $datum
+                ), true
             );
             $result['errcode'] ?: (
                 $method == 'update'
@@ -228,7 +228,7 @@ class SyncDepartment implements ShouldQueue {
      */
     private function syncParty(array $deptIds = null) {
         
-        $accessToken = $this->accessToken();
+        $token = $this->token();
         if (!$deptIds) {
             $d = (new Department)->find($this->departmentIds[0]);
             $parentid = $d->departmentType->name == '学校'
@@ -240,15 +240,15 @@ class SyncDepartment implements ShouldQueue {
             );
             $result = json_decode(
                 Wechat::invoke(
-                    'ent', 'department', $this->action,
-                    [$accessToken], $params
+                    'ent', 'department',
+                    $this->action, [$token], $params
                 ), true
             );
             # 如果在更新部门时返回"部门ID不存在"
             $result['errcode'] != 60003 ?: $result = json_decode(
                 Wechat::invoke(
-                    'ent', 'department', 'create',
-                    [$accessToken], $params
+                    'ent', 'department',
+                    'create', [$token], $params
                 ), true
             );
             $this->response['statusCode'] = $result['errcode']
@@ -261,7 +261,7 @@ class SyncDepartment implements ShouldQueue {
                 $result = json_decode(
                     Wechat::invoke(
                         'ent', 'department',
-                        'delete', [$accessToken, $id]
+                        'delete', [$token, $id]
                     ), true
                 );
                 if (($result['errcode'] && $result['errcode'] == 60123) || !$result['errcode']) {
@@ -279,24 +279,14 @@ class SyncDepartment implements ShouldQueue {
      * 获取access_token
      *
      * @return mixed
-     * @throws PusherException
      * @throws Exception
      */
-    private function accessToken() {
+    private function token() {
         
-        $token = Wechat::token(
-            $this->corp->corpid,
-            $this->corp->contact_sync_secret,
-            true
+        return Wechat::token(
+            'ent', $this->corp->corpid,
+            Wechat::syncSecret($this->corp->id),
         );
-        if ($token['errcode']) {
-            $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            $this->response['message'] = $token['errmsg'];
-            $this->bc->broadcast($this->response);
-            exit;
-        }
-        
-        return $token['access_token'];
         
     }
     

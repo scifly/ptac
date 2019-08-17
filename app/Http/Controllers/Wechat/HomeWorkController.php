@@ -185,29 +185,27 @@ class HomeWorkController extends Controller {
      */
     private function openid() {
     
-        $corp = Corp::find(session('corpId'));
-        $paths = explode('/', Request::path());
-        $app = App::whereCorpId($corp->id)->where('name', Constant::APPS[$paths[1]])->first();
-        $token = Wechat::token('ent', $corp->corpid, $app->secret);
-        abort_if(
-            $token['errcode'],
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            $token['errmsg']
-        );
-        $user = Auth::user();
-        $result = json_decode(
-            Wechat::invoke(
-                'ent', 'user', 'convert_to_openid',
-                [$token['access_token']], ['userid' => $user->userid]
-            ), true
-        );
-        abort_if(
-            $result['errcode'],
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            Constant::WXERR[$result['errcode']]
-        );
-        
-        return $result['openid'];
+        try {
+            $corp = Corp::find(session('corpId'));
+            $app = App::whereCorpId($corp->id)->where(
+                'name', Constant::APPS[explode('/', Request::path())[1]]
+            )->first();
+            $result = json_decode(
+                Wechat::invoke(
+                    'ent', 'user', 'convert_to_openid',
+                    [Wechat::token('ent', $corp->corpid, $app->secret)],
+                    ['userid' => Auth::user()->userid]
+                ), true
+            );
+            throw_if(
+                $errcode = $result['errcode'],
+                new Exception(Constant::WXERR[$errcode])
+            );
+    
+            return $result['openid'];
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     

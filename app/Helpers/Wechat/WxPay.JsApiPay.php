@@ -3,6 +3,7 @@ namespace App\Helpers\Wechat;
 use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
+use Exception;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -77,39 +78,36 @@ class JsApiPay {
      */
     public function getOpenidFromMp($code) {
     
-        $token = Wechat::token(
-            'ent',
-            'wwefd1c6553e218347',
-            'EfS77mm40eYEJgLVJSeuWQgx0odW2vumk2rOxSBvnvg'
-        );
-        if ($token['errcode']) {
-            abort(
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                $token['errmsg']
+        try {
+            $token = Wechat::token(
+                'ent',
+                'wwefd1c6553e218347',
+                'EfS77mm40eYEJgLVJSeuWQgx0odW2vumk2rOxSBvnvg'
             );
+            $result = json_decode(
+                Wechat::invoke(
+                    'ent', 'user',
+                    'getuserinfo', [$token, $code]
+                ), JSON_UNESCAPED_UNICODE
+            );
+            throw_if(
+                $result['errcode'],
+                new Exception(Constant::WXERR[$result['errcode']])
+            );
+            $result = json_decode(
+                Wechat::invoke(
+                    'ent', 'user', 'convert_to_openid',
+                    [$token], ['userid' => $result['UserId']]
+                ), true
+            );
+            throw_if(
+                $result['errcode'],
+                new Exception(Constant::WXERR[$result['errcode']])
+            );
+            return $result['openid'];
+        } catch (Exception $e) {
+            throw $e;
         }
-        $accessToken = $token['access_token'];
-        $result = json_decode(
-            Wechat::invoke('ent', 'user', 'getuserinfo', [$accessToken, $code]),
-            JSON_UNESCAPED_UNICODE
-        );
-        abort_if(
-            $result['errcode'],
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            Constant::WXERR[$result['errcode']]
-        );
-        $result = json_decode(
-            Wechat::invoke(
-                'ent', 'user', 'convert_to_openid',
-                [$accessToken], ['userid' => $result['UserId']]
-            ), true
-        );
-        abort_if(
-            $result['errcode'],
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            Constant::WXERR[$result['errcode']]
-        );
-        return $result['openid'];
         
     }
     

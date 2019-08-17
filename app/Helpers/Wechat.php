@@ -1,8 +1,9 @@
 <?php
 namespace App\Helpers;
 
+use App\Models\AccessToken;
 use App\Models\App;
-use App\Models\Corp;
+use Exception;
 use Throwable;
 
 /**
@@ -22,154 +23,155 @@ class Wechat {
     const PRIVATEINFO = 'snsapi_privateinfo';
     const CODE_PARAM = ['appid', 'redirect_uri', 'response_type', 'scope', 'state'];
     const BASEURI = [
+        'ath' => 'https://open.weixin.qq.com/connect/oauth2/authorize?',    # 获取code
         'ent' => 'https://qyapi.weixin.qq.com/cgi-bin/',                    # 企业微信
-        'red' => 'https://api.mch.weixin.qq.com/',                          # 企业微信 - 企业支付
-        'url' => 'https://open.weixin.qq.com/connect/oauth2/authorize?',    # 企业微信 - 获取code
+        'red' => 'https://api.mch.weixin.qq.com/',                          # 企业微信 - 企业支付(红包)
         'pub' => 'https://api.weixin.qq.com/cgi-bin/',                      # 微信公众号
-        'svc' => 'https://api.weixin.qq.com/',                              # 微信公众号 - 数据统计、客服账号管理
+        'sns' => 'https://api.weixin.qq.com/sns/',                          # 微信公众号 - 网页授权
+        'aux' => 'https://api.weixin.qq.com/',                              # 微信公众号 - 数据统计、客服账号管理
     ];
     /** api url配置，1 = access_token, 0 = 无参数 */
     const APIS = [
         'ent' => [
-            'agent'           => [
-                'get' => [1, 'agentid'],
-                'set' => 1,
+            'agent'           => [                                          // 应用管理
+                'get' => [1, 'agentid'],                                    # 获取应用
+                'set' => 1,                                                 # 设置应用
             ],
-            'appchat'         => [
-                'create' => 1,
-                'update' => 1,
-                'get'    => 1,
-                'send'   => 1,
+            'appchat'         => [                                          // 发送消息到群聊对话
+                'create' => 1,                                              # 创建群聊会话
+                'update' => 1,                                              # 修改群聊会话
+                'get'    => 1,                                              # 获取群聊会话
+                'send'   => 1,                                              # 应用推送消息
             ],
-            'card'            => [
-                'invoice/reimburse/getinvoiceinfo'      => 1,
-                'invoice/reimburse/updateinvoicestatus' => 1,
-                'invoice/reimburse/updatestatusbatch'   => 1,
-                'invoice/reimburse/getinvoiceinfobatch' => 1,
+            'card'            => [                                          // 点子发票
+                'invoice/reimburse/getinvoiceinfo'      => 1,               # 查询点子发票
+                'invoice/reimburse/updateinvoicestatus' => 1,               # 更新发票状态
+                'invoice/reimburse/updatestatusbatch'   => 1,               # 批量更新发票状态
+                'invoice/reimburse/getinvoiceinfobatch' => 1,               # 批量查询电子发票
             ],
-            'checkin'         => [
-                'getcheckindata'   => 1,
-                'getcheckinoption' => 1,
+            'checkin'         => [                                          // 企业微信打卡应用
+                'getcheckindata'   => 1,                                    # 获取打卡数据
+                'getcheckinoption' => 1,                                    # 获取打卡规则
             ],
-            'batch'           => [
-                'invite'       => 1,
-                'syncuser'     => 1,
-                'replaceuser'  => 1,
-                'replaceparty' => 1,
-                'getresult'    => 1,
+            'batch'           => [                                          // 异步批量接口
+                'invite'       => 1,                                        # 邀请成员
+                'syncuser'     => 1,                                        # 增量更新成员
+                'replaceuser'  => 1,                                        # 全量覆盖成员
+                'replaceparty' => 1,                                        # 全量覆盖部门
+                'getresult'    => 1,                                        # 获取异步任务结果
             ],
             'corp'            => [
-                'get_join_qrcode' => [1, 'size_type'],
-                'getapprovaldata' => 1,
+                'get_join_qrcode' => [1, 'size_type'],                      # 获取加入企业二维码
+                'getapprovaldata' => 1,                                     # 获取审批数据
             ],
-            'department'      => [
-                'create' => 1,
-                'update' => 1,
-                'delete' => [1, 'id'],
-                'list'   => [1, 'id'],
+            'department'      => [                                          // 部门管理
+                'create' => 1,                                              # 创建部门
+                'update' => 1,                                              # 更新部门
+                'delete' => [1, 'id'],                                      # 删除部门
+                'list'   => [1, 'id'],                                      # 获取部门列表
             ],
             'dial'            => [
-                'get_dial_record' => 1,
+                'get_dial_record' => 1,                                     # 获取公费电话拨打记录
             ],
-            'externalcontact' => [
-                'get_fellow_user_list'   => 1,
-                'list'                   => [1, 'userid'],
-                'get'                    => [1, 'external_userid'],
-                'add_contact_way'        => 1,
-                'add_msg_template'       => 1,
-                'get_group_msg_result'   => 1,
-                'get_user_behavior_data' => 1,
-                'send_welcome_msg'       => 1,
-                'get_unassigned_list'    => 1,
-                'transfer'               => 1,
-                'get_corp_tag_list'      => 1,
-                'mark_tag'               => 1,
+            'externalcontact' => [                                          // 外部联系人管理
+                'get_fellow_user_list'   => 1,                              # 获取配置了客户联系功能的成员列表
+                'list'                   => [1, 'userid'],                  # 获取外部联系人列表
+                'get'                    => [1, 'external_userid'],         # 获取外部联系人详情
+                'add_contact_way'        => 1,                              # 配置客户联系「联系我」方式
+                'add_msg_template'       => 1,                              # 添加企业群发消息模板
+                'get_group_msg_result'   => 1,                              # 获取企业群发消息发送结果
+                'get_user_behavior_data' => 1,                              # 获取员工行为数据
+                'send_welcome_msg'       => 1,                              # 发送新客户欢迎语
+                'get_unassigned_list'    => 1,                              # 获取离职成员的客户列表
+                'transfer'               => 1,                              # 离职成员的外部联系人再分配
+                'get_corp_tag_list'      => 1,                              # 获取企业标签库
+                'mark_tag'               => 1,                              # 编辑外部联系人企业标签
             ],
             'gettoken'        => [
-                'gettoken' => ['corpid', 'corpsecret'],
+                'gettoken' => ['corpid', 'corpsecret'],                     # 获取access_token
             ],
-            'linkedcorp'      => [
-                'message/send' => 1,
+            'linkedcorp'      => [                                          // 互联企业消息推送
+                'message/send' => 1,                                        # 发送应用消息
             ],
-            'media'           => [
-                'upload'    => [1, 'type'],
-                'uploadimg' => 1,
-                'get'       => [1, 'media_id'],
-                'get/jssdk' => [1, 'media_id'],
+            'media'           => [                                          // 素材管理
+                'upload'    => [1, 'type'],                                 # 上传临时素材
+                'uploadimg' => 1,                                           # 上传永久图片
+                'get'       => [1, 'media_id'],                             # 获取临时素材
+                'get/jssdk' => [1, 'media_id'],                             # 获取高清语音素材
             ],
-            'menu'            => [
-                'create' => [1, 'agentid'],
-                'get'    => [1, 'agentid'],
-                'delete' => [1, 'agentid'],
+            'menu'            => [                                          // 自定义菜单
+                'create' => [1, 'agentid'],                                 # 创建菜单
+                'get'    => [1, 'agentid'],                                 # 获取菜单
+                'delete' => [1, 'agentid'],                                 # 删除菜单
             ],
-            'message'         => [
-                'send' => 1,
+            'message'         => [                                          // 消息推送
+                'send' => 1,                                                # 发送应用消息
             ],
-            'tag'             => [
-                'create'      => 1,
-                'update'      => 1,
-                'delete'      => [1, 'tagid'],
-                'get'         => [1, 'tagid'],
-                'addtagusers' => 1,
-                'deltagusers' => 1,
-                'list'        => 1,
+            'tag'             => [                                          // 标签管理
+                'create'      => 1,                                         # 创建标签
+                'update'      => 1,                                         # 更新标签名字
+                'delete'      => [1, 'tagid'],                              # 删除标签
+                'get'         => [1, 'tagid'],                              # 获取标签成员
+                'addtagusers' => 1,                                         # 增加标签成员
+                'deltagusers' => 1,                                         # 删除标签成员
+                'list'        => 1,                                         # 获取标签列表
             ],
-            'user'            => [
-                'create'            => 1,
-                'get'               => [1, 'userid'],
-                'update'            => 1,
-                'delete'            => [1, 'userid'],
-                'batchdelete'       => 1,
-                'simplelist'        => [1, 'department_id', 'fetch_child'],
-                'list'              => [1, 'department_id', 'fetch_child'],
-                'convert_to_openid' => 1,
-                'convert_to_userid' => 1,
-                'authsucc'          => [1, 'userid'],
-                'getuserinfo'       => [1, 'code'],
+            'user'            => [                                          // 成员管理
+                'create'            => 1,                                   # 创建成员
+                'get'               => [1, 'userid'],                       # 读取成员
+                'update'            => 1,                                   # 更新成员
+                'delete'            => [1, 'userid'],                       # 删除成员
+                'batchdelete'       => 1,                                   # 批量删除成员
+                'simplelist'        => [1, 'department_id', 'fetch_child'], # 获取部门成员
+                'list'              => [1, 'department_id', 'fetch_child'], # 获取部门成员详情
+                'convert_to_openid' => 1,                                   # 将userid转换成openid
+                'convert_to_userid' => 1,                                   # 将openid转换成userid
+                'authsucc'          => [1, 'userid'],                       # 二次验证
+                'getuserinfo'       => [1, 'code'],                         # 获取访问用户身份
             ],
         ],
         'red' => [
-            'mmpaymkttransfers' => [
-                'sendworkwxredpack'     => 0,
-                'queryworkwxredpack'    => 0,
-                'paywwsptrans2pocket'   => 0,
-                'querywwsptrans2pocket' => 0,
+            'mmpaymkttransfers' => [                                        // 企业支付
+                'sendworkwxredpack'     => 0,                               # 发放企业红包
+                'queryworkwxredpack'    => 0,                               # 查询红包记录
+                'paywwsptrans2pocket'   => 0,                               # 向员工付款
+                'querywwsptrans2pocket' => 0,                               # 查询付款记录
             ],
         ],
         'pub' => [
             'token'                     => [
-                'token' => ['grant_type', 'appid', 'secret'],
+                'token' => ['grant_type', 'appid', 'secret'],               # 获取access_token
             ],
-            'menu'                      => [
-                'create'         => 1,
-                'get'            => 1,
-                'delete'         => 1,
-                'addconditional' => 1,
+            'menu'                      => [                                // 自定义菜单
+                'create'         => 1,                                      # 创建菜单
+                'get'            => 1,                                      # 查询菜单
+                'delete'         => 1,                                      # 删除菜单
+                'addconditional' => 1,                                      # 创建个性化菜单
             ],
             'get_current_selfmenu_info' => [
-                'get_current_selfmenu_info' => 1,
+                'get_current_selfmenu_info' => 1,                           # 获取自定义菜单配置
             ],
             'material'                  => [
-                'add_news'          => 1,
-                'update_news'       => 1,
-                'get_material'      => ['accesstoken'],
-                'batchget_material' => ['accesstoken'],
-                'get_materialcount' => ['accesstoken'],
-                'del_material'      => ['accesstoken'],
+                'add_news'          => 1,                                   # 新增永久图文素材
+                'update_news'       => 1,                                   # 修改永久图文素材
+                'get_material'      => 1,                                   # 获取永久素材
+                'batchget_material' => 1,                                   # 获取素材列表
+                'get_materialcount' => 1,                                   # 获取素材总数
+                'del_material'      => 1,                                   # 删除永久素材
             ],
             'media'                     => [
-                'uploadimg'  => 1,
-                'uploadnews' => 1,
-                'upload'     => [1, 'type'],
-                'get'        => [1, 'media_id'],
+                'uploadimg'  => 1,                                          # 上传图文消息内的图片获取URL【订阅号与服务号认证后均可用】
+                'uploadnews' => 1,                                          # 上传图文消息素材【订阅号与服务号认证后均可用】
+                'upload'     => [1, 'type'],                                # 新增临时素材
+                'get'        => [1, 'media_id'],                            # 获取临时素材
             ],
             'message'                   => [
-                'mass/sendall'       => 1,
-                'mass/send'          => 1,
-                'mass/delete'        => 1,
-                'mass/preview'       => 1,
-                'mass/get'           => 1,
-                'mass/speed/get'     => 1,
+                'mass/sendall'       => 1,                                  # 根据标签进行群发【订阅号与服务号认证后均可用】
+                'mass/send'          => 1,                                  # 根据OpenID列表群发【订阅号不可用，服务号认证后可用】
+                'mass/delete'        => 1,                                  # 删除群发【订阅号与服务号认证后均可用】
+                'mass/preview'       => 1,                                  # 预览接口【订阅号与服务号认证后均可用】
+                'mass/get'           => 1,                                  # 查询群发消息发送状态【订阅号与服务号认证后均可用】
+                'mass/speed/get'     => 1,                                  # 控制群发速度
                 'template/send'      => 1,
                 'template/subscribe' => 1,
             ],
@@ -180,36 +182,48 @@ class Wechat {
                 'shorturl' => 1,
             ],
             'tags'                      => [
-                'create'                 => 1,
-                'get'                    => 1,
-                'update'                 => 1,
-                'delete'                 => 1,
-                'members/batchtagging'   => 1,
-                'members/batchuntagging' => 1,
-                'getidlist'              => 1,
+                'create'                 => 1,                              # 创建标签
+                'get'                    => 1,                              # 获取公众号已创建的标签
+                'update'                 => 1,                              # 编辑标签
+                'delete'                 => 1,                              # 删除标签
+                'members/batchtagging'   => 1,                              # 批量为用户打标签
+                'members/batchuntagging' => 1,                              # 批量为用户取消标签
+                'getidlist'              => 1,                              # 获取用户身上的标签列表
                 'members/getblacklist'   => 1,
             ],
-            'template'                  => [
-                'api_set_industry'         => 1,
-                'get_industry'             => 1,
-                'api_add_template'         => 1,
-                'get_all_private_template' => 1,
-                'del_private_template'     => 1,
+            'template'                  => [                                // 模板消息接口
+                'api_set_industry'         => 1,                            # 设置所属行业
+                'get_industry'             => 1,                            # 获取设置的行业信息
+                'api_add_template'         => 1,                            # 获得模板ID
+                'get_all_private_template' => 1,                            # 获取模板列表
+                'del_private_template'     => 1,                            # 删除模板
             ],
             'user'                      => [
-                'tag/get'           => 1,
-                'info/updateremark' => 1,
-                'info'              => [1, 'openid', 'lang'],
-                'get'               => [1, 'next_openid'],
+                'tag/get'           => 1,                                   # 获取标签下粉丝列表
+                'info/updateremark' => 1,                                   # 设置用户备注名
+                'info'              => [1, 'openid', 'lang'],               # 获取用户基本信息（包括UnionID机制）
+                'get'               => [1, 'next_openid'],                  # 获取用户列表
             ],
         ],
-        'svc' => [
+        'sns' => [
+            'oauth2'   => [
+                'access_token'  => ['appid', 'secret', 'code', 'grant_type'],   # 通过code换取网页授权access_token
+                'refresh_token' => ['appid', 'grant_type', 'refresh_token'],    # 刷新access_token（如果需要）
+            ],
+            'userinfo' => [
+                'userinfo' => [1, 'openid', 'lang'],                        # 拉取用户信息(需scope为 snsapi_userinfo)
+            ],
+            'auth'     => [
+                'auth' => [1, 'openid'],                                    # 检验授权凭证（access_token）是否有效
+            ],
+        ],
+        'aux' => [
             'customservice' => [
-                'kfaccount/add'           => 1,
-                'kfaccount/update'        => 1,
-                'kfaccount/del'           => 1,
-                'kfaccount/uploadheadimg' => [1, 'kf_account'],
-                'getkflist'               => 1,
+                'kfaccount/add'           => 1,                             # 添加客服账号
+                'kfaccount/update'        => 1,                             # 修改客服账号
+                'kfaccount/del'           => 1,                             # 删除客服账号
+                'kfaccount/uploadheadimg' => [1, 'kf_account'],             # 设置客服帐号的头像
+                'getkflist'               => 1,                             # 获取所有客服账号
             ],
             'datacube'      => [
                 'getusersummary'          => 1,
@@ -236,6 +250,17 @@ class Wechat {
     const ERRMSGS = [
         -1      => '系统繁忙',
         0       => '请求成功',
+        10003	=> 'redirect_uri域名与后台配置不一致',
+        10004	=> '此公众号被封禁',
+        10005	=> '此公众号并没有这些scope的权限',
+        10006	=> '必须关注此测试号',
+        10009	=> '操作太频繁了，请稍后重试',
+        10010	=> 'scope不能为空',
+        10011	=> 'redirect_uri不能为空',
+        10012	=> 'appid不能为空',
+        10013	=> 'state不能为空',
+        10015	=> '公众号未授权第三方平台，请检查授权状态',
+        10016	=> '不支持微信开放平台的Appid，请使用公众号Appid',
         40001   => 'secret参数错误',
         40002   => '非法凭证类型',
         40003   => 'UserID/OpenID无效',
@@ -537,39 +562,46 @@ class Wechat {
     /**
      * 获取access_token
      *
-     * @param $platform - 微信平台：ent - 企业微信，pub - 微信公众号
-     * @param string $id 企业微信corpid / 公众号appid
-     * @param string $secret 应用secret / 公众号appsecret
-     * @param bool $contactSync
-     * @return bool|mixed
+     * @param $base - 微信平台：ent - 企业微信，pub - 微信公众号，sns - 微信公众号网页授权
+     * @param string $appid - 企业微信corpid / 公众号appid
+     * @param string $appsecret - 应用secret / 公众号appsecret
+     * @param null|string $code - 微信公众号网页授权code
+     * @return mixed
      * @throws Throwable
      */
-    function token($platform, $id, $secret, $contactSync = false) {
+    function token($base, $appid, $appsecret, $code = null) {
         
-        $app = !$contactSync
-            ? App::whereSecret($secret)->first()
-            : Corp::whereContactSyncSecret($secret)->first();
-        if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
-            $base = $platform;
-            $category = $method = $platform == 'ent' ? 'gettoken' : 'token';
-            $result = json_decode(
-                $this->invoke($base, $category, $method, [$id, $secret]), true
+        try {
+            [$app, $category, $method, $values] = $this->accessToken(
+                $base, $appid, $appsecret, $code
             );
-            $errcode = $result['errcode'] ?? 0;
-            $token = !$errcode
-                ? ['errcode' => 0, 'access_token' => $result['access_token']]
-                : ['errcode' => $errcode, 'errmsg' => Constant::WXERR[$errcode]];
-            if (!$token['errcode']) {
-                $app->update([
-                    'expire_at'    => date('Y-m-d H:i:s', time() + 7000),
-                    'access_token' => $token['access_token'],
-                ]);
+            if ($code || strtotime($app['expire_at']) < time()) {
+                $result = json_decode(
+                    $this->invoke(
+                        $base, $category, $method, $values
+                    ), true
+                );
+                throw_if(
+                    $errcode = $result['errcode'] ?? 0,
+                    new Exception(Constant::WXERR[$errcode])
+                );
+                if ($code) return $result;
+                $token = $result['access_token'];
+                $data = [
+                    'expire_at'    => date(
+                        'Y-m-d H:i:s', time() + 7000
+                    ),
+                    'access_token' => $token,
+                ];
+                $app->update($data);
+            } else {
+                $token = $app['access_token'];
             }
-        } else {
-            $token = ['errcode' => 0, 'access_token' => $app['access_token']];
+    
+            return $token;
+        } catch (Exception $e) {
+            throw $e;
         }
-        
-        return $token;
         
     }
     
@@ -586,7 +618,7 @@ class Wechat {
         $params = self::CODE_PARAM;
         $values = [
             $id, urlencode($redirectUri),
-            'code', self::USERINFO,
+            'code', self::BASE,
             'STATE#wechat_redirect',
         ];
         if ($agentid) {
@@ -595,13 +627,25 @@ class Wechat {
         }
         
         return join([
-            self::BASEURI['url'],
+            self::BASEURI['ath'],
             http_build_query(
                 array_combine($params, $values)
             ),
         ]);
         
         // return "window.location = \"{$url}\"";
+    }
+    
+    /**
+     * 返回“通讯录同步”secret
+     *
+     * @param $corpId
+     * @return mixed
+     */
+    function syncSecret($corpId) {
+        
+        return App::where(['corp_id' => $corpId, 'app_id' => 0])->first()->appsecret;
+        
     }
     
     /**
@@ -633,6 +677,28 @@ class Wechat {
         return $data
             ? $this->curlPost($data, $url)
             : $this->curlGet($url);
+        
+    }
+    
+    /**
+     * @param $base
+     * @param string $id - corpid / appid
+     * @param string $secret - secret/contact_sync_secret/appsecret
+     * @param $code
+     * @return array
+     */
+    private function accessToken($base, $id, $secret, $code) {
+        
+        $values = [$id, $secret];
+        
+        return [
+            $app = App::where(['appid' => $id, 'appsecret' => $secret])->first(),
+            $category = $base == 'sns' ? 'oauth2' : ($base == 'ent' ? 'gettoken' : 'token'),
+            $method = $base == 'sns' ? 'access_token' : $category,
+            $code
+                ? array_merge($values, [$code, 'authorization_code'])                           # 公众号网页授权
+                : ($base == 'ent' ? $values : array_merge(['client_credential'], $values)),     # 企业 / 公众号
+        ];
         
     }
     
