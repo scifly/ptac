@@ -345,7 +345,7 @@ class Corp extends Model {
             case 'index':
                 return [
                     'titles' => [
-                        '#', '名称', '缩写', '所属运营', '企业号ID', '通讯录同步Secret',
+                        '#', '名称', '缩写', '所属运营', '企业号ID',
                         '创建于', '更新于', '状态 . 操作',
                     ],
                 ];
