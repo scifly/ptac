@@ -17,70 +17,16 @@ use Illuminate\Support\Facades\{Auth, DB, Request, Session};
 use Throwable;
 
 /**
- * App\Models\Corp 企业
- *
- * @property int $id
- * @property string $name 企业名称
- * @property string $acronym 企业名称缩写（首字母缩略词）
- * @property string $corpid 企业号id
- * @property string $contact_sync_secret "通讯录同步"应用Secret
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property Carbon|null $expire_at
- * @property int $enabled
- * @property int $menu_id 对应的菜单ID
- * @property int $company_id 所属运营者公司ID
- * @property int $department_id 对应的部门ID
- * @property string $encoding_aes_key 接收消息服务器配置项，用于加密消息体
- * @property string $token 接收消息服务器配置项，用于生成签名
- * @property string|null $access_token 通讯录同步应用access_token
- * @property int $departmentid 企业微信后台通讯录的根部门id
- * @property int $sms_balance 短信余额
- * @property int $sms_used 已使用的短信数量
- * @property string|null $mchid 微信支付商户号
- * @property string|null $apikey 微信支付商户支付密钥
- * @property-read Company $company
- * @property-read Collection|Department[] $departments
- * @property-read Collection|Grade[] $grades
- * @property-read Collection|Educator[] $educators
- * @property-read Collection|School[] $schools
- * @property-read Collection|Tag[] $tags
- * @property-read Department $department
- * @property-read Menu $menu
- * @property-read Collection|App[] $apps
- * @method static Builder|Corp whereCorpid($value)
- * @method static Builder|Corp whereContactSyncSecret($value)
- * @method static Builder|Corp whereCreatedAt($value)
- * @method static Builder|Corp whereEnabled($value)
- * @method static Builder|Corp whereId($value)
- * @method static Builder|Corp whereName($value)
- * @method static Builder|Corp whereAcronym($value)
- * @method static Builder|Corp whereUpdatedAt($value)
- * @method static Builder|Corp whereExpireAt($value)
- * @method static Builder|Corp whereEncodingAesKey($value)
- * @method static Builder|Corp whereToken($value)
- * @method static Builder|Corp whereCompanyId($value)
- * @method static Builder|Corp whereDepartmentId($value)
- * @method static Builder|Corp whereMenuId($value)
- * @method static Builder|Corp whereApikey($value)
- * @method static Builder|Corp whereMchid($value)
- * @method static Builder|Corp whereSmsBalance($value)
- * @method static Builder|Corp whereSmsUsed($value)
- * @method static Builder|Corp whereAccessToken($value)
- * @method static Builder|Corp newModelQuery()
- * @method static Builder|Corp newQuery()
- * @method static Builder|Corp query()
- * @mixin Eloquent
+ * Class Corp
+ * @package App\Models
  */
 class Corp extends Model {
     
     use ModelTrait;
     
     protected $fillable = [
-        'name', 'acronym', 'company_id', 'expire_at',
-        'corpid', 'contact_sync_secret', 'access_token',
-        'encoding_aes_key', 'token', 'menu_id',
-        'department_id', 'departmentid', 'mchid',
+        'name', 'acronym', 'company_id', 'corpid',
+        'menu_id', 'department_id', 'departmentid', 'mchid',
         'apikey', 'sms_balance', 'sms_used', 'enabled',
     ];
     
@@ -176,11 +122,10 @@ class Corp extends Model {
                 },
             ],
             ['db' => 'Corp.corpid', 'dt' => 4],
-            ['db' => 'Corp.contact_sync_secret', 'dt' => 5],
-            ['db' => 'Corp.created_at', 'dt' => 6],
-            ['db' => 'Corp.updated_at', 'dt' => 7],
+            ['db' => 'Corp.created_at', 'dt' => 5],
+            ['db' => 'Corp.updated_at', 'dt' => 6],
             [
-                'db'        => 'Corp.enabled', 'dt' => 8,
+                'db'        => 'Corp.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     $rechargeLink = sprintf(
                         Snippet::DT_ANCHOR,
