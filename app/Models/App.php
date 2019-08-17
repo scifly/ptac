@@ -42,12 +42,16 @@ use Throwable;
  * @method static Builder|App whereCreatedAt($value)
  * @method static Builder|App whereDescription($value)
  * @method static Builder|App whereEnabled($value)
+ * @method static Builder|App whereAccessToken($value)
+ * @method static Builder|App whereExpireAt($value)
  * @method static Builder|App whereId($value)
  * @method static Builder|App whereMenu($value)
  * @method static Builder|App whereName($value)
  * @method static Builder|App whereProperties($value)
  * @method static Builder|App whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property string|null $access_token
+ * @property string|null $expire_at
  */
 class App extends Model {
     

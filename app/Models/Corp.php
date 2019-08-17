@@ -3,8 +3,6 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\{ModelTrait, Snippet};
-use Carbon\Carbon;
-use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
@@ -13,12 +11,55 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany,
     Relations\HasManyThrough};
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\{Auth, DB, Request, Session};
 use Throwable;
 
 /**
  * Class Corp
+ *
  * @package App\Models
+ * @property int $id
+ * @property string $name 企业名称
+ * @property int $company_id 所属运营者公司ID
+ * @property string $acronym 企业名称缩写（首字母缩略词）
+ * @property string $corpid 企业id
+ * @property int $department_id 对应的部门ID
+ * @property int $menu_id 对应的菜单id
+ * @property int $departmentid 企业微信后台通讯录的根部门id
+ * @property string|null $mchid 微信支付商户号
+ * @property string|null $apikey 微信支付商户支付密钥
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property int $sms_balance 短信余额
+ * @property int $sms_used 已使用的短信数量
+ * @property int $enabled
+ * @property-read Collection|App[] $apps
+ * @property-read Company $company
+ * @property-read Department $department
+ * @property-read Collection|Educator[] $educators
+ * @property-read Collection|Grade[] $grades
+ * @property-read Menu $menu
+ * @property-read Collection|School[] $schools
+ * @property-read Collection|Tag[] $tags
+ * @method static Builder|Corp newModelQuery()
+ * @method static Builder|Corp newQuery()
+ * @method static Builder|Corp query()
+ * @method static Builder|Corp whereAcronym($value)
+ * @method static Builder|Corp whereApikey($value)
+ * @method static Builder|Corp whereCompanyId($value)
+ * @method static Builder|Corp whereCorpid($value)
+ * @method static Builder|Corp whereCreatedAt($value)
+ * @method static Builder|Corp whereDepartmentId($value)
+ * @method static Builder|Corp whereEnabled($value)
+ * @method static Builder|Corp whereId($value)
+ * @method static Builder|Corp whereMchid($value)
+ * @method static Builder|Corp whereMenuId($value)
+ * @method static Builder|Corp whereName($value)
+ * @method static Builder|Corp whereSmsBalance($value)
+ * @method static Builder|Corp whereSmsUsed($value)
+ * @method static Builder|Corp whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Corp extends Model {
     
