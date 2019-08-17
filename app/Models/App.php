@@ -18,23 +18,27 @@ use Throwable;
  * @package App\Models
  * @property int $id
  * @property int $corp_id 所属企业id
- * @property int $category 应用类型：1 - 企业应用；2 - 公众号
+ * @property int $category 应用类型：1 - 企业应用；2 - 公众号；3 - （企业）通讯录同步
  * @property string $name 企业应用 / 公众号名称
  * @property string|null $appid 企业应用agentid / 公众号appid；null - 通讯录同步(企业微信)
  * @property string $appsecret 企业应用secret / 公众号appsecret
  * @property mixed|null $menu 企业应用 / 公众号菜单
  * @property mixed $properties 企业应用 / 公众号参数(token, encoding_aes_key ...)
  * @property string|null $description 企业应用 / 公众号描述
+ * @property string|null $access_token
+ * @property string|null $expire_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read Corp $corp
  * @property-read Collection|Message[] $messages
- * @property-read Collection|School[] $schools
  * @property-read Collection|Openid[] $openids
+ * @property-read Collection|School[] $schools
+ * @property-read Collection|Template[] $templates
  * @method static Builder|App newModelQuery()
  * @method static Builder|App newQuery()
  * @method static Builder|App query()
+ * @method static Builder|App whereAccessToken($value)
  * @method static Builder|App whereAppid($value)
  * @method static Builder|App whereAppsecret($value)
  * @method static Builder|App whereCategory($value)
@@ -42,7 +46,6 @@ use Throwable;
  * @method static Builder|App whereCreatedAt($value)
  * @method static Builder|App whereDescription($value)
  * @method static Builder|App whereEnabled($value)
- * @method static Builder|App whereAccessToken($value)
  * @method static Builder|App whereExpireAt($value)
  * @method static Builder|App whereId($value)
  * @method static Builder|App whereMenu($value)
@@ -50,8 +53,6 @@ use Throwable;
  * @method static Builder|App whereProperties($value)
  * @method static Builder|App whereUpdatedAt($value)
  * @mixin Eloquent
- * @property string|null $access_token
- * @property string|null $expire_at
  */
 class App extends Model {
     
@@ -65,6 +66,8 @@ class App extends Model {
         'properties->url',
         'properties->token',
         'properties->encoding_aes_key',
+        'properties->primary_industry',
+        'properties->secondary_industry',
         'properties->redirect_domain',
         'properties->report_location_flag',
         'properties->isreportenter',
@@ -104,6 +107,13 @@ class App extends Model {
      * @return HasMany
      */
     function openids() { return $this->hasMany('App\Models\Openid'); }
+    
+    /**
+     * 返回指定公众号所包含的所有模板
+     *
+     * @return HasMany
+     */
+    function templates() { return $this->hasMany('App\Models\Template'); }
     
     /**
      * 应用列表
@@ -197,7 +207,7 @@ class App extends Model {
         try {
             DB::transaction(function () use ($id) {
                 $this->purge(['Message', 'School'], 'app_id', 'reset', $id);
-                $this->purge(['App'], 'id', 'purge', $id);
+                $this->purge(['App'], 'id');
             });
         } catch (Exception $e) {
             throw $e;
@@ -217,7 +227,8 @@ class App extends Model {
             case 'apps/index':
                 return [
                     'titles' => [
-                        '#', '名称', '类型', '所属企业', '描述', '创建于', '更新于', '状态 . 操作',
+                        '#', '名称', '类型', '所属企业', '描述',
+                        '创建于', '更新于', '状态 . 操作',
                     ],
                 ];
             case 'apps/create':

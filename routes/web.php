@@ -82,7 +82,7 @@ $routes = [
     ],
     'corp'                   => array_merge(
         $default, ['recharge' => ['{id}' => ['get', 'put']]],
-    ),
+        ),
     'custodian'              => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
@@ -175,7 +175,7 @@ $routes = [
     ],
     'partner'                => array_merge(
         $default, ['recharge' => ['{id}' => ['get', 'put']]],
-    ),
+        ),
     'passage_log'            => [
         'index'  => ['get'],
         'store'  => ['post'],
@@ -236,6 +236,11 @@ $routes = [
         'store'   => ['post'],
         'edit'    => ['{id?}' => ['get', 'post']],
         'update'  => ['{id?}' => 'get'],
+        'destroy' => ['{id?}' => 'delete'],
+    ],
+    'template'               => [
+        'index'   => ['get'],
+        'config'  => ['get', 'post'],
         'destroy' => ['{id?}' => 'delete'],
     ],
     'turnstile'              => [

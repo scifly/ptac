@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\{ModelTrait, Snippet};
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
@@ -59,7 +60,7 @@ use Throwable;
  * @method static Builder|Corp whereSmsBalance($value)
  * @method static Builder|Corp whereSmsUsed($value)
  * @method static Builder|Corp whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Corp extends Model {
     
@@ -277,13 +278,13 @@ class Corp extends Model {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
                 $corps = $this->whereIn('id', $ids)->get();
-                list($appIds, $schoolIds) = array_map(
+                [$appIds, $schoolIds] = array_map(
                     function ($class) use ($ids) {
                         return $this->model($class)->whereIn('corp_id', $ids)
                             ->pluck('id')->toArray();
                     }, ['App', 'School']
                 );
-                list($departmentIds, $menuIds) = array_map(
+                [$departmentIds, $menuIds] = array_map(
                     function ($field) use ($corps) {
                         return $corps->pluck($field)->toArray();
                     }, ['department_id', 'menu_id']
