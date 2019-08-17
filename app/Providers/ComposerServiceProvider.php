@@ -67,6 +67,7 @@ class ComposerServiceProvider extends ServiceProvider {
             'subject_module'         => ['index', 'create_edit'],
             'tab'                    => ['index', 'create_edit'],
             'tag'                    => ['index', 'create_edit'],
+            'template'               => ['index', 'config'],
             'turnstile'              => ['index'],
             'user'                   => ['edit', 'reset', 'message', 'event'],
             'wap_site'               => ['create_edit'],
