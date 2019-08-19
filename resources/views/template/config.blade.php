@@ -13,16 +13,19 @@
                  'label' => '公众号',
                  'id' => 'app_id',
                  'items' => $apps,
+                 'icon' => 'fa fa-weixin text-green'
             ])
             @include('shared.single_select', [
                  'label' => '主营行业',
                  'id' => 'primary',
                  'items' => $industries,
+                 'icon' => 'fa fa-industry'
             ])
             @include('shared.single_select', [
                  'label' => '副营行业',
                  'id' => 'secondary',
                  'items' => $industries,
+                 'icon' => 'fa fa-industry'
             ])
         </div>
     </div>
