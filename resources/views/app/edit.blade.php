@@ -25,7 +25,7 @@
                             'class' => 'form-control text-blue',
                             'required' => 'true',
                             'disabled' => $app['category'] != 1,
-                            'placeholder' => '(不超过12个汉字)',
+                            'placeholder' => '(必填。不得超过12个汉字)',
                             'maxlength' => '12'
                         ]) !!}
                     </div>
@@ -43,7 +43,8 @@
                             </div>
                             {!! Form::text('appid', null, [
                                 'class' => 'form-control text-blue',
-                                'disabled' => true
+                                'disabled' => true,
+                                'placeholder' => '(必填)'
                             ]) !!}
                         </div>
                     </div>
@@ -74,6 +75,7 @@
                             @include('shared.icon_addon', ['class' => 'fa-link'])
                             {!! Form::text('url', $url ?? null, [
                                 'class' => 'form-control text-blue',
+                                'placeholder' => '(必填)'
                             ]) !!}
                         </div>
                     </div>
@@ -89,6 +91,7 @@
                             @include('shared.icon_addon', ['class' => 'fa-key'])
                             {!! Form::text('token', $token ?? null, [
                                 'class' => 'form-control text-blue',
+                                'placeholder' => '(必填)'
                             ]) !!}
                         </div>
                     </div>
@@ -104,7 +107,7 @@
                             @include('shared.icon_addon', ['class' => 'fa-key'])
                             {!! Form::text('encoding_aes_key', $encoding_aes_key ?? null, [
                                 'class' => 'form-control text-blue',
-                                'placeholder' => '(如为公众号，此项必填)',
+                                'placeholder' => '(必填)',
                             ]) !!}
                         </div>
                     </div>
@@ -124,7 +127,8 @@
                             @include('shared.icon_addon', ['class' => 'fa-location-arrow text-purple'])
                             {!! Form::text('redirect_domain', $redirect_domain ?? null, [
                                 'class' => 'form-control text-blue',
-                                'maxlength' => '255'
+                                'maxlength' => '255',
+                                'placeholder' => '(必填)'
                             ]) !!}
                         </div>
                     </div>
@@ -138,7 +142,8 @@
                             @include('shared.icon_addon', ['class' => 'fa-link'])
                             {!! Form::text('home_url', $home_url ?? null, [
                                 'class' => 'form-control text-blue',
-                                'maxlength' => '255'
+                                'maxlength' => '255',
+                                'placeholder' => '(必填)'
                             ]) !!}
                         </div>
                     </div>
