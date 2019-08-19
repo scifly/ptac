@@ -1,7 +1,7 @@
 var $appId = $('#app_id'),
     $primary = $('#primary'),
     $secondary = $('#secondary'),
-    $config = $('#config');
+    $config = $('#save');
 
 page.initSelect2();
 page.initBackBtn('templates');

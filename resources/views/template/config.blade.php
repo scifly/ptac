@@ -26,6 +26,6 @@
             ])
         </div>
     </div>
-    @include('shared.form_buttons', ['id' => 'config'])
+    @include('shared.form_buttons', ['id' => 'save'])
 </div>
 {!! Form::close() !!}
