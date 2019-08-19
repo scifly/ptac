@@ -4,3 +4,9 @@ page.index('templates', [
     {searchable: false, targets: [3, 4, 5]},
     {orderable: false, targets: [3, 4, 5]}
 ]);
+$('#config').off().on('click', function () {
+    page.getTabContent(
+        $('#tab_' + page.getActiveTabId()),
+        'templates/config'
+    );
+});
