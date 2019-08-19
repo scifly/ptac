@@ -1,11 +1,13 @@
 var $appId = $('#app_id'),
     $primary = $('#primary'),
     $secondary = $('#secondary'),
-    $config = $('#config');
+    $config = $('#config'),
+    $form = $('#formTemplate');
 
 page.initSelect2();
 page.initBackBtn('templates');
 $primary.add($secondary).on('change', function() { validate(); });
+$form.on('submit', function () { return false; });
 $config.on('click', function () {
     validate();
     if ($appId.val() === null) {
@@ -14,7 +16,7 @@ $config.on('click', function () {
     }
     $.ajax({
         type: 'POST',
-        data: $('#formTemplate').serialize(),
+        data: $form.serialize(),
         url: 'templates/store',
         dataType: 'json',
         success: function (result) {
