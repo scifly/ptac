@@ -187,7 +187,7 @@ class Template extends Model {
                     ],
                     'buttons' => [
                         'config' => [
-                            'id'    => 'config',
+                            'id'    => 'create',
                             'label' => '设置所属行业',
                             'icon'  => 'fa fa-industry',
                         ],

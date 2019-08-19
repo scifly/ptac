@@ -1,7 +1,7 @@
 var $appId = $('#app_id'),
     $primary = $('#primary'),
     $secondary = $('#secondary'),
-    $config = $('#save');
+    $config = $('#config');
 
 page.initSelect2();
 page.initBackBtn('templates');
@@ -12,6 +12,18 @@ $config.on('click', function () {
         page.inform('设置所属行业', '请选择一个公众号', page.failure);
         return false;
     }
+    $.ajax({
+        type: 'POST',
+        data: $('#formTemplate').serialize(),
+        url: 'templates/store',
+        dataType: 'json',
+        success: function (result) {
+            page.inform(result['title'], result['message'], page.success);
+        },
+        error: function (e) {
+            page.errorHandler(e);
+        }
+    });
 });
 
 function validate() {

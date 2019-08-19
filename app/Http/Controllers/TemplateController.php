@@ -45,16 +45,28 @@ class TemplateController extends Controller {
     /**
      * 设置所属行业
      *
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    function config() {
+        
+        return $this->output();
+        
+    }
+    
+    /**
+     * 保存所属行业
+     *
      * @param TemplateRequest $request
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    function config(TemplateRequest $request) {
+    function store(TemplateRequest $request) {
         
-        return Request::method() == 'POST'
-            ? $this->template->config($request)
-            : $this->output();
-        
+        return $this->result(
+            $this->template->config($request)
+        );
+
     }
     
     /**
