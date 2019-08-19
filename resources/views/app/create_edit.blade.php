@@ -25,7 +25,7 @@
                         {!! Form::text('name', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
-                            'placeholder' => '(不超过12个汉字)',
+                            'placeholder' => '(必填，不超过12个汉字)',
                             'maxlength' => '12'
                         ]) !!}
                     </div>
@@ -86,7 +86,7 @@
                         @include('shared.icon_addon', ['class' => 'fa-key'])
                         {!! Form::text('encoding_aes_key', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(如为公众号，此项必填)',
+                            'placeholder' => '(必填)',
                         ]) !!}
                     </div>
                 </div>
@@ -115,7 +115,7 @@
                         @include('shared.icon_addon', ['class' => 'fa-link'])
                         {!! Form::text('home_url', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(选填)',
+                            'placeholder' => '(必填)',
                             'maxlength' => '255'
                         ]) !!}
                     </div>
