@@ -2,8 +2,11 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
+use App\Facades\Wechat;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
+use App\Http\Requests\TemplateRequest;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
@@ -44,13 +47,13 @@ use Throwable;
  * @mixin \Eloquent
  */
 class Template extends Model {
-
+    
     use ModelTrait;
     
     protected $fillable = [
         'app_id', 'title', 'templateid',
         'primary_industry', 'deputy_industry',
-        'content', 'example', 'enabled'
+        'content', 'example', 'enabled',
     ];
     
     /**
@@ -71,7 +74,7 @@ class Template extends Model {
             ['db' => 'Template.id', 'dt' => 0],
             ['db' => 'Template.title', 'dt' => 1],
             [
-                'db' => 'App.name', 'dt' => 2,
+                'db'        => 'App.name', 'dt' => 2,
                 'formatter' => function ($d) {
                     return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
                         '<span class="text-green">' . $d . '</span>';
@@ -84,25 +87,25 @@ class Template extends Model {
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false, false);
                 },
-            ]
+            ],
         ];
         $joins = [
             [
-                'table' => 'apps',
-                'alias' => 'App',
-                'type' => 'INNER',
+                'table'      => 'apps',
+                'alias'      => 'App',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'App.id = Template.app_id'
-                ]
+                    'App.id = Template.app_id',
+                ],
             ],
             [
-                'table' => 'corps',
-                'alias' => 'Corp',
-                'type' => 'INNER',
+                'table'      => 'corps',
+                'alias'      => 'Corp',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Corp.id = App.corp_id'
-                ]
-            ]
+                    'Corp.id = App.corp_id',
+                ],
+            ],
         ];
         $condition = 'App.corp_id = ' . (new Corp)->corpId();
         
@@ -115,9 +118,36 @@ class Template extends Model {
     /**
      * 设置所属行业
      *
+     * @param TemplateRequest $request
      * @return bool
+     * @throws Throwable
      */
-    function config() {
+    function config(TemplateRequest $request) {
+        
+        try {
+            DB::transaction(function () use ($request) {
+                $data = $request->all();
+                $app = App::find($data['app_id']);
+                $token = Wechat::token('pub', $app->appid, $app->appsecret);
+                $params = [$data['primary'], $data['secondary']];
+                $result = Wechat::invoke(
+                    'pub', 'template', 'api_set_industry' [$token],
+                    array_combine(['industry_id1', 'industry_id2'], $params),
+                );
+                throw_if(
+                    $errcode = $result['errcode'],
+                    new Exception(Constant::WXERR[$errcode])
+                );
+                $app->update(
+                    array_combine([
+                        'properties->primary_industry',
+                        'properties->second_industry',
+                    ], $params)
+                );
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
         return true;
         
@@ -139,6 +169,7 @@ class Template extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
         
     }
@@ -151,21 +182,25 @@ class Template extends Model {
         switch (explode('/', Request::path())[1]) {
             case 'index':
                 return [
-                    'titles' => [
+                    'titles'  => [
                         '#', '标题', '公众号', '一级行业', '二级行业', '状态 . 操作',
                     ],
-                    'buttons'        => [
-                        'config'   => [
+                    'buttons' => [
+                        'config' => [
                             'id'    => 'config',
                             'label' => '设置所属行业',
                             'icon'  => 'fa fa-industry',
                         ],
                     ],
-                    'batch'          => true,
-                    'filter'         => true,
+                    'batch'   => true,
+                    'filter'  => true,
                 ];
             default:
-                return [];
+                return [
+                    'apps'       => App::where('category', 2)
+                        ->pluck('name', 'id')->toArray(),
+                    'industries' => Constant::INDUSTRY,
+                ];
         }
         
     }

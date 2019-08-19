@@ -1,7 +1,6 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\AccessToken;
 use App\Models\App;
 use Exception;
 use Throwable;

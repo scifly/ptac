@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TemplateRequest;
 use App\Models\Template;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -44,13 +45,14 @@ class TemplateController extends Controller {
     /**
      * 设置所属行业
      *
+     * @param TemplateRequest $request
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    function config() {
+    function config(TemplateRequest $request) {
         
         return Request::method() == 'POST'
-            ? $this->template->config()
+            ? $this->template->config($request)
             : $this->output();
         
     }
