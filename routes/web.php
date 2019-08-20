@@ -242,7 +242,7 @@ $routes = [
         'index'   => ['get'],
         'config'  => ['get'],
         'store'   => ['post'],
-        'list'    => ['post'],
+        'fetch'   => ['post'],
         'destroy' => ['{id?}' => 'delete'],
     ],
     'turnstile'              => [

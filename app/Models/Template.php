@@ -161,7 +161,7 @@ class Template extends Model {
      * @return bool
      * @throws Exception
      */
-    function list() {
+    function fetch() {
         
         try {
             GetTemplateList::dispatch(

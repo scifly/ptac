@@ -76,10 +76,10 @@ class TemplateController extends Controller {
      * @return JsonResponse|string
      * @throws Exception
      */
-    function list() {
+    function fetch() {
         
         return $this->result(
-            $this->template->list(),
+            $this->template->fetch(),
             __('messages.template.started')
         );
         
