@@ -213,8 +213,8 @@ class Template extends Model {
                             'label' => '设置所属行业',
                             'icon'  => 'fa fa-industry',
                         ],
-                        'list' => [
-                            'id'    => 'list',
+                        'fetch' => [
+                            'id'    => 'fetch',
                             'label' => '获取所有模板',
                             'icon'  => 'fa fa-list',
                         ],
