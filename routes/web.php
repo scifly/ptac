@@ -240,7 +240,9 @@ $routes = [
     ],
     'template'               => [
         'index'   => ['get'],
-        'config'  => ['get', 'post'],
+        'config'  => ['get'],
+        'store'   => ['post'],
+        'list'    => ['post'],
         'destroy' => ['{id?}' => 'delete'],
     ],
     'turnstile'              => [

@@ -59,7 +59,7 @@ class SendMessage implements ShouldQueue {
                         }, $this->messages
                     )
                 );
-                list($code, $msg) = $this->inform($results);
+                [$code, $msg] = $this->inform($results);
                 $this->response['statusCode'] = $code;
                 $this->response['message'] = $msg;
             });

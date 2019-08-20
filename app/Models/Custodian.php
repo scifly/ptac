@@ -104,21 +104,9 @@ class Custodian extends Model {
                     return implode(',', $realnames);
                 },
             ],
-            ['db' => 'Mobile.mobile', 'dt' => 5],
+            ['db' => 'User.mobile', 'dt' => 5],
             ['db' => 'Custodian.created_at', 'dt' => 6, 'dr' => true],
             ['db' => 'Custodian.updated_at', 'dt' => 7, 'dr' => true],
-            // [
-            //     'db'        => 'User.synced', 'dt' => 8,
-            //     'formatter' => function ($d) {
-            //         return $this->synced($d);
-            //     },
-            // ],
-            // [
-            //     'db'        => 'User.subscribed', 'dt' => 9,
-            //     'formatter' => function ($d) {
-            //         return $this->subscribed($d);
-            //     },
-            // ],
             [
                 'db'        => 'Custodian.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
@@ -134,16 +122,7 @@ class Custodian extends Model {
                 'conditions' => [
                     'User.id = Custodian.user_id',
                 ],
-            ],
-            [
-                'table'      => 'mobiles',
-                'alias'      => 'Mobile',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'User.id = Mobile.user_id',
-                    'Mobile.isdefault = 1',
-                ],
-            ],
+            ]
         ];
         
         return Datatable::simple(
@@ -215,8 +194,6 @@ class Custodian extends Model {
         );
         # 更新监护人&学生关系
         (new CustodianStudent)->store($custodian->id, $data['relationships'] ?? []);
-        # 更新监护人手机号码
-        (new Mobile)->store($data['mobile'], $custodian->user->id);
         
     }
     

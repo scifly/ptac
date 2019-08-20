@@ -158,6 +158,12 @@ return [
         'title'        => '短信充值',
         'insufficient' => '(上级)余额不足',
     ],
+    'template' => [
+        'title' => '消息模板',
+        'started' => '已提交消息模板下载请求...',
+        'completed' => '消息模板下载完成',
+        'failed' => '获取消息模板失败',
+    ],
     'user'                     => [
         'not_found' => '没有这个用户',
         'vericode' => '注册验证码：',

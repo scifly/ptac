@@ -28,21 +28,18 @@ class EducatorRequest extends FormRequest {
         
         $rules = [
             'user.realname'              => 'required|string|between:2,255',
-            'user.english_name'          => 'nullable|string|between:2,64',
             'user.gender'                => 'required|boolean',
             'user.group_id'              => 'required|integer',
             'user.username'              => 'required|string|between:2,255',
             'user.password'              => 'string|min:8|confirmed',
             'user.password_confirmation' => 'string|min:8',
-            'user.telephone'             => 'nullable|string|between:2,64',
-            'user.email'                 => ['nullable', 'email', new Email],
-            'user.position'              => 'nullable|string|between:2,64',
-            'user.enabled'               => 'required|boolean',
             'singular'                   => 'required|boolean',
+            'user.mobile'                => ['nullable', new Mobile],
+            'user.email'                 => ['nullable', 'email', new Email],
+            'user.enabled'               => 'required|boolean',
+
             'school_id'                  => 'required|integer',
-            'sms_quote'                  => 'nullable|integer',
             'enabled'                    => 'required|boolean',
-            'mobile.*'                   => ['required', new Mobile],
             'selectedDepartments'        => 'required|array',
         ];
         $this->batchRules($rules);

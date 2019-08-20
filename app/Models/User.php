@@ -4,7 +4,6 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Sms, Snippet};
 use App\Jobs\SyncMember;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Contracts\View\Factory;
@@ -17,6 +16,7 @@ use Illuminate\Database\Eloquent\{Builder,
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Notifications\{DatabaseNotification, DatabaseNotificationCollection, Notifiable};
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\{Auth, DB, Hash, Request};
 use Illuminate\View\View;
 use Laravel\Passport\{Client, HasApiTokens, Token};
@@ -27,75 +27,61 @@ use Throwable;
  *
  * @property int $id
  * @property int $group_id 所属角色/权限ID
- * @property int|null $card_id
- * @property int $face_id 人脸id
  * @property string $username 用户名
- * @property string|null $remember_token "记住我"令牌，登录时用
  * @property string $password 密码
- * @property string|null $email 电子邮箱
- * @property int $gender 性别
  * @property string $realname 真实姓名
- * @property string $avatar_url 头像URL
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property int $enabled
- * @property int $synced 是否已同步到企业号
- * @property string $userid 成员userid
- * @property string|null $english_name 英文名
- * @property int|null $isleader 上级字段，标识是否为上级。第三方暂不支持
- * @property string|null $position 职位信息
- * @property string|null $telephone 座机号码
- * @property int|null $order 部门内的排序值，默认为0。数量必须和department一致，数值越大排序越前面
- * @property int $subscribed 是否关注企业微信
+ * @property int $gender 性别
+ * @property string|null $email 电子邮箱
+ * @property string|null $mobile 手机号码
+ * @property int|null $face_id 人脸识别id
+ * @property int|null $card_id 一卡通id
+ * @property string|null $avatar_url 头像URL
+ * @property mixed|null $ent_attrs 企业微信相关属性
+ * @property int|null $api_attrs api相关属性
+ * @property string|null $remember_token "记住我"令牌，登录时用
+ * @property Carbon|null $created_at 创建于
+ * @property Carbon|null $updated_at 更新于
+ * @property int $enabled 状态：1 - 启用，0 - 禁用
+ * @property-read Collection|Tag[] $_tags
+ * @property-read Card $card
+ * @property-read Collection|Client[] $clients
  * @property-read Custodian $custodian
  * @property-read Collection|Department[] $departments
  * @property-read Educator $educator
- * @property-read Group $group
- * @property-read Card $card
+ * @property-read Collection|Event[] $events
  * @property-read Face $face
- * @property-read Collection|Message[] $messages
+ * @property-read Group $group
  * @property-read Collection|Mobile[] $mobiles
  * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
+ * @property-read Collection|Openid[] $openids
  * @property-read Collection|Order[] $orders
- * @property-read Collection|PollQuestionnaireAnswer[] $pollQuestionnaireAnswers
- * @property-read Collection|PollQuestionnaireParticipant[] $pollQuestionnairePartcipants
  * @property-read Collection|PollQuestionnaire[] $pollQuestionnaires
- * @property-read Student $student
- * @property-read Collection|Client[] $clients
- * @property-read Collection|Token[] $tokens
- * @property-read Collection|Event[] $events
  * @property-read Collection|PollQuestionnaireAnswer[] $pqAnswers
  * @property-read Collection|PollQuestionnaireParticipant[] $pqParticipants
+ * @property-read Student $student
  * @property-read Collection|Tag[] $tags
- * @property-read Collection|Tag[] $_tags
- * @method static Builder|User whereAvatarMediaid($value)
- * @method static Builder|User whereAvatarUrl($value)
- * @method static Builder|User whereCardId($value)
- * @method static Builder|User whereFaceId($value)
- * @method static Builder|User whereCreatedAt($value)
- * @method static Builder|User whereEmail($value)
- * @method static Builder|User whereEnabled($value)
- * @method static Builder|User whereEnglishName($value)
- * @method static Builder|User whereGender($value)
- * @method static Builder|User whereGroupId($value)
- * @method static Builder|User whereId($value)
- * @method static Builder|User whereIsleader($value)
- * @method static Builder|User whereOrder($value)
- * @method static Builder|User wherePassword($value)
- * @method static Builder|User wherePosition($value)
- * @method static Builder|User whereRealname($value)
- * @method static Builder|User whereRememberToken($value)
- * @method static Builder|User whereTelephone($value)
- * @method static Builder|User whereUpdatedAt($value)
- * @method static Builder|User whereUserid($value)
- * @method static Builder|User whereSubscribed($value)
- * @method static Builder|User whereSynced($value)
- * @method static Builder|User whereUsername($value)
+ * @property-read Collection|Token[] $tokens
  * @method static Builder|User newModelQuery()
  * @method static Builder|User newQuery()
  * @method static Builder|User query()
+ * @method static Builder|User whereApiAttrs($value)
+ * @method static Builder|User whereAvatarUrl($value)
+ * @method static Builder|User whereCardId($value)
+ * @method static Builder|User whereCreatedAt($value)
+ * @method static Builder|User whereEmail($value)
+ * @method static Builder|User whereEnabled($value)
+ * @method static Builder|User whereEntAttrs($value)
+ * @method static Builder|User whereFaceId($value)
+ * @method static Builder|User whereGender($value)
+ * @method static Builder|User whereGroupId($value)
+ * @method static Builder|User whereId($value)
+ * @method static Builder|User whereMobile($value)
+ * @method static Builder|User wherePassword($value)
+ * @method static Builder|User whereRealname($value)
+ * @method static Builder|User whereRememberToken($value)
+ * @method static Builder|User whereUpdatedAt($value)
+ * @method static Builder|User whereUsername($value)
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Openid[] $openids
  */
 class User extends Authenticatable {
     
@@ -111,12 +97,31 @@ class User extends Authenticatable {
      * @var array
      */
     protected $fillable = [
-        'username', 'group_id', 'password',
-        'realname', 'gender', 'userid',
-        'position', 'enabled', 'email',
-        'card_id', 'avatar_url', 'english_name',
-        'isleader', 'telephone', 'order',
-        'synced', 'subscribed', 'face_id',
+        # 基本信息
+        'group_id', 'username', 'password', 'gender',
+        'email', 'mobile', 'face_id', 'card_id',
+        'avatar_url', 'ent_attrs', 'api_attrs', 'enabeld',
+        # 企业微信相关属性
+        'ent_attrs->userid',
+        'ent_attrs->english_name',
+        'ent_attrs->alias',
+        'ent_attrs->order',
+        'ent_attrs->position',
+        'ent_attrs->is_leader_in_dept',
+        'ent_attrs->avatar',
+        'ent_attrs->telephone',
+        'ent_attrs->extattr',
+        'ent_attrs->qr_code',
+        'ent_attrs->external_profile',
+        'ent_attrs->external_position',
+        'ent_attrs->position',
+        'ent_attrs->enable',
+        'ent_attrs->status',
+        'ent_attrs->synced',
+        # api相关属性
+        'api_attrs->password',
+        'api_attrs->classname',
+        'api_attrs->contact',
     ];
     
     /**
@@ -272,18 +277,6 @@ class User extends Authenticatable {
             ['db' => 'User.email', 'dt' => 6],
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
-            // [
-            //     'db'        => 'User.synced', 'dt' => 9,
-            //     'formatter' => function ($d) {
-            //         return $this->synced($d);
-            //     },
-            // ],
-            // [
-            //     'db'        => 'User.subscribed', 'dt' => 10,
-            //     'formatter' => function ($d) {
-            //         return $this->subscribed($d);
-            //     },
-            // ],
             [
                 'db'        => 'User.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
@@ -361,8 +354,8 @@ class User extends Authenticatable {
                 },
             ],
             ['db' => 'User.username', 'dt' => 3],
-            ['db' => 'User.english_name', 'dt' => 4],
-            ['db' => 'User.telephone', 'dt' => 5],
+            ['db' => 'Groups.name as groupname', 'dt' => 4],
+            ['db' => 'User.mobile', 'dt' => 5],
             ['db' => 'User.email', 'dt' => 6],
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
@@ -446,6 +439,11 @@ class User extends Authenticatable {
                     ]);
                 } else {
                     # 创建合作伙伴(api用户)
+                    $data['api_attrs'] = json_encode([
+                        'contact'   => $data['contact'],
+                        'secret'    => $data['secret'],
+                        'classname' => $data['classname'],
+                    ], JSON_UNESCAPED_UNICODE);
                     $partner = $this->create($data);
                     $data['user_id'] = $partner->id;
                     Educator::create($data);
@@ -516,20 +514,20 @@ class User extends Authenticatable {
             [$userId, $role, $method] = $contact;
             if ($role == '学生') continue;
             $user = $this->find($userId);
+            $entAttrs = json_decode($user->ent_attrs, true);
             $params = [
-                'userid'   => $user->userid,
+                'userid'   => $entAttrs['userid'],
                 'username' => $user->username,
-                'position' => $user->position ?? $role,
+                'position' => $entAttrs['position'] ?? $role,
                 'corpIds'  => $this->corpIds($userId),
             ];
             if ($method != 'delete') {
                 $departments = in_array($role, ['运营', '企业']) ? [1]
                     : $user->departments->unique()->pluck('id')->toArray();
-                $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
                 $params = array_merge($params, [
                     'name'         => $user->realname,
-                    'english_name' => $user->english_name,
-                    'mobile'       => $mobile,
+                    'english_name' => $entAttrs['english_name'],
+                    'mobile'       => $user->mobile,
                     'email'        => $user->email,
                     'department'   => $departments,
                     'gender'       => $user->gender,
@@ -537,7 +535,9 @@ class User extends Authenticatable {
                     'enable'       => $user->enabled,
                 ]);
                 # 在创建会员时，默认情况下不向该会员发送邀请
-                // $method != 'create' ?: $params = array_merge($params, ['to_invite' => false]);
+                $method != 'create' ?: $params = array_merge(
+                    $params, ['to_invite' => false]
+                );
             }
             $members[] = [$params, $method];
         }
@@ -621,6 +621,11 @@ class User extends Authenticatable {
                 } else {
                     # 更新合作伙伴(api)
                     if ($id) {
+                        $data['api_attrs'] = json_encode([
+                            'contact'   => $data['contact'],
+                            'secret'    => $data['secret'],
+                            'classname' => $data['classname'],
+                        ], JSON_UNESCAPED_UNICODE);
                         $this->find($id)->update($data);
                         MessageType::whereUserId($id)->first()->update([
                             'name'    => $data['realname'],
@@ -913,8 +918,8 @@ class User extends Authenticatable {
                 return [
                     'batch'  => true,
                     'titles' => [
-                        '#', '全称', '所属学校', '接口用户名', '接口密码',
-                        '联系人', '电子邮箱', '创建于', '更新于', '状态',
+                        '#', '全称', '所属学校', '接口用户名', '类型',
+                        '手机号码', '电子邮箱', '创建于', '更新于', '状态',
                     ],
                 ];
             case 'partners/create':    # api用户创建/编辑

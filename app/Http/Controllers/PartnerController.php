@@ -86,6 +86,10 @@ class PartnerController extends Controller {
        
         $partner = $this->partner->find($id);
         $partner->{'school_id'} = $partner->educator->school_id;
+        $attrs = json_decode($partner->api_attrs, true);
+        $partner->{'contact'} = $attrs['contact'];
+        $partner->{'classname'} = $attrs['classname'];
+        $partner->{'secret'} = $attrs['secret'];
         return $this->output([
             'partner' => $partner,
         ]);
@@ -120,7 +124,9 @@ class PartnerController extends Controller {
     public function destroy($id = null) {
         
         return $this->result(
-            $this->partner->remove($id, true)
+            $this->partner->remove(
+                $id, true
+            )
         );
         
     }

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TemplateRequest;
 use App\Models\Template;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -67,6 +68,21 @@ class TemplateController extends Controller {
             $this->template->config($request)
         );
 
+    }
+    
+    /**
+     * 获取所有模板
+     *
+     * @return JsonResponse|string
+     * @throws Exception
+     */
+    function list() {
+        
+        return $this->result(
+            $this->template->list(),
+            __('messages.template.started')
+        );
+        
     }
     
     /**

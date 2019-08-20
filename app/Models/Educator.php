@@ -120,22 +120,10 @@ class Educator extends Model {
                     return Snippet::gender($d);
                 },
             ],
-            ['db' => 'User.position', 'dt' => 4],
-            ['db' => 'Mobile.mobile', 'dt' => 5],
+            ['db' => 'Groups.name', 'dt' => 4],
+            ['db' => 'User.mobile', 'dt' => 5],
             ['db' => 'Educator.created_at', 'dt' => 6, 'dr' => true],
             ['db' => 'Educator.updated_at', 'dt' => 7, 'dr' => true],
-            // [
-            //     'db'        => 'User.synced', 'dt' => 8,
-            //     'formatter' => function ($d) {
-            //         return $this->synced($d);
-            //     },
-            // ],
-            // [
-            //     'db'        => 'User.subscribed', 'dt' => 9,
-            //     'formatter' => function ($d) {
-            //         return $this->subscribed($d);
-            //     },
-            // ],
             [
                 'db'        => 'Educator.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
@@ -160,12 +148,11 @@ class Educator extends Model {
                 ],
             ],
             [
-                'table'      => 'mobiles',
-                'alias'      => 'Mobile',
-                'type'       => 'LEFT',
+                'table'      => 'groups',
+                'alias'      => 'Groups',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'User.id = Mobile.user_id',
-                    'Mobile.isdefault = 1',
+                    'Groups.id = User.group_id',
                 ],
             ],
         ];
@@ -200,8 +187,6 @@ class Educator extends Model {
                 (new ClassEducator)->storeByEducatorId($educator->id, $data['cs']);
                 # 部门用户绑定关系
                 (new DepartmentUser)->storeByUserId($user->id, $data['selectedDepartments']);
-                # 手机号码
-                (new Mobile)->store($data['mobile'], $user->id);
                 # 如果同时也是监护人
                 $data['singular'] ?: $custodian = Custodian::create([
                     'user_id' => $user->id,
@@ -241,7 +226,6 @@ class Educator extends Model {
                     (new Card)->store($user);
                     (new ClassEducator)->storeByEducatorId($educator->id, $data['cs']);
                     (new DepartmentUser)->storeByUserId($educator->user_id, $data['selectedDepartments']);
-                    (new Mobile)->store($data['mobile'], $educator->user_id);
                     # 如果同时也是监护人
                     $custodian = $user->custodian;
                     if (!$data['singular']) {
@@ -564,18 +548,6 @@ class Educator extends Model {
                             'title' => '更新于',
                             'html'  => $this->inputDateTimeRange('更新于'),
                         ],
-                        // [
-                        //     'title' => '同步状态',
-                        //     'html' => $this->singleSelectList(
-                        //         [null => '全部', 0 => '未同步', 1 => '已同步'], 'filter_synced'
-                        //     ),
-                        // ],
-                        // [
-                        //     'title' => '关注状态',
-                        //     'html' => $this->singleSelectList(
-                        //         [null => '全部', 0 => '未关注', 1 => '已关注'], 'filter_subscribed'
-                        //     )
-                        // ],
                         [
                             'title' => '状态 . 操作',
                             'html'  => $this->singleSelectList(
@@ -614,11 +586,11 @@ class Educator extends Model {
             default:    # 编辑
                 $classes = Squad::whereIn('id', $this->classIds())->where('enabled', 1)->get();
                 $gradeIds = array_unique($classes->pluck('grade_id')->toArray());
-                $subjects = Subject::where(['enabled' => 1, 'school_id' => $this->schoolId()])
-                    ->get()->filter(function (Subject $subject) use ($gradeIds) {
+                $subjects = Subject::where(['enabled' => 1, 'school_id' => $this->schoolId()])->get()->filter(
+                    function (Subject $subject) use ($gradeIds) {
                         return !empty(array_intersect($gradeIds, explode(',', $subject->grade_ids)));
                     }
-                    );
+                );
                 if (($educatorId = $id ?? Request::route('id')) && Request::method() == 'GET') {
                     $educator = $this->find($educatorId);
                     $educator->{'card'} = $educator->user->card;

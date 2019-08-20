@@ -83,9 +83,9 @@ trait ModelTrait {
                                 $records = $model->all()->filter(
                                     function (Model $record) use ($values, $field) {
                                         return !empty(
-                                            array_intersect(
-                                                explode(',', $record->{$field}), $values
-                                            )
+                                        array_intersect(
+                                            explode(',', $record->{$field}), $values
+                                        )
                                         );
                                     }
                                 );
@@ -152,7 +152,7 @@ trait ModelTrait {
             }
             $model->insert($records ?? []);
         });
-    
+        
         return true;
         
     }
@@ -170,7 +170,7 @@ trait ModelTrait {
         $class = get_class($model);
         $reflectionClass = new ReflectionClass($class);
         foreach ($reflectionClass->getMethods() as $method) {
-            if (!$method->isUserDefined() || !$method->isPublic() || $method->class != $class ) continue;
+            if (!$method->isUserDefined() || !$method->isPublic() || $method->class != $class) continue;
             $doc = $method->getDocComment();
             if ($doc && stripos($doc, 'Has') !== false) $relations[] = $method->getName();
         }
@@ -283,7 +283,7 @@ trait ModelTrait {
                 $schools = School::whereIn('id', array_unique($schoolIds ?? []))->get();
                 break;
         }
-
+        
         return $schools->when(
             $corpId, function (Collection $schools) use ($corpId) {
             return $schools->where('corp_id', $corpId);
@@ -383,7 +383,7 @@ trait ModelTrait {
             }
         }
         $userIds = array_unique($userIds);
-
+        
         return (empty($userIds)) ? [0]
             : User::with($type)->whereIn('id', $userIds)
                 ->get()->pluck($type . '.id')->toArray();
@@ -670,7 +670,6 @@ trait ModelTrait {
         } else {
             $departmentIds = $this->departmentIds();
         }
-        
         $userIds = implode(',', array_unique(
                 DepartmentUser::whereIn('department_id', array_unique($departmentIds))
                     ->pluck('user_id')->toArray()
@@ -738,26 +737,15 @@ trait ModelTrait {
     function contactInput(FormRequest $request, $role) {
         
         $input = $request->all();
-        if (isset($input['mobile'])) {
-            $isdefault = $input['mobile']['isdefault'];
-            unset($input['mobile']['isdefault']);
-            foreach ($input['mobile'] as $i => $m) {
-                $input['mobile'][$i]['user_id'] = $input['user_id'] ?? 0;
-                $input['mobile'][$i]['enabled'] = isset($m['enabled']) ? 1 : 0;
-                $input['mobile'][$i]['isdefault'] = $i == $isdefault ? 1 : 0;
-            }
-        }
         $userid = uniqid('ptac_');
         switch ($role) {
             case 'student':
             case 'custodian':
-                if (!Request::route('id')) {
-                    $input['user'] += [
-                        'username' => $userid,
-                        'password' => '12345678',
-                    ];
-                }
-                $position = $role == 'student' ? '学生' : '监护人';
+                Request::route('id') ?: $input['user'] += [
+                    'username' => $userid,
+                    'password' => '12345678',
+                ];
+                $position = ($role == 'student' ? '学生' : '监护人');
                 $groupId = Group::whereName($position)->first()->id;
                 if (isset($input['singular']) && !$input['singular']) {
                     $group = isset($input['user_id'])
@@ -766,7 +754,7 @@ trait ModelTrait {
                     $position = $group->name . '/监护人';
                     $groupId = $group->id;
                 }
-                $input['user']['position'] = $position;
+                $input['user']['ent_attrs']['position'] = $position;
                 $input['user']['group_id'] = $groupId;
                 $input['enabled'] = $input['user']['enabled'];
                 if (!empty($input['student_ids'])) {
@@ -787,7 +775,7 @@ trait ModelTrait {
             case 'educator':
             case 'operator':
                 $role == 'educator' ?: $input['user'] = $input;
-                $input['user']['position'] = Group::find($input['user']['group_id'])->name;
+                $input['user']['ent_attrs']['position'] = Group::find($input['user']['group_id'])->name;
                 if ($role == 'educator') {
                     $input['enabled'] = $input['user']['enabled'];
                     $input['school_id'] = $this->schoolId();
@@ -821,7 +809,11 @@ trait ModelTrait {
             default:
                 break;
         }
-        Request::route('id') ?: $input['user']['userid'] = $userid;
+        Request::route('id') ?: $input['user']['ent_attrs']['userid'] = $userid;
+        $input['user']['ent_attrs'] = json_encode(
+            $input['user']['ent_attrs'],
+            JSON_UNESCAPED_UNICODE
+        );
         
         return $input;
         
@@ -838,7 +830,7 @@ trait ModelTrait {
         
         $app = App::where([
             'corp_id' => $corpId,
-            'name' => $name ?? config('app.name'),
+            'name'    => $name ?? config('app.name'),
         ])->first();
         abort_if(
             !$app, HttpStatusCode::NOT_FOUND,

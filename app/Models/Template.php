@@ -7,9 +7,11 @@ use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use App\Http\Requests\TemplateRequest;
+use App\Jobs\GetTemplateList;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -154,6 +156,26 @@ class Template extends Model {
     }
     
     /**
+     * 获取模板列表
+     *
+     * @return bool
+     * @throws Exception
+     */
+    function list() {
+        
+        try {
+            GetTemplateList::dispatch(
+                (new Corp)->corpId(), Auth::id()
+            );
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
      * 删除模板
      *
      * @param null $id
@@ -190,6 +212,11 @@ class Template extends Model {
                             'id'    => 'config',
                             'label' => '设置所属行业',
                             'icon'  => 'fa fa-industry',
+                        ],
+                        'list' => [
+                            'id'    => 'list',
+                            'label' => '获取所有模板',
+                            'icon'  => 'fa fa-list',
                         ],
                     ],
                     'batch'   => true,
