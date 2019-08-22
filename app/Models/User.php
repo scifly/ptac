@@ -51,7 +51,6 @@ use Throwable;
  * @property-read Collection|Event[] $events
  * @property-read Face $face
  * @property-read Group $group
- * @property-read Collection|Mobile[] $mobiles
  * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property-read Collection|Openid[] $openids
  * @property-read Collection|Order[] $orders
@@ -180,13 +179,6 @@ class User extends Authenticatable {
      * @return HasMany
      */
     function orders() { return $this->hasMany('App\Models\Order'); }
-    
-    /**
-     * 获取指定用户的所有手机号码对象
-     *
-     * @return HasMany
-     */
-    function mobiles() { return $this->hasMany('App\Models\Mobile'); }
     
     /**
      * 获取指定用户所属的所有部门对象
@@ -422,8 +414,7 @@ class User extends Authenticatable {
                 if ($data['group_id'] != Group::whereName('api')->first()->id) {
                     # 创建超级用户(运营/企业/学校)
                     $data['user']['password'] = bcrypt($data['user']['password']);
-                    $mobiles = $data['mobile'];
-                    unset($data['user']['mobile']);
+                    // unset($data['user']['mobile']);
                     $user = $this->create($data['user']);
                     (new Card)->store($user);
                     # 如果角色为校级管理员，则同时创建教职员工记录
@@ -431,7 +422,6 @@ class User extends Authenticatable {
                         $data['user_id'] = $user->id;
                         Educator::create($data);
                     }
-                    (new Mobile)->store($mobiles, $user->id);
                     (new DepartmentUser)->storeByUserId($user->id, [$this->departmentId($data)]);
                     $group = Group::find($data['user']['group_id']);
                     $this->sync([
@@ -493,10 +483,8 @@ class User extends Authenticatable {
                 return Department::whereParentId(null)->first()->id;
             case '企业':
                 return Corp::find($data['corp_id'])->department_id;
-            case '学校':
+            default: # 学校
                 return School::find($data['school_id'])->department_id;
-            default:
-                return null;
         }
         
     }
@@ -514,11 +502,11 @@ class User extends Authenticatable {
             [$userId, $role, $method] = $contact;
             if ($role == '学生') continue;
             $user = $this->find($userId);
-            $entAttrs = json_decode($user->ent_attrs, true);
+            $attrs = json_decode($user->ent_attrs, true);
             $params = [
-                'userid'   => $entAttrs['userid'],
+                'userid'   => $attrs['userid'],
                 'username' => $user->username,
-                'position' => $entAttrs['position'] ?? $role,
+                'position' => $attrs['position'] ?? $role,
                 'corpIds'  => $this->corpIds($userId),
             ];
             if ($method != 'delete') {
@@ -526,7 +514,7 @@ class User extends Authenticatable {
                     : $user->departments->unique()->pluck('id')->toArray();
                 $params = array_merge($params, [
                     'name'         => $user->realname,
-                    'english_name' => $entAttrs['english_name'],
+                    'english_name' => $attrs['english_name'],
                     'mobile'       => $user->mobile,
                     'email'        => $user->email,
                     'department'   => $departments,
@@ -554,14 +542,13 @@ class User extends Authenticatable {
      * @param $id
      * @return array
      */
-    function corpIds($id) {
+    function corpIds($id = null) {
         
-        $user = $this->find($id);
-        $topDeptId = $this->topDeptId($user);
+        $user = $this->find($id ?? Auth::id());
         
-        return $this->role($id) == '运营'
+        return $this->role($user->id) == '运营'
             ? Corp::pluck('id')->toArray()
-            : ($topDeptId != 1 ? [(new Department)->corpId($topDeptId)] : []);
+            : [(new Department)->corpId($user->departments->first()->id)];
         
     }
     
@@ -586,7 +573,6 @@ class User extends Authenticatable {
                         $this->whereIn('id', $ids)->update($data);
                     } else {
                         $user = $this->find($id);
-                        $mobile = $data['mobile'];
                         if (isset($data['enabled'])) unset($data['mobile']);
                         $user->update($data);
                         (new Card)->store($user);
@@ -603,11 +589,7 @@ class User extends Authenticatable {
                             );
                         }
                         if (isset($data['enabled'])) {
-                            (new Mobile)->store($mobile, $user->id);
                             (new DepartmentUser)->store($user->id, $this->departmentId($data));
-                        } else {
-                            Mobile::where(['user_id' => $user->id, 'isdefault' => 1])
-                                ->update(['mobile' => $mobile]);
                         }
                     }
                     # 同步企业微信会员
@@ -630,7 +612,7 @@ class User extends Authenticatable {
                         MessageType::whereUserId($id)->first()->update([
                             'name'    => $data['realname'],
                             'remark'  => $data['realname'] . '接口消息',
-                            'enabled' => 0,
+                            'enabled' => Constant::DISABLED,
                         ]);
                     } else {
                         $this->batch($this);
@@ -697,7 +679,7 @@ class User extends Authenticatable {
                     );
                     $this->purge([
                         class_basename($this), 'DepartmentUser', 'TagUser', 'Card',
-                        'Tag', 'Mobile', 'PollQuestionnaire', 'MessageReply', 'Face',
+                        'Tag', 'PollQuestionnaire', 'MessageReply', 'Face',
                         'PollQuestionnaireAnswer', 'PollQuestionnaireParticipant',
                     ], 'user_id');
                 } else {
@@ -743,6 +725,7 @@ class User extends Authenticatable {
         
         $field = Request::input('field');
         $value = Request::input('value');
+        $corp = new Corp;
         abort_if(
             !in_array($field, ['group_id', 'corp_id']),
             HttpStatusCode::NOT_ACCEPTABLE,
@@ -751,8 +734,12 @@ class User extends Authenticatable {
         $result = ['statusCode' => HttpStatusCode::OK];
         # 获取企业和学校列表
         if ($field == 'group_id') {
+            $builder = Auth::user()->role() == '运营'
+                ? Corp::whereEnabled(1)
+                : Corp::whereId($corp->corpId());
             $result['corpList'] = $this->selectList(
-                $corps = $this->corps(), 'corp_id'
+                $corps = $builder->pluck('name', 'id')->toArray(),
+                'corp_id'
             );
             Group::find($value)->name != '学校' ?: $corpId = array_key_first($corps);
         } else {
@@ -770,14 +757,13 @@ class User extends Authenticatable {
      * 返回指定用户直属的部门集合
      *
      * @param null $id
-     * @param string $role
      * @return array
      */
-    function deptIds($id = null, $role = '') {
+    function deptIds($id = null) {
         
         $id = $id ?? Auth::id();
         $user = $this->find($id);
-        $role = !empty($role) ? $role : $this->role($id);
+        $role = $this->role($id);
         
         return in_array($role, Constant::NON_EDUCATOR) && $role != '监护人'
             ? $user->departments->pluck('id')->toArray()
@@ -794,13 +780,13 @@ class User extends Authenticatable {
      * @return array
      */
     function compose() {
-        
+    
         /**
          * @param array $names
-         * @return array
+         * @return \Illuminate\Support\Collection
          */
         function groups(array $names) {
-            return Group::whereIn('name', $names)->pluck('name', 'id')->toArray();
+            return Group::whereIn('name', $names)->get();
         }
         
         switch (Request::route()->uri) {
@@ -808,14 +794,7 @@ class User extends Authenticatable {
             case 'home':
             case 'pages/{id}':
             case 'users/edit':
-                $user = Auth::user();
-                
-                return [
-                    'mobile'   => $user->mobiles->isNotEmpty()
-                        ? $user->mobiles->where('isdefault', 1)->first()->mobile
-                        : '(n/a)',
-                    'disabled' => true,
-                ];
+                return ['disabled' => true];
             case 'users/event':
                 return [
                     'titles' => [
@@ -857,62 +836,53 @@ class User extends Authenticatable {
                 ];
             case 'operators/create':
             case 'operators/edit/{id}':
-                $operator = $departmentId = $corps = $schools = null;
+                $operator = $departmentId = $role = null;
+                $corps = $schools = collect([]);
                 $rootMenu = Menu::find((new Menu)->rootId(true));
-                if (Request::route('id')) {
+                if ($id = Request::route('id')) {
                     $operator = $this->find(Request::route('id'));
-                    $departmentId = $this->topDeptId($operator);
+                    $role = $operator->role($operator->id);
+                    $departmentId = $operator->departments->first()->id;
                 }
                 switch ($rootMenu->menuType->name) {
                     case '根':
-                        $groups = groups(['运营', '企业', '学校']);
-                        if (Request::route('id')) {
-                            $role = $operator->role($operator->id);
-                            $role == '运营' ?: $corps = Corp::all()->pluck('name', 'id')->toArray();
-                            $role != '学校' ?: $schools = School::whereCorpId($operator->educator->school->corp_id)
-                                ->pluck('name', 'id')->toArray();
+                        $groups = Group::whereIn('name', ['运营', '企业', '学校']);
+                        if ($id) {
+                            $role == '运营' ?: $corps = new Corp;
+                            $corpId = $operator->educator->school->corp_id;
+                            $role != '学校' ?: $schools = School::whereCorpId($corpId);
                         }
                         break;
                     case '企业':
-                        $groups = groups(['企业', '学校']);
-                        $corp = null;
-                        if (Request::route('id')) {
-                            switch ($operator->role($operator->id)) {
-                                case '企业':
-                                    $corp = Corp::whereDepartmentId($departmentId)->first();
-                                    break;
-                                case '学校':
-                                    $corpId = head($this->corpIds($operator->id)); // $operator->educator->school->corp_id;
-                                    $corp = Corp::find($corpId);
-                                    $schools = School::whereCorpId($corpId)->pluck('name', 'id')->toArray();
-                                    break;
-                                default:
-                                    break;
+                        $groups = Group::whereIn('name', ['企业', '学校']);
+                        if ($id) {
+                            if ($role == '企业') {
+                                $corps = Corp::whereDepartmentId($departmentId);
+                            } else {
+                                $corpId = head($this->corpIds($operator->id));
+                                $corps = Corp::whereId($corpId);
+                                $schools = School::whereCorpId($corpId);
                             }
                         } else {
-                            $corp = Corp::whereMenuId($rootMenu->id)->first();
+                            $corps = Corp::whereMenuId($rootMenu->id);
                         }
-                        $corps = [$corp->id => $corp->name];
                         break;
-                    case '学校':
-                        $groups = groups(['学校']);
-                        $school = Request::route('id')
-                            ? School::whereDepartmentId($departmentId)->first()
-                            : School::whereMenuId($rootMenu->id)->first();
-                        $corp = Corp::find($school->corp_id);
-                        $corps = [$corp->id => $corp->name];
-                        $schools = [$school->id => $school->name];
-                        break;
-                    default:
+                    default: # 学校
+                        $groups = Group::where(['name' => '学校']);
+                        $schools = $id
+                            ? School::whereDepartmentId($departmentId)
+                            : School::whereMenuId($rootMenu->id);
+                        $corps = Corp::whereId($schools->first()->corp_id);
                         break;
                 }
                 
                 return array_combine(
-                    ['mobiles', 'groups', 'corps', 'schools'],
-                    [
-                        Request::route('id') ? $this->find(Request::route('id'))->mobiles : [],
-                        $groups ?? [], $corps, $schools,
-                    ]
+                    ['groups', 'corps', 'schools'],
+                    array_map(
+                        function (Builder $builder) {
+                            return $builder->pluck('name', 'id');
+                        }, [$groups, $corps, $schools]
+                    )
                 );
             case 'partners/index':
                 return [
@@ -924,27 +894,10 @@ class User extends Authenticatable {
                 ];
             case 'partners/create':    # api用户创建/编辑
             case 'partners/edit/{id?}':
-                return ['schools' => School::whereCorpId((new Corp)->corpId())->pluck('name', 'id')->toArray()];
+                $corpId = (new Corp)->corpId();
+                return ['schools' => School::whereCorpId($corpId)->pluck('name', 'id')];
             default:                   # api用户短信充值/查询
                 return (new Message)->compose('recharge');
-        }
-        
-    }
-    
-    /**
-     * @return array
-     */
-    private function corps() {
-        
-        switch (Auth::user()->role()) {
-            case '运营':
-                return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
-            case '企业':
-                $corp = Corp::whereDepartmentId($this->topDeptId())->first();
-                
-                return [$corp->id => $corp->name];
-            default:
-                return [];
         }
         
     }
@@ -968,7 +921,7 @@ class User extends Authenticatable {
     }
     
     /**
-     * 公众号用户注册
+     * 公众号用户绑定
      *
      * @param $appId - 公众号应用id
      * @return Factory|JsonResponse|View
@@ -990,9 +943,7 @@ class User extends Authenticatable {
                 ? session('mobile')
                 : Request::input('mobile');
             throw_if(
-                !$default = Mobile::where([
-                    'mobile' => $mobile, 'isdefault' => 1,
-                ])->first(),
+                !$user = User::whereMobile($mobile)->first(),
                 new Exception(__('messages.user.not_found'))
             );
             if (Request::has('openid')) {
@@ -1008,7 +959,7 @@ class User extends Authenticatable {
                     new Exception(__('messages.user.v_invalid'))
                 );
                 Openid::create([
-                    'user_id' => $default->user_id,
+                    'user_id' => $user->id,
                     'app_id'  => $appId,
                     'openid'  => Request::input('openid'),
                 ]);
@@ -1020,13 +971,13 @@ class User extends Authenticatable {
             } else {
                 # 发送短信验证码
                 session([
-                    'mobile'    => $default->mobile,
+                    'mobile'    => $user->mobile,
                     'code'      => $code = mt_rand(1000, 9999),
                     'expiredAt' => time() + 30 * 60,
                 ]);
                 $sent = (new Sms)->invoke(
                     'BatchSend2',
-                    [$default->mobile, urlencode(
+                    [$user->mobile, urlencode(
                         mb_convert_encoding(
                             __('messages.user.vericode') . $code,
                             'gb2312', 'utf-8'

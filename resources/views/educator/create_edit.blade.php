@@ -9,7 +9,7 @@
                 {{ Form::hidden('user_id', $educator['user_id'], ['id' => 'user_id']) }}
                 @include('shared.avatar', ['user' => $educator->user])
             @endif
-            <!-- 真实姓名 -->
+            <!-- 姓名 -->
             <div class="form-group">
                 {!! Form::label('user[realname]', '姓名', [
                     'class' => 'col-sm-3 control-label'
@@ -20,25 +20,9 @@
                         {!! Form::text('user[realname]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入真实姓名)',
+                            'data-parsley-length' => '[2,255]',
                             'required' => 'true',
-                            'data-parsley-length' => '[2,255]'
                         ]) !!}
-                    </div>
-                </div>
-            </div>
-            <!-- 英文名 -->
-            <div class="form-group">
-                {{ Form::label('user[ent_attrs][english_name]', '英文名', [
-                    'class' => 'col-sm-3 control-label'
-                ]) }}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-language'])
-                        {{ Form::text('user[english_name]', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(选填)',
-                            'data-parsley-length' => '[2, 255]'
-                        ]) }}
                     </div>
                 </div>
             </div>
@@ -109,32 +93,37 @@
                     </div>
                 </div>
             @endif
-            <!-- 座机号码 -->
+            <!-- 手机号码 -->
             <div class="form-group">
-                {{ Form::label('user[ent_attrs][telephone]', '座机', [
+                {!! Form::label('user[mobile]', '手机号码', [
                     'class' => 'col-sm-3 control-label'
-                ]) }}
+                ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-phone'])
-                        {{ Form::text('user[ent_attrs][telephone]', null, [
+                        @include('shared.icon_addon', ['class' => 'fa-mobile'])
+                        {!! Form::email('user[mobile]', null, [
+                            'type' => 'number',
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(选填)',
-                        ]) }}
+                            'data-parsley-length' => '[11,11]',
+                            'data-parsley-pattern' => '/^1[3456789]\d{9}$/',
+                            'placeholder' => '(选填。如果邮箱为空，此项必填)'
+                        ]) !!}
                     </div>
                 </div>
             </div>
             <!-- 电子邮箱 -->
             <div class="form-group">
-                {!! Form::label('user[email]', '电子邮箱', [
+                {!! Form::label('user[email]', '邮箱', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
                         {!! Form::email('user[email]', null, [
+                            'type' => 'email',
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(选填)',
+                            'placeholder' => '(选填。如果手机号码为空，此项必填)',
+                            'maxlength' => '255'
                         ]) !!}
                     </div>
                 </div>
@@ -147,22 +136,7 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-briefcase'])
-                        {!! Form::text('user[position]', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(选填)',
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
-            <!-- 手机号码 -->
-            <div class="form-group">
-                {!! Form::label('user[mobile]', '手机号码', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-mobile'])
-                        {!! Form::email('user[mobile]', null, [
+                        {!! Form::text('user[ent_attrs][position]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(选填)',
                         ]) !!}

@@ -2,7 +2,7 @@
 namespace App\Jobs;
 
 use App\Apis\MassImport;
-use App\Helpers\{Constant, HttpStatusCode, JobTrait, ModelTrait};
+use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
 use App\Models\{Score, Student};
 use Exception;
 use Illuminate\{Bus\Queueable,
@@ -24,7 +24,7 @@ class ImportScore implements ShouldQueue, MassImport {
     use Dispatchable, InteractsWithQueue, Queueable,
         SerializesModels, ModelTrait, JobTrait;
     
-    public $data, $userId, $classId, $response;
+    public $data, $userId, $classId, $response, $broadcaster;
     const CONDITION_FIELDS = ['student_id', 'subject_id', 'exam_id', 'enabled'];
     
     /**
@@ -33,6 +33,7 @@ class ImportScore implements ShouldQueue, MassImport {
      * @param array $data
      * @param $userId
      * @param $classId
+     * @throws PusherException
      */
     function __construct(array $data, $userId, $classId) {
         
@@ -43,17 +44,28 @@ class ImportScore implements ShouldQueue, MassImport {
             $userId, __('messages.score.title'),
             HttpStatusCode::OK, __('messages.score.import_completed'),
         ]);
+        $this->broadcaster = new Broadcaster();
         
     }
     
     /**
      * @return bool
-     * @throws Exception
+     * @throws PusherException
      * @throws Throwable
      */
     function handle() {
+    
+        try {
+            $this->import($this);
+        } catch (Exception $e) {
+            $this->eHandler($e, $this->response);
+            throw $e;
+        }
+        $this->broadcaster->broadcast(
+            $this->response
+        );
         
-        return $this->import($this, $this->response);
+        return true;
         
     }
     
@@ -118,22 +130,21 @@ class ImportScore implements ShouldQueue, MassImport {
     }
     
     /**
-     * 插入导入的考试成绩
+     * 新增考试成绩
      *
-     * @param array $inserts
+     * @param array $records
      * @return bool
      * @throws Throwable
      */
-    function insert(array $inserts) {
+    function insert(array $records) {
         
         try {
-            DB::transaction(function () use ($inserts) {
-                foreach ($inserts as $insert) {
+            DB::transaction(function () use ($records) {
+                foreach ($records as $insert) {
                     if (!($student = Student::whereSn($insert['sn'])->first())) continue;
                     Score::create(
                         array_combine(
-                            (new Score)->getFillable(),
-                            [
+                            (new Score)->getFillable(), [
                                 $student->id, $insert['subject_id'],
                                 $insert['exam_id'], 0, 0, $insert['score'], 1
                             ]
@@ -142,7 +153,6 @@ class ImportScore implements ShouldQueue, MassImport {
                 }
             });
         } catch (Exception $e) {
-            $this->eHandler($e, $this->response);
             throw $e;
         }
         
@@ -151,26 +161,24 @@ class ImportScore implements ShouldQueue, MassImport {
     }
     
     /**
-     * 更新导入的考试成绩
+     * 更新考试成绩
      *
-     * @param array $updates
+     * @param array $records
      * @return bool
      * @throws Throwable
      */
-    function update(array $updates) {
+    function update(array $records) {
         
         try {
-            DB::transaction(function () use ($updates) {
-                foreach ($updates as $update) {
-                    $student = Student::whereSn($update['sn'])->first();
-                    if (!$student) continue;
+            DB::transaction(function () use ($records) {
+                foreach ($records as $update) {
+                    if (!$student = Student::whereSn($update['sn'])->first()) continue;
                     $condition = array_combine(self::CONDITION_FIELDS, [
                         $student->id, $update['subject_id'], $update['exam_id'], 1
                     ]);
                     Score::where($condition)->first()->update(
                         array_combine(
-                            (new Score)->getFillable(),
-                            [
+                            (new Score)->getFillable(), [
                                 $student->id, $update['subject_id'],
                                 $update['exam_id'], 0, 0, $update['score'], 1
                             ]
@@ -179,7 +187,6 @@ class ImportScore implements ShouldQueue, MassImport {
                 }
             });
         } catch (Exception $e) {
-            $this->eHandler($e, $this->response);
             throw $e;
         }
         

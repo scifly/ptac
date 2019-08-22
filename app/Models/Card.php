@@ -91,14 +91,7 @@ class Card extends Model {
             ],
             ['db' => 'User.realname', 'dt' => 3],
             ['db' => 'Groups.name', 'dt' => 4],
-            [
-                'db'        => 'User.id as userId', 'dt' => 5,
-                'formatter' => function ($d) {
-                    $default = User::find($d)->mobiles->where('isdefault', 1)->first();
-                    
-                    return $default ? $default->mobile : 'n/a';
-                },
-            ],
+            ['db' => 'User.mobile', 'dt' => 5],
             [
                 'db'        => 'Card.created_at', 'dt' => 6, 'dr' => true,
                 'formatter' => function ($d) { return $d ?? ' - '; },

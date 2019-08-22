@@ -69,10 +69,9 @@ class FaceComposer {
             $list = '';
             $face = new Face;
             foreach (User::whereIn('id', $ids)->get() as $user) {
-                $default = $user->mobiles->where('isdefault', 1)->first();
                 $list .= sprintf(
                     $tpl, $user->id, $user->realname, $user->group->name,
-                    $default ? $default->mobile : 'n/a', $face->uploader($user),
+                    $user->mobile ?? 'n/a', $face->uploader($user),
                     $face->selector((new Camera)->cameras(), $user),
                     $face->state($user->face ? $user->face->state : 1, $user->id)
                 );

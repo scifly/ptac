@@ -3,6 +3,8 @@ namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
 use App\Models\Group;
+use App\Rules\Email;
+use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -28,18 +30,25 @@ class PartnerRequest extends FormRequest {
     public function rules() {
         
         $rules = [
-            'group_id'              => 'required|integer',
-            'username'              => 'required|string|between:6,255|unique:users,username,' .
+            # 合作伙伴全称
+            'realname'  => 'required|string',
+            # 接口用户名
+            'username'  => 'required|string|between:6,255|unique:users,username,' .
                 $this->input('id') . ',id',
-            'password'              => 'required|string|min:6',
-            'gender'                => 'required|boolean',
-            'realname'              => 'required|string',
-            'userid'                => 'required|string',
-            'position'              => 'required|string',   # 接口类名
-            'enabled'               => 'required|boolean',
-            'synced'                => 'required|boolean',
-            'subscribed'            => 'required|boolean',
-            'school_id'             => 'required|integer'
+            # 接口密码(明文)
+            'secret'    => 'required|string|between:6,255',
+            # 接口密码(密文)
+            'password'  => 'required|string|min:6',
+            # 接口类名
+            'classname' => 'required|string',
+            # 联系人
+            'contact'   => 'nullable|string',
+            'mobile'    => ['nullable', new Mobile],
+            'email'     => ['nullable', new Email],
+            'gender'    => 'required|boolean',
+            'group_id'  => 'required|integer',
+            'school_id' => 'required|integer',
+            'enabled'   => 'required|boolean',
         ];
         $this->batchRules($rules);
         
@@ -48,16 +57,13 @@ class PartnerRequest extends FormRequest {
     }
     
     protected function prepareForValidation() {
-    
+        
         if (!$this->has('ids')) {
             $input = $this->all();
             $input['group_id'] = Group::whereName('api')->first()->id;
-            # english_name - 接口密码明文
-            $input['password'] = bcrypt($input['english_name']);
+            # secret - 接口密码明文
+            $input['password'] = bcrypt($input['secret']);
             $input['gender'] = 0;
-            $input['userid'] = $input['username'] . uniqid();
-            $input['synced'] = 0;
-            $input['subscribed'] = 0;
             $this->replace($input);
         }
         

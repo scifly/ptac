@@ -324,7 +324,6 @@ class Message extends Model {
      */
     function sms($sender, $senderid) {
         
-        
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
@@ -342,7 +341,7 @@ class Message extends Model {
                 'alias'      => 'User',
                 'type'       => 'INNER',
                 'conditions' => [
-                     'User.id = Message.s_user_id',
+                    'User.id = Message.s_user_id',
                 ],
             ],
         ];
@@ -359,7 +358,7 @@ class Message extends Model {
         }
         $userIds = join(',', $builder->pluck('user_id')->toArray());
         !empty($userIds) ?: $userIds = 0;
-        $condition = 'Message.comm_type_id = 2 AND s_user_id IN (' . $userIds  . ')';
+        $condition = 'Message.comm_type_id = 2 AND s_user_id IN (' . $userIds . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition
@@ -945,8 +944,7 @@ class Message extends Model {
         
         $userIds = $this->realTargets($userIds, $deptIds)->pluck('id');
         
-        return Mobile::whereIn('user_id', $userIds)
-            ->where(['enabled' => 1, 'isdefault' => 1])
+        return User::whereIn('id', $userIds)
             ->pluck('mobile')->toArray();
         
     }
@@ -960,19 +958,17 @@ class Message extends Model {
      */
     function realTargets(array $userIds, array $deptIds) {
         
-        $departmentUserIds = DepartmentUser::whereIn('department_id', $deptIds)
+        $deptUserIds = DepartmentUser::whereIn('department_id', $deptIds)
             ->pluck('user_id')->toArray();
-        $logUserIds = array_unique(array_merge($userIds, $departmentUserIds));
+        $logUserIds = array_unique(array_merge($userIds, $deptUserIds));
         $users = User::whereIn('id', $logUserIds)->get();
         $targets = collect([]);
         foreach ($users as $user) {
-            $user->student
-                ? $user->student->custodians->each(
+            $user->student ? $user->student->custodians->each(
                 function (Custodian $custodian) use (&$targets) {
                     $targets->push($custodian->user);
                 }
-            )
-                : $targets->push($user);
+            ) : $targets->push($user);
         }
         
         return $targets;
@@ -1010,8 +1006,7 @@ class Message extends Model {
         } else {
             list($smsTargets, $wxTargets) = $realTargets;
         }
-        $smsMobiles = Mobile::whereIn('user_id', $smsTargets->pluck('id'))
-            ->where(['enabled' => 1, 'isdefault' => 1])
+        $smsMobiles = User::whereIn('id', $smsTargets->pluck('id'))
             ->pluck('mobile')->toArray();
         
         return [$smsMobiles, $wxTargets, $realTargetUsers];
@@ -1300,7 +1295,6 @@ class Message extends Model {
         
         # 搜索发送对象
         $user = Auth::user();
-        $schoolId = ($educator = $user->educator) ? $educator->school_id : session('schoolId');
         $targets = collect([]);
         $type = 'user';
         if ($departmentId = Request::input('departmentId')) {
@@ -1313,7 +1307,7 @@ class Message extends Model {
             switch ($target = Request::input('target')) {
                 case 'list':        # 返回所有可见部门
                 case 'department':  # 搜索部门
-                    $targets = Department::whereIn('id', $this->departmentIds($user->id, $schoolId))
+                    $targets = Department::whereIn('id', $this->departmentIds($user->id))
                         ->get()->reject(
                             function (Department $department) use ($target, $keyword) {
                                 return $target == 'department'
@@ -1634,7 +1628,7 @@ class Message extends Model {
                     $chosenTargetsHtml = $departmentHtml . $userHtml;
                 }
                 # 对当前用户可见的所有部门id
-                $departmentIds = $this->departmentIds($user->id, session('schoolId'));
+                $departmentIds = $this->departmentIds($user->id);
                 
                 return [
                     'departments'           => Department::whereIn('id', $departmentIds)->get(),

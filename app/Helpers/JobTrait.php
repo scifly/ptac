@@ -30,8 +30,9 @@ trait JobTrait {
         try {
             DB::transaction(function () use ($message, &$results, $fields, $targetSize) {
                 $content = json_decode($message->content, true);
-                $userIds = User::whereIn('userid', explode('|', $content['touser']))
-                    ->pluck('id')->toArray();
+                $userIds = User::whereIn(
+                    'ent_attrs->userid', explode('|', $content['touser'])
+                )->pluck('id')->toArray();
                 $departmentIds = explode('|', $content['toparty']);
                 $msgType = $content['msgtype'];
                 if ($msgType == 'sms') {
@@ -85,59 +86,45 @@ trait JobTrait {
      * 批量导入
      *
      * @param $job
-     * @param array $response
-     * @return bool
-     * @throws PusherException
      * @throws Throwable
      */
-    function import($job, array $response) {
+    function import($job) {
         
-        $broadcaster = new Broadcaster();
-        list($inserts, $updates, $illegals) = $job->{'validate'}($job->data);
-        # 生成错误数据excel文件
-        if (!empty($illegals)) {
-            try {
-                $job->{'excel'}($illegals, 'illegals', '错误数据', false);
-                $response['url'] = $this->filePath('illegals') . '.xlsx';
-            } catch (Exception $e) {
-                $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                $response['message'] = $e->getMessage();
-                $broadcaster->broadcast($response);
-                throw $e;
-            }
+        try {
+            DB::transaction(function () use ($job) {
+                [$inserts, $updates, $illegals] = $job->{'validate'}($job->data);
+                # 生成错误数据excel文件
+                if (!empty($illegals)) {
+                    $job->{'excel'}($illegals, 'illegals', '错误数据', false);
+                    $job->{'response'}['url'] = $this->filePath('illegals') . '.xlsx';
+                }
+                throw_if(
+                    empty($updates) && empty($inserts),
+                    new Exception(__('messages.invalid_data_format'))
+                );
+                [$nInserts, $nUpdates, $nIllegals] = array_map(
+                    'count', [$inserts, $updates, $illegals]
+                );
+                $tpl = join([
+                    __('messages.import_request_submitted'),
+                    (!$nIllegals ? '' : __('messages.import_illegals'))
+                ]);
+                $job->{'broadcaster'}->broadcast(
+                    array_combine(Constant::BROADCAST_FIELDS, [
+                        $job->{'userId'}, $job->{'response'}['title'], HttpStatusCode::ACCEPTED,
+                        sprintf($tpl, $nInserts, $nUpdates, $nIllegals)
+                    ])
+                );
+                # 插入、更新记录
+                array_map(
+                    function ($records, $action) use ($job) {
+                        empty($records) ?: $job->{$action}($records);
+                    }, [$inserts, $updates], ['insert', 'update']
+                );
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-        if (empty($updates) && empty($inserts)) {
-            # 数据格式不正确，中止任务
-            $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
-            $response['message'] = __('messages.invalid_data_format');
-        } else {
-            $records = [$inserts, $updates, $illegals];
-            try {
-                DB::transaction(function () use ($job, $records, &$response, $broadcaster) {
-                    # 发送广播消息
-                    list($nInserts, $nUpdates, $nIllegals) = array_map('count', $records);
-                    $tpl = __('messages.import_request_submitted') .
-                        (!$nIllegals ? '' : __('messages.import_illegals'));
-                    $broadcaster->broadcast(array_combine(Constant::BROADCAST_FIELDS, [
-                        $job->{'userId'}, $response['title'], HttpStatusCode::ACCEPTED,
-                        sprintf($tpl, $nInserts, $nUpdates, $nIllegals),
-                    ]));
-                    # 插入、更新记录
-                    list($inserts, $updates) = $records;
-                    array_map(
-                        function ($records, $action) use ($job) {
-                            empty($records) ?: $job->{$action}($records);
-                        }, [$inserts, $updates], ['insert', 'update']
-                    );
-                });
-            } catch (Exception $e) {
-                $this->eHandler($e, $response);
-                throw $e;
-            }
-        }
-        $broadcaster->broadcast($response);
-        
-        return true;
         
     }
     

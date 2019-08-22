@@ -7,26 +7,26 @@
             <!-- 学生ID -->
             @if (isset($student['id']))
                 <!-- 学生ID -->
-                {{ Form::hidden('id', $student['id'], ['id' => 'id']) }}
+                {!! Form::hidden('id', $student['id'], ['id' => 'id']) !!}
                 <!-- 学生UserID -->
-                {{ Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) }}
+                {!! Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) !!}
                 <!-- 学生头像 -->
                 @include('shared.avatar', ['user' => $student->user, 'student' => true])
             @endif
             <!-- 真实姓名 -->
             <div class="form-group">
-                {{ Form::label('user[realname]', '姓名', [
+                {!! Form::label('user[realname]', '姓名', [
                     'class' => 'col-sm-3 control-label'
-                ]) }}
+                ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-child'])
-                        {{ Form::text('user[realname]', null, [
+                        {!! Form::text('user[realname]', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
                             'placeholder' => '(不得少于2个字符)',
                             'data-parsley-length' => '[2, 255]',
-                        ]) }}
+                        ]) !!}
                     </div>
                 </div>
             </div>
@@ -79,11 +79,10 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa fa-calendar'])
-                        {!! Form::date('birthday', isset($student) ? date('Y-m-d', strtotime($student->birthday)) : null, [
-                            'required' => 'true',
-                            'class' => 'form-control text-blue',
-                            'data-parsley-type' => 'date',
-                        ]) !!}
+                        {!! Form::date(
+                            'birthday', isset($student) ? date('Y-m-d', strtotime($student->birthday)) : null,
+                            ['type' => 'date', 'class' => 'form-control text-blue', 'required' => 'true'])
+                        !!}
                     </div>
                 </div>
             </div>

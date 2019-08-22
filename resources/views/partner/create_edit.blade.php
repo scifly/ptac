@@ -27,8 +27,8 @@
             </div>
             <!-- 所属学校 -->
             @include('shared.single_select', [
-                'label' => '所属学校',
                 'id' => 'school_id',
+                'label' => '所属学校',
                 'items' => $schools,
                 'icon' => 'fa fa-university text-purple'
             ])
@@ -100,24 +100,6 @@
                     </div>
                 </div>
             </div>
-            <!-- 电子邮箱 -->
-            <div class="form-group">
-                {!! Form::label('email', '电子邮箱', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
-                        {!! Form::text('email', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(选填)',
-                            'type' => 'email',
-                            'maxlength' => '255',
-                            'data-parsley-type'=>"email"
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
             <!-- 手机号码 -->
             <div class="form-group">
                 {!! Form::label('mobile', '手机号码', [
@@ -127,9 +109,28 @@
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-mobile'])
                         {!! Form::text('mobile', null, [
+                            'type' => 'number',
+                            'class' => 'form-control text-blue',
+                            'data-parsley-length' => '[11,11]',
+                            'data-parsley-pattern' => '/^1[3456789]\d{9}$/',
+                            'placeholder' => '(选填)'
+                        ]) !!}
+                    </div>
+                </div>
+            </div>
+            <!-- 电子邮箱 -->
+            <div class="form-group">
+                {!! Form::label('email', '电子邮箱', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
+                        {!! Form::text('email', null, [
+                            'type' => 'email',
                             'class' => 'form-control text-blue',
                             'placeholder' => '(选填)',
-                            'maxlength' => '11',
+                            'maxlength' => '255'
                         ]) !!}
                     </div>
                 </div>

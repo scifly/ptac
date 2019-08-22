@@ -6,82 +6,66 @@
         <div class="form-horizontal">
             <!-- 监护人ID -->
             @if (!empty($custodian['id']))
-                {{ Form::hidden('id', $custodian['id'], ['id' => 'id']) }}
-                {{ Form::hidden('user_id', $custodian['user_id'], ['id' => 'user_id']) }}
+                {!! Form::hidden('id', $custodian['id'], ['id' => 'id']) !!}
+                {!! Form::hidden('user_id', $custodian['user_id'], ['id' => 'user_id']) !!}
                 @include('shared.avatar', ['user' => $custodian->user])
             @endif
-            <!-- 监护人姓名 -->
+            <!-- 姓名 -->
             <div class="form-group">
-                {{ Form::label('user[realname]', '姓名', [
+                {!! Form::label('user[realname]', '姓名', [
                     'class' => 'col-sm-3 control-label'
-                ]) }}
+                ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-user'])
-                        {{ Form::text('user[realname]', null, [
+                        {!! Form::text('user[realname]', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
                             'placeholder' => '(请填写真实姓名)',
                             'data-parsley-length' => '[2, 255]'
-                        ]) }}
+                        ]) !!}
                     </div>
                 </div>
             </div>
-            <!-- 监护人英文名 -->
-            <div class="form-group">
-                {{ Form::label('user[english_name]', '英文名', [
-                    'class' => 'col-sm-3 control-label'
-                ]) }}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-language'])
-                        {{ Form::text('user[english_name]', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(可选)',
-                            'type' => 'string',
-                            'data-parsley-length' => '[2, 255]'
-                        ]) }}
-                    </div>
-                </div>
-            </div>
-            <!-- 监护人性别 -->
+            <!-- 性别 -->
             @include('shared.switch', [
                 'label' => '性别',
                 'id' => 'user[gender]',
                 'value' => $custodian->user->gender ?? null,
                 'options' => ['男', '女']
             ])
-            <!-- 监护人手机列表 -->
-            @include('shared.mobile')
-            <!-- 监护人座机号码 -->
+            <!-- 手机号码 -->
             <div class="form-group">
-                {{ Form::label('user[telephone]', '座机', [
+                {!! Form::label('user[mobile]', '手机号码', [
                     'class' => 'col-sm-3 control-label'
-                ]) }}
+                ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-phone'])
-                        {{ Form::text('user[telephone]', null, [
+                        @include('shared.icon_addon', ['class' => 'fa-mobile'])
+                        {!! Form::text('user[mobile]', null, [
+                            'type' => 'number',
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(可选)',
-                        ]) }}
+                            'data-parsley-length' => '[11,11]',
+                            'data-parsley-pattern' => '/^1[3456789]\d{9}$/',
+                            'placeholder' => '(选填。如果邮箱为空，此项必填)'
+                        ]) !!}
                     </div>
                 </div>
             </div>
-            <!-- 监护人电子邮件地址 -->
+            <!-- 电子邮件 -->
             <div class="form-group">
-                {{ Form::label('user[email]', '邮箱', [
+                {!! Form::label('user[email]', '邮箱', [
                     'class' => 'col-sm-3 control-label'
-                ]) }}
+                ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
-                        {{ Form::text('user[email]', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(可选)',
-                            'maxlength' => '255',
-                            'data-parsley-type'=>"email"
-                        ]) }}
+                        {!! Form::text('user[email]', null, [
+                            'type'        => 'email',
+                            'class'       => 'form-control text-blue',
+                            'placeholder' => '(选填。如果手机号码为空，此项必填)',
+                            'maxlength'   => '255',
+                        ]) !!}
                     </div>
                 </div>
             </div>
@@ -95,7 +79,7 @@
                 'options' => ['否', '是']
             ])
             @include('shared.card')
-            <!-- 监护人状态 -->
+            <!-- 状态 -->
             @include('shared.switch', [
                 'id' => 'user[enabled]',
                 'value' => $custodian->user->enabled ?? null

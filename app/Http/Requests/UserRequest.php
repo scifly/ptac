@@ -28,9 +28,9 @@ class UserRequest extends FormRequest {
         $paths = explode('/', $this->path());
         if ($paths[1] == 'reset') {
             return [
-                'old_password' => 'required|string',
-                'password' => 'required|string|min:8|confirmed',
-                'password_confirmation' => 'required|string|min:8'
+                'old_password'          => 'required|string',
+                'password'              => 'required|string|min:8|confirmed',
+                'password_confirmation' => 'required|string|min:8',
             ];
         }
         

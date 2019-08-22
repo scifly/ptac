@@ -240,8 +240,8 @@ class Corp extends Model {
             DB::transaction(function () use ($data, $id) {
                 $corp = $this->find($id);
                 $corp->update($data);
-                (new Department())->alter($corp, 'company');
-                (new Menu())->alter($corp, 'company');
+                (new Department)->alter($corp, 'company');
+                (new Menu)->alter($corp, 'company');
             });
         } catch (Exception $e) {
             throw $e;
@@ -314,24 +314,20 @@ class Corp extends Model {
      */
     function corpId() {
         
-        if (!Session::exists('menuId')) return null;
+        if (!$menuId = Session::exists('menuId')) return null;
         $user = Auth::user();
+        $menu = new Menu;
         switch ($user->role()) {
             case '运营':
             case '企业':
-                $corpMenuId = (new Menu)->menuId(session('menuId'), '企业');
-                $corpId = $corpMenuId ? $this->where('menu_id', $corpMenuId)->first()->id : null;
-                break;
+                $cMId = $menu->menuId($menuId, '企业');
+                return !$cMId ?: $this->where('menu_id', $cMId)->first()->id;
             case '学校':
-                $schoolMenuId = (new Menu)->menuId(session('menuId'));
-                $corpId = School::whereMenuId($schoolMenuId)->first()->corp_id;
-                break;
+                $sMId = $menu->menuId($menuId);
+                return School::whereMenuId($sMId)->first()->corp_id;
             default:
-                $corpId = School::find($user->educator->school_id)->corp_id;
-                break;
+                return School::find($user->educator->school_id)->corp_id;
         }
-        
-        return $corpId;
         
     }
     
@@ -352,24 +348,7 @@ class Corp extends Model {
                 ];
             case 'create':
             case 'edit':
-                $companies = Company::pluck('name', 'id');
-                if ((new Menu)->menuId(session('menuId'), '企业')) {
-                    # disabled - 是否显示'返回列表'和'取消'按钮
-                    if (Request::route('id')) {
-                        $corp = Corp::find(Request::route('id'));
-                        $companies = [$corp->company_id => $corp->company->name];
-                        $disabled = true;
-                    }
-                    
-                    return [
-                        'companies' => $companies,
-                        'disabled'  => $disabled ?? null,
-                    ];
-                } else {
-                    return [
-                        'companies' => $companies,
-                    ];
-                }
+                return ['companies' => Company::pluck('name', 'id')];
             default:
                 return (new Message)->compose('recharge');
         }

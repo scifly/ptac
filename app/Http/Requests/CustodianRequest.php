@@ -31,14 +31,12 @@ class CustodianRequest extends FormRequest {
         $rules = [
             'user.group_id'     => 'required|integer',
             'user.realname'     => 'required|string|between:2,255',
-            'user.english_name' => 'nullable|string|between:2,64',
             'user.gender'       => 'required|boolean',
-            'user.telephone'    => 'nullable|string|between:2,64',
-            'user.email'        => ['nullable', 'email', new Email],
+            'user.mobile'       => [new Mobile, 'required_without:user.email'],
+            'user.email'        => ['email', new Email, 'required_without:user.mobile'],
             'user.enabled'      => 'required|boolean',
             'singular'          => 'required|boolean',
             'enabled'           => 'required|boolean',
-            'mobile.*'          => ['required', new Mobile],
             'student_ids'       => 'required',
         ];
         $this->batchRules($rules);

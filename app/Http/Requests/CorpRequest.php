@@ -2,7 +2,6 @@
 namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
-use App\Models\Corp;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -41,16 +40,6 @@ class CorpRequest extends FormRequest {
             'apikey'              => 'nullable|string|max:32',
             'enabled'             => 'required|boolean'
         ];
-        
-    }
-    
-    protected function prepareForValidation() {
-        
-        $input = $this->all();
-        $input['company_id'] = $input['company_id']
-            ?? Corp::whereDepartmentId($this->topDeptId($this->user()))->first()->company_id;
-
-        $this->replace($input);
         
     }
     

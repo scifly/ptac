@@ -51,29 +51,31 @@ class OperatorPolicy {
         $isOperatorAllowed = $isGroupAllowed = $isCorpAllowed = $isSchoolAllowed = true;
     
         # 对当前用户可见的超级用户ids
-        $allowedOperatorIds = [$user->id];
-        $departmentIds = School::whereIn('id', $this->schoolIds())->get()->pluck('department_id')->toArray();
-        $userIds = DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray();
-        $allowedOperatorIds = array_merge($allowedOperatorIds, $userIds);
+        $departmentIds = School::whereIn('id', $this->schoolIds())->pluck('department_id');
+        $userIds = DepartmentUser::whereIn('department_id', $departmentIds)->pluck('user_id');
+        $allowedOperatorIds = array_merge([$user->id], $userIds->toArray());
     
         # 批量操作
         if ($operatorIds = Request::input('ids')) {
             $isOperatorAllowed = empty(array_diff($operatorIds, $allowedOperatorIds));
         } else {
             if (in_array($action, ['store', 'update'])) {
-                $corpGroupId = Group::whereName('企业')->first()->id;
-                $schoolGroupId = Group::whereName('学校')->first()->id;
+                [$cGId, $sGId] = array_map(
+                    function ($name) {
+                        return Group::whereName($name)->first()->id;
+                    }, ['企业', '学校']
+                );
                 $groupId = Request::input('group_id');
                 $corpId = Request::input('corp_id');
                 $schoolId = Request::input('school_id');
                 $isGroupAllowed = $role == '企业'
-                    ? in_array($groupId, [$corpGroupId, $schoolGroupId])
-                    : $groupId == $schoolGroupId;
+                    ? in_array($groupId, [$cGId, $sGId])
+                    : $groupId == $sGId;
                 if ($corpId) {
-                    $departmentId = $this->topDeptId($user);
+                    $deptId = $user->departments->first()->id;
                     $corp = $role == '企业'
-                        ? Corp::whereDepartmentId($departmentId)->first()
-                        : School::whereDepartmentId($departmentId)->first()->corp;
+                        ? Corp::whereDepartmentId($deptId)->first()
+                        : School::whereDepartmentId($deptId)->first()->corp;
                     $isCorpAllowed = $corpId == $corp->id;
                 }
                 !$schoolId ?: $isSchoolAllowed = in_array($schoolId, $this->schoolIds());

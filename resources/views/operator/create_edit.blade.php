@@ -6,7 +6,7 @@
         <div class="form-horizontal">
             <!-- 用户id -->
             @if (!empty($operator['id']))
-                {{ Form::hidden('id', $operator['id'], ['id' => 'id']) }}
+                {!! Form::hidden('id', $operator['id'], ['id' => 'id']) !!}
                 @include('shared.avatar', ['user' => $operator])
             @endif
             <!-- 用户名 -->
@@ -35,11 +35,11 @@
                     <div class="col-sm-6">
                         <div class="input-group">
                             @include('shared.icon_addon', ['class' => 'fa-lock'])
-                            {{ Form::password('password', [
+                            {!! Form::password('password', [
                                 'id' => 'password',
                                 'class' => 'form-control text-blue',
                                 'required' => 'true'
-                            ]) }}
+                            ]) !!}
                         </div>
                     </div>
                 </div>
@@ -51,12 +51,12 @@
                     <div class="col-sm-6">
                         <div class="input-group">
                             @include('shared.icon_addon', ['class' => 'fa-lock'])
-                            {{ Form::password('password_confirmation', [
+                            {!! Form::password('password_confirmation', [
                                 'id' => 'password_confirmation',
                                 'class' => 'form-control text-blue',
                                 'required' => 'true',
                                 'data-parsley-equalto' => '#password'
-                            ]) }}
+                            ]) !!}
                         </div>
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                 'icon' => 'fa fa-meh-o'
             ])
             <!-- 所属企业 -->
-            @if (isset($corps))
+            @if ($corps->isNotEmpty())
                 @include('shared.single_select', [
                     'id' => 'corp_id',
                     'label' => '所属企业',
@@ -92,7 +92,7 @@
                 </div>
             @endif
             <!-- 所属学校 -->
-            @if (isset($schools))
+            @if ($schools->isNotEmpty())
                 @include('shared.single_select', [
                     'id' => 'school_id',
                     'label' => '所属学校',
@@ -114,7 +114,7 @@
                     </div>
                 </div>
             @endif
-            <!-- 真实姓名 -->
+            <!-- 姓名 -->
             <div class="form-group">
                 {!! Form::label('realname', '真实姓名', [
                     'class' => 'col-sm-3 control-label'
@@ -131,22 +131,6 @@
                     </div>
                 </div>
             </div>
-            <!-- 英文名 -->
-            <div class="form-group">
-                {!! Form::label('english_name', '英文名', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-language'])
-                        {!! Form::text('english_name', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(可选)',
-                            'data-parsley-length' => '[2, 64]',
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
             <!-- 性别 -->
             @include('shared.switch', [
                 'id' => 'gender',
@@ -155,37 +139,37 @@
                 'options' => ['男', '女']
             ])
             <!-- 手机号码 -->
-            @include('shared.mobile')
-            <!-- 电子邮箱 -->
             <div class="form-group">
-                {{ Form::label('user[email]', '邮箱', [
+                {!! Form::label('user[mobile]', '手机号码', [
                     'class' => 'col-sm-3 control-label'
-                ]) }}
+                ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
-                        {{ Form::text('email', null, [
+                        @include('shared.icon_addon', ['class' => 'fa-mobile'])
+                        {!! Form::text('mobile', null, [
+                            'type' => 'number',
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(可选)',
-                            'type' => 'email',
-                            'maxlength' => '255',
-                            'data-parsley-type'=>"email"
-                        ]) }}
+                            'data-parsley-length' => '[11,11]',
+                            'data-parsley-pattern' => '/^1[3456789]\d{9}$/',
+                            'placeholder' => '(选填。如果邮箱为空，此项必填)'
+                        ]) !!}
                     </div>
                 </div>
             </div>
-            <!-- 座机号码 -->
+            <!-- 电子邮箱 -->
             <div class="form-group">
-                {{ Form::label('telephone', '座机', [
+                {!! Form::label('user[email]', '邮箱', [
                     'class' => 'col-sm-3 control-label'
-                ]) }}
+                ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-phone'])
-                        {{ Form::text('telephone', null, [
+                        @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
+                        {!! Form::text('email', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(可选)',
-                        ]) }}
+                            'placeholder' => '(选填。如果手机号码为空，此项必填)',
+                            'type' => 'email',
+                            'maxlength' => '255',
+                        ]) !!}
                     </div>
                 </div>
             </div>

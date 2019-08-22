@@ -350,7 +350,7 @@ class Department extends Model {
         }
         asort($levels);
         
-        return $this->find(array_key_first($levels))->parent->id;
+        return $this->find(array_key_first($levels))->parent_id;
         
     }
     
@@ -390,8 +390,7 @@ class Department extends Model {
         } elseif ($dtName == '企业') {
             return Corp::whereDepartmentId($id)->first()->id;
         }
-        $parent = $department->parent;
-        if (!$parent) return null;
+        if (!$parent = $department->parent) return null;
         while ($parent->departmentType->name != '企业') {
             $id = $parent->id;
             

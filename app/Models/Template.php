@@ -1,19 +1,14 @@
 <?php
 namespace App\Models;
 
-use App\Facades\Datatable;
-use App\Facades\Wechat;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Facades\{Datatable, Wechat};
+use App\Helpers\{Constant, ModelTrait, Snippet};
 use App\Http\Requests\TemplateRequest;
 use App\Jobs\GetTemplateList;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
@@ -138,7 +133,12 @@ class Template extends Model {
                 );
                 throw_if(
                     $errcode = $result['errcode'],
-                    new Exception(Constant::WXERR[$errcode])
+                    new Exception(
+                        join(':', [
+                            __('messages.template.failed'),
+                            Constant::WXERR[$errcode]
+                        ])
+                    )
                 );
                 $app->update(
                     array_combine([
@@ -163,17 +163,15 @@ class Template extends Model {
      */
     function fetch() {
         
-        try {
-            GetTemplateList::dispatch(
-                (new Corp)->corpId(), Auth::id()
-            );
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
+        GetTemplateList::dispatch(
+            (new Corp)->corpId(), Auth::id()
+        );
+
         return true;
         
     }
+    
+    function send() { }
     
     /**
      * 删除模板
@@ -186,6 +184,27 @@ class Template extends Model {
         
         try {
             DB::transaction(function () use ($id) {
+                throw_if(
+                    $template = $this->find($id),
+                    new Exception(__('messages.template.not_found'))
+                );
+                $app = $template->app;
+                $result = json_decode(
+                    Wechat::invoke(
+                        'pub', 'template', 'del_private_template',
+                        [Wechat::token('pub', $app->appid, $app->appsecret)],
+                        ['template_id' => $template->templateid]
+                    ), true
+                );
+                throw_if(
+                    $errcode = $result['errcode'],
+                    new Exception(
+                        join(':', [
+                            __('messages.template.failed'),
+                            Constant::WXERR[$errcode]
+                        ])
+                    )
+                );
                 $this->purge(['Template'], 'id');
             });
         } catch (Exception $e) {

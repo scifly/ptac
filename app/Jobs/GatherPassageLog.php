@@ -92,9 +92,8 @@ class GatherPassageLog implements ShouldQueue {
                             if (!$card = Card::whereSn($record['card_num'])->first()) continue;
                             if ($card->user->group->name != '学生') continue;
                             foreach ($card->user->student->custodians as $custodian) {
-                                $default = $custodian->user->mobiles->where('isdefault', 1)->first();
-                                if (!$default) continue;
-                                $smses[$default->mobile] = sprintf(
+                                if (!$mobile = $custodian->user->mobile) continue;
+                                $smses[$mobile] = sprintf(
                                     $tpl,
                                     $card->user->realname,
                                     date('Y-m-d H:i:s', strtotime($record['time'])),

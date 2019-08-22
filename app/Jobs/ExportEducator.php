@@ -83,7 +83,7 @@ class ExportEducator implements ShouldQueue {
                 $user->position,
                 $user->departments->first()->name,
                 $educator->school->name,
-                $user->mobiles->where('isdefault', 1)->first()->mobile,
+                $user->mobile ?? 'n/a',
                 $grades,
                 $squads,
                 implode(',', $cses ?? [])

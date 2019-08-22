@@ -33,12 +33,12 @@ class EducatorRequest extends FormRequest {
             'user.username'              => 'required|string|between:2,255',
             'user.password'              => 'string|min:8|confirmed',
             'user.password_confirmation' => 'string|min:8',
-            'singular'                   => 'required|boolean',
-            'user.mobile'                => ['nullable', new Mobile],
-            'user.email'                 => ['nullable', 'email', new Email],
+            'user.mobile'                => [new Mobile, 'required_without:user.email'],
+            'user.email'                 => ['email', new Email, 'required_without:user.mobile'],
             'user.enabled'               => 'required|boolean',
-
+            
             'school_id'                  => 'required|integer',
+            'singular'                   => 'required|boolean',
             'enabled'                    => 'required|boolean',
             'selectedDepartments'        => 'required|array',
         ];

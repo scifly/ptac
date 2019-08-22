@@ -60,8 +60,8 @@ class ExportStudent implements ShouldQueue {
                 if (!$cs->custodian) continue;
                 $cUser = $cs->custodian->user;
                 $relationships[] = implode(':', [
-                    $cs->relationship, $cUser->realname, $cUser->gender ? '男' : '女',
-                    $cUser->mobiles->where('isdefault', 1)->first()->mobile,
+                    $cs->relationship, $cUser->realname,
+                    $cUser->gender ? '男' : '女', $cUser->mobile,
                 ]);
             }
             $sUser = $student->user;

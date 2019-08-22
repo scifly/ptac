@@ -239,7 +239,7 @@ trait ModelTrait {
     }
     
     /**
-     * 根据当前菜单Id及用户角色返回学校Id
+     * 根据当前菜单Id返回学校Id
      *
      * @return int|mixed
      */
@@ -267,7 +267,7 @@ trait ModelTrait {
                 $schools = School::all();
                 break;
             case '企业':
-                $corp = Corp::whereDepartmentId($this->topDeptId($user))->first();
+                $corp = Corp::whereDepartmentId($user->departments->first()->id)->first();
                 $schools = $corp->schools;
                 break;
             case '学生':
@@ -304,7 +304,7 @@ trait ModelTrait {
         $schoolId = $schoolId ?? $this->schoolId();
         $grades = in_array($user->role($user->id), Constant::SUPER_ROLES)
             ? School::find($schoolId)->grades
-            : Grade::whereIn('department_id', $this->departmentIds($user->id, $schoolId))->get();
+            : Grade::whereIn('department_id', $this->departmentIds($user->id));
         
         return $grades->isEmpty() ? [0] : $grades->pluck('id')->toArray();
         
@@ -323,7 +323,7 @@ trait ModelTrait {
         $schoolId = $schoolId ?? $this->schoolId();
         $classes = in_array($user->role($user->id), Constant::SUPER_ROLES)
             ? School::find($schoolId)->classes
-            : Squad::whereIn('department_id', $this->departmentIds($user->id, $schoolId))->get();
+            : Squad::whereIn('department_id', $this->departmentIds($user->id));
         
         return $classes->isEmpty() ? [0] : $classes->pluck('id')->toArray();
         
@@ -419,34 +419,30 @@ trait ModelTrait {
      * 返回指定用户可访问的所有部门Id
      *
      * @param $userId
-     * @param null $schoolId
      * @return array
      */
-    function departmentIds($userId = null, $schoolId = null) {
+    function departmentIds($userId = null) {
         
-        $user = User::find($userId ?? Auth::id());
-        $role = $user->role($userId ?? Auth::id());
+        $userId = $userId ?? Auth::id();
+        $user = User::find($userId);
+        $role = $user->role($userId);
+        $d = new Department;
         if (in_array($role, Constant::SUPER_ROLES)) {
-            $schoolId = $schoolId ?? $this->schoolId();
-            $department = $schoolId
-                ? School::find($schoolId)->department
-                : Department::find($role == '运营' ? 1 : $this->topDeptId($user));
-            $departmentIds[] = $department->id;
+            $department = $this->schoolId()
+                ? School::find($this->schoolId())->department
+                : $user->departments->first();
             
             return array_unique(
                 array_merge(
-                    $departmentIds,
-                    $department->subIds($department->id)
+                    [$department->id],
+                    $d->subIds($department->id)
                 )
             );
         }
-        $d = new Department;
-        $deptIds = $user->deptIds();
-        foreach ($deptIds as $id) {
-            $departmentIds[] = $id;
+        foreach ($user->deptIds() as $deptId) {
+            $departmentIds[] = $deptId;
             $departmentIds = array_merge(
-                $d->subIds($id),
-                $departmentIds
+                $d->subIds($deptId), $departmentIds
             );
         }
         
@@ -471,7 +467,7 @@ trait ModelTrait {
             $className = 'App\\Models\\' . ($role == '企业' ? 'Corp' : 'School');
             $model = (new ReflectionClass($className))->newInstance();
             $menuIds = (new Menu)->subIds(
-                $model::whereDepartmentId($this->topDeptId($user))->first()->menu_id
+                $model::whereDepartmentId($user->departments->first()->id)->first()->menu_id
             );
         }
         
@@ -775,7 +771,7 @@ trait ModelTrait {
             case 'educator':
             case 'operator':
                 $role == 'educator' ?: $input['user'] = $input;
-                $input['user']['ent_attrs']['position'] = Group::find($input['user']['group_id'])->name;
+                $position = Group::find($input['user']['group_id'])->name;
                 if ($role == 'educator') {
                     $input['enabled'] = $input['user']['enabled'];
                     $input['school_id'] = $this->schoolId();
@@ -809,11 +805,14 @@ trait ModelTrait {
             default:
                 break;
         }
-        Request::route('id') ?: $input['user']['ent_attrs']['userid'] = $userid;
-        $input['user']['ent_attrs'] = json_encode(
-            $input['user']['ent_attrs'],
-            JSON_UNESCAPED_UNICODE
-        );
+        if (!Request::route('id')) {
+            $input['user']['ent_attrs'] = json_encode(
+                ['userid' => $userid, 'position' => $position ?? ''],
+                JSON_UNESCAPED_UNICODE
+            );
+        } else {
+            $input['user']['ent_attrs->position'] = $position ?? '';
+        }
         
         return $input;
         
@@ -838,23 +837,6 @@ trait ModelTrait {
         );
         
         return $app;
-        
-    }
-    
-    /**
-     * 返回指定用户所属的最顶级部门id
-     *
-     * @param User $user
-     * @return int|mixed
-     */
-    function topDeptId(User $user = null) {
-        
-        $user = $user ?? Auth::user();
-        $departmentIds = $user->departments->pluck('id')->toArray();
-        sort($departmentIds);
-        $topDeptId = head($departmentIds);
-        
-        return $topDeptId ? $topDeptId : 1;
         
     }
     

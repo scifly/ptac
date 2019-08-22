@@ -179,6 +179,7 @@ class Educator extends Model {
                 # 用户
                 $data['user']['password'] = bcrypt($data['user']['password']);
                 $user = User::create($data['user']);
+                # 一卡通
                 (new Card)->store($user);
                 # 教职员工
                 $data['user_id'] = $user->id;
@@ -219,13 +220,19 @@ class Educator extends Model {
                 if (!$id) {
                     $this->batch($this);
                 } else {
-                    $educator = $this->find($id);
-                    $user = $educator->user;
-                    $user->update($data['user']);
-                    $educator->update($data);
+                    ($educator = $this->find($id))->update($data);
+                    # 用户
+                    ($user = $educator->user)->update($data['user']);
+                    # 一卡通
                     (new Card)->store($user);
-                    (new ClassEducator)->storeByEducatorId($educator->id, $data['cs']);
-                    (new DepartmentUser)->storeByUserId($educator->user_id, $data['selectedDepartments']);
+                    # 班级科目绑定关系
+                    (new ClassEducator)->storeByEducatorId(
+                        $educator->id, $data['cs']
+                    );
+                    # 部门用户绑定关系
+                    (new DepartmentUser)->storeByUserId(
+                        $educator->user_id, $data['selectedDepartments']
+                    );
                     # 如果同时也是监护人
                     $custodian = $user->custodian;
                     if (!$data['singular']) {
@@ -242,7 +249,7 @@ class Educator extends Model {
                 (new User)->sync(
                     array_map(
                         function ($userId) { return [$userId, '', 'update']; },
-                        $this->whereIn('id', $ids)->get()->pluck('user_id')->toArray()
+                        $this->whereIn('id', $ids)->pluck('user_id')->toArray()
                     )
                 );
             });
@@ -403,7 +410,6 @@ class Educator extends Model {
     }
     
     /**
-     *
      * 批量授权
      *
      * @return JsonResponse|string
@@ -496,12 +502,12 @@ class Educator extends Model {
      */
     function compose($id = null) {
         
-        switch (explode('/', Request::path())[1]) {
+        $action = explode('/', Request::path())[1];
+        switch ($action) {
             case 'index':
                 $departments = Department::whereIn('id', $this->departmentIds(Auth::id()))
                     ->pluck('name', 'id')->toArray();
-                
-                return [
+                $data = [
                     'buttons'        => [
                         'import' => [
                             'id'    => 'import',
@@ -559,30 +565,33 @@ class Educator extends Model {
                     'importTemplate' => 'files/educators.xlsx',
                     'title'          => '导出教职员工',
                 ];
+                break;
             case 'issue':
-                $titles = <<<HTML
-                    <th>#</th>
-                    <th class="text-center">姓名</th>
-                    <th class="text-center">员工编号/用户名</th>
-                    <th>卡号</th>
-                HTML;
-                
-                return $this->data($titles);
-            case 'grant':
-                return (new Card)->compose('Educator');
             case 'face':
                 $titles = <<<HTML
                     <th>#</th>
                     <th class="text-center">姓名</th>
                     <th class="text-center">员工编号/用户名</th>
-                    <th>人脸</th>
-                    <th>设备</th>
-                    <th class="text-center">状态</th>
                 HTML;
-                
-                return $this->data($titles);
+                $titles .= $action == 'issue'
+                    ? '<th>卡号</th>'
+                    : '<th>人脸</th><th>设备</th><th class="text-center">状态</th>';
+                $departments = Department::whereIn('id', $this->departmentIds())
+                    ->pluck('name', 'id')->toArray();
+                $data = [
+                    'prompt'  => '教师列表',
+                    'formId'  => 'formEducator',
+                    'classes' => [0 => '(请选择一个部门)'] + $departments,
+                    'titles'  => $titles,
+                    'columns' => 6,
+                ];
+                break;
+            case 'grant':
+                $data = (new Card)->compose('Educator');
+                break;
             case 'recharge':
-                return (new Message)->compose('recharge');
+                $data = (new Message)->compose('recharge');
+                break;
             default:    # 编辑
                 $classes = Squad::whereIn('id', $this->classIds())->where('enabled', 1)->get();
                 $gradeIds = array_unique($classes->pluck('grade_id')->toArray());
@@ -594,30 +603,29 @@ class Educator extends Model {
                 if (($educatorId = $id ?? Request::route('id')) && Request::method() == 'GET') {
                     $educator = $this->find($educatorId);
                     $educator->{'card'} = $educator->user->card;
-                    $mobiles = $educator ? $educator->user->mobiles : null;
                     $selectedDepartmentIds = !$educator ? []
                         : $educator->user->deptIds($educator->user_id);
                     $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
                 }
                 $firstOption = [0 => '(请选择)'];
-                
-                return array_merge(
+                $data = array_combine(
                     [
                         'educator', 'squads', 'subjects', 'groups',
                         'selectedDepartmentIds', 'selectedDepartments',
-                        'mobiles',
                     ],
                     [
                         $educator ?? null,
                         $firstOption + $classes->pluck('name', 'id')->toArray(),
                         $firstOption + $subjects->pluck('name', 'id')->toArray(),
                         (new Group)->groupList(),
-                        implode(',', $selectedDepartmentIds ?? []),
+                        join(',', $selectedDepartmentIds ?? []),
                         $selectedDepartments ?? [],
-                        $mobiles ?? [],
                     ]
                 );
+                break;
         }
+        
+        return $data;
         
     }
     
@@ -659,25 +667,6 @@ class Educator extends Model {
                 return !in_array($user->group->name, ['监护人', '学生']);
             }
         );
-        
-    }
-    
-    /**
-     * @param $titles
-     * @return array
-     */
-    private function data($titles) {
-        
-        $departments = Department::whereIn('id', $this->departmentIds())
-            ->get()->pluck('name', 'id')->toArray();
-        
-        return [
-            'prompt'  => '教师列表',
-            'formId'  => 'formEducator',
-            'classes' => [0 => '(请选择一个部门)'] + $departments,
-            'titles'  => $titles,
-            'columns' => 6,
-        ];
         
     }
     

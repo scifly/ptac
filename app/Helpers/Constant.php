@@ -123,19 +123,8 @@ class Constant {
     const SUPER_ROLES = ['运营', '企业', '学校'];
     const NON_EDUCATOR = ['运营', '企业', '监护人', '学生', 'api'];
     const BATCH_OPERATIONS = ['enable', 'disable', 'delete'];
-    # 企业管理员可访问的运营类功能
-    const ALLOWED_CORP_ACTIONS = [
-        'corps/edit/%s',
-        'corps/update/%s',
-    ];
     # 校级管理员可访问的企业类功能
-    const ALLOWED_SCHOOL_ACTIONS = [
-        'schools/show/%s',
-        'schools/edit/%s',
-        'schools/update/%s',
-    ];
     const ALLOWED_WAPSITE_ACTIONS = [
-        'wap_sites/show/%s',
         'wap_sites/edit/%s',
         'wap_sites/update/%s',
     ];
@@ -556,8 +545,7 @@ class Constant {
     
     # field names
     const USER_FIELDS = [
-        'username', 'group_id', 'password', 'realname',
-        'gender', 'userid', 'position', 'enabled',
+        'username', 'group_id', 'password', 'realname', 'gender', 'mobile', 'enabled', 'ent_attrs'
     ];
     const MESSAGE_FIELDS = [
         'comm_type_id', 'media_type_id', 'app_id', 'msl_id', 'title', 'content', 'serviceid', 'message_id',

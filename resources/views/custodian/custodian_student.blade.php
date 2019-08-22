@@ -13,31 +13,29 @@
                 </tr>
                 </thead>
                 <tbody id="tBody">
-                @if (!empty($relations))
-                    @foreach($relations as $key => $relation)
-                        <tr>
-                            <td class="text-center">
-                                {!! Form::hidden('student_ids[]', $relation->student_id) !!}
-                                {!! $relation->student->user->realname !!}
-                            </td>
-                            <td class="text-center">
-                                {!! $relation->student->sn !!}
-                            </td>
-                            <td class="text-center">
-                                {!! Form::text('relationships[]', $relation->relationship, [
-                                    'class' => 'no-border text-center',
-                                    'style' => 'background: none;',
-                                    'title' => '监护关系'
-                                ]) !!}
-                            </td>
-                            <td class="text-center">
-                                <a href="javascript:" class="delete">
-                                    <i class="fa fa-trash-o text-blue"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                @endif
+                @foreach($relations as $key => $relation)
+                    <tr>
+                        <td class="text-center">
+                            {!! Form::hidden('student_ids[]', $relation->student_id) !!}
+                            {!! $relation->student->user->realname !!}
+                        </td>
+                        <td class="text-center">
+                            {!! $relation->student->sn !!}
+                        </td>
+                        <td class="text-center">
+                            {!! Form::text('relationships[]', $relation->relationship, [
+                                'class' => 'no-border text-center',
+                                'style' => 'background: none;',
+                                'title' => '监护关系'
+                            ]) !!}
+                        </td>
+                        <td class="text-center">
+                            <a href="javascript:" class="delete">
+                                <i class="fa fa-trash-o text-blue"></i>
+                            </a>
+                        </td>
+                    </tr>
+                @endforeach
                 </tbody>
             </table>
         </div>

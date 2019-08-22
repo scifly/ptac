@@ -827,10 +827,11 @@ class Score extends Model {
                 implode(',', $message ?? [])
             );
             foreach ($student->custodians as $custodian) {
+                $user = $custodian->user;
                 $result[] = [
-                    'custodian' => $custodian->user->realname,
+                    'custodian' => $user->realname,
                     'name'      => $studentName,
-                    'mobile'    => $custodian->user->mobiles->where('isdefault', 1)->mobile,
+                    'mobile'    => $user->mobile,
                     'content'   => $content,
                 ];
             }

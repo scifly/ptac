@@ -38,8 +38,8 @@ class GetTemplateList implements ShouldQueue {
         $this->corpId = $corpId;
         $this->userId = $userId;
         $this->response = array_combine(Constant::BROADCAST_FIELDS, [
-            $this->userId, __('messages.face.title'),
-            HttpStatusCode::OK, __('messages.face.config_completed'),
+            $this->userId, __('messages.template.title'),
+            HttpStatusCode::OK, __('messages.template.completed'),
         ]);
         $this->broadcaster = new Broadcaster;
         
@@ -54,7 +54,6 @@ class GetTemplateList implements ShouldQueue {
         try {
             DB::transaction(function () {
                 $apps = App::where(['corp_id' => $this->corpId, 'category' => 2])->get();
-                $records = [];
                 $t = new Template;
                 /** @var App $app */
                 foreach ($apps as $app) {
@@ -74,16 +73,19 @@ class GetTemplateList implements ShouldQueue {
                         )
                     );
                     foreach ($templates['template_list'] as $template) {
-                        $records[] = array_combine(
-                            $t->getFillable(), [
-                                $app->id, $template['title'], $template['template_id'],
-                                $template['primary_industry'], $template['deputy_industry'],
-                                $template['content'], $template['example'], Constant::ENABLED,
-                            ]
-                        );
+                        Template::updateOrCreate([
+                            'app_id'     => $app->id,
+                            'templateid' => $template['template_id'],
+                            'enabled'    => $template['enabled'],
+                        ], [
+                            'title'            => $template['title'],
+                            'primary_industry' => $template['primary_industry'],
+                            'deputy_industry'  => $template['deputy_industry'],
+                            'content'          => $template['content'],
+                            'example'          => $template['example'],
+                        ]);
                     }
                 }
-                $t->insert($records);
             });
         } catch (Exception $e) {
             $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;

@@ -492,40 +492,139 @@ class Custodian extends Model {
      * @return array
      */
     function compose($id = null) {
+    
+        $action = explode('/', Request::path())[1];
+        switch ($action) {
+            case 'index':
+                [$grades, $classes] = $this->gcList();
+                $data = [
+                    'buttons'        => [
+                        'issue' => [
+                            'id' => 'issue',
+                            'label' => '发卡',
+                            'icon' => 'fa fa-credit-card'
+                        ],
+                        'grant' => [
+                            'id'    => 'grant',
+                            'label' => '一卡通授权',
+                            'icon'  => 'fa fa-credit-card',
+                        ],
+                        'face' => [
+                            'id'    => 'face',
+                            'label' => '人脸设置',
+                            'icon'  => 'fa fa-camera',
+                        ],
+                    ],
+                    'batch'   => true,
+                    'filter'  => true,
+                    'titles'  => [
+                        '#', '姓名', '头像',
+                        [
+                            'title' => '性别',
+                            'html' => $this->singleSelectList(
+                                [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
+                            )
+                        ],
+                        '学生', '手机号码',
+                        [
+                            'title' => '创建于',
+                            'html' => $this->inputDateTimeRange('创建于')
+                        ],
+                        [
+                            'title' => '更新于',
+                            'html' => $this->inputDateTimeRange('更新于')
+                        ],
+                        [
+                            'title' => '状态 . 操作',
+                            'html' => $this->singleSelectList(
+                                [null => '全部', 0 => '未启用', 1 => '已启用'], 'filter_enabled'
+                            )
+                        ],
+                    ],
+                    'grades'  => $grades,
+                    'classes' => $classes,
+                    'title'   => '导出监护人',
+                ];
+                break;
+            case 'issue':
+            case 'face':
+                $titles = <<<HTML
+                    <th>#</th>
+                    <th class="text-center">家长</th>
+                    <th class="text-center">学生</th>
+                    <th class="text-center">学号</th>
+                HTML;
+                $titles .= $action == 'issue'
+                    ? '<th>卡号</th>'
+                    : '<th>人脸</th><th>设备</th><th class="text-center">状态</th>';
+                $classes = Squad::whereIn('id', $this->classIds())
+                    ->get()->pluck('name', 'id')->toArray();
+                $data = [
+                    'prompt' => '家长列表',
+                    'formId' => 'formCustodian',
+                    'classes' => [0 => '(请选择一个班级)'] + $classes,
+                    'titles' => $titles,
+                    'columns' => 7
+                ];
+                break;
+            case 'grant':
+                $data = (new Card)->compose('Custodian');
+                break;
+            default:
+                [$grades, $classes] = $this->gcList();
+                $records = Student::with('user:id,realname')
+                    ->where(['class_id' => array_key_first($classes), 'enabled' => 1])
+                    ->get()->toArray();
+                foreach ($records as $record) {
+                    if (!isset($record['user'])) continue;
+                    $students[$record['id']] = $record['user']['realname'] . '-' . $record['sn'];
+                }
+                if (($custodianId = $id ?? Request::route('id')) && Request::method() == 'GET') {
+                    $custodian = $this->find($custodianId);
+                    $custodian->{'card'} = $custodian->user->card;
+                    $custodian->user->ent_attrs = json_decode(
+                        $custodian->user->ent_attrs, true
+                    );
+                    $relations = CustodianStudent::whereCustodianId($custodianId)->get()->filter(
+                        function (CustodianStudent $cs) {
+                            return $this->schoolId() == Student::find($cs->student_id)->squad->grade->school_id;
+                        }
+                    );
+                }
+                $data = array_combine(
+                    [
+                        'custodian', 'title', 'grades', 'classes',
+                        'students', 'relations', 'relationship'
+                    ],
+                    [
+                        $custodian ?? null, '新增监护关系',
+                        $grades, $classes, $students ?? [],
+                        $relations ?? collect([]), true
+                    ]
+                );
+                break;
+        }
         
+        return $data;
+        
+    }
+    
+    /**
+     * 返回对当前登录用户可见的年级与班级列表
+     *
+     * @return array
+     */
+    private function gcList() {
+    
         $grades = Grade::whereIn('id', $this->gradeIds())
             ->where('enabled', 1)
-            ->pluck('name', 'id')
-            ->toArray();
-        $classes = Squad::where(['grade_id' => array_key_first($grades), 'enabled' => 1])
             ->pluck('name', 'id')->toArray();
-        $records = Student::with('user:id,realname')
-            ->where(['class_id' => array_key_first($classes), 'enabled' => 1])
-            ->get()->toArray();
-        foreach ($records as $record) {
-            if (!isset($record['user'])) continue;
-            $students[$record['id']] = $record['user']['realname'] . '-' . $record['sn'];
-        }
-        $custodianId = $id ?? Request::route('id');
-        if ($custodianId && Request::method() == 'GET') {
-            $custodian = $this->find($custodianId);
-            $custodian->{'card'} = $custodian->user->card;
-            $mobiles = $custodian ? $custodian->user->mobiles : null;
-            $relations = CustodianStudent::whereCustodianId($custodianId)->get()->filter(
-                function (CustodianStudent $cs) {
-                    return $this->schoolId() == Student::find($cs->student_id)->squad->grade->school_id;
-                }
-            );
-        }
+        $classes = Squad::where([
+            'grade_id' => array_key_first($grades),
+            'enabled' => 1
+        ])->pluck('name', 'id')->toArray();
         
-        return [
-            $custodian ?? null,
-            '新增监护关系',
-            $grades,
-            $classes, $students ?? [],
-            $relations ?? collect([]),
-            $mobiles ?? [],
-        ];
+        return [$grades, $classes];
         
     }
     

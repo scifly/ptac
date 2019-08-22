@@ -91,13 +91,12 @@ class CardComposer {
             foreach ($users as $user) {
                 $status = $action == 'create' ? ''
                     : '<td>' . $card->status($user->card ? $user->card->status : 1) . '</td>';
-                $default = $user->mobiles->where('isdefault', 1)->first();
                 $record = sprintf(
                     $row,
                     $user->id,
                     $user->realname,
                     $user->group->name,
-                    $default ? $default->mobile : 'n/a',
+                    $user->mobile,
                     $user->id, $i,
                     $user->card ? $user->card->sn : '',
                     $status

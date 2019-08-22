@@ -69,6 +69,7 @@ return [
     'educator'                 => [
         'title'                     => '教职员工',
         'not_found'                 => '没有这个教职员工',
+        'import_failed'             => '批量导入失败',
         'import_validation_error'   => '学校/部门名称错误',
         'import_completed'          => '教职员工导入完毕',
         'export_completed'          => '教职员工导出完毕，请打开下载的excel文件查看详情',
@@ -162,7 +163,8 @@ return [
         'title' => '消息模板',
         'started' => '已提交消息模板下载请求...',
         'completed' => '消息模板下载完成',
-        'failed' => '获取消息模板失败',
+        'failed' => '操作失败',
+        'not_found' => '找不到这个模板'
     ],
     'user'                     => [
         'not_found' => '没有这个用户',

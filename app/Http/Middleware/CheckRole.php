@@ -3,7 +3,7 @@ namespace App\Http\Middleware;
 
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
-use App\Models\{Action, ActionGroup, Corp, Department, Group, GroupMenu, Menu, School, Tab, WapSite};
+use App\Models\{Action, ActionGroup, Department, Group, GroupMenu, Menu, School, Tab, WapSite};
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -44,70 +44,45 @@ class CheckRole {
         $menuId = session('menuId');
     
         # 超级用户直接访问所有功能, 如果访问的是首页，则直接通过并进入下个请求
-        if ($role == '运营' || in_array($route, ['/', 'home'])) {
-            return $next($request);
-        }
+        if ($role == '运营' || in_array($route, ['/', 'home'])) return $next($request);
     
+        # 菜单权限
         $rootMenuId = $this->menu->rootId();
-        # 菜单权限判断
         if ($request->is('pages/*')) {
-            if (in_array($role, ['企业', '学校'])) {
-                $menuIds = $this->menu->subIds($rootMenuId);
-                $abort = !in_array($menuId, $menuIds) ?? false;
-            } else {
-                $groupMenu = GroupMenu::where([
-                    'menu_id' => $menuId,
-                    'group_id' => $groupId
-                ])->first();
-                $abort = !$groupMenu ?? false;
-            }
             abort_if(
-                $abort,
-                HttpStatusCode::FORBIDDEN,
-                __('messages.forbidden')
+                in_array($role, ['企业', '学校'])
+                    ? !in_array($menuId, $this->menu->subIds($rootMenuId))
+                    : !GroupMenu::where(['menu_id' => $menuId, 'group_id' => $groupId])->first(),
+                HttpStatusCode::FORBIDDEN, __('messages.forbidden')
             );
-            
+    
             return $next($request);
         }
-        # 功能权限判断
-        $controller = Action::whereRoute($route)->first()->tab->name;
-        $corpGroupIds = array_merge([0], Group::whereIn('name', ['企业', '学校'])->pluck('id')->toArray());
-        $schoolGroupIds = [0, Group::whereName('学校')->first()->id];
-        if (in_array($role, ['企业', '学校'])) {
-            $abort = !Tab::whereIn('group_id', $role == '企业' ? $corpGroupIds : $schoolGroupIds)
-                ->where('name', $controller)->first();
-        } else {
-            # 校级以下角色 action权限判断
-            $abort = !ActionGroup::where([
-                'action_id' => Action::whereRoute($route)->first()->id,
-                'group_id' => $groupId
-            ])->first();
-        }
-
-        # 企业级管理员可访问的运营类功能
-        if ($role == '企业') {
-            $corpId = Corp::whereMenuId($rootMenuId)->first()->id;
-            $allowedCorpActions = $this->allowedActions(
-                Constant::ALLOWED_CORP_ACTIONS, $corpId
-            );
-            if (in_array($request->path(), $allowedCorpActions)) {
-                return $next($request);
-            }
-        }
+        
+        # 功能权限
+        [$cGIds, $sGIds] = array_map(
+            function ($names) {
+                $builder = Group::whereIn('name', $names);
+                return array_merge([0], $builder->pluck('id')->toArray());
+            }, ['企业', '学校'], ['学校']
+        );
+        $groupIds = $role == '企业' ? $cGIds : $sGIds;
+        $action = Action::whereRoute($route)->first();
+        $abort = in_array($role, ['企业', '学校'])
+            ? !Tab::whereIn('group_id', $groupIds)->where('name', $action->tab->name)->first()
+            : !ActionGroup::where(['action_id' => $action->id, 'group_id' => $groupId])->first();
 
         # 校级管理员可访问的企业类功能
         if ($role == '学校') {
             $schoolId = School::whereMenuId($rootMenuId)->first()->id;
-            $wapSite = WapSite::whereSchoolId($schoolId)->first();
-            $allowedSchoolActions = [];
-            if ($wapSite) {
-                $wapSiteId = $wapSite->id;
-                $allowedSchoolActions = array_merge(
-                    $this->allowedActions(Constant::ALLOWED_SCHOOL_ACTIONS, $schoolId),
-                    $this->allowedActions(Constant::ALLOWED_WAPSITE_ACTIONS, $wapSiteId)
+            if ($wapSite = WapSite::whereSchoolId($schoolId)->first()) {
+                $actions = array_map(
+                    function ($route) use ($wapSite) {
+                        return sprintf($route, $wapSite->id);
+                    }, Constant::ALLOWED_WAPSITE_ACTIONS
                 );
             }
-            if (in_array($request->path(), $allowedSchoolActions)) {
+            if (in_array($request->path(), $actions ?? [])) {
                 return $next($request);
             }
         }
@@ -118,22 +93,6 @@ class CheckRole {
         );
         
         return $next($request);
-        
-    }
-    
-    /**
-     * @param array $actions
-     * @param $id
-     * @return array
-     */
-    private function allowedActions(array $actions, $id) {
-        
-        return array_map(
-            function ($str) use ($id) {
-                return sprintf($str, $id);
-            },
-            $actions
-        );
         
     }
     

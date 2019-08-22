@@ -23,7 +23,7 @@ class ConferenceQueueComposer {
      * @param View $view
      */
     public function compose(View $view) {
-    
+        
         $action = explode('/', Request::path())[1];
         if ($action == 'index') {
             $data = [
@@ -45,11 +45,10 @@ class ConferenceQueueComposer {
                         ->toArray();
                     break;
                 default:
-                    $departmentIds = $user->departmentIds($user->id);
                     $userIds = array_unique(
-                        DepartmentUser::whereIn('department_id', $departmentIds)
-                            ->get(['user_id'])
-                            ->toArray()
+                        DepartmentUser::whereIn(
+                            'department_id', $user->departmentIds($user->id)
+                        )->get(['user_id'])->toArray()
                     );
                     $educators = [];
                     foreach ($userIds as $userId) {
@@ -61,13 +60,12 @@ class ConferenceQueueComposer {
                     break;
             }
             $data = [
-                'conferenceRooms' => $conferenceRooms,
-                'educators'       => $educators,
+                'conferenceRooms'   => $conferenceRooms,
+                'educators'         => $educators,
                 'selectedEducators' => (new Educator)->educatorList(
                     ConferenceQueue::find(Request::route('id'))->educator_ids),
             ];
         }
-        
         $view->with($data);
         
     }

@@ -4,13 +4,10 @@ namespace App\Jobs;
 use App\Helpers\{Constant, JobTrait, ModelTrait};
 use App\Models\{ApiMessage,
     CommType,
-    Department,
-    DepartmentUser,
     MediaType,
     Message,
     MessageSendingLog,
     MessageType,
-    Mobile,
     School,
     User};
 use Exception;
@@ -61,23 +58,13 @@ class SendMessageApi implements ShouldQueue {
             DB::transaction(function () {
                 $message = new Message;
                 $apiMessage = new ApiMessage;
-                $department = new Department;
                 $messageType = MessageType::whereUserId($this->partner->id)->first();
                 $school = School::find($this->schoolId);
-                $departmentIds = array_merge(
-                    [$school->department_id],
-                    $department->subIds($school->department_id)
-                );
-                $userIds = array_unique(
-                    DepartmentUser::whereIn('department_id', $departmentIds)->pluck('user_id')->toArray()
-                );
                 # 所有手机号码
                 $targets = array_unique(explode(',', $this->mobiles));
                 # 在指定学校通讯录内的手机号码
-                $contacts = Mobile::whereIn('mobile', $targets)
-                    ->whereIn('user_id', $userIds)
-                    ->pluck('user_id', 'mobile')
-                    ->toArray();
+                $contacts = User::whereIn('mobile', $targets)
+                    ->pluck('id', 'mobile')->toArray();
                 # 创建发送日志
                 $msl = (new MessageSendingLog)->store([
                     'read_count'     => 0,

@@ -43,14 +43,12 @@
                     </div>
                 </div>
             </div>
-            @if (Auth::user()->{'group'}->name == '运营')
-                @include('shared.single_select', [
-                    'label' => '所属运营者',
-                    'id' => 'company_id',
-                    'items' => $companies,
-                    'icon' => 'fa fa-building text-blue'
-                ])
-            @endif
+            @include('shared.single_select', [
+                'label' => '所属运营者',
+                'id' => 'company_id',
+                'items' => $companies,
+                'icon' => 'fa fa-building text-blue'
+            ])
             <div class="form-group">
                 {!! Form::label('corpid', '企业ID', [
                     'class' => 'col-sm-3 control-label'

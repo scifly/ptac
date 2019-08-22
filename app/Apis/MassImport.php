@@ -18,17 +18,17 @@ interface MassImport {
     /**
      * 插入数据
      *
-     * @param array $inserts
+     * @param array $records
      * @return mixed
      */
-    function insert(array $inserts);
+    function insert(array $records);
     
     /**
      * 更新数据
      *
-     * @param array $updates
+     * @param array $records
      * @return mixed
      */
-    function update(array $updates);
+    function update(array $records);
     
 }

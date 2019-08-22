@@ -3,13 +3,9 @@
 namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
 use App\Models\Corp;
-use App\Models\Department;
-use App\Models\Menu;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class CorpPolicy
@@ -17,19 +13,9 @@ use Illuminate\Support\Facades\Request;
  */
 class CorpPolicy {
 
-    use HandlesAuthorization, ModelTrait;
+    use HandlesAuthorization;
     
-    protected $menu;
-    
-    /**
-     * CorpPolicy constructor.
-     * @param Menu $menu
-     */
-    function __construct(Menu $menu) {
-        
-        $this->menu = $menu;
-        
-    }
+    function __construct() { }
     
     /**
      * Determine whether the user can (v)iew/(e)dit/(u)pdate/(d)elete the corp.
@@ -46,29 +32,8 @@ class CorpPolicy {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        switch ($user->role()) {
-            case '运营':
-                return true;
-            case '企业':
-                $paths = explode('/', Request::path());
-                if (in_array($paths[1], ['index', 'create', 'store', 'delete'])) {
-                    return false;
-                }
-                # userCorp - the Corp to which the user belongs
-                $rootMenuId = $this->menu->rootId();
-                $userCorp = Corp::whereMenuId($rootMenuId)->first();
-                if ($paths[1] == 'edit') {
-                    return $userCorp->id == $corp->id;
-                }
-                $departmentId = Request::input('department_id');
-                $department = Department::find($departmentId);
-                if (!$department) { return false; }
-                return ($userCorp->id == $corp->id)
-                    && in_array($departmentId, $this->departmentIds($user->id))
-                    && $department->departmentType->name == '企业';
-            default:
-                return false;
-        }
+        
+        return $user->role() == '运营';
 
     }
 

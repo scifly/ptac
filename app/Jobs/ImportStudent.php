@@ -3,7 +3,7 @@ namespace App\Jobs;
 
 use App\Apis\MassImport;
 use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
-use App\Models\{Custodian, CustodianStudent, DepartmentUser, Grade, Group, Mobile, School, Squad, Student, User};
+use App\Models\{Custodian, CustodianStudent, DepartmentUser, Grade, Group, School, Squad, Student, User};
 use Exception;
 use Illuminate\{Bus\Queueable,
     Contracts\Queue\ShouldQueue,
@@ -25,8 +25,9 @@ class ImportStudent implements ShouldQueue, MassImport {
     use Dispatchable, InteractsWithQueue, Queueable,
         SerializesModels, ModelTrait, JobTrait;
     
-    public $data, $schoolId, $userId, $response, $broadcaster, $members, $corpId;
-    
+    protected $data, $schoolId, $userId, $corpId;
+    protected $members, $response, $broadcaster;
+
     /**
      * Create a new job instance.
      *
@@ -54,10 +55,17 @@ class ImportStudent implements ShouldQueue, MassImport {
      */
     function handle() {
         
-        $imported = $this->import($this, $this->response);
-        !$imported ?: (new User)->sync(
-            $this->members, $this->userId
-        );
+        try {
+            DB::transaction(function () {
+                $this->import($this);
+                # 同步企业微信通讯录
+                (new User)->sync($this->members, $this->userId);
+            });
+        } catch (Exception $e) {
+            $this->eHandler($e, $this->response);
+            throw $e;
+        }
+        $this->broadcaster->broadcast($this->response);
         
         return true;
         
@@ -138,23 +146,22 @@ class ImportStudent implements ShouldQueue, MassImport {
     /**
      * 插入需导入的学籍数据
      *
-     * @param array $inserts
+     * @param array $records
      * @return bool
      * @throws Throwable
      */
-    function insert(array $inserts) {
+    function insert(array $records) {
         
         try {
-            DB::transaction(function () use ($inserts) {
-                $password = bcrypt('12345678');
+            DB::transaction(function () use ($records) {
                 $groupId = Group::whereName('学生')->first()->id;
-                foreach ($inserts as $insert) {
+                foreach ($records as $record) {
                     $userid = uniqid('ptac_');
                     # 创建用户
                     $user = User::create(
                         array_combine(Constant::USER_FIELDS, [
-                            $userid, $groupId, $password, $insert['name'],
-                            $insert['gender'] == '男' ? 1 : 0, $userid, '学生', 1,
+                            $userid, $groupId, bcrypt('12345678'), $record['name'],
+                            $record['gender'] == '男' ? 1 : 0, $userid, '学生', 1,
                         ])
                     );
                     # 创建学生
@@ -162,26 +169,17 @@ class ImportStudent implements ShouldQueue, MassImport {
                         array_combine(
                             (new Student)->getFillable(),
                             [
-                                $user->id, $insert['class_id'], $insert['sn'],
-                                $insert['oncampus'] == '住读' ? 1 : 0, $insert['birthday'],
-                                $insert['remark'] ?? '导入', $user->enabled,
+                                $user->id, $record['class_id'], $record['sn'],
+                                $record['oncampus'] == '住读' ? 1 : 0, $record['birthday'],
+                                $record['remark'] ?? '导入', $user->enabled,
                             ]
                         )
                     );
                     # 保存监护关系
-                    $this->binding($student, $insert, $password);
-                    # 保存部门 & 用户绑定关系
-                    DepartmentUser::create(
-                        array_combine(
-                            (new DepartmentUser)->getFillable(),
-                            [$insert['department_id'], $user->id, $user->enabled]
-                        )
-                    );
-                    // $this->members[] = [$user->id, '学生', 'create'];
+                    $this->binding($student, $record, 'create');
                 }
             });
         } catch (Exception $e) {
-            $this->eHandler($e, $this->response);
             throw $e;
         }
         
@@ -192,45 +190,42 @@ class ImportStudent implements ShouldQueue, MassImport {
     /**
      * 更新已导入的学籍数据
      *
-     * @param array $updates
+     * @param array $records
      * @return bool
      * @throws Throwable
      */
-    function update(array $updates) {
+    function update(array $records) {
         
         try {
-            DB::transaction(function () use ($updates) {
-                foreach ($updates as $update) {
-                    $ex = new Exception(__('messages.not_found'));
-                    $student = Student::whereSn($update['sn'])->first();
-                    throw_if(!$student, $ex);
+            DB::transaction(function () use ($records) {
+                foreach ($records as $record) {
+                    $student = Student::whereSn($record['sn'])->first();
+                    throw_if(
+                        !$student || !$student->user,
+                        new Exception(__('messages.not_found'))
+                    );
+                    # 更新学生
                     $student->update(
                         array_combine(
                             (new Student)->getFillable(),
                             [
-                                $student->user_id, $update['class_id'],
-                                $update['sn'], $update['oncampus'] == '住读' ? 1 : 0,
-                                $update['birthday'], '导入', $student->enabled,
+                                $student->user_id, $record['class_id'],
+                                $record['sn'], $record['oncampus'] == '住读' ? 1 : 0,
+                                $record['birthday'], '导入', $student->enabled,
                             ]
                         )
                     );
-                    throw_if(!$student->user, $ex);
+                    # 更新用户
                     $student->user->update([
-                        'realname' => $update['name'],
-                        'gender'   => $update['gender'] == '男' ? 1 : 0,
+                        'realname' => $record['name'],
+                        'gender'   => $record['gender'] == '男' ? 1 : 0,
                     ]);
                     # 保存监护关系
-                    $this->binding($student, $update);
-                    # 更新部门 & 用户绑定关系
-                    DepartmentUser::updateOrCreate(
-                        ['user_id' => $student->user_id, 'enabled' => 1],
-                        ['department_id' => $update['department_id']]
-                    );
-                    // $this->members[] = [$student->user_id, '学生', 'update'];
+                    $this->binding($student, $record, 'update');
+                    
                 }
             });
         } catch (Exception $e) {
-            $this->eHandler($e, $this->response);
             throw $e;
         }
         
@@ -243,57 +238,65 @@ class ImportStudent implements ShouldQueue, MassImport {
      *
      * @param Student $student
      * @param $record
-     * @param $password
+     * @param $type
      * @throws Throwable
      */
-    private function binding(Student $student, $record, $password = null) {
+    private function binding(Student $student, $record, $type) {
         
         try {
-            DB::transaction(function () use ($student, $record, $password) {
-                $password = $password ?? bcrypt('12345678');
-                $relationship = str_replace(['，', '：'], [',', ':'], $record['relationship']);
-                $relationships = explode(',', $relationship);
+            DB::transaction(function () use ($student, $record, $type) {
+                $password = bcrypt('12345678');
+                $relationships = explode(',', str_replace(
+                    ['，', '：'], [',', ':'], $record['relationship'])
+                );
                 $groupId = Group::whereName('监护人')->first()->id;
+                $deptId = $record['department_id'];
                 foreach ($relationships as $r) {
                     if (count($paths = explode(':', $r)) != 4) continue;
-                    if (!($mobile = Mobile::whereMobile($paths[3])->first())) {
-                        $userid = uniqid('ptac_');
+                    [$relation, $realname, $gender, $mobile] = $paths;
+                    $gender = ($gender == '男' ? 1 : 0);
+                    # 用户
+                    if (!$user = User::whereMobile($paths[3])->first()) {
                         $user = User::create(
                             array_combine(Constant::USER_FIELDS, [
-                                $userid, $groupId, $password, $paths[1],
-                                $paths[2] == '男' ? 1 : 0, $userid, '监护人', 1,
-                            ])
-                        );
-                        Mobile::create(
-                            array_combine((new Mobile)->getFillable(), [
-                                $user->id, $paths[3], 1, $user->enabled,
+                                $userid = uniqid('ptac_'), $groupId, $password,
+                                $realname, $gender, $mobile, Constant::ENABLED,
+                                json_encode(
+                                    ['userid' => $userid, 'position' => '监护人'],
+                                    JSON_UNESCAPED_UNICODE
+                                )
                             ])
                         );
                     } else {
-                        !($user = User::find($mobile->user_id))
-                            ?: $user->update(
-                            $user->educator
-                                ? ['position' => $user->group->name . '/' . '监护人']
-                                : ['realname' => $paths[1], 'gender' => $paths[2] == '男' ? 1 : 0]
+                        $data = ['realname' => $realname, 'gender' => $gender];
+                        !$user->educator ?: $data = array_merge(
+                            $data, ['ent_attrs->position' => $user->group->name . '/' . '监护人']
                         );
+                        $user->update($data);
                     }
-                    # 更新/创建监护人
+                    # 监护人
                     $custodian = Custodian::updateOrCreate(
                         ['user_id' => $user->id], ['enabled' => $user->enabled]
                     );
-                    # 更新/创建监护人 & 学生绑定关系
+                    # 监护人学生绑定关系
                     CustodianStudent::updateOrCreate(
                         ['custodian_id' => $custodian->id, 'student_id' => $student->id],
-                        ['relationship' => $paths[0], 'enabled' => $user->enabled]
+                        ['relationship' => $relation, 'enabled' => $user->enabled]
                     );
-                    # 更新/创建部门 & 用户绑定关系
+                    # 部门用户绑定关系
                     DepartmentUser::updateOrCreate(
                         ['user_id' => $user->id, 'enabled' => 0],
-                        ['department_id' => $record['department_id']]
+                        ['department_id' => $deptId]
                     );
-                    # 需要同步至企业微信的监护人
-                    $this->members[] = [$user->id, '监护人', !$mobile ? 'create' : 'update'];
+                    # 同步至企业微信通讯录
+                    $this->members[] = [$user->id, '监护人', !$user ? 'create' : 'update'];
                 }
+                # 部门用户绑定关系(学生)
+                DepartmentUser::updateOrCreate(
+                    ['user_id' => $student->user_id, 'enabled' => 1],
+                    ['department_id' => $deptId]
+                );
+                // $this->members[] = [$student->user_id, '学生', $type];
             });
         } catch (Exception $e) {
             throw $e;

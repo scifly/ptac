@@ -23,11 +23,12 @@ class SyncController extends Controller {
     static $category = 1;
     
     const MEMBER_PROPERTIES = [
-        'UserID'      => 'userid',
         'Name'        => 'realname',
-        'Position'    => 'position',
         'Gender'      => 'gender',
         'Email'       => 'email',
+        'Mobile'      => 'mobile',
+        'UserID'      => 'userid',
+        'Position'    => 'position',
         'Status'      => 'subscribed',
         'Avatar'      => 'avatar_url',
         'EnglishName' => 'english_name',
@@ -90,14 +91,17 @@ class SyncController extends Controller {
                 $data['username'] = $data['userid'];
                 $data['group_id'] = $groupId;
                 $data['password'] = bcrypt('12345678');
-                $data['synced'] = $data['enabled'] = 1;
+                $data['mobile'] = $data['mobile'] ?? '';
+                $data['ent_attrs'] = [
+                    'synced' => $data['enabled'] = 1
+                ];
                 $user = User::create($data);
                 $departmentIds = [$this->corp->department_id];
                 if (Group::find($groupId)->name != '企业') {
                     Educator::create(
                         array_combine(
                             (new Educator)->getFillable(),
-                            [$user->id, $this->school()->id, 0, 1]
+                            [$user->id, $this->school()->id, 0, 0, 1]
                         )
                     );
                     $departmentIds = (array)$this->event->{'Department'};
@@ -129,9 +133,10 @@ class SyncController extends Controller {
                 } else {
                     $user->update($this->data());
                     # 更新用户手机号码
-                    !property_exists($this->event, 'Mobile') ?:
-                        Mobile::where(['user_id' => $user->id, 'isdefault' => 1])->first()
-                            ->update(['mobile' => $this->event->{'Mobile'}]);
+                    !property_exists($this->event, 'Mobile')
+                        ?: User::find($user->id)->update([
+                            'mobile' => $this->event->{'Mobile'}
+                        ]);
                     # 更新用户所属部门
                     if (property_exists($this->event, 'Department')) {
                         $du = new DepartmentUser;

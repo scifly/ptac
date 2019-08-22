@@ -57,20 +57,11 @@ class SchoolRequest extends FormRequest {
                 $input['menu_id'] = $input['menu_id'] ?? 0;
             } else {
                 # 更新 - update
-                if ($this->has('id')) {
-                    $school = School::find($this->input('id'));
-                    $input['department_id'] = $school->department_id;
-                    $input['menu_id'] = $school->menu_id;
-                }
+                $school = School::find($this->input('id'));
+                $input['department_id'] = $school->department_id;
+                $input['menu_id'] = $school->menu_id;
             }
-            $input['school_type_id'] = $input['school_type_id'] ?? School::find($this->schoolId())->school_type_id;
-            $input['user_ids'] = $input['user_ids'] ?? implode(',', $input['user_ids']);
-            if (!isset($input['corp_id'])) {
-                $departmentId = $this->topDeptId();
-                $input['corp_id'] = $this->user()->role() == '企业'
-                    ? Corp::whereDepartmentId($departmentId)->first()->id
-                    : School::whereDepartmentId($departmentId)->first()->corp_id;
-            }
+            $input['user_ids'] = join(',', $input['user_ids']);
             $this->replace($input);
         }
         

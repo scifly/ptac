@@ -544,30 +544,161 @@ class Student extends Model {
      * @return array
      */
     function compose() {
+    
+        $action = explode('/', Request::path())[1];
+        switch ($action) {
+            case 'index':
+                [$grades, $classes] = $this->gcList();
+                $optionAll = [null => '全部'];
+                $data = [
+                    'buttons'        => [
+                        'import' => [
+                            'id'    => 'import',
+                            'label' => '批量导入',
+                            'icon'  => 'fa fa-upload',
+                        ],
+                        'export' => [
+                            'id'    => 'export',
+                            'label' => '批量导出',
+                            'icon'  => 'fa fa-download',
+                        ],
+                        'issue'  => [
+                            'id'    => 'issue',
+                            'label' => '发卡',
+                            'icon'  => 'fa fa-credit-card',
+                        ],
+                        'grant' => [
+                            'id'    => 'grant',
+                            'label' => '一卡通授权',
+                            'icon'  => 'fa fa-credit-card',
+                        ],
+                        'face' => [
+                            'id'    => 'face',
+                            'label' => '人脸设置',
+                            'icon'  => 'fa fa-camera',
+                        ],
+                    ],
+                    'titles'         => [
+                        '#', '姓名', '头像',
+                        [
+                            'title' => '性别',
+                            'html'  => $this->singleSelectList(
+                                $optionAll + [0 => '女', 1 => '男'], 'filter_gender'
+                            ),
+                        ],
+                        [
+                            'title' => '班级',
+                            'html'  => $this->singleSelectList(
+                                $optionAll + Squad::whereIn('id', $this->classIds())
+                                    ->pluck('name', 'id')->toArray()
+                                , 'filter_class'
+                            ),
+                        ],
+                        '学号',
+                        [
+                            'title' => '住校',
+                            'html'  => $this->singleSelectList(
+                                $optionAll + [0 => '否', 1 => '是'], 'filter_oncampus'
+                            ),
+                        ],
+                        [
+                            'title' => '生日',
+                            'html'  => $this->inputDateTimeRange('生日', false),
+                        ],
+                        [
+                            'title' => '创建于',
+                            'html'  => $this->inputDateTimeRange('创建于'),
+                        ],
+                        [
+                            'title' => '更新于',
+                            'html'  => $this->inputDateTimeRange('更新于'),
+                        ],
+                        [
+                            'title' => '状态 . 操作',
+                            'html'  => $this->singleSelectList(
+                                $optionAll + [0 => '已禁用', 1 => '已启用'], 'filter_enabled'
+                            ),
+                        ],
+                    ],
+                    'batch'          => true,
+                    'grades'         => $grades,
+                    'classes'        => $classes,
+                    'importTemplate' => 'files/students.xlsx',
+                    'title'          => '导出学籍',
+                    'filter'         => true,
+                ];
+                break;
+            case 'issue':
+            case 'face':
+                $titles = <<<HTML
+                    <th>#</th>
+                    <th class="text-center">姓名</th>
+                    <th class="text-center">学号</th>
+                HTML;
+                $titles .= $action == 'issue'
+                    ? '<th>卡号</th>'
+                    : '<th>人脸</th><th>设备</th><th class="text-center">状态</th>';
+                $classes = Squad::whereIn('id', $this->classIds())
+                    ->get()->pluck('name', 'id')->toArray();
+                $data = [
+                    'prompt'  => '学生列表',
+                    'formId'  => 'formStudent',
+                    'classes' => [0 => '(请选择一个班级)'] + $classes,
+                    'titles'  => $titles,
+                    'columns' => 6,
+                ];
+                break;
+            case 'grant':
+                $data = (new Card)->compose('Student');
+                break;
+            default:
+                [$grades] = $this->gcList();
+                if (Request::route('id')) {
+                    $student = $this->find(Request::route('id'));
+                    $student->{'card'} = $student->user->card;
+                    $student->user->ent_attrs = json_decode(
+                        $student->user->ent_attrs, true
+                    );
+                    $student->{'grade_id'} = $student->squad->grade_id;
+                }
+                $gradeId = Request::route('id')
+                    ? $this->find(Request::route('id'))->squad->grade_id
+                    : key($grades);
+                $builder = empty($grades)
+                    ? Squad::whereIn('id', $this->classIds())
+                    : Squad::where(['grade_id' => $gradeId, 'enabled' => 1]);
+                $data = array_combine(
+                    ['student', 'grades', 'classes'],
+                    [
+                        $student ?? null,
+                        $grades,
+                        $builder->pluck('name', 'id')->toArray(),
+                    ]
+                );
+                break;
+        }
         
+        return $data;
+        
+    }
+    
+    /**
+     * 返回对当前登录用户可见的年级与班级列表
+     *
+     * @return array
+     */
+    private function gcList() {
+    
         $grades = Grade::whereIn('id', $this->gradeIds())
             ->where('enabled', 1)
             ->pluck('name', 'id')
             ->toArray();
-        if (Request::route('id')) {
-            $student = $this->find(Request::route('id'));
-            $student->{'card'} = $student->user->card;
-            $student->{'grade_id'} = $student->squad->grade_id;
-            $mobiles = $student->user->mobiles;
-        }
-        $gradeId = Request::route('id')
-            ? $this->find(Request::route('id'))->squad->grade_id
-            : key($grades);
-        $builder = empty($grades)
-            ? Squad::whereIn('id', $this->classIds())
-            : Squad::where(['grade_id' => $gradeId, 'enabled' => 1]);
+        $classes = Squad::whereGradeId(array_key_first($grades))
+            ->where('enabled', 1)
+            ->pluck('name', 'id')
+            ->toArray();
         
-        return [
-            $student ?? null,
-            $grades,
-            $builder->pluck('name', 'id')->toArray(),
-            $mobiles ?? null,
-        ];
+        return [$grades, $classes];
         
     }
     

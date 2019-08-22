@@ -45,22 +45,6 @@
                     </div>
                 </div>
             </div>
-            <!-- 英文名 -->
-            <div class="form-group">
-                {!! Form::label('english_name', '英文名', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-language'])
-                        {!! Form::text('english_name', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(可选)',
-                            'data-parsley-length' => '[2, 20]',
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
             <!-- 手机号码 -->
             <div class="form-group">
                 {!! Form::label('mobile', '手机号码', [
@@ -69,7 +53,7 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-mobile'])
-                        {!! Form::text('mobile', $mobile ?? '', [
+                        {!! Form::text('mobile', null, [
                             'class' => 'form-control text-blue',
                             'data-parsley-length' => '[11, 11]',
                         ]) !!}
@@ -89,21 +73,6 @@
                             'type' => 'email',
                             'maxlength' => '255',
                             'data-parsley-type'=>"email"
-                        ]) }}
-                    </div>
-                </div>
-            </div>
-            <!-- 座机号码 -->
-            <div class="form-group">
-                {{ Form::label('telephone', '座机', [
-                    'class' => 'col-sm-3 control-label'
-                ]) }}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-phone'])
-                        {{ Form::text('telephone', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(选填)'
                         ]) }}
                     </div>
                 </div>
