@@ -5,7 +5,6 @@ use App\Http\Requests\SchoolRequest;
 use App\Models\Message;
 use App\Models\School as School;
 use Exception;
-use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;

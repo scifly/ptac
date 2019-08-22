@@ -5,6 +5,7 @@ use App\Facades\{Datatable, Wechat};
 use App\Helpers\{Constant, ModelTrait, Snippet};
 use App\Http\Requests\TemplateRequest;
 use App\Jobs\GetTemplateList;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
@@ -41,7 +42,7 @@ use Throwable;
  * @method static Builder|Template whereTemplateid($value)
  * @method static Builder|Template whereTitle($value)
  * @method static Builder|Template whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Template extends Model {
     

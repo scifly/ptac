@@ -54,7 +54,6 @@ class GetTemplateList implements ShouldQueue {
         try {
             DB::transaction(function () {
                 $apps = App::where(['corp_id' => $this->corpId, 'category' => 2])->get();
-                $t = new Template;
                 /** @var App $app */
                 foreach ($apps as $app) {
                     $templates = json_decode(
@@ -76,7 +75,7 @@ class GetTemplateList implements ShouldQueue {
                         Template::updateOrCreate([
                             'app_id'     => $app->id,
                             'templateid' => $template['template_id'],
-                            'enabled'    => $template['enabled'],
+                            'enabled'    => Constant::ENABLED
                         ], [
                             'title'            => $template['title'],
                             'primary_industry' => $template['primary_industry'],
@@ -88,9 +87,7 @@ class GetTemplateList implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
-            $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            $this->response['message'] = $e->getMessage();
-            $this->broadcaster->broadcast($this->response);
+            $this->eHandler($e, $this->response);
             throw $e;
         }
         $this->broadcaster->broadcast($this->response);

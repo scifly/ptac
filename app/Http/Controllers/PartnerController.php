@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PartnerRequest;
 use App\Models\ApiMessage;
-use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;

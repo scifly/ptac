@@ -60,12 +60,12 @@ class SendScheduledMessage implements ShouldQueue {
     }
     
     /**
-     * @param Exception $exception
-     * @throws PusherException
+     * @param Exception $e
+     * @throws Exception
      */
-    function failed(Exception $exception) {
+    function failed(Exception $e) {
     
-        $this->eHandler($exception);
+        throw $e;
         
     }
     

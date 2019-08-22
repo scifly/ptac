@@ -3,7 +3,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Helpers\HttpStatusCode;
 use App\Http\Controllers\Controller;
-use App\Models\Mobile;
 use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\JsonResponse;

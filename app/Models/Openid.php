@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
 
@@ -25,7 +26,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Openid whereOpenid($value)
  * @method static Builder|Openid whereUpdatedAt($value)
  * @method static Builder|Openid whereUserId($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Openid extends Model {
 

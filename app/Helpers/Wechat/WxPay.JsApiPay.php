@@ -2,7 +2,6 @@
 namespace App\Helpers\Wechat;
 use App\Facades\Wechat;
 use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
 use Exception;
 use Illuminate\Support\Facades\Request;
 use Throwable;

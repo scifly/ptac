@@ -3,7 +3,7 @@ namespace App\Jobs;
 
 use App\Facades\Wechat;
 use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
-use App\Models\{App, Corp, Department, DepartmentUser, User};
+use App\Models\{Corp, Department, DepartmentUser, User};
 use Exception;
 use Illuminate\{Bus\Queueable,
     Contracts\Queue\ShouldQueue,
@@ -77,22 +77,19 @@ class SyncDepartment implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
-            $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            $this->response['message'] = $e->getMessage();
-            !$this->userId ?: $this->bc->broadcast($this->response);
-            throw $e;
+           $this->eHandler($this, $e);
         }
         !$this->userId ?: $this->bc->broadcast($this->response);
         
     }
     
     /**
-     * @param Exception $exception
-     * @throws PusherException
+     * @param Exception $e
+     * @throws Exception
      */
-    function failed(Exception $exception) {
+    function failed(Exception $e) {
         
-        $this->eHandler($exception, $this->response);
+        $this->eHandler($this, $e);
         
     }
     

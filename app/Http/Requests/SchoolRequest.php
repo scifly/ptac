@@ -2,7 +2,6 @@
 namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
-use App\Models\Corp;
 use App\Models\School;
 use Illuminate\Foundation\Http\FormRequest;
 

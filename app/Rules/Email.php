@@ -4,7 +4,6 @@ namespace App\Rules;
 use App\Models\Corp;
 use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 /**

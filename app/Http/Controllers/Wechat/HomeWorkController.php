@@ -3,7 +3,6 @@ namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
 use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
 use App\Helpers\Wechat\JsApiPay;
 use App\Helpers\Wechat\WxPayApi;
 use App\Helpers\Wechat\WxPayConfig;

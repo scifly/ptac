@@ -335,8 +335,7 @@ class CreateSchool implements ShouldQueue {
                 !$this->userId ?: $this->broadcaster->broadcast($this->response);
             });
         } catch (Exception $e) {
-            $this->eHandler($e, $this->response);
-            throw $e;
+            $this->eHandler($this, $e);
         }
         
     }
@@ -344,12 +343,12 @@ class CreateSchool implements ShouldQueue {
     /**
      * 任务异常处理
      *
-     * @param Exception $exception
-     * @throws PusherException
+     * @param Exception $e
+     * @throws Exception
      */
-    function failed(Exception $exception) {
+    function failed(Exception $e) {
         
-        $this->eHandler($exception, $this->response);
+        $this->eHandler($this, $e);
         
     }
     

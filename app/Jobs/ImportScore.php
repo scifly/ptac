@@ -58,8 +58,7 @@ class ImportScore implements ShouldQueue, MassImport {
         try {
             $this->import($this);
         } catch (Exception $e) {
-            $this->eHandler($e, $this->response);
-            throw $e;
+            $this->eHandler($this, $e);
         }
         $this->broadcaster->broadcast(
             $this->response
@@ -70,12 +69,12 @@ class ImportScore implements ShouldQueue, MassImport {
     }
     
     /**
-     * @param Exception $exception
-     * @throws PusherException
+     * @param Exception $e
+     * @throws Exception
      */
-    function failed(Exception $exception) {
+    function failed(Exception $e) {
         
-        $this->eHandler($exception, $this->response);
+        $this->eHandler($this, $e);
         
     }
     

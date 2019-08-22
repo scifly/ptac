@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Helpers\Constant;
 use App\Helpers\PolicyTrait;
-use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\School;
 use App\Models\User;
@@ -45,15 +44,6 @@ class MethodPolicy {
         }
 
         $rootMenuId = $this->menu->rootId();
-        
-        if ($role == '企业' && stripos($route->uri, 'corps') > -1) {
-            $corpId = Corp::whereMenuId($rootMenuId)->first()->id;
-            $allowedActions = $this->allowedActions(
-                Constant::ALLOWED_CORP_ACTIONS, $corpId
-            );
-            return in_array($route, $allowedActions);
-        }
-        
         if (
             $role == '学校' &&
             (stripos($route->uri, 'schools') > -1 ||
@@ -61,31 +51,16 @@ class MethodPolicy {
         ) {
             $schoolId = School::whereMenuId($rootMenuId)->first()->id;
             $wapsiteId = WapSite::whereSchoolId($schoolId)->first()->id;
-            $allowedActions = array_merge(
-                $this->allowedActions(Constant::ALLOWED_SCHOOL_ACTIONS, $schoolId),
-                $this->allowedActions(Constant::ALLOWED_WAPSITE_ACTIONS, $wapsiteId)
-            );
-            return in_array($route, $allowedActions);
+
+            return in_array($route, array_map(
+                function($action) use($wapsiteId) {
+                    return sprintf($action, $wapsiteId);
+                }, Constant::ALLOWED_WAPSITE_ACTIONS
+            ));
         }
         
         return true;
 
     }
     
-    /**
-     * @param array $actions
-     * @param $id
-     * @return array
-     */
-    private function allowedActions(array $actions, $id) {
-        
-        return array_map(
-            function($str) use($id) {
-                return sprintf($str, $id);
-            },
-            $actions
-        );
-        
-    }
-
 }

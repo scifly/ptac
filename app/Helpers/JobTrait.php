@@ -156,17 +156,16 @@ trait JobTrait {
     /**
      * 任务失败处理器
      *
-     * @param array $response
-     * @param Exception $exception
-     * @throws PusherException
+     * @param $job
+     * @param Exception $e
+     * @throws Exception
      */
-    function eHandler(Exception $exception, array $response = []) {
+    function eHandler($job, Exception $e) {
 
-        if (!empty($response)) {
-            $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            $response['message'] = $exception->getMessage();
-            (new Broadcaster)->broadcast($response);
-        }
+        $job->{'response'}['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+        $job->{'response'}['message'] = $e->getMessage();
+        $job->{'broadcaster'}->broadcast($job->{'response'});
+        throw $e;
         
     }
     

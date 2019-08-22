@@ -52,63 +52,70 @@ class ExportEducator implements ShouldQueue {
      */
     function handle() {
     
-        $records = [];
-        foreach ($this->data as $educator) {
-            if (!($user = $educator->user)) continue;
-            list($grades, $squads) = array_map(
-                function ($name) use ($educator) {
-                    $className = 'App\\Models\\' . ucfirst($name);
-                    $model = (new ReflectionClass($className))->newInstance();
-                    /** @var Collection $collection */
-                    // $collection = $model->whereRaw($educator->id . ' IN (educator_ids)')->get();
-                    $collection = $model->where('educator_ids', 'like', '%,' . $educator->id . '%')->get();
+        try {
+            $records = [];
+            foreach ($this->data as $educator) {
+                if (!($user = $educator->user)) continue;
+                [$grades, $squads] = array_map(
+                    function ($name) use ($educator) {
+                        $className = 'App\\Models\\' . ucfirst($name);
+                        $model = (new ReflectionClass($className))->newInstance();
+                        /** @var Collection $collection */
+                        // $collection = $model->whereRaw($educator->id . ' IN (educator_ids)')->get();
+                        $collection = $model->where('educator_ids', 'like', '%,' . $educator->id . '%')->get();
                 
-                    return $collection->isEmpty() ? ''
-                        : implode(',', $collection->pluck('name')->toArray());
-                }, ['grade', 'squad']
-            );
-            $eces = ClassEducator::whereEducatorId($educator->id)->get();
-            $cses = [];
-            foreach ($eces as $ec) {
-                $squad = $ec->squad;
-                $subject = $ec->subject;
-                if (isset($squad, $subject)) {
-                    $cses[] = implode(':', [$squad->name, $subject->name]);
+                        return $collection->isEmpty() ? ''
+                            : implode(',', $collection->pluck('name')->toArray());
+                    }, ['grade', 'squad']
+                );
+                $eces = ClassEducator::whereEducatorId($educator->id)->get();
+                $cses = [];
+                foreach ($eces as $ec) {
+                    $squad = $ec->squad;
+                    $subject = $ec->subject;
+                    if (isset($squad, $subject)) {
+                        $cses[] = implode(':', [$squad->name, $subject->name]);
+                    }
                 }
+                $records[] = [
+                    $user->realname,
+                    $user->gender ? '男' : '女',
+                    strval($user->username),
+                    $user->position,
+                    $user->departments->first()->name,
+                    $educator->school->name,
+                    $user->mobile ?? 'n/a',
+                    $grades,
+                    $squads,
+                    implode(',', $cses ?? [])
+                ];
             }
-            $records[] = [
-                $user->realname,
-                $user->gender ? '男' : '女',
-                strval($user->username),
-                $user->position,
-                $user->departments->first()->name,
-                $educator->school->name,
-                $user->mobile ?? 'n/a',
-                $grades,
-                $squads,
-                implode(',', $cses ?? [])
-            ];
-        }
-        usort($records, function ($a, $b) {
-            return strcmp($a[4], $b[4]);     # 按部门排序
-        });
+            usort($records, function ($a, $b) {
+                return strcmp($a[4], $b[4]);     # 按部门排序
+            });
     
-        $filename = 'educator_exports';
-        $this->excel(array_merge([$this->titles], $records), $filename, '教职员工', false);
-        $this->response['url'] = $this->filePath($filename) . '.xlsx';
-        $this->broadcaster->broadcast($this->response);
+            $filename = 'educator_exports';
+            $this->excel(
+                array_merge([$this->titles], $records),
+                $filename, '教职员工', false
+            );
+            $this->response['url'] = $this->filePath($filename) . '.xlsx';
+            $this->broadcaster->broadcast($this->response);
+        } catch (Exception $e) {
+            $this->eHandler($this, $e);
+        }
         
     }
     
     /**
      * 任务异常处理
      *
-     * @param Exception $exception
-     * @throws PusherException
+     * @param Exception $e
+     * @throws Exception
      */
-    function failed(Exception $exception) {
+    function failed(Exception $e) {
         
-        $this->eHandler($exception, $this->response);
+        $this->eHandler($this, $e);
         
     }
     
