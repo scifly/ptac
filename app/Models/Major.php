@@ -58,17 +58,6 @@ class Major extends Model {
     function subjects() { return $this->belongsToMany('App\Models\Subject', 'major_subject'); }
     
     /**
-     * 返回专业列表
-     *
-     * @return Collection
-     */
-    function majorList() {
-        
-        return $this->whereSchoolId($this->schoolId())->get()->pluck('name', 'id');
-        
-    }
-    
-    /**
      * 专业列表
      *
      * @return array

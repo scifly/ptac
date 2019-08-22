@@ -494,7 +494,7 @@ class School extends Model {
                 return [
                     'titles' => [
                         '#', '名称', '地址', '类型', '公众号',
-                        '创建于', '更新于', '状态 . 操作'
+                        '创建于', '更新于', '状态 . 操作',
                     ],
                     'batch'  => true,
                 ];
@@ -527,23 +527,6 @@ class School extends Model {
     }
     
     /**
-     * 返回对当前用户可见的所有年级列表html
-     *
-     * @return array
-     */
-    function gradeList() {
-        
-        $grades = Grade::whereIn('id', $this->gradeIds())
-            ->pluck('name', 'id')->toArray();
-        
-        return [
-            $this->singleSelectList($grades, 'grade_id'),
-            array_key_first($grades),
-        ];
-        
-    }
-    
-    /**
      * 获取字段列表
      *
      * @param $field
@@ -554,36 +537,27 @@ class School extends Model {
     function fieldLists($field, $id, $gradeClass = null) {
         
         # todo - fetch field list by role
-        $grades = [];
-        $classes = [];
-        $students = [];
-        switch ($field) {
-            case 'grade':
-                if (isset($gradeClass)) {
-                    list($classes, $students) = $this->getClass($id, $gradeClass);
-                } else {
-                    $classes = Squad::whereGradeId($id)
-                        ->where('enabled', 1)
-                        ->pluck('name', 'id');
-                    $students = Student::whereClassId($classes->keys()->first())
-                        ->where('enabled', 1)
-                        ->pluck('sn', 'id');
+        if ($field == 'grade') {
+            if (isset($gradeClass)) {
+                [$classes, $students] = $this->getClass($id, $gradeClass);
+            } else {
+                $classes = Squad::where([
+                    'grade_id' => $id, 'enabled' => 1,
+                ])->pluck('name', 'id');
+                $students = Student::where([
+                    'class_id' => $classes->keys()->first(),
+                    'enabled'  => 1,
+                ])->pluck('sn', 'id');
+            }
+        } else {
+            $list = Student::where(['class_id' => $id, 'enabled' => 1])->get();
+            if ($list->isNotEmpty()) {
+                foreach ($list as $s) {
+                    $students[$s->id] = $s->user->realname . "-" . $s->sn;
                 }
-                break;
-            case 'class':
-                $list = Student::whereClassId($id)
-                    ->where('enabled', 1)
-                    ->get();
-                if (!empty($list)) {
-                    foreach ($list as $s) {
-                        $students[$s->id] = $s->user->realname . "-" . $s->sn;
-                    }
-                }
-                break;
-            default:
-                break;
+            }
         }
-        $htmls = array_map(
+        $tpls = array_map(
             function ($items) {
                 $html = '<select class="form-control col-sm-6" id="%s" name="%s">';
                 foreach ($items as $key => $value) {
@@ -592,14 +566,18 @@ class School extends Model {
                 $html .= '</select>';
                 
                 return $html;
-            }, [$grades, $classes, $students]
+            }, [$grades ?? [], $classes ?? [], $students ?? []]
         );
+        $ids = $names = ['gradeId', 'classId', 'studentId'];
         
-        return [
-            'grades'   => sprintf($htmls[0], 'gradeId', 'gradeId'),
-            'classes'  => sprintf($htmls[1], 'classId', 'classId'),
-            'students' => sprintf($htmls[2], 'studentId', 'studentId'),
-        ];
+        return array_combine(
+            ['grades', 'classes', 'students'],
+            array_map(
+                function ($tpl, $id, $name) {
+                    return sprintf($tpl, $id, $name);
+                }, $tpls, $ids, $names
+            )
+        );
         
     }
     

@@ -277,8 +277,8 @@ class Subject extends Model {
         }
         
         return [
-            (new Grade)->gradeList(),
-            (new Major)->majorList(),
+            Grade::whereIn('id', $this->gradeIds())->pluck('name', 'id'),
+            Major::whereSchoolId($this->schoolId())->pluck('name', 'id'),
             $selectedMajors ?? null,
             $selectedGrades ?? null,
         ];

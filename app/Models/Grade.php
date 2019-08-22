@@ -89,18 +89,6 @@ class Grade extends Model {
     }
     
     /**
-     * 根据学校ID返回年级列表(id, name)
-     *
-     * @return Collection|\Illuminate\Support\Collection
-     */
-    function gradeList() {
-        
-        return self::whereIn('id', $this->gradeIds())
-            ->get()->pluck('name', 'id');
-        
-    }
-    
-    /**
      * 年级列表
      *
      * @return array
