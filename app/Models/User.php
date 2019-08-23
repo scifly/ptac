@@ -267,16 +267,17 @@ class User extends Authenticatable {
                     return Snippet::gender($d);
                 },
             ],
-            ['db' => 'User.email', 'dt' => 6],
-            ['db' => 'User.created_at', 'dt' => 7],
-            ['db' => 'User.updated_at', 'dt' => 8],
+            ['db' => 'User.mobile', 'dt' => 6],
+            ['db' => 'User.email', 'dt' => 7],
+            ['db' => 'User.created_at', 'dt' => 8],
+            ['db' => 'User.updated_at', 'dt' => 9],
             [
-                'db'        => 'User.enabled', 'dt' => 9,
+                'db'        => 'User.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 },
             ],
-            ['db' => 'Groups.remark as remark', 'dt' => 10],
+            ['db' => 'Groups.remark as remark', 'dt' => 11],
         ];
         $joins = [
             [
@@ -832,7 +833,7 @@ class User extends Authenticatable {
                     'batch'  => true,
                     'titles' => [
                         '#', '用户名', '角色', '真实姓名', '头像', '性别',
-                        '电子邮件', '创建于', '更新于', '状态 . 操作',
+                        '手机号码', '电子邮件', '创建于', '更新于', '状态 . 操作',
                     ],
                 ];
             case 'operators/create':
