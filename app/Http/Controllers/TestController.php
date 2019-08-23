@@ -78,11 +78,11 @@ class TestController extends Controller {
                     } else {
                         $data = [
                             'mobile'    => $default ? $default->mobile : null,
-                            'api_attrs' => [
+                            'api_attrs' => json_encode([
                                 'secret'    => $member->english_name,
                                 'classname' => $member->position,
                                 'contact'   => $member->telephone,
-                            ],
+                            ], true)
                         ];
                     }
                     User::find($member->id)->update($data);
