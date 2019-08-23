@@ -46,58 +46,66 @@ class ExportStudent implements ShouldQueue {
     }
     
     /**
+     * Execute the job
+     *
      * @throws Exception
      * @throws Throwable
      */
     function handle() {
     
-        $records = [];
-        foreach ($this->data as $student) {
-            if (!$student->user) continue;
-            $cses = CustodianStudent::whereStudentId($student->id)->get();
-            $relationships = [];
-            foreach ($cses as $cs) {
-                if (!$cs->custodian) continue;
-                $cUser = $cs->custodian->user;
-                $relationships[] = implode(':', [
-                    $cs->relationship, $cUser->realname,
-                    $cUser->gender ? '男' : '女', $cUser->mobile,
-                ]);
+        try {
+            $records = [];
+            foreach ($this->data as $student) {
+                if (!$student->user) continue;
+                $cses = CustodianStudent::whereStudentId($student->id)->get();
+                $relationships = [];
+                foreach ($cses as $cs) {
+                    if (!$cs->custodian) continue;
+                    $cUser = $cs->custodian->user;
+                    $relationships[] = implode(':', [
+                        $cs->relationship, $cUser->realname,
+                        $cUser->gender ? '男' : '女', $cUser->mobile,
+                    ]);
+                }
+                $sUser = $student->user;
+                $records[] = [
+                    $sUser->realname,
+                    $sUser->gender ? '男' : '女',
+                    $student->squad->grade->school->name,
+                    date('Y-m-d', strtotime($student->birthday)),
+                    $student->squad->grade->name,
+                    $student->squad->name,
+                    $student->sn,
+                    $student->oncampus ? '住读' : '走读',
+                    $student->remark,
+                    !empty($relationships) ? implode(',', $relationships) : '',
+                ];
             }
-            $sUser = $student->user;
-            $records[] = [
-                $sUser->realname,
-                $sUser->gender ? '男' : '女',
-                $student->squad->grade->school->name,
-                date('Y-m-d', strtotime($student->birthday)),
-                $student->squad->grade->name,
-                $student->squad->name,
-                $student->sn,
-                $student->oncampus ? '住读' : '走读',
-                $student->remark,
-                !empty($relationships) ? implode(',', $relationships) : '',
-            ];
+            # 按年级/班级/学号依次排序
+            usort($records, function ($a, $b) {
+                return strcmp($a[4], $b[4]) ?: strcmp($a[5], $b[5]) ?: strcmp($a[7], $b[7]);
+            });
+            $filename = 'student_exports';
+            $this->excel(array_merge([$this->titles], $records), $filename, '学籍', false);
+            $this->response['url'] = $this->filePath($filename) . '.xlsx';
+        } catch (Exception $e) {
+            $this->eHandler($this, $e);
         }
-        # 按年级/班级/学号依次排序
-        usort($records, function ($a, $b) {
-            return strcmp($a[4], $b[4]) ?: strcmp($a[5], $b[5]) ?: strcmp($a[7], $b[7]);
-        });
-        $filename = 'student_exports';
-        $this->excel(array_merge([$this->titles], $records), $filename, '学籍', false);
-        $this->response['url'] = $this->filePath($filename) . '.xlsx';
         $this->broadcaster->broadcast($this->response);
+        
+        return true;
         
     }
     
     /**
      * 任务异常处理
      *
-     * @param Exception $exception
-     * @throws PusherException
+     * @param Exception $e
+     * @throws Exception
      */
-    function failed(Exception $exception) {
+    function failed(Exception $e) {
         
-        $this->eHandler($exception, $this->response);
+        $this->eHandler($this, $e);
         
     }
     

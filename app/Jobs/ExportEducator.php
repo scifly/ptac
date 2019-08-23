@@ -100,11 +100,11 @@ class ExportEducator implements ShouldQueue {
                 $filename, '教职员工', false
             );
             $this->response['url'] = $this->filePath($filename) . '.xlsx';
-            $this->broadcaster->broadcast($this->response);
         } catch (Exception $e) {
             $this->eHandler($this, $e);
         }
-        
+        $this->broadcaster->broadcast($this->response);
+    
     }
     
     /**

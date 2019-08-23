@@ -31,8 +31,10 @@ class CreateSchool implements ShouldQueue {
         '教职员工' => [0, '通讯录', null, 'fa fa-user', ['教职员工']],
         '监护人' => [0, '通讯录', null, 'fa fa-user', ['监护人', '学生']],
         '标签' => [0, '通讯录', null, 'fa fa-tags', ['标签管理']],
+        '一卡通管理' => [0, '通讯录', null, 'fa fa-tags', ['一卡通']],
+        '人脸识别管理' => [0, '通讯录', null, 'fa fa-tags', ['人脸识别', '人脸识别设备']],
         '考勤管理' => [0, null, null, 'fa fa-credit-card', null],
-        '通行规则管理' => [0, '考勤管理', null, 'fa fa-credit-card', ['门禁通行规则', '门禁设备']],
+        '门禁设置' => [0, '考勤管理', null, 'fa fa-credit-card', ['门禁通行规则', '门禁设备']],
         '通行记录' => [0, '考勤管理', null, 'fa fa-commenting', ['门禁通行记录']],
         '学生消费管理' => [0, null, null, 'fa fa-money', ['消费记录']],
         '成绩中心' => [0, null, null, 'fa fa-file', null],
@@ -91,8 +93,10 @@ class CreateSchool implements ShouldQueue {
     }
     
     /**
-     * Exeute the job.
+     * Execute the job
      *
+     * @return bool
+     * @throws PusherException
      * @throws Throwable
      */
     function handle() {
@@ -154,6 +158,8 @@ class CreateSchool implements ShouldQueue {
             $this->eHandler($this, $e);
         }
         !$this->userId ?: $this->broadcaster->broadcast($this->response);
+        
+        return true;
         
     }
     

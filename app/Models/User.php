@@ -117,8 +117,9 @@ class User extends Authenticatable {
         'ent_attrs->enable',
         'ent_attrs->status',
         'ent_attrs->synced',
+        'ent_attrs->subscribed',
         # api相关属性
-        'api_attrs->password',
+        'api_attrs->secret',
         'api_attrs->classname',
         'api_attrs->contact',
     ];
