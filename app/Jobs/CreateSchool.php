@@ -30,7 +30,6 @@ class CreateSchool implements ShouldQueue {
         '学生' => [0, '通讯录', null, 'fa fa-child', ['学生', '班级']],
         '教职员工' => [0, '通讯录', null, 'fa fa-user', ['教职员工']],
         '监护人' => [0, '通讯录', null, 'fa fa-user', ['监护人', '学生']],
-        '标签' => [0, '通讯录', null, 'fa fa-tags', ['标签管理']],
         '一卡通管理' => [0, '通讯录', null, 'fa fa-tags', ['一卡通']],
         '人脸识别管理' => [0, '通讯录', null, 'fa fa-tags', ['人脸识别', '人脸识别设备']],
         '考勤管理' => [0, null, null, 'fa fa-credit-card', null],
@@ -58,14 +57,14 @@ class CreateSchool implements ShouldQueue {
     ];
     
     protected $educatorMenus = [
-        '首页', '消息中心', '通讯录', '学生', '教职员工', '监护人', '标签',
+        '首页', '消息中心', '通讯录', '学生', '教职员工', '监护人',
         '考勤管理', '通行记录', '学生消费管理', '成绩中心', '考试设置',
         '成绩管理', '用户中心', '个人信息', '重置密码', '我的消息', '待办事项',
     ];
     
     protected $educatorTabs = [
         '消息中心', '学生', '班级', '教职员工', '监护人', '门禁通行记录',
-        '消费记录', '考试', '成绩', '成绩统计项', '总成绩', '标签管理',
+        '消费记录', '考试', '成绩', '成绩统计项', '总成绩'
     ];
     
     protected $school, $userId, $response;
