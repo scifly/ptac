@@ -18,6 +18,7 @@ use Throwable;
  * @property string $name 标签名称
  * @property int $school_id 所属学校ID
  * @property int $user_id 创建者的用户id
+ * @property int $tagid 公众号标签id
  * @property string|null $remark 备注
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -32,6 +33,7 @@ use Throwable;
  * @method static Builder|Tag whereId($value)
  * @method static Builder|Tag whereName($value)
  * @method static Builder|Tag whereRemark($value)
+ * @method static Builder|Tag whereTagid($value)
  * @method static Builder|Tag whereSchoolId($value)
  * @method static Builder|Tag whereUserId($value)
  * @method static Builder|Tag whereUpdatedAt($value)
@@ -46,7 +48,7 @@ class Tag extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'name', 'school_id', 'user_id',
+        'name', 'school_id', 'user_id', 'tagid',
         'remark', 'enabled', 'synced',
     ];
     
@@ -133,15 +135,13 @@ class Tag extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $tag = $this->create($data);
-                if (isset($data['user_ids'])) {
-                    $this->retain('TagUser', $tag->id, $data['user_ids']);
-                }
-                if (isset($data['dept_ids'])) {
-                    $this->retain('DepartmentTag', $tag->id, $data['dept_ids'], false);
-                }
-                if ($tag) {
-                    $this->sync([$tag->id], 'create');
-                }
+                !isset($data['user_ids']) ?: $this->retain(
+                    'TagUser', $tag->id, $data['user_ids']
+                );
+                !isset($data['dept_ids']) ?: $this->retain(
+                    'DepartmentTag', $tag->id, $data['dept_ids'], false
+                );
+                !$tag ?: $this->sync([$tag->id], 'create');
             });
         } catch (Exception $e) {
             throw $e;
@@ -160,10 +160,7 @@ class Tag extends Model {
     private function sync(array $ids, $action) {
         
         if ($tag = $this->find($ids[0])) {
-            $data = [
-                'tagid' => $ids, 'corp_id' => $tag->school->corp_id,
-            ];
-            $action == 'delete' ?: ($data['tagname'] = $tag->name);
+            $data = ['tagid' => $ids, 'school_id' => $tag->school_id];
             SyncTag::dispatch($data, Auth::id(), $action);
         }
         
@@ -184,16 +181,13 @@ class Tag extends Model {
                 $tag = $this->find($id);
                 TagUser::whereTagId($tag->id)->delete();
                 DepartmentTag::whereTagId($tag->id)->delete();
-                if (isset($data['user_ids'])) {
-                    $this->retain('TagUser', $id, $data['user_ids']);
-                }
-                if (isset($data['dept_ids'])) {
-                    $this->retain('DepartmentTag', $tag->id, $data['dept_ids'], false);
-                }
-                $updated = $tag->update($data);
-                if ($updated) {
-                    $this->sync([$id], 'update');
-                }
+                !isset($data['user_ids']) ?: $this->retain(
+                    'TagUser', $id, $data['user_ids']
+                );
+                !isset($data['dept_ids']) ?: $this->retain(
+                    'DepartmentTag', $tag->id, $data['dept_ids'], false
+                );
+                !$tag->update($data) ?: $this->sync([$id], 'update');
             });
         } catch (Exception $e) {
             throw $e;

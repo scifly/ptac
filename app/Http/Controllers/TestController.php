@@ -2,11 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\{Broadcaster, HttpStatusCode, ModelTrait};
-use App\Models\Department;
-use App\Models\Group;
-use App\Models\Member;
-use App\Models\Mobile;
-use App\Models\User;
+use App\Models\{Department, Group, Member, Mobile, User};
 use Auth;
 use Exception;
 use GuzzleHttp\Client;
