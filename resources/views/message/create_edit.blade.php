@@ -34,7 +34,7 @@
         'id' => 'message_type_id',
         'items' => $messageTypes
     ])
-    @if ($templates)
+    @if (isset($templates))
         @include('shared.single_select', [
             'label' => '消息模板',
             'id' => 'template_id',
