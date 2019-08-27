@@ -384,7 +384,6 @@ class Message extends Model {
                 : explode('|', $toparty);
             $userids = empty($touser = $message->{'touser'}) ? []
                 : explode('|', $touser);
-            $tags =
             $users = User::whereIn('userid', $userids)->get();
             $timing = $this->find($id)->event_id ? true : false;
             $time = $timing ? date('Y-m-d H:i', strtotime($this->find($id)->event->start)) : null;

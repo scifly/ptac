@@ -44,7 +44,7 @@ class ComposerServiceProvider extends ServiceProvider {
             'icon'                   => ['index', 'create_edit'],
             'major'                  => ['index', 'create_edit'],
             'menu'                   => ['create_edit', 'sort'],
-            'message'                => ['index', 'create_edit'],
+            'message'                => ['index'],
             'message_type'           => ['index'],
             'module'                 => ['index', 'create_edit'],
             'operator'               => ['index', 'create_edit'],
