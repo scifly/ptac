@@ -33,13 +33,17 @@
                     </span>
                 </div>
                 <div class="box-body">
-                    {!! Form::select( 'tagids[]', $tags, $selectedTags ? array_keys($selectedTags) : null, [
-                        'id' => 'tagids',
-                        'multiple' => 'multiple',
-                        'disabled' => sizeof($tags) <= 1,
-                        'class' => 'form-control select2',
-                        'style' => 'width: 100%;',
-                    ]) !!}
+                    {!! Form::select(
+                        'tagids[]', $tags,
+                        $selectedTags ? array_keys($selectedTags) : null,
+                        [
+                            'id' => 'tagids',
+                            'multiple' => 'multiple',
+                            'disabled' => sizeof($tags) <= 1,
+                            'class' => 'form-control select2',
+                            'style' => 'width: 100%;'
+                        ])
+                    !!}
                 </div>
             </div>
         </div>

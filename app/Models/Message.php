@@ -1443,10 +1443,10 @@ class Message extends Model {
      * @return array
      */
     function compose($uri) {
-
+    
+        $tags = (new Tag)->list();
         if ($app = School::find($this->schoolId())->app) {
             $templates = [0 => '[群发]'] + Template::whereAppId($app->id)->pluck('name', 'id')->toArray();
-            $tags = (new Tag)->list();
         }
         
         switch ($uri) {
