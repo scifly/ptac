@@ -881,8 +881,8 @@ class User extends Authenticatable {
                 return array_combine(
                     ['groups', 'corps', 'schools'],
                     array_map(
-                        function (Builder $builder) {
-                            return $builder->pluck('name', 'id');
+                        function ($builder) {
+                            return $builder->{'pluck'}('name', 'id');
                         }, [$groups, $corps, $schools]
                     )
                 );
