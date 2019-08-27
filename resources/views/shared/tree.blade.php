@@ -23,7 +23,7 @@
             <div id="tree"></div>
         </div>
         <div class="col-xs-4">
-            <div class="box box-default collapsed-box">
+            <div class="box box-default box-solid">
                 <div class="box-header with-border">
                     <span style="margin-left: 5px; vertical-align: middle;">
                         {!! Form::label(
