@@ -900,7 +900,7 @@ class User extends Authenticatable {
                 $corpId = (new Corp)->corpId();
                 return ['schools' => School::whereCorpId($corpId)->pluck('name', 'id')];
             default:                   # api用户短信充值/查询
-                return (new Message)->compose();
+                return (new Message)->compose('recharge');
         }
         
     }
