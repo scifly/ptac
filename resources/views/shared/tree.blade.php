@@ -35,7 +35,7 @@
                 <div class="box-body">
                     {!! Form::select(
                         'tagids[]', $tags,
-                        $selectedTags ? array_keys($selectedTags) : null,
+                        isset($selectedTags) ? array_keys($selectedTags) : null,
                         [
                             'id' => 'tagids',
                             'multiple' => 'multiple',
