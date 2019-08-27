@@ -19,9 +19,8 @@
         ]) !!}
         <div class="col-sm-6">
             <div id="checked-nodes"></div>
-            {!! Form::hidden('selected-node-ids', null, [
-                'id' => 'selected-node-ids',
-            ]) !!}
+            {!! Form::hidden('selected-node-ids', null, ['id' => 'selected-node-ids']) !!}
+            {!! Form::hidden('selected-tag-ids', null, ['id' => 'selected-tag-ids']) !!}
             {!! Form::button('<i class="fa fa-user-plus text-blue">&nbsp;选择</i>', [
                 'id' => 'choose',
                 'class' => 'btn btn-box-tool',
@@ -35,6 +34,13 @@
         'id' => 'message_type_id',
         'items' => $messageTypes
     ])
+    @if ($templates)
+        @include('shared.single_select', [
+            'label' => '消息模板',
+            'id' => 'template_id',
+            'items' => $templates
+        ])
+    @endif
     <!-- 消息内容 -->
     <div class="form-group">
         {!! Form::label('content', '消息内容', [

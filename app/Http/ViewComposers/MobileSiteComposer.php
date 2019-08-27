@@ -78,6 +78,9 @@ class MobileSiteComposer {
                 ];
                 break;
         }
+        $data = array_merge($data, [
+            'userid' => json_decode($user->ent_attrs, true)['userid']
+        ]);
         
         $view->with($data);
         

@@ -156,11 +156,11 @@ class Educator extends Model {
                 ],
             ],
         ];
-        $condition = 'Educator.user_id IN (%s) AND Educator.school_id = %s';
-        
+        // $condition = 'Educator.user_id IN (%s) AND Educator.school_id = %s';
+        $condition = 'Educator.school_id = ' . $this->schoolId();
         return Datatable::simple(
-            $this, $columns, $joins,
-            sprintf($condition, $this->visibleUserIds(), $this->schoolId())
+            $this, $columns, $joins, $condition
+            // sprintf($condition, $this->visibleUserIds(), $this->schoolId())
         );
         
     }

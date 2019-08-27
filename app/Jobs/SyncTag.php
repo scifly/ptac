@@ -59,7 +59,7 @@ class SyncTag implements ShouldQueue {
     function handle() {
         
         try {
-            $tag = Tag::find($this->data['tagid'][0]);
+            $tag = Tag::find($this->data[0]);
             $school = $tag->school;
             ($this->app = $school->app)
                 ? $this->sync($this->app, $school)
@@ -88,7 +88,7 @@ class SyncTag implements ShouldQueue {
                 $token = Wechat::token('pub', $app->appid, $app->appsecret);
                 if ($this->action != 'delete') {
                     # 同步(创建/更新)标签
-                    $tag = Tag::find($this->data['tagid'][0]);
+                    $tag = Tag::find($this->data[0]);
                     $data['tag']['name'] = $tag->name;
                     $this->action != 'update' ?: $data['tag']['id'] = $tag->tagid;
                     $this->throw_if($result = $this->invoke($this->action, [$token], $data));
@@ -136,7 +136,7 @@ class SyncTag implements ShouldQueue {
                             $this->throw_if(
                                 $this->invoke($this->action, [$token, Tag::find($tagId)->tagid])
                             );
-                        }, $this->data['tagid']
+                        }, $this->data
                     );
                 }
             });
@@ -155,11 +155,11 @@ class SyncTag implements ShouldQueue {
     
         try {
             DB::transaction(function () {
-                $corp = School::find($this->data['school_id'])->corp;
+                $tag = Tag::find($this->data[0]);
+                $corp = School::find($tag->school_id)->corp;
+                $this->response['message'] .= '企业微信通讯录';
                 $token = Wechat::token('ent', $corp->corpid, Wechat::syncSecret($corp->id));
                 $this->response['title'] .= '企业微信通讯录标签';
-                $this->response['message'] .= '企业微信通讯录';
-                $tag = Tag::find($this->data['tagid'][0]);
                 if ($this->action != 'delete') {
                     $result = $this->invoke($this->action, [$token], $this->data);
                     if ($result['errcode'] == 40068 && $this->action == 'update') {
@@ -215,7 +215,7 @@ class SyncTag implements ShouldQueue {
                     array_map(
                         function ($tagId) use ($token) {
                             $this->throw_if($this->invoke($this->action, [$token, $tagId]));
-                        }, $this->data['tagid']
+                        }, $this->data
                     );
                 }
             });

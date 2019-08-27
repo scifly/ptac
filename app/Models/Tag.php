@@ -152,21 +152,6 @@ class Tag extends Model {
     }
     
     /**
-     * 同步企业微信通绪论标签
-     *
-     * @param array $ids
-     * @param $action
-     */
-    private function sync(array $ids, $action) {
-        
-        if ($tag = $this->find($ids[0])) {
-            $data = ['tagid' => $ids, 'school_id' => $tag->school_id];
-            SyncTag::dispatch($data, Auth::id(), $action);
-        }
-        
-    }
-    
-    /**
      * 更新标签
      *
      * @param array $data
@@ -220,6 +205,35 @@ class Tag extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 返回标签列表
+     *
+     * @return array
+     */
+    function list() {
+    
+        foreach (Tag::whereSchoolId($this->schoolId())->pluck('name', 'id')->toArray() as $id => $name) {
+            $tags[$id] = explode('.', $name)[0];
+        }
+        
+        return $tags ?? [];
+        
+    }
+    
+    /**
+     * 同步标签
+     *
+     * @param array $ids
+     * @param $action
+     */
+    private function sync(array $ids, $action) {
+        
+        if ($tag = $this->find($ids[0])) {
+            SyncTag::dispatch($ids, Auth::id(), $action);
+        }
         
     }
     

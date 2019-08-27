@@ -143,9 +143,11 @@ class SyncDepartment implements ShouldQueue {
                                 array_diff($departments, [$this->corp->department_id])
                             );
                         }
+                        $entAttrs = json_decode($user->ent_attrs, true);
                         $updates[] = array_combine(Constant::MEMBER_FIELDS, [
-                            $user->userid, $user->username, $user->position, $user->realname,
-                            $user->english_name, $user->mobile, $user->email, $departments,
+                            $entAttrs['userid'], $user->username, $entAttrs['position'],
+                            $user->realname, $entAttrs['english_name'], $user->mobile,
+                            $user->email, $departments,
                         ]);
                     }
                     $deletions = User::whereIn('id', array_diff($uIds, $uUIds))

@@ -4,6 +4,7 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\Message;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -31,11 +32,14 @@ class MessageCenterComposer {
      */
     public function compose(View $view) {
     
-        $view->with(
-            $this->message->compose(
-                join('/', array_slice(explode('/', Request::route()->uri), 1))
-            )
+        $user = Auth::user();
+        $data = $this->message->compose(
+            join('/', array_slice(explode('/', Request::route()->uri), 1))
         );
+        $data = array_merge(
+            $data, ['userid' => json_decode($user->ent_attrs, true)['userid']]
+        );
+        $view->with($data);
         
     }
     

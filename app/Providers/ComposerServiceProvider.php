@@ -75,7 +75,7 @@ class ComposerServiceProvider extends ServiceProvider {
             'wsm_article'            => ['index', 'create_edit'],
         ];
         $wComposers = [
-            'mobile_site' => ['index', 'module', 'article'],
+            'mobile_site'    => ['index', 'module', 'article'],
             'score_center'   => ['analyze', 'squad', 'stat', 'student'],
             'message_center' => ['index', 'create_edit', 'show'],
         ];

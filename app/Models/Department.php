@@ -207,14 +207,12 @@ class Department extends Model {
         
         $user = Auth::user();
         $isSuperRole = in_array($user->role(), Constant::SUPER_ROLES);
-        if (isset($rootId)) {
-            $departments = $this->nodes($rootId);
-        } else {
+        if (!isset($rootId)) {
             $rootId = $isSuperRole
                 ? $this->rootId(true)
                 : $this->topId();
-            $departments = $this->nodes($rootId);
         }
+        $departments = $this->nodes($rootId);
         $allowedDepartmentIds = $this->departmentIds($user->id);
         $nodes = [];
         for ($i = 0; $i < sizeof($departments); $i++) {
@@ -720,24 +718,28 @@ class Department extends Model {
     function contacts($contact = true) {
         
         $user = Auth::user();
+        $role = $user->role();
+        # 如果角色为教职员工且需要返回联系人，则返回整棵树，
+        # 但不可见部门仅返回教职员工类联系人。
+        $mixed = $contact && !in_array($role, Constant::NON_EDUCATOR);
         $contacts = [];
-        if (in_array($user->role(), Constant::SUPER_ROLES)) {
-            $departmentId = School::find($this->schoolId())->department_id;
-            $visibleNodes = $this->tree($departmentId);
+        if (in_array($role, Constant::SUPER_ROLES) || $mixed) {
+            $id = School::find($this->schoolId())->department_id;
+            $visibleNodes = $this->tree($id);
         } else {
             $nodes = $this->tree();
             # 当前用户可访问的所有部门id
-            $allowedDepartmentIds = $this->departmentIds($user->id);
+            $allowedDeptIds = $this->departmentIds($user->id);
             # 当前用户可访问部门的所有上级部门id
             $allowedParentIds = [];
-            foreach ($allowedDepartmentIds as $id) {
+            foreach ($allowedDeptIds as $id) {
                 $allowedParentIds[$id] = $this->parentIds($id);
             }
             # 对当前用户可见的所有部门节点
             $visibleNodes = [];
             foreach ($nodes as $node) {
                 if (!$node['selectable']) {
-                    foreach ($allowedParentIds as $departmentId => $parentIds) {
+                    foreach ($allowedParentIds as $id => $parentIds) {
                         if (in_array($node['id'], $parentIds)) {
                             $visibleNodes[] = $node;
                             break;
@@ -749,10 +751,17 @@ class Department extends Model {
             }
         }
         if ($contact) {
-            # 获取可见部门下的所有联系人（学生、教职员工）
+            # 获取可见部门下的学生、教职员工 & 不可见部门下的教职员工
+            $visibleIds = $mixed ? $this->departmentIds($user->id) : [];
             foreach ($visibleNodes as $node) {
                 if ($node['selectable']) {
-                    $this->find($node['id'])->users->each(
+                    $users = $this->find($node['id'])->users->filter(
+                        function (User $user) use($node, $visibleIds) {
+                            return (empty($visibleIds) || in_array($node['id'], $visibleIds))
+                                ? true : !in_array($user->role(), Constant::NON_EDUCATOR);
+                        }
+                    );
+                    /*$this->find($node['id'])->*/$users->each(
                         function (User $user) use ($node, &$contacts) {
                             if ($user->student || $user->educator) {
                                 $contacts[] = [

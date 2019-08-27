@@ -1,11 +1,9 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\{Message, Mobile, School, User};
+use App\Models\{Message, Openid, School, User};
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\{DB};
-use Pusher\PusherException;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
@@ -18,66 +16,57 @@ trait JobTrait {
      * 发送消息（微信、短信）
      *
      * @param Message $message
-     * @param array $response
      * @return array
      * @throws Throwable
      */
-    function send(Message $message, array $response = []) {
-        
-        $results = [];
-        $fields = ['message', 'result', 'targets'];
-        $targetSize = ['wx' => 1000, 'sms' => 2000];
+    function send(Message $message) {
+    
         try {
-            DB::transaction(function () use ($message, &$results, $fields, $targetSize) {
-                $content = json_decode($message->content, true);
-                $userIds = User::whereIn(
-                    'ent_attrs->userid', explode('|', $content['touser'])
-                )->pluck('id')->toArray();
-                $departmentIds = explode('|', $content['toparty']);
+            DB::transaction(function () use ($message, &$results) {
+                $targetSize = ['ent' => 1000, 'pub' => 10000, 'sms' => 2000];
+                [$content, $mobiles, $members] = $message->targets($message);
                 $msgType = $content['msgtype'];
+                $category = $message->app->category;    # 应用类型：1 - 企业应用；2 - 公众号
                 if ($msgType == 'sms') {
-                    $mobiles = $message->smsTargets($userIds, $departmentIds);
                     $sms = $content['sms'];
                 } else {
-                    /**
-                     * @var Collection|User[] $wxTargets
-                     * @var Collection|User[] $realTargetUsers
-                     */
-                    [$mobiles, $wxTargets, $realTargetUsers] = $message->wxTargets($userIds, $departmentIds);
-                    # step 1: 向已关注的用户（监护人、教职员工）发送微信
-                    if ($realTargetUsers->where('subscribed', 1)->count()) {
-                        $userids = $wxTargets->where('subscribed', 1)->pluck('userid')->toArray();
-                        # 微信消息发送的会员对象每次不得超过1000名
-                        $groups = array_chunk($userids, $targetSize['wx']);
-                        foreach ($groups as $group) {
-                            $content['touser'] = implode('|', $group);
-                            $result = $message->sendWx($message->app, $content);
-                            $message->log($users = User::whereIn('userid', $group)->get(), $message, $result);
-                            $results[] = array_combine($fields, [$message, $result, $users]);
+                    /** @var User $user */
+                    foreach ($members as $user) {
+                        $tousers[] = $category == 1
+                            ? json_decode($user->ent_attrs, true)['userid']
+                            : Openid::where(['user_id' => $user->id, 'app_id' => $message->app_id])->first()->openid;
+                    }
+                    $size = $category == 1 ? $targetSize['ent'] : ($msgType != 'tpl' ? $targetSize['pub'] : 1);
+                    $category == 2 ?: $content['toparty'] = $content['totag'] = '';
+                    foreach (array_chunk($tousers ?? [], $size) as $group) {
+                        $content['touser'] = $category == 1 ? join('|', $group)
+                            : ($msgType != 'tpl' ? $group : $group[0]);
+                        $result = $message->sendWx($message, $content);
+                        if ($category == 1) {
+                            $users = User::whereIn('ent_attrs->userid', $group)->get();
+                        } else {
+                            $userIds = Openid::whereIn('openid', $group)->pluck('user_id');
+                            $users = User::whereIn('id', $userIds)->get();
                         }
+                        $this->log($results, $result, $message, $users);
                     }
-                    # step 2: 向未关注的用户（监护人、教职员工）发送短信
-                    if (!empty($mobiles)) {
-                        $urlcode = uniqid();
-                        $sms = $msgType == 'text' ? $content['text']['content']
-                            : config('app.url') . '/sms/' . $urlcode;
-                    }
+                    $urlcode = uniqid();
+                    $sms = $msgType == 'text'
+                        ? $content['text']['content']
+                        : config('app.url') . '/sms/' . $urlcode;
                 }
-                if (!empty($mobiles)) {
-                    $chunks = array_chunk($mobiles, $targetSize['sms']);
-                    foreach ($chunks as $chunk) {
-                        $result = $message->sendSms($chunk, $sms ?? '', $message->s_user_id);
-                        $userIds = Mobile::whereIn('mobile', $chunk)->pluck('user_id');
-                        $users = User::whereIn('id', $userIds)->get();
-                        $message->log($users, $message, $result, $urlcode ?? null);
-                        $results[] = array_combine($fields, [$message, $result, $chunk]);
-                    }
+                # 短信
+                foreach (array_chunk($mobiles, $targetSize['sms']) as $group) {
+                    $result = $message->sendSms($group, $sms ?? '', $message->s_user_id);
+                    $users = User::whereIn('mobile', $group)->get();
+                    $this->log($results, $result, $message, $users, $urlcode ?? null);
                 }
             });
         } catch (Exception $e) {
-            $this->eHandler($e, $response);
+            $this->eHandler($this, $e);
             throw $e;
         }
+        
         return $results;
         
     }
@@ -107,12 +96,12 @@ trait JobTrait {
                 );
                 $tpl = join([
                     __('messages.import_request_submitted'),
-                    (!$nIllegals ? '' : __('messages.import_illegals'))
+                    (!$nIllegals ? '' : __('messages.import_illegals')),
                 ]);
                 $job->{'broadcaster'}->broadcast(
                     array_combine(Constant::BROADCAST_FIELDS, [
                         $job->{'userId'}, $job->{'response'}['title'], HttpStatusCode::ACCEPTED,
-                        sprintf($tpl, $nInserts, $nUpdates, $nIllegals)
+                        sprintf($tpl, $nInserts, $nUpdates, $nIllegals),
                     ])
                 );
                 # 插入、更新记录
@@ -141,7 +130,9 @@ trait JobTrait {
         foreach ($data['schoolIds'] as $schoolId) {
             if ($userIds = School::find($schoolId)->user_ids) {
                 foreach (explode(',', $userIds) as $userId) {
-                    $className = 'App\\Apis\\' . ucfirst(User::find($userId)->position);
+                    $className = 'App\\Apis\\' . ucfirst(
+                            json_decode(User::find($userId)->api_attrs, true)['classname']
+                        );
                     $api = new $className(
                         $departmentId ? '部门' : '人员',
                         $action, $data, $response
@@ -161,7 +152,7 @@ trait JobTrait {
      * @throws Exception
      */
     function eHandler($job, Exception $e) {
-
+        
         $job->{'response'}['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
         $job->{'response'}['message'] = $e->getMessage();
         $job->{'broadcaster'}->broadcast($job->{'response'});
@@ -219,6 +210,21 @@ trait JobTrait {
         );
         
         return [$code ?? HttpStatusCode::OK, $msg];
+        
+    }
+    
+    /**
+     * @param $results
+     * @param $result
+     * @param Message $message
+     * @param $users
+     * @param null $urlcode
+     * @throws Throwable
+     */
+    private function log(&$results, $result, Message $message, $users, $urlcode = null) {
+        
+        $message->log($users, $message, $result, $urlcode);
+        $results[] = array_combine(['message', 'result', 'targets'], [$message, $result, $users]);
         
     }
     

@@ -14,7 +14,7 @@
     @yield('css')
 </head>
 <body ontouchstart>
-{!! Form::hidden('member_id', Auth::user()->userid, ['id' => 'member_id']) !!}
+{!! Form::hidden('member_id', $userid, ['id' => 'member_id']) !!}
 <div style="height: 100%; overflow: scroll;" id="app">
     @yield('content')
 </div>

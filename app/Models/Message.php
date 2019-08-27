@@ -7,8 +7,10 @@ use App\Jobs\SendMessage;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Form;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo, Relations\HasOne};
+use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\{Auth, DB, Request};
@@ -317,6 +319,7 @@ class Message extends Model {
     
     /**
      * 返回短消息列表
+     * 教职员工、学校以或代理人的短信发送记录
      *
      * @param $sender
      * @param $senderid
@@ -382,6 +385,7 @@ class Message extends Model {
                 : explode('|', $toparty);
             $userids = empty($touser = $message->{'touser'}) ? []
                 : explode('|', $touser);
+            $tags =
             $users = User::whereIn('userid', $userids)->get();
             $timing = $this->find($id)->event_id ? true : false;
             $time = $timing ? date('Y-m-d H:i', strtotime($this->find($id)->event->start)) : null;
@@ -762,23 +766,26 @@ class Message extends Model {
     /**
      * 发送微信消息
      *
-     * @param App $app - 应用详情
-     * @param array $message - 消息详情
+     * @param Message $message - 消息对象
+     * @param array $content - 消息内容
      * @return array|bool|mixed
-     * @throws Throwable
      */
-    function sendWx(App $app, array $message) {
+    function sendWx(Message $message, array $content) {
         
+        $app = $message->app;
+        $base = $app->category == 1 ? 'ent' : 'pub';
         $result = json_decode(
             Wechat::invoke(
-                'ent', 'message', 'send',
-                [Wechat::token('ent', $app->corp->corpid, $app['appsecret'])],
-                $message
+                $base,
+                'message',
+                $base == 'ent' ? 'send' : ($content['msgtype'] == 'tpl' ? 'template/send' : 'mass/sendall'),
+                [Wechat::token($base, $base == 'ent' ? $app->corp->corpid : $app->appid, $app->appsecret)],
+                $content
             ), true
         );
         
         return [
-            'errcode'      => ($errcode = $result['errcode']),
+            'errcode'      => ($errcode = $result['errcode'] ?? 0),
             'errmsg'       => Constant::WXERR[$errcode],
             'invaliduser'  => $result['invaliduser'] ?? '',
             'invalidparty' => $result['invalidparty'] ?? '',
@@ -907,10 +914,11 @@ class Message extends Model {
      */
     function failedUserIds($userids, $deptIds) {
         
-        list($userIds, $departmentUserIds) = array_map(
+        [$userIds, $deptUserIds] = array_map(
             function ($name, $ids) {
-                $model = (new ReflectionClass('App\\Models\\' . ucfirst($name)))->newInstance();
-                $field = $name == 'user' ? 'userid' : 'department_id';
+                $className = 'App\\Models\\' . ucfirst($name);
+                $model = (new ReflectionClass($className))->newInstance();
+                $field = $name == 'user' ? 'ent_attrs->userid' : 'department_id';
                 $id = $name == 'user' ? 'id' : 'user_id';
                 
                 return array_unique(
@@ -922,7 +930,7 @@ class Message extends Model {
         return array_unique(
             array_merge(
                 $userIds,
-                User::whereIn('id', $departmentUserIds)->get()->filter(
+                User::whereIn('id', $deptUserIds)->get()->filter(
                     function (User $user) { return !$user->student; }
                 )->pluck('id')->toArray()
             )
@@ -931,85 +939,60 @@ class Message extends Model {
     }
     
     /**
-     * 返回指定用户(学生、教职员工)及部门对应的：
+     * 返回消息内容及发送对象
      *
-     * @param array $userIds - 学生及教职员工用户id列表
-     * @param array $deptIds - 包含学生及教职员工的部门id列表
-     *
+     * @param Message $message
      * @return array
-     *      1. 需要发送短信的用户（监护人、教职员工）手机号码列表；
-     *      2. 需要记录短信发送日志的用户列表。
      */
-    function smsTargets($userIds = [], $deptIds = []) {
-        
-        $userIds = $this->realTargets($userIds, $deptIds)->pluck('id');
-        
-        return User::whereIn('id', $userIds)
-            ->pluck('mobile')->toArray();
-        
-    }
+    function targets(Message $message) {
     
-    /**
-     * 获取指定用户（学生、教职员工）及部门对应的消息发送对象用户（监护人、教职员工）列表
-     *
-     * @param array $userIds - 学生、教职员工的用户id列表
-     * @param array $deptIds - 部门id列表
-     * @return Collection
-     */
-    function realTargets(array $userIds, array $deptIds) {
-        
-        $deptUserIds = DepartmentUser::whereIn('department_id', $deptIds)
-            ->pluck('user_id')->toArray();
-        $logUserIds = array_unique(array_merge($userIds, $deptUserIds));
-        $users = User::whereIn('id', $logUserIds)->get();
-        $targets = collect([]);
-        foreach ($users as $user) {
-            $user->student ? $user->student->custodians->each(
-                function (Custodian $custodian) use (&$targets) {
-                    $targets->push($custodian->user);
-                }
-            ) : $targets->push($user);
-        }
-        
-        return $targets;
-        
-    }
-    
-    /** 微信端 ------------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回指定用户（学生、教职员工）及部门对应的:
-     *
-     * @param $userIds - 学生及教职员工用户id列表
-     * @param $deptIds - 学生
-     *
-     * @return array
-     *      1. 需要发送短信的用户（监护人、教职员工）手机号码列表；
-     *      2. 需要发送微信的用户（监护人、教职员工，不含隶属于指定部门的用户）列表；
-     */
-    function wxTargets($userIds = [], $deptIds = []) {
-        
-        /**
-         * @var Collection|User[] $realTargetUsers - 实际接收消息的用户(
-         * @var Collection|User[] $realTargets
-         */
-        $realTargetUsers = $this->realTargets($userIds, $deptIds);
-        $realTargets = $realTargetUsers->groupBy('subscribed');
-        $wxTargets = $smsTargets = collect([]);
-        if ($realTargets->count() < 2) {
-            if (array_key_exists(1, $realTargets->toArray())) {
-                # 如果发送对象仅包含已关注的用户
-                $wxTargets = $realTargets[1];
-            } elseif (array_key_exists(0, $realTargets->toArray())) {
-                # 如果发送对象仅包含未关注的用户
-                $smsTargets = $realTargets[0];
+        $content = json_decode($message->content, true);
+        $senderDeptIds = (new Department)->departmentIds($message->s_user_id);
+        $us = User::whereIn(
+            'ent_attrs->userid',
+            explode('|', $content['touser'])
+        );
+        $dus = DepartmentUser::whereIn(
+            'department_id',
+            explode('|', $content['toparty'])
+        );
+        $userIds = array_merge(
+            $us->pluck('id')->toArray(),
+            $dus->pluck('user_id')->toArray()
+        );
+        foreach (explode('|', $content['totag']) as $tagId) {
+            $tag = Tag::find($tagId);
+            $userIds = array_merge($userIds, $tag->users->pluck('id')->toArray());
+            foreach ($tag->departments as $department) {
+                $userIds = array_merge($userIds, $department->users->pluck('id')->toArray());
             }
-        } else {
-            list($smsTargets, $wxTargets) = $realTargets;
         }
-        $smsMobiles = User::whereIn('id', $smsTargets->pluck('id'))
-            ->pluck('mobile')->toArray();
+        $users = new Collection;
+        /** @var User $user */
+        foreach (User::whereIn('id', array_unique($userIds))->get() as $user) {
+            if (!in_array($user->role(), Constant::NON_EDUCATOR)) {
+                $users->push($user);
+            } elseif ($user->student) {
+                if (in_array($user->student->squad->department_id, $senderDeptIds)) {
+                    $user->student->custodians->each(
+                        function (Custodian $custodian) use (&$users) {
+                            $users->push($custodian->user);
+                        }
+                    );
+                }
+            }
+        }
+        if ($message->commType->name == '短信') {
+            $mobiles = $users;
+        } else {
+            [$mobiles, $members] = $users->groupBy(
+                ($message->app->category == 1 ? 'ent' : 'pub') . '_attrs->subscribed'
+            );
+        }
         
-        return [$smsMobiles, $wxTargets, $realTargetUsers];
+        return [
+            $content, $mobiles->pluck('mobile')->toArray(), $members ?? null,
+        ];
         
     }
     
@@ -1087,7 +1070,7 @@ class Message extends Model {
     /**
      * 获取消息
      *
-     * @return Message[]|Builder[]|Collection|\Illuminate\Database\Query\Builder[]|Collection
+     * @return Message[]|Builder[]|Collection|QBuilder[]|Collection
      */
     private function messages() {
         
@@ -1460,6 +1443,11 @@ class Message extends Model {
      * @return array
      */
     function compose($uri) {
+
+        if ($app = School::find($this->schoolId())->app) {
+            $templates = [0 => '[群发]'] + Template::whereAppId($app->id)->pluck('name', 'id')->toArray();
+            $tags = (new Tag)->list();
+        }
         
         switch ($uri) {
             case 'messages/index':
@@ -1493,7 +1481,9 @@ class Message extends Model {
                         ],
                     ]),
                     'smsMaxLength' => 300,
-                    'messageTypes' => MessageType::whereEnabled(1)->pluck('name', 'id')->toArray(),
+                    'messageTypes' => MessageType::whereEnabled(1)->pluck('name', 'id'),
+                    'templates'    => $templates ?? null,
+                    'tags'         => $tags ?? null,
                     'batch'        => true,
                     'filter'       => true,
                 ];

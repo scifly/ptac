@@ -159,20 +159,20 @@ return [
         'title'        => '短信充值',
         'insufficient' => '(上级)余额不足',
     ],
-    'template' => [
-        'title' => '消息模板',
-        'started' => '已提交消息模板下载请求...',
+    'template'                 => [
+        'title'     => '消息模板',
+        'started'   => '已提交消息模板下载请求...',
         'completed' => '消息模板下载完成',
-        'failed' => '操作失败',
-        'not_found' => '找不到这个模板'
+        'failed'    => '操作失败',
+        'not_found' => '找不到这个模板',
     ],
     'user'                     => [
-        'not_found' => '没有这个用户',
-        'vericode' => '注册验证码：',
-        'v_invalid' => '验证码无效',
+        'not_found'  => '没有这个用户',
+        'vericode'   => '注册验证码：',
+        'v_invalid'  => '验证码无效',
         'registered' => '注册成功',
-        'v_sent'    => '验证码已发送，请在30分钟内输入',
-        'v_failed'  => '短信发送失败'
+        'v_sent'     => '验证码已发送，请在30分钟内输入',
+        'v_failed'   => '短信发送失败',
     ],
     'wap_site'                 => [
         'title' => '微网站',

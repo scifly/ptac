@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class ScoreCenterComposer
@@ -16,8 +17,13 @@ class ScoreCenterComposer {
      * @param View $view
      */
     public function compose(View $view) {
-        
-        $view->with(['acronym' => session('acronym')]);
+    
+        $user = Auth::user();
+        $userid = json_decode($user->ent_attrs, true)['userid'];
+        $view->with([
+            'acronym' => session('acronym'),
+            'userid'  => $userid
+        ]);
         
     }
     

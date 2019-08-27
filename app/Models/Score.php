@@ -269,7 +269,7 @@ class Score extends Model {
                 $corp = $school->corp;
                 $app = $this->app($corp->id);
                 $msgType = '成绩消息';
-                $msgTypeId = MediaType::whereName('text')->first()->id;
+                $msgTypeId = MessageType::whereName($msgType)->first()->id;
                 $mediaTypeId = MediaType::whereName('text')->first()->id;
                 $sUserId = Auth::id() ?? 0;
                 foreach ($data as $datum) {
@@ -284,13 +284,13 @@ class Score extends Model {
                         'recipient_count' => 0,
                     ])->id;
                     foreach (explode(',', $datum->mobile) as $mobile) {
-                        if (!($m = Mobile::whereMobile($mobile)->first())) continue;
-                        $userids[] = User::find($m->user_id)->userid;
+                        if (!$user = User::whereMobile($mobile)->first()) continue;
+                        $userids[] = json_decode($user->ent_attrs, true)['userid'];
                     }
                     $record['content'] = json_encode([
                         'touser'  => implode('|', $userids ?? []),
                         "msgtype" => "text",
-                        "agentid" => $app->agentid,
+                        "agentid" => $app->appid,
                         'text'    => [
                             'content' => $datum->content,
                         ],

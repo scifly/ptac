@@ -11,7 +11,6 @@ use Illuminate\{Bus\Queueable,
     Queue\SerializesModels,
     Support\Arr,
     Support\Facades\DB};
-use Pusher\PusherException;
 use Throwable;
 
 /**
@@ -55,7 +54,7 @@ class SendMessage implements ShouldQueue {
                 $results = Arr::collapse(
                     array_map(
                         function (Message $message) {
-                            return $this->send($message, $this->response);
+                            return $this->send($message);
                         }, $this->messages
                     )
                 );

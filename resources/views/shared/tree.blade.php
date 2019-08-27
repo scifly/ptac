@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="box-body row">
-        <div class="col-xs-8">
+        <div class="col-xs-4">
             {{--searchBox--}}
             <div class="input-group">
                 @include('shared.icon_addon', ['class' => 'fa-search'])
@@ -21,6 +21,27 @@
                 ]) !!}
             </div>
             <div id="tree"></div>
+        </div>
+        <div class="col-xs-4">
+            <div class="box box-default collapsed-box">
+                <div class="box-header with-border">
+                    <span style="margin-left: 5px; vertical-align: middle;">
+                        {!! Form::label(
+                            'tagids', '<i class="fa fa-tags">标签</i>',
+                            ['class' => 'control-label'], false
+                        ) !!}
+                    </span>
+                </div>
+                <div class="box-body">
+                    {!! Form::select( 'tagids[]', $tags, $selectedTags ? array_keys($selectedTags) : null, [
+                        'id' => 'tagids',
+                        'multiple' => 'multiple',
+                        'disabled' => sizeof($tags) <= 1,
+                        'class' => 'form-control select2',
+                        'style' => 'width: 100%;',
+                    ]) !!}
+                </div>
+            </div>
         </div>
         <div class="col-xs-4">
             <i class="fa fa-check-circle">
