@@ -384,7 +384,7 @@ class Message extends Model {
                 : explode('|', $toparty);
             $userids = empty($touser = $message->{'touser'}) ? []
                 : explode('|', $touser);
-            $users = User::whereIn('userid', $userids)->get();
+            $users = User::whereIn('ent_attrs->userid', $userids)->get();
             $timing = $this->find($id)->event_id ? true : false;
             $time = $timing ? date('Y-m-d H:i', strtotime($this->find($id)->event->start)) : null;
         } catch (Exception $e) {
@@ -1314,7 +1314,8 @@ class Message extends Model {
         if ($id = Request::route('id')) {
             empty($targetIds = json_decode($this->find($id)->content)->{$type == 'user' ? 'touser' : 'toparty'}) ?:
                 $selectedTargetIds = ($type == 'user')
-                    ? User::whereIn('userid', explode('|', $targetIds))->pluck('id')->toArray()
+                    ? User::whereIn('ent_attrs->userid', explode('|', $targetIds))
+                        ->pluck('id')->toArray()
                     : explode('|', $targetIds);
         }
         
@@ -1592,7 +1593,7 @@ class Message extends Model {
                         ? explode('|', $message->{'toparty'}) : [];
                     $touser = !empty($message->{'touser'})
                         ? explode('|', $message->{'touser'}) : [];
-                    $selectedUserIds = User::whereIn('userid', $touser)->pluck('id')->toArray();
+                    $selectedUserIds = User::whereIn('ent_attrs->userid', $touser)->pluck('id')->toArray();
                     list($departmentHtml, $userHtml) = array_map(
                         function ($ids, $type) {
                             /** @noinspection HtmlUnknownTarget */
