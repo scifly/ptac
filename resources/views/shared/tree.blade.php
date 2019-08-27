@@ -22,7 +22,7 @@
             </div>
             <div id="tree"></div>
         </div>
-        <div class="col-xs-2">
+        <div class="col-xs-3">
             <div class="box box-default box-solid">
                 <div class="box-header with-border">
                     <span style="margin-left: 5px; vertical-align: middle;">
@@ -47,7 +47,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-3">
             <i class="fa fa-check-circle">
                 &nbsp;{!! isset($selectedTitle) ? $selectedTitle : '已选择的部门' !!}
             </i>
