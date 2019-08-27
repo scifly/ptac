@@ -487,7 +487,7 @@ class Message extends Model {
         $userids = explode('|', $message->{'touser'});
         $deptIds = explode('|', $message->{'toparty'});
         $recipients = array_merge(
-            User::whereIn('userid', $userids)->pluck('realname')->toArray(),
+            User::whereIn('ent_attrs->userid', $userids)->pluck('realname')->toArray(),
             Department::whereIn('id', $deptIds)->pluck('name')->toArray()
         );
         $msgBody = '';
