@@ -7,7 +7,6 @@ use App\Jobs\SendMessage;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Form;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo, Relations\HasOne};
 use Illuminate\Database\Query\Builder as QBuilder;
@@ -945,7 +944,7 @@ class Message extends Model {
      * @return array
      */
     function targets(Message $message) {
-    
+        
         $content = json_decode($message->content, true);
         $senderDeptIds = (new Department)->departmentIds($message->s_user_id);
         $us = User::whereIn(
@@ -1439,17 +1438,15 @@ class Message extends Model {
     /**
      * 返回Message相关view数据
      *
-     * @param string $uri
      * @return array
      */
-    function compose($uri) {
-    
+    function compose() {
+        
         $tags = (new Tag)->list();
         if ($app = School::find($this->schoolId())->app) {
             $templates = [0 => '[群发]'] + Template::whereAppId($app->id)->pluck('name', 'id')->toArray();
         }
-        
-        switch ($uri) {
+        switch (Request::route()->uri) {
             case 'messages/index':
                 [$optionAll, $htmlCommType, $htmlMediaType, $htmlMessageType] = $this->messageFilters();
                 $titles = [

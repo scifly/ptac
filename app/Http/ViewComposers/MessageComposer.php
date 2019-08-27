@@ -17,7 +17,7 @@ class MessageComposer {
     public function compose(View $view) {
     
         $view->with(
-            (new Message)->compose(Request::route()->uri)
+            (new Message)->compose()
         );
     
     }
