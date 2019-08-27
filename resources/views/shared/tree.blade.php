@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="box-body row">
-        <div class="col-xs-4">
+        <div class="col-xs-6">
             {{--searchBox--}}
             <div class="input-group">
                 @include('shared.icon_addon', ['class' => 'fa-search'])
@@ -22,7 +22,7 @@
             </div>
             <div id="tree"></div>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-2">
             <div class="box box-default box-solid">
                 <div class="box-header with-border">
                     <span style="margin-left: 5px; vertical-align: middle;">
