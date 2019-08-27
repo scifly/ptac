@@ -27,7 +27,7 @@
                 <div class="box-header with-border">
                     <span style="margin-left: 5px; vertical-align: middle;">
                         {!! Form::label(
-                            'tagids', '<i class="fa fa-tags">标签</i>',
+                            'tagids', '<i class="fa fa-tags"> 标签</i>',
                             ['class' => 'control-label'], false
                         ) !!}
                     </span>
