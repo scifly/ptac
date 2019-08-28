@@ -51,6 +51,7 @@ class Controller extends BaseController {
             $params['uris'] = $this->uris($ctlr->id);
             $params['breadcrumb'] = $action->name;
             $params['user'] = Auth::user();
+            
             # 获取功能对应的菜单/卡片对象
             $menu = Menu::find($menuId = session('menuId'));
             $tabId = session('tabId');

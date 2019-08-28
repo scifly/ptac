@@ -163,15 +163,15 @@
                             @foreach($selectedDepartments as $key => $department)
                                 <button type="button" class="btn btn-flat"
                                         style="margin-right: 5px; margin-bottom: 5px">
-                                    <i class="{{ $department['icon'] }}"></i>
-                                    {{ $department['text'] }}
+                                    <i class="{!! $department['icon'] !!}"></i>
+                                    {!! $department['text'] !!}
                                     <i class="fa fa-close remove-selected" style="margin-left: 5px;"></i>
-                                    <input type="hidden" name="selectedDepartments[]" value="{{ $department['id'] }}"/>
+                                    {!! Form::hidden('selectedDepartments[]', $department['id']) !!}
                                 </button>
                             @endforeach
                         @endif
                     </div>
-                    <input type="hidden" id="selected-node-ids" value="{{ $selectedDepartmentIds ?? '' }}"/>
+                    <input type="hidden" id="selected-node-ids" value="{!! $selectedDepartmentIds ?? '' !!}"/>
                     <a id="choose" href="#"><i class="fa fa-sitemap"></i>&nbsp; 选择</a>
                 </div>
             </div>

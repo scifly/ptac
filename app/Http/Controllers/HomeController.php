@@ -43,11 +43,12 @@ class HomeController extends Controller {
     public function index() {
         
         if (!$menuId = Request::query('menuId')) {
-            $menuId = Menu::whereParentId($this->menu->rootId())
-                ->whereIn('uri', ['home', '/'])->first()->id;
-            session(['menuId' => $menuId]);
+            session([
+                'menuId' => Menu::whereParentId($this->menu->rootId())
+                    ->whereIn('uri', ['home', '/'])->first()->id
+            ]);
         } else {
-            !session('menuId') || session('menuId') !== $menuId
+            session('menuId') != $menuId
                 ? session(['menuId' => $menuId, 'menuChanged' => true])
                 : Session::forget('menuChanged');
         }
@@ -80,11 +81,9 @@ class HomeController extends Controller {
      */
     public function menu($id) {
         
-        if (!session('menuId') || session('menuId') !== $id) {
-            session(['menuId' => $id, 'menuChanged' => true]);
-        } else {
-            Session::forget('menuChanged');
-        }
+        session('menuId') != $id
+            ? session(['menuId' => $id, 'menuChanged' => true])
+            : Session::forget('menuChanged');
         # 获取指定菜单包含的卡片列表
         $tabIds = $this->mt->tabIdsByMenuId($id);
         # 获取当前用户可以访问的卡片（控制器）id
