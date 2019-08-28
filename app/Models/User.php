@@ -793,7 +793,7 @@ class User extends Authenticatable {
         
         switch (Request::route()->uri) {
             case '/':
-            case 'home':
+            // case 'home':
             // case 'pages/{id}':
             // case 'users/edit':
             // case 'messages/index':
