@@ -43,7 +43,7 @@ class Controller extends BaseController {
         $params['user'] = Auth::user();
         $action = Action::where([
             'method' => Request::route()->getActionMethod(),
-            'tab_id' => $tabId
+            'tab_id' => $tabId,
         ])->first();
         abort_if(
             !$action, HttpStatusCode::NOT_FOUND,
@@ -93,7 +93,6 @@ class Controller extends BaseController {
             if ($tab) return response()->redirectTo('pages/' . session('menuId'));
             
             # 如果请求的内容需要直接在Wrapper层（不包含卡片）中显示
-            
             return view('layouts.web', [
                 'menu'       => $menu->htmlTree($menu->rootId()),
                 'tabs'       => [],
@@ -107,8 +106,8 @@ class Controller extends BaseController {
         if (Request::query('menuId') && Request::query('tabId')) {
             session([
                 'menuId' => Request::query('menuId'),
-                'tabId' => Request::query('tabId'),
-                'tabUrl' => Request::path()
+                'tabId'  => Request::query('tabId'),
+                'tabUrl' => Request::path(),
             ]);
             
             return response()->redirectTo('pages/' . session('menuId'));
@@ -128,7 +127,7 @@ class Controller extends BaseController {
      * @return JsonResponse|string
      */
     protected function result($result, String $success = null, String $failure = null) {
-    
+        
         # 获取功能名称
         $e = new Exception();
         $method = $e->getTrace()[1]['function'];
@@ -137,7 +136,7 @@ class Controller extends BaseController {
         unset($e);
         $action = Action::where([
             'tab_id' => Tab::whereName($controller)->first()->id,
-            'method' => $method
+            'method' => $method,
         ])->first();
         # 获取状态消息
         $message = $result
@@ -147,7 +146,7 @@ class Controller extends BaseController {
         $statusCode = $result
             ? HttpStatusCode::OK
             : HttpStatusCode::INTERNAL_SERVER_ERROR;
-    
+        
         # 输出状态码及消息
         return Request::ajax()
             ? response()->json(['title' => $action ? $action->name : '', 'message' => $message], $statusCode)
