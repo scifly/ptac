@@ -804,11 +804,11 @@ class User extends Authenticatable {
                 
                 return [
                     'titles'    => [
-                        '#',
+                        '#', '标题', '消息批次',
                         ['title' => '通信方式', 'html' => $htmlCommType],
-                        ['title' => '应用', 'html' => $htmlApp],
-                        '消息批次', '发送者',
+                        ['title' => '媒体类型', 'html' => $htmlApp],
                         ['title' => '类型', 'html' => $htmlMessageType],
+                        '发送者',
                         ['title' => '接收于', 'html' => $this->inputDateTimeRange('接收于')],
                         [
                             'title' => '状态',
