@@ -154,7 +154,7 @@
             ])
             <!-- 所属部门 -->
             <div class="form-group depart">
-                {!! Form::label('departmentId', '所属部门', [
+                {!! Form::label('departmentId', '所属部门/标签', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6" style="margin-top: 7px;">
