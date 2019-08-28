@@ -159,19 +159,34 @@
                 ]) !!}
                 <div class="col-sm-6" style="margin-top: 7px;">
                     <div id="checked-nodes">
-                        @if (isset($selectedDepartments))
-                            @foreach($selectedDepartments as $key => $department)
-                                <button type="button" class="btn btn-flat"
-                                        style="margin-right: 5px; margin-bottom: 5px">
-                                    <i class="{!! $department['icon'] !!}"></i>
-                                    {!! $department['text'] !!}
-                                    <i class="fa fa-close remove-selected" style="margin-left: 5px;"></i>
-                                    {!! Form::hidden('selectedDepartments[]', $department['id']) !!}
-                                </button>
-                            @endforeach
-                        @endif
+                        @foreach($selectedDepartments as $key => $department)
+                            <button type="button" class="btn btn-flat"
+                                    style="margin-right: 5px; margin-bottom: 5px">
+                                <i class="{!! $department['icon'] !!}"></i>
+                                {!! $department['text'] !!}
+                                <i class="fa fa-close remove-selected" style="margin-left: 5px;"></i>
+                                {!! Form::hidden('selectedDepartments[]', $department['id']) !!}
+                            </button>
+                        @endforeach
+                        @foreach($selectedTags as $id => $tag)
+                            <button type="button" class="btn btn-flat"
+                                    style="margin-right: 5px; margin-bottom: 5px">
+                                <i class="fa fa-tag"></i> {!! $tag !!}
+                                <i class="fa fa-close remove-selected" style="margin-left: 5px;"></i>
+                                {!! Form::hidden('selectedTags[]', $id) !!}
+                            </button>
+                        @endforeach
                     </div>
-                    <input type="hidden" id="selected-node-ids" value="{!! $selectedDepartmentIds ?? '' !!}"/>
+                    {!! Form::hidden(
+                        'selected-node-ids[]',
+                        $selectedDepartmentIds,
+                        ['id' => 'selected-node-ids']
+                    ) !!}
+                    {!! Form::hidden(
+                        'selected-tag-ids[]',
+                        join(',', array_keys($selectedTags)),
+                        ['id' => 'selected-tag-ids']
+                    ) !!}
                     <a id="choose" href="#"><i class="fa fa-sitemap"></i>&nbsp; 选择</a>
                 </div>
             </div>

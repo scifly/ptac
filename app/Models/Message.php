@@ -1444,10 +1444,6 @@ class Message extends Model {
     function compose($uri = null) {
         
         $tags = (new Tag)->list();
-        // if ($app = School::find($this->schoolId())->app) {
-        //     $templates = [0 => '[群发]'] + Template::whereAppId($app->id)->pluck('name', 'id')->toArray();
-        // }
-        
         switch ($uri ?? Request::route()->uri) {
             case 'messages/index':
                 [$optionAll, $htmlCommType, $htmlMediaType, $htmlMessageType] = $this->messageFilters();

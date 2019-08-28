@@ -592,7 +592,7 @@ class Educator extends Model {
             case 'recharge':
                 $data = (new Message)->compose('recharge');
                 break;
-            default:    # 编辑
+            default:    # 创建/编辑
                 $classes = Squad::whereIn('id', $this->classIds())->where('enabled', 1)->get();
                 $gradeIds = array_unique($classes->pluck('grade_id')->toArray());
                 $subjects = Subject::where(['enabled' => 1, 'school_id' => $this->schoolId()])->get()->filter(
@@ -606,12 +606,14 @@ class Educator extends Model {
                     $selectedDepartmentIds = !$educator ? []
                         : $educator->user->deptIds($educator->user_id);
                     $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
+                    $selectedTags = !$educator ? [] : $educator->user->tags->pluck('name', 'id')->toArray();
                 }
                 $firstOption = [0 => '(请选择)'];
                 $data = array_combine(
                     [
                         'educator', 'squads', 'subjects', 'groups',
                         'selectedDepartmentIds', 'selectedDepartments',
+                        'tags', 'selectedTags'
                     ],
                     [
                         $educator ?? null,
@@ -620,6 +622,8 @@ class Educator extends Model {
                         (new Group)->groupList(),
                         join(',', $selectedDepartmentIds ?? []),
                         $selectedDepartments ?? [],
+                        (new Tag)->list(),
+                        $selectedTags ?? [],
                     ]
                 );
                 break;
