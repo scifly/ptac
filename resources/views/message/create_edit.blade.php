@@ -228,17 +228,20 @@
         </div>
     </div>
     <div class="form-group">
-        <label for="" class="col-sm-3"></label>
+        {!! Form::label('', ['class' => 'col-sm-3']) !!}
         <div class="col-sm-6">
-            <button class="btn btn-primary btn-sm margin" id="send">
-                <i class="fa fa-send-o"> 发送</i>
-            </button>
-            <button class="btn btn-success btn-sm margin" id="preview">
-                <i class="fa fa-play-circle"> 预览</i>
-            </button>
-            <button class="btn btn-default btn-sm margin" id="draft">
-                <i class="fa fa-save"> 存为草稿</i>
-            </button>
+            {!! Form::button('<i class="fa fa-send-o"> 发送</i>', [
+                'id' => 'send',
+                'class' => 'btn btn-primary btn-sm margin'
+            ]) !!}
+            {!! Form::button('<i class="fa fa-play-circle"> 预览</i>', [
+                'id' => 'preview',
+                'class' => 'btn btn-success btn-sm margin'
+            ]) !!}
+            {!! Form::button('<i class="fa fa-save"> 存为草稿</i>', [
+                'id' => 'draft',
+                'class' => 'btn btn-default btn-sm margin'
+            ]) !!}
         </div>
     </div>
     {!! Form::close() !!}
