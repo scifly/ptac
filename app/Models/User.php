@@ -783,14 +783,6 @@ class User extends Authenticatable {
      */
     function compose() {
     
-        /**
-         * @param array $names
-         * @return \Illuminate\Support\Collection
-         */
-        function groups(array $names) {
-            return Group::whereIn('name', $names)->get();
-        }
-        
         switch (Request::route()->uri) {
             case 'users/event':
                 return [
