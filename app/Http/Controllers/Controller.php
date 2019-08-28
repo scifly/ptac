@@ -59,10 +59,10 @@ class Controller extends BaseController {
         # 获取功能对应的菜单/卡片对象
         $menu = Menu::find(session('menuId'));
         $tab = Tab::find(session('tabId'));
-        # 如果请求类型为Ajax
         if (Request::ajax()) {
-            # 如果Http请求的内容需要在卡片中展示
+            # 如果请求类型为Ajax
             if ($tab = Tab::find(Request::get('tabId'))) {
+                # 如果Http请求的内容需要在卡片中展示
                 abort_if(!$menu, HttpStatusCode::UNAUTHORIZED);
                 !session('tabId') || session('tabId') !== $tab->id
                     ? session(['tabId' => $tab->id, 'tabChanged' => 1])
@@ -86,36 +86,28 @@ class Controller extends BaseController {
                 'js'         => $action->js,
                 'department' => $menu->department(session('menuId')),
             ]);
-        }
-        # 如果是非Ajax请求，且用户已登录
-        if (session('menuId')) {
-            # 如果请求的内容需要在卡片中展示
-            if ($tab) return response()->redirectTo('pages/' . session('menuId'));
-            
-            # 如果请求的内容需要直接在Wrapper层（不包含卡片）中显示
-            return view('layouts.web', [
-                'menu'       => $menu->htmlTree($menu->rootId()),
-                'tabs'       => [],
-                'content'    => view($view, $params)->render(),
-                'menuId'     => session('menuId'),
-                'js'         => 'js/home/page',
-                'department' => $menu->department($menu->id),
-            ]);
-        }
-        # 如果是非Ajax请求，且用户已登录，但没有设置menuId会话变量
-        if (Request::query('menuId') && Request::query('tabId')) {
+        } else {
+            # 如果是非Ajax请求
             session([
-                'menuId' => Request::query('menuId'),
+                'menuId' => $menuId = session('menuId') ?? Request::query('menuId'),
                 'tabId'  => Request::query('tabId'),
                 'tabUrl' => Request::path(),
             ]);
-            
-            return response()->redirectTo('pages/' . session('menuId'));
+            return $tab
+                # 如果请求的内容需要在卡片中展示
+                ? response()->redirectTo($menuId ? 'pages/' . $menuId : '/')
+                # 如果请求的内容需要直接在Wrapper层（不包含卡片）中显示
+                : view('layouts.web', [
+                    'menu'       => $menu->htmlTree($menu->rootId()),
+                    'tabs'       => [],
+                    'content'    => view($view, $params)->render(),
+                    'menuId'     => session('menuId'),
+                    'js'         => 'js/home/page',
+                    'department' => $menu->department($menu->id),
+                ]);
         }
-        
         # 如果用户没有登录
-        return Response()->redirectToRoute('login');
-        
+        // return Response()->redirectToRoute('login');
     }
     
     /**
