@@ -122,7 +122,7 @@ class ScoreTotal extends Model {
             [
                 'db'        => 'ScoreTotal.enabled', 'dt' => 11,
                 'formatter' => function ($d, $row) {
-                    return Datatable::status($d, $row, false, false, true);
+                    return Datatable::status($d, $row, false, false, false);
                 },
             ],
         ];
