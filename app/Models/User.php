@@ -796,7 +796,7 @@ class User extends Authenticatable {
             case 'home':
             case 'pages/{id}':
             case 'users/edit':
-            case 'messages/index':
+            // case 'messages/index':
                 return ['disabled' => true];
             case 'users/event':
                 return [

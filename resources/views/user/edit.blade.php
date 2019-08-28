@@ -86,6 +86,9 @@
             ])
         </div>
     </div>
-    @include('shared.form_buttons', ['id' => 'store'])
+    @include('shared.form_buttons', [
+        'id' => 'store',
+        'disabled' => true
+    ])
 </div>
 {!! Form::close() !!}
