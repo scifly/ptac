@@ -26,8 +26,6 @@ return [
     'import_illegals'          => '<br />非法记录数: %s, 请参考导出文件',
     'empty_import_file'        => '没有数据可以导入',
     'internal_server_error'    => '内部服务器错误',
-    'nonexistent_action'       => '功能不存在',
-    'misconfigured_action'     => '功能配置错误',
     'invalid_credentials'      => '用户名/密码错误',
     'invalid_argument'         => '参数无效',
     'invalid_file_format'      => '数据格式错误',
@@ -37,6 +35,11 @@ return [
     'sync_failed'              => '部分用户同步失败，请参考导出的excel文件',
     'operator'                 => [
         'stored' => '保存超级管理员',
+    ],
+    'action' => [
+        'title' => '功能',
+        'not_found' => '没有这个功能',
+        'misconfigured' => '功能配置错误'
     ],
     'app'                      => [
         'title'      => '应用管理',
@@ -158,6 +161,10 @@ return [
     'sms_charge'               => [
         'title'        => '短信充值',
         'insufficient' => '(上级)余额不足',
+    ],
+    'tab' => [
+        'title' => '控制器(卡片)',
+        'not_found' => '没有这个控制器'
     ],
     'template'                 => [
         'title'     => '消息模板',

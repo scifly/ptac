@@ -2,20 +2,15 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\HttpStatusCode;
-use App\Models\Action;
-use App\Models\Menu;
-use App\Models\Tab;
+use App\Models\{Action, Menu, Tab};
 use App\Policies\Route;
 use Auth;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Foundation\{Auth\Access\AuthorizesRequests, Bus\DispatchesJobs, Validation\ValidatesRequests};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\{Request, Session};
 use Throwable;
 
 /**
@@ -35,86 +30,93 @@ class Controller extends BaseController {
      */
     protected function output(array $params = []) {
         
-        # 获取功能对象
-        $tabId = Tab::whereName(
-            class_basename(Request::route()->controller)
-        )->first()->id;
-        $params['uris'] = $this->uris($tabId);
-        $params['user'] = Auth::user();
-        $action = Action::where([
-            'method' => Request::route()->getActionMethod(),
-            'tab_id' => $tabId,
-        ])->first();
-        abort_if(
-            !$action, HttpStatusCode::NOT_FOUND,
-            __('messages.nonexistent_action')
-        );
-        $params['breadcrumb'] = $action->name;
-        # 获取功能对应的View
-        $view = $action->view;
-        abort_if(
-            !$view, HttpStatusCode::NOT_FOUND,
-            __('messages.misconfigured_action')
-        );
-        # 获取功能对应的菜单/卡片对象
-        $menu = Menu::find(session('menuId'));
-        $tab = Tab::find(session('tabId'));
-        # 如果请求类型为Ajax
-        if (Request::ajax()) {
-            # 如果Http请求的内容需要在卡片中展示
-            if ($tab = Tab::find(Request::get('tabId'))) {
-                abort_if(!$menu, HttpStatusCode::UNAUTHORIZED);
-                !session('tabId') || session('tabId') !== $tab->id
-                    ? session(['tabId' => $tab->id, 'tabChanged' => 1])
-                    : Session::forget('tabChanged');
-                session(['tabUrl' => Request::path()]);
+        try {
+            $route = Request::route();
+            [$controller, $method] = [
+                class_basename($route->controller),
+                $route->getActionMethod(),
+            ];
+            throw_if(
+                !$ctlr = Tab::whereName($controller)->first(),
+                new Exception(__('messages.tab.not_found'))
+            );
+            throw_if(
+                !$action = Action::where(['method' => $method, 'tab_id' => $ctlr->id])->first(),
+                new Exception(__('messages.action.not_found'))
+            );
+            throw_if(
+                !$view = $action->view,
+                new Exception(__('messages.action.misconfigured'))
+            );
+            $params['uris'] = $this->uris($ctlr->id);
+            $params['breadcrumb'] = $action->name;
+            $params['user'] = Auth::user();
+            # 获取功能对应的菜单/卡片对象
+            $menu = Menu::find($menuId = session('menuId'));
+            $tabId = session('tabId');
+            # 如果请求类型为Ajax
+            if (Request::ajax()) {
+                # 如果Http请求的内容需要在卡片中展示
+                if ($tab = Tab::find(Request::query('tabId'))) {
+                    throw_if(!$menu, new Exception(__('messages.bad_request')));
+                    $tabId != $tab->id
+                        ? session(['tabId' => $tab->id, 'tabChanged' => 1])
+                        : Session::forget('tabChanged');
+                    session(['tabUrl' => Request::path()]);
+                    
+                    return response()->json([
+                        'html'       => view($view, $params)->render(),
+                        'js'         => $action->js,
+                        'breadcrumb' => $params['breadcrumb'],
+                    ]);
+                }
+                # 如果Http请求的内容需要直接在Wrapper层（不包含卡片）中显示
+                session(['menuId' => Request::query('menuId')]);
+                Session::forget('tabId');
                 
                 return response()->json([
+                    'title'      => $params['breadcrumb'],
+                    'uri'        => Request::path(),
                     'html'       => view($view, $params)->render(),
                     'js'         => $action->js,
-                    'breadcrumb' => $params['breadcrumb'],
+                    'department' => $menu->department(session('menuId')),
                 ]);
+            } else {
+                # 非Ajax请求
+                if ($menuId) {
+                    # 设置了menuId会话变量
+                    return Tab::find($tabId)
+                        # 如果请求的内容需要在卡片中展示
+                        ? response()->redirectTo('pages/' . $menuId)
+                        # 如果请求的内容需要直接在Wrapper层（不包含卡片）中显示
+                        : view('layouts.web', [
+                            'menu'       => $menu->htmlTree($menu->rootId()),
+                            'tabs'       => [],
+                            'content'    => view($view, $params)->render(),
+                            'menuId'     => session('menuId'),
+                            'js'         => 'js/home/page',
+                            'department' => $menu->department($menuId),
+                        ]);
+                } elseif (
+                    ($menuId = Request::query('menuId')) &&
+                    ($tabId = Request::query('tabId'))
+                ) {
+                    # 没有设置menuId会话变量
+                    session([
+                        'menuId' => $menuId,
+                        'tabId'  => $tabId,
+                        'tabUrl' => Request::path(),
+                    ]);
+                    
+                    return response()->redirectTo('pages/' . $menuId);
+                }
             }
-            # 如果Http请求的内容需要直接在Wrapper层（不包含卡片）中显示
-            session(['menuId' => Request::query('menuId')]);
-            Session::forget('tabId');
             
-            return response()->json([
-                'title'      => $params['breadcrumb'],
-                'uri'        => Request::path(),
-                'html'       => view($view, $params)->render(),
-                'js'         => $action->js,
-                'department' => $menu->department(session('menuId')),
-            ]);
+            # 如果用户没有登录
+            return Response()->redirectToRoute('login');
+        } catch (Exception $e) {
+            throw $e;
         }
-        # 如果是非Ajax请求，且用户已登录
-        if ($menuId = session('menuId')) {
-            # 如果请求的内容需要在卡片中展示
-            if ($tab) return response()->redirectTo('pages/' . session('menuId'));
-    
-            # 如果请求的内容需要直接在Wrapper层（不包含卡片）中显示
-            return view('layouts.web', [
-                'menu'       => $menu->htmlTree($menu->rootId()),
-                'tabs'       => [],
-                'content'    => view($view, $params)->render(),
-                'menuId'     => session('menuId'),
-                'js'         => 'js/home/page',
-                'department' => $menu->department($menu->id),
-            ]);
-        }
-        # 如果是非Ajax请求，且用户已登录，但没有设置menuId会话变量
-        if (Request::query('menuId') && Request::query('tabId')) {
-            session([
-                'menuId' => Request::query('menuId'),
-                'tabId'  => Request::query('tabId'),
-                'tabUrl' => Request::path(),
-            ]);
-    
-            return response()->redirectTo('pages/' . session('menuId'));
-        }
-        
-        # 如果用户没有登录
-        return Response()->redirectToRoute('login');
         
     }
     
@@ -129,14 +131,11 @@ class Controller extends BaseController {
     protected function result($result, String $success = null, String $failure = null) {
         
         # 获取功能名称
-        $e = new Exception();
-        $method = $e->getTrace()[1]['function'];
         $paths = explode('\\', get_called_class());
         $controller = $paths[sizeof($paths) - 1];
-        unset($e);
         $action = Action::where([
             'tab_id' => Tab::whereName($controller)->first()->id,
-            'method' => $method,
+            'method' => (new Exception)->getTrace()[1]['function'],
         ])->first();
         # 获取状态消息
         $message = $result
