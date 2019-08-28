@@ -228,7 +228,7 @@
         </div>
     </div>
     <div class="form-group">
-        {!! Form::label('', ['class' => 'col-sm-3']) !!}
+        {!! Form::label('', null, ['class' => 'col-sm-3']) !!}
         <div class="col-sm-6">
             {!! Form::button('<i class="fa fa-send-o"> 发送</i>', [
                 'id' => 'send',
