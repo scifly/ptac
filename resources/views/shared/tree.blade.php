@@ -1,4 +1,4 @@
-<div class="box box-default" style="display: none" id="contacts">
+<div class="box box-default" style="display: none;" id="contacts">
     <div class="box-header with-border">
         <h3 class="box-title">
             <i class="fa fa-sitemap"> {!! $title ?? '所属部门' !!}</i>
@@ -50,7 +50,7 @@
                 </div>
             </div>
         @endif
-        <div class="{!! isset($disabled) ? 'col-xs-3' : 'col-xs-6' !!}">
+        <div class="{!! isset($disabled) ? 'col-xs-6' : 'col-xs-3' !!}">
             <i class="fa fa-check-circle">
                 &nbsp;{!! $selectedTitle ?? '已选择的部门' !!}
             </i>
