@@ -10,7 +10,7 @@
             </tr>
             </thead>
             <tbody>
-            @if ($educator->educatorClasses)
+            @if (isset($educator) && $educator->educatorClasses)
                 @foreach ($educator->educatorClasses  as $index => $ec)
                     <tr>
                         <td class="text-left">
