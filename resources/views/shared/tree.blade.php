@@ -23,32 +23,34 @@
             </div>
             <div id="tree"></div>
         </div>
-        <div class="col-xs-3">
-            <div class="box box-default box-solid">
-                <div class="box-header with-border">
-                    <span style="margin-left: 5px; vertical-align: middle;">
-                        {!! Form::label(
-                            'tagids', '<i class="fa fa-tags"> 标签</i>',
-                            ['class' => 'control-label'], false
-                        ) !!}
-                    </span>
-                </div>
-                <div class="box-body">
-                    {!! Form::select(
-                        'tagids[]', $tags,
-                        isset($selectedTags) ? array_keys($selectedTags) : null,
-                        [
-                            'id' => 'tagids',
-                            'multiple' => 'multiple',
-                            'disabled' => sizeof($tags) <= 1,
-                            'class' => 'form-control select2',
-                            'style' => 'width: 100%;'
-                        ])
-                    !!}
+        @if (!isset($disabled))
+            <div class="col-xs-3">
+                <div class="box box-default box-solid">
+                    <div class="box-header with-border">
+                        <span style="margin-left: 5px; vertical-align: middle;">
+                            {!! Form::label(
+                                'tagids', '<i class="fa fa-tags"> 标签</i>',
+                                ['class' => 'control-label'], false
+                            ) !!}
+                        </span>
+                    </div>
+                    <div class="box-body">
+                        {!! Form::select(
+                            'tagids[]', $tags,
+                            isset($selectedTags) ? array_keys($selectedTags) : null,
+                            [
+                                'id' => 'tagids',
+                                'multiple' => 'multiple',
+                                'disabled' => sizeof($tags) <= 1,
+                                'class' => 'form-control select2',
+                                'style' => 'width: 100%;'
+                            ])
+                        !!}
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-xs-3">
+        @endif
+        <div class="{!! isset($disabled) ? 'col-xs-3' : 'col-xs-6' !!}">
             <i class="fa fa-check-circle">
                 &nbsp;{!! $selectedTitle ?? '已选择的部门' !!}
             </i>
