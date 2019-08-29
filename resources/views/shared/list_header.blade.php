@@ -12,8 +12,8 @@
         @foreach ($buttons as $button)
             @can('act', $uris[$button['id']])
                 {!! Form::button(
-                    Html::tag('i', $button['label'], [
-                        'class' => $button['icon'] . ' ' . ($button['color'] ?? 'text-blue')
+                    Html::tag('i', '&nbsp;' . $button['label'], [
+                        'class' => $button['icon'] . '&nbsp;' . ($button['color'] ?? 'text-blue')
                     ]), ['id' => $button['id'], 'class' => 'btn btn-box-tool']
                 ) !!}
             @endcan
@@ -22,8 +22,8 @@
     @if (isset($batch))
         <div class="btn-group">
             @if (
-                (isset($uris['update']) && Auth::user()->can('act', $uris['update'])) ||
-                (isset($uris['destroy']) && Auth::user()->can('act', $uris['destroy']))
+                (isset($uris['update']) && Auth::user()->{'can'}('act', $uris['update'])) ||
+                (isset($uris['destroy']) && Auth::user()->{'can'}('act', $uris['destroy']))
             )
                 {!! Form::button(
                     Html::tag('i', '', ['class' => 'fa fa-check-circle text-blue']),
