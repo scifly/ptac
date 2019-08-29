@@ -35,7 +35,7 @@
                             'id' => 'media_id'
                         ]) !!}
                         @if (isset($media))
-                            <img src="../../{{ $media->path }}" id="{{ $media->id }}">
+                            <img src="../../{{ $media->path }}" id="{{ $media->id }}" alt="">
                         @endif
                     </div>
                     <label for="file-image" class="custom-file-upload text-blue">

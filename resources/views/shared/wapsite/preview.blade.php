@@ -7,7 +7,7 @@
             @if (isset($medias))
                 @foreach($medias as $media)
                     <div class="img-item">
-                        <img src="../../{{ $media->path }}" id="{{ $media->id }}">
+                        <img src="../../{{ $media->path }}" id="{{ $media->id }}" alt="">
                         {!! Form::hidden('media_ids[]', $media->id) !!}
                         <div class="del-mask">
                             <i class="delete fa fa-trash"></i>

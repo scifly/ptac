@@ -16,7 +16,7 @@
             <div class="weui-cell__bd clearfix">
                 <img src="{!! $type == 'department' ? asset('img/department.png') : asset('img/personal.png') !!}"
                      @if ($type == 'department') style="border-radius: 0;" @endif
-                     class="target-image" width="25" height="25">
+                     class="target-image" width="25" height="25" alt="">
                 <span class="contacts-text">
                 {!!
                     $type == 'department'

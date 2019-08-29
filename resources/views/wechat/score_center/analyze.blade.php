@@ -25,7 +25,7 @@
                             <div class="table-title">{!! $one['sub'] !!}分数统计详情</div>
                             <table class="table-count">
                                 <tr>
-                                    <td class="subtit" width="">统计人数</td>
+                                    <td class="subtit">统计人数</td>
                                     <td>{!! $one['count'] !!}</td>
                                 </tr>
                                 <tr>
