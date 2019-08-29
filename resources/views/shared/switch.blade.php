@@ -10,9 +10,9 @@
         {!! Form::label($id . '1', $options[0] ?? '启用', ['class' => 'switch-lbl']) !!}
 {{--        <input id="{!! $id !!}2" @if (isset($value) && !$value) checked @endif--}}
 {{--               type="radio" name="{!! $id !!}" class="minimal" value="0">--}}
-        {!! Form::radio($id, 0, isset($value) && !$value), [
+        {!! Form::radio($id, 0, isset($value) && !$value, [
             'id' => $id . '2', 'class' => 'minimal'
-        ] !!}
+        ]) !!}
         {!! Form::label($id . '2', $options[1] ?? '禁用', ['class' => 'switch-lbl']) !!}
     </div>
 </div>
