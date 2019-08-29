@@ -57,9 +57,9 @@
     </div>
     <div class="box-footer">
         <div class="form-group">
-            {!! Form::reset(
+            {!! Form::button(
                 Html::tag('i', ' 取消', ['class' => 'fa fa-reply']),
-                ['id' => 'revoke', 'class' => 'btn btn-default pull-right margin btn-sm']
+                ['id' => 'revoke', 'class' => 'btn btn-default pull-right margin btn-sm', 'type' => 'reset']
             ) !!}
             {!! Form::button(
                 Html::tag('i', ' 确定', ['class' => 'fa fa-save']),
