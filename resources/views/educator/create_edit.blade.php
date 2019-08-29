@@ -101,7 +101,7 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-mobile'])
-                        {!! Form::email('user[mobile]', null, [
+                        {!! Form::text('user[mobile]', null, [
                             'type' => 'number',
                             'class' => 'form-control text-blue',
                             'data-parsley-length' => '[11,11]',
@@ -120,7 +120,6 @@
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
                         {!! Form::email('user[email]', null, [
-                            'type' => 'email',
                             'class' => 'form-control text-blue',
                             'placeholder' => '(选填。如果手机号码为空，此项必填)',
                             'maxlength' => '255'
@@ -152,7 +151,7 @@
                 'label' => '也是监护人',
                 'options' => ['否', '是']
             ])
-            <!-- 所属部门 -->
+            <!-- 所属部门/标签-->
             <div class="form-group depart">
                 {!! Form::label('departmentId', '所属部门 & 标签', [
                     'class' => 'col-sm-3 control-label'

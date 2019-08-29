@@ -9,9 +9,16 @@
             </button>
             @if (!isset($disabled))
                 @can('act', $uris['index'])
-                    <button class="btn btn-default pull-right" id="cancel" type="reset">
-                        <i class="fa fa-mail-reply"> 取消</i>
-                    </button>
+{{--                    <button class="btn btn-default pull-right" id="cancel" type="reset">--}}
+{{--                        <i class="fa fa-mail-reply"> 取消</i>--}}
+{{--                    </button>--}}
+                    {!! Form::button(
+                        Html::tag('i', ' 取消', ['class' => 'fa fa-mail-reply']),
+                        [
+                            'id' => 'cancel', 'type' => 'reset',
+                            'class' => 'btn btn-default pull-right'
+                        ]
+                    ) !!}
                 @endcan
             @endif
         </div>
