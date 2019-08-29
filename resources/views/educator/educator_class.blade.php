@@ -1,74 +1,63 @@
 <div class="form-group" id="class-subjects">
-    <label class="col-sm-3 control-label">任教班级&科目</label>
+    {!! Form::label('', '任教班级 & 科目', ['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-6">
         <table id="classes" class="table-bordered table-responsive" style="width: 100%;">
             <thead>
             <tr class="bg-info">
-                <td class="text-center">班级</td>
-                <td class="text-center">科目</td>
-                <td class="text-center">+/-</td>
+                @foreach (['班级', '科目', '+/-'] as $title)
+                    <td class="text-center">{!! $title !!}</td>
+                @endforeach
             </tr>
             </thead>
             <tbody>
-            @if (isset($educator->educatorClasses) && count($educator->educatorClasses) != 0 )
+            @if ($educator->educatorClasses)
                 @foreach ($educator->educatorClasses  as $index => $ec)
                     <tr>
                         <td class="text-left">
-                            <select name="cs[class_ids][]" class="select2" title="班级" style="width: 98%;">
-                                @foreach ($squads as $id => $squad )
-                                    <option value="{!! $id !!}" @if ($id == $ec->class_id) selected @endif>
-                                        {!! $squad !!}
-                                    </option>
-                                @endforeach
-                            </select>
+                            {!! Form::select('cs[class_ids][]', $squads, $ec->class_id, [
+                                'class' => 'select2', 'title' => '班级', 'style' => 'width: 98%;'
+                            ]) !!}
                         </td>
                         <td class="text-left">
-                            <select name="cs[subject_ids][]" class="select2" title="科目" style="width: 98%;">
-                                @foreach($subjects as $id => $subject )
-                                    <option value="{!! $id !!}" @if ($id == $ec->subject_id) selected @endif>
-                                        {!! $subject !!}
-                                    </option>
-                                @endforeach
-                            </select>
+                            {!! Form::select('cs[subject_ids][]', $subjects, $ec->subject_id, [
+                                'class' => 'select2', 'title' => '科目', 'style' => 'width: 98%;'
+                            ]) !!}
                         </td>
                         <td class="text-center">
-                            @if ($index == sizeof($educator->educatorClasses) - 1)
-                                <span class="input-group-btn">
-                                    <button class="btn btn-box-tool btn-class-add btn-add">
-                                        <i class="fa fa-plus text-blue"></i>
-                                    </button>
-                                </span>
-                            @else
-                                <span class="input-group-btn">
-                                    <button class="btn btn-box-tool  btn-class-remove btn-remove">
-                                        <i class="fa fa-minus text-blue"></i>
-                                    </button>
-                                </span>
-                            @endif
+                            <span class="input-group-btn">
+                                @if ($index == sizeof($educator->educatorClasses) - 1)
+                                    {!! Form::button(
+                                        Html::tag('i', '', ['class' => 'fa fa-plus text-blue']),
+                                        ['class' => 'btn btn-box-tool btn-class-add btn-add']
+                                    ) !!}
+                                @else
+                                    {!! Form::button(
+                                        Html::tag('i', '', ['class' => 'fa fa-minus text-blue']),
+                                        ['class' => 'btn btn-box-tool btn-class-remove btn-remove']
+                                    ) !!}
+                                @endif
+                            </span>
                         </td>
                     </tr>
                 @endforeach
             @else
                 <tr>
                     <td class="text-left">
-                        <select name="cs[class_ids][]" class="select2" title="班级" style="width: 98%;">
-                            @foreach ($squads as $id => $squad )
-                                <option value="{!! $id !!}">{!! $squad !!}</option>
-                            @endforeach
-                        </select>
+                        {!! Form::select('cs[class_ids][]', $squads, null, [
+                            'class' => 'select2', 'title' => '班级', 'style' => 'width: 98%;'
+                        ]) !!}
                     </td>
                     <td class="text-left">
-                        <select name="cs[subject_ids][]" class="select2" title="科目" style="width: 98%;">
-                            @foreach ($subjects as $id => $subject )
-                                <option value="{!! $id !!}">{!! $subject !!}</option>
-                            @endforeach
-                        </select>
+                        {!! Form::select('cs[subject_ids][]', $subjects, null, [
+                            'class' => 'select2', 'title' => '科目', 'style' => 'width: 98%;'
+                        ]) !!}
                     </td>
                     <td class="text-center">
                         <span class="input-group-btn">
-                            <button class="btn btn-box-tool btn-class-add">
-                                <i class="fa fa-plus text-blue"></i>
-                            </button>
+                            {!! Form::button(
+                                Html::tag('i', '', ['class' => 'fa fa-plus text-blue']),
+                                ['class' => 'btn btn-box-tool btn-class-add']
+                            ) !!}
                         </span>
                     </td>
                 </tr>

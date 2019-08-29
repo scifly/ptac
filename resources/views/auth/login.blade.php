@@ -40,24 +40,38 @@
             <form  method="post">
                 {!! csrf_field() !!}
                 <div class="form-group has-feedback">
-                    <input  class="form-control" placeholder="(用户名/邮箱/手机号码)" name="input" id="input">
+                    {!! Form::text('input', null, [
+                        'id' => 'input',
+                        'placeholder' => '(用户名/邮箱/手机号码)',
+                        'class' => 'form-control'
+                    ]) !!}
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
                 </div>
                 <div class="form-group has-feedback">
-                    <input type="password" class="form-control" placeholder="密码" name="password" id="password">
+                    {!! Form::password('password', [
+                        'id' => 'password',
+                        'class' => 'form-control',
+                        'placeholder' => '(密码)'
+                    ]) !!}
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                 </div>
                 <div class="row">
                     <div class="col-xs-8">
                         <div class="checkbox icheck">
-                            <input type="checkbox" id="remember">
-                            <label for="remember" style="vertical-align: middle; margin-left: 5px;">记住我</label>
+                            {!! Form::checkbox('remember', 0, null, ['id' => 'remember']) !!}
+                            {!! Form::label('remember', '记住我', [
+                                'style' => 'vertical-align: middle; margin-left: 5px;',
+                            ]) !!}
                         </div>
                     </div>
                     <div class="col-xs-4">
-                        <button onclick="void(0)" class="btn btn-primary btn-block btn-flat" id="signin">
-                            <i class="fa fa-sign-in">&nbsp;&nbsp;登录</i>
-                        </button>
+                        {!! Form::button(
+                            Html::tag('i', ' 登录', ['class' => 'fa fa-sign-in']),
+                            [
+                                'id' => 'signin', 'onclick' => 'void(0)',
+                                'class' => 'btn btn-primary btn-block btn-flat'
+                            ]
+                        ) !!}
                     </div>
                 </div>
             </form>
@@ -66,7 +80,6 @@
         @include('shared.form_overlay')
     </div>
 </div>
-
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
 <script src="{{ asset('js/bootstrap.min.js')  }}"></script>

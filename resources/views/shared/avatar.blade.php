@@ -5,7 +5,7 @@
     ]) !!}
     <div class="col-sm-6">
         <div class="input-group">
-            <img src="{!! Auth::user()->avatar_url ?? asset('img/default.png') !!}"
+            <img src="{!! Auth::user()->{'avatar_url'} ?? asset('img/default.png') !!}"
                  class="img-circle" style="height: 80px;" alt="">
         </div>
         @if (!isset($student))
