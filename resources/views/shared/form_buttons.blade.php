@@ -4,7 +4,7 @@
         <div class="col-sm-6 col-sm-offset-3">
             {!! Form::button(
                 Html::tag('i', $label ?? ' 保存', ['class' => 'fa ' . ($class ?? 'fa-save')]), [
-                    'id' => $id ?? '', 'type' => 'submit',
+                    'id' => $id, 'type' => 'submit',
                     'class' => 'btn btn-primary'
                 ]
             ) !!}
