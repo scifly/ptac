@@ -4,7 +4,7 @@
         @foreach ($buttons as $button)
             @can('act', $uris[$button['id']])
                 {!! Form::button(
-                    Html::tag('i', $button['label'], [
+                    Html::tag('i', '&nbsp;' . $button['label'], [
                         'class' => $button['icon'] . '&nbsp;' . ($button['color'] ?? 'text-blue')
                     ]),
                     ['id' => $button['id'], 'class' => 'btn btn-box-tool']
