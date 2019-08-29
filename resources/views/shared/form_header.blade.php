@@ -3,19 +3,21 @@
     @if (isset($buttons))
         @foreach ($buttons as $button)
             @can('act', $uris[$button['id']])
-                <button id="{{ $button['id'] }}" type="button" class="btn btn-box-tool">
-                    <i class="{{ $button['icon'] }} {{ $button['color'] ?? 'text-blue' }}">
-                        &nbsp;{{ $button['label'] }}
-                    </i>
-                </button>
+                {!! Form::button(
+                    Html::tag('i', $button['label'], [
+                        'class' => $button['icon'] . ' ' . ($button['color'] ?? 'text-blue')
+                    ]),
+                    ['id' => $button['id'], 'class' => 'btn btn-box-tool']
+                ) !!}
             @endcan
         @endforeach
     @endif
     @if (!isset($disabled))
         @can('act', $uris['index'])
-            <button id="record-list" type="button" class="btn btn-box-tool">
-                <i class="fa fa-mail-reply text-blue"> 返回列表</i>
-            </button>
+            {!! Form::button(
+                Html::tag('i', ' 返回列表', ['class' => 'fa fa-mail-reply text-blue']),
+                ['id' => 'record-list', 'class' => 'btn btn-box-tool']
+            ) !!}
         @endcan
     @endif
 </div>

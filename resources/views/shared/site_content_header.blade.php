@@ -5,9 +5,7 @@
         </i>
     </h1>
     <ol class="breadcrumb">
-        <li>
-            <a href="#"><i class="fa fa-dashboard"></i> PTAC</a>
-        </li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> PTAC</a></li>
         <li class="active" id="head-breadcrumb"></li>
     </ol>
 </section>

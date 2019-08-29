@@ -3,7 +3,10 @@
     <div class="col-sm-6">
         <div class="input-group">
             <div class="input-group-addon">
-                <i class="{!! $icon ?? 'fa fa-list-alt' !!}" style="width: 20px;"></i>
+                {!! Html::tag('i', '', [
+                    'style' => 'width: 20px;',
+                    'class' => $icon ?? 'fa fa-list-alt'
+                ]) !!}
             </div>
             {!! Form::select(
                 $id . '[]', $items,

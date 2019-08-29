@@ -1,10 +1,14 @@
 <form action="#" class="sidebar-form">
     <div class="input-group">
-        <input name="q" class="form-control" placeholder="搜索...">
+        {!! Form::text('q', null, [
+            'placeholder' => '搜索...',
+            'class' => 'form-control'
+        ]) !!}
         <span class="input-group-btn">
-            <button name="search" id="search-btn" class="btn btn-flat">
-                <i class="fa fa-search"></i>
-            </button>
+            {!! Form::button(
+                Html::tag('i', '', ['class' => 'fa fa-search']),
+                ['name' => 'search', 'id' => 'search-btn', 'class' => 'btn btn-flat']
+            ) !!}
         </span>
     </div>
 </form>

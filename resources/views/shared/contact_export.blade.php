@@ -6,7 +6,6 @@
                 <h4 class="modal-title">{{ $title }}</h4>
             </div>
             <div class="modal-body with-border">
-                <?php $lblStyle = "margin: 0 5px; vertical-align: middle; font-weight: normal;"; ?>
                 <div class="form-horizontal">
                     @if (!isset($relationship))
                         <div class="form-group">
@@ -15,17 +14,17 @@
                             ]) }}
                             <div class="col-sm-6" style="padding-top: 5px;" id="range">
                                 @if (isset($departments))
-                                    <input id="range0" checked type="radio" name="range" class="minimal" value="0">
-                                    <label for="range0" style="{!! $lblStyle !!}">部门</label>
-                                    <input id="range1" type="radio" name="range" class="minimal" value="1">
-                                    <label for="range1" style="{!! $lblStyle !!}">所有</label>
+                                    {!! Form::radio('range', 0, true, ['id' => 'range0', 'class' => 'minimal']) !!}
+                                    {!! Form::label('range0', '部门', ['class' => 'switch-lbl']) !!}
+                                    {!! Form::radio('range', 1, false, ['id' => 'range1', 'class' => 'minimal']) !!}
+                                    {!! Form::label('range1', '所有', ['class' => 'switch-lbl']) !!}
                                 @else
-                                    <input id="range0" checked type="radio" name="range" class="minimal" value="0">
-                                    <label for="range0" style="{!! $lblStyle !!}">班级</label>
-                                    <input id="range1" type="radio" name="range" class="minimal" value="1">
-                                    <label for="range1" style="{!! $lblStyle !!}">年级</label>
-                                    <input id="range2" type="radio" name="range" class="minimal" value="2">
-                                    <label for="range2" style="{!! $lblStyle !!}">所有</label>
+                                    {!! Form::radio('range', 0, true, ['id' => 'range0', 'class' => 'minimal']) !!}
+                                    {!! Form::label('range0', '班级', ['class' => 'switch-lbl']) !!}
+                                    {!! Form::radio('range', 1, false, ['id' => 'range1', 'class' => 'minimal']) !!}
+                                    {!! Form::label('range1', '年级', ['class' => 'switch-lbl']) !!}
+                                    {!! Form::radio('range', 2, false, ['id' => 'range2', 'class' => 'minimal']) !!}
+                                    {!! Form::label('range2', '所有', ['class' => 'switch-lbl']) !!}
                                 @endif
                             </div>
                         </div>
@@ -83,8 +82,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <a id="confirm" href="javascript:" class="btn btn-sm btn-success">确定</a>
-                <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">取消</a>
+                {!! Html::link('#', '确定', ['id' => 'confirm', 'class' => 'btn btn-sm btn-success']) !!}
+                {!! Html::link('#', '取消', ['class' => 'btn btn-sm btn-white', 'data-dismiss' => 'modal']) !!}
             </div>
         </div>
     </div>

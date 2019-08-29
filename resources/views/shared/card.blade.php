@@ -8,7 +8,7 @@
             @include('shared.icon_addon', ['class' => 'fa-credit-card'])
             {!! Form::text('card[sn]', null, [
                 'class' => 'form-control text-blue',
-                'placeholder' => '(可选)',
+                'placeholder' => '(选填)',
                 'data-parsley-type' => 'alphanum',
                 'data-parsley-length' => '[2, 32]'
             ]) !!}

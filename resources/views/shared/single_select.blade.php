@@ -1,14 +1,11 @@
-<div class="form-group"
-     @if (isset($divId)) id="{{ $divId }}" @endif
-     @if (isset($style)) style="{{ $style }}" @endif
->
+<div class="form-group" id="{!! $divId ?? '' !!}" style="{!! $style ?? '' !!}">
     {!! Form::label($id, $label, [
-        'class' => (isset($wl) ? $wl : 'col-sm-3') . ' control-label',
+        'class' => ($wl ?? 'col-sm-3') . ' control-label',
     ]) !!}
-    <div class="{!! isset($wr) ? $wr : 'col-sm-6' !!}">
+    <div class="{!! $wr ?? 'col-sm-6' !!}">
         <div class="input-group">
             <div class="input-group-addon">
-                <i class="{{ $icon ?? 'fa fa-list' }}" style="width: 20px;"></i>
+                <i class="{!! $icon ?? 'fa fa-list' !!}" style="width: 20px;"></i>
             </div>
             {!! Form::select($id, $items, null, [
                 'class' => 'form-control select2',
