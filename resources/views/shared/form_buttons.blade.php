@@ -2,15 +2,15 @@
 <div class="box-footer">
     <div class="form-group">
         <div class="col-sm-6 col-sm-offset-3">
-            {!! Form::submit(
+            {!! Form::button(
                 Html::tag('i', $label ?? ' 保存', ['class' => 'fa ' . ($class ?? 'fa-save')]),
-                ['id' => $id ?? null, 'class' => 'btn btn-primary']
+                ['id' => $id ?? null, 'class' => 'btn btn-primary', 'type' => 'submit']
             ) !!}
             @if (!isset($disabled))
                 @can('act', $uris['index'])
-                    {!! Form::reset(
+                    {!! Form::button(
                         Html::tag('i', ' 取消', ['class' => 'fa fa-mail-reply']),
-                        ['id' => 'cancel', 'class' => 'btn btn-default pull-right']
+                        ['id' => 'cancel', 'class' => 'btn btn-default pull-right', 'type' => 'reset']
                     ) !!}
                 @endcan
             @endif
