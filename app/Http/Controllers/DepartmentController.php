@@ -64,6 +64,7 @@ class DepartmentController extends Controller {
      *
      * @param DepartmentRequest $request
      * @return JsonResponse
+     * @throws Throwable
      */
     public function store(DepartmentRequest $request) {
         
@@ -96,6 +97,7 @@ class DepartmentController extends Controller {
      * @param DepartmentRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(DepartmentRequest $request, $id) {
         

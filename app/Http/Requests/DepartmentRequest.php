@@ -33,6 +33,7 @@ class DepartmentRequest extends FormRequest {
             'parent_id'          => 'nullable|integer',
             'department_type_id' => 'required|integer',
             'order'              => 'nullable|integer',
+            'tag_ids'            => 'nullable|array',
             'enabled'            => 'required|boolean',
         ];
         

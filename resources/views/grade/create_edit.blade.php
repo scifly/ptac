@@ -8,6 +8,7 @@
                 {!! Form::hidden('id', $grade['id'], ['id' => 'id']) !!}
                 {!! Form::hidden('department_id', $grade['department_id']) !!}
             @endif
+            <!-- 名称 -->
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
@@ -24,12 +25,15 @@
                     </div>
                 </div>
             </div>
+            <!-- 年级主任 -->
             @include('shared.multiple_select', [
                 'label' => '年级主任',
                 'id' => 'educator_ids',
                 'items' => $educators,
                 'selectedItems' => $selectedEducators ?? []
             ])
+            <!-- 所属标签 -->
+            @include('shared.tag.tags')
             @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $grade['enabled'] ?? null

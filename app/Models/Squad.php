@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasMany};
 use Illuminate\Support\Facades\{Auth, DB, Request};
+use ReflectionException;
 use Throwable;
 
 /**
@@ -172,11 +173,15 @@ class Squad extends Model {
         
         try {
             DB::transaction(function () use ($data) {
-                # 创建班级、对应的部门
+                # 创建班级对应的部门
                 $class = $this->create($data);
-                $department = (new Department)->stow($class, 'grade');
                 # 更新“班级”的部门id
+                $department = (new Department)->stow($class, 'grade');
                 $class->update(['department_id' => $department->id]);
+                # 更新部门标签绑定关系
+                (new DepartmentTag)->storeByDeptId(
+                    $department->id, $data['tag_ids'] ?? []
+                );
             });
         } catch (Exception $e) {
             throw $e;
@@ -198,10 +203,14 @@ class Squad extends Model {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                if ($id) {
-                    $class = $this->find($id);
+                if ($class = $this->find($id)) {
+                    # 更新班级
                     $class->update($data);
-                    (new Department)->alter($this->find($id));
+                    (new Department)->alter($class);
+                    # 更新部门标签绑定关系
+                    (new DepartmentTag)->storeByDeptId(
+                        $class->department_id, $data['tag_ids'] ?? []
+                    );
                 } else {
                     $this->batch($this);
                 }
@@ -242,6 +251,79 @@ class Squad extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 返回view所需数据
+     *
+     * @return array
+     * @throws ReflectionException
+     */
+    function compose() {
+        
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            return [
+                'titles' => [
+                    '#', '名称',
+                    [
+                        'title' => '所属年级',
+                        'html'  => $this->singleSelectList(
+                            [null => '全部'] + Grade::whereIn('id', $this->gradeIds())
+                                ->pluck('name', 'id')->toArray(),
+                            'filter_grade_id'
+                        ),
+                    ],
+                    '班主任',
+                    [
+                        'title' => '创建于',
+                        'html'  => $this->inputDateTimeRange('创建于'),
+                    ],
+                    [
+                        'title' => '更新于',
+                        'html'  => $this->inputDateTimeRange('更新于'),
+                    ],
+                    [
+                        'title' => '同步状态',
+                        'html'  => $this->singleSelectList(
+                            [null => '全部', 0 => '未同步', 1 => '已同步'], 'filter_subscribed'
+                        ),
+                    ],
+                    [
+                        'title' => '状态 . 操作',
+                        'html'  => $this->singleSelectList(
+                            [null => '全部', 0 => '未启用', 1 => '已启用'], 'filter_enabled'
+                        ),
+                    ],
+                ],
+                'filter' => true,
+            ];
+        } else {
+            $grades = Grade::whereIn('id', $this->gradeIds())
+                ->where('enabled', 1)
+                ->pluck('name', 'id');
+            $educators = Educator::with('user')
+                ->whereIn('id', $this->contactIds('educator'))
+                ->where('enabled', 1)->get()
+                ->pluck('user.realname', 'id');
+            if ($class = $this->find(Request::route('id'))) {
+                $department = $class->department;
+                $educatorIds = $class->educator_ids;
+                $educatorIds == '0' ?: $selectedEducators = (new Educator)->educatorList(
+                    explode(',', $educatorIds)
+                );
+            }
+            
+            return array_merge(
+                [
+                    'grades'            => $grades,
+                    'educators'         => $educators,
+                    'selectedEducators' => $selectedEducators ?? null,
+                ],
+                (new Tag)->compose('department', $department ?? null)
+            );
+        }
         
     }
     

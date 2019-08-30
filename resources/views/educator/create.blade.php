@@ -5,4 +5,4 @@
 ]) !!}
 @include('educator.create_edit')
 {!! Form::close() !!}
-@include('shared.tree', ['title' => '所属部门 & 标签'])
+@include('shared.tree', ['title' => '所属部门'])

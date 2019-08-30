@@ -7,7 +7,7 @@
             @if (!empty($department['id']))
                 {{ Form::hidden('id', $department['id'], ['id' => 'id']) }}
             @endif
-            {{ Form::hidden('parent_id', isset($parentId) ? $parentId : null, ['id' => 'parent_id']) }}
+            {!! Form::hidden('parent_id', $parentId ?? null, ['id' => 'parent_id']) !!}
             <div class="form-group">
                 {!! Form::label('name', '名称',[
                     'class' => 'col-sm-3 control-label'
@@ -24,6 +24,8 @@
                     </div>
                 </div>
             </div>
+            <!-- 所属标签 -->
+            @include('shared.tag.tags')
             @include('shared.remark')
             @include('shared.switch', [
                 'id' => 'enabled',

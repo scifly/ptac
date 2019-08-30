@@ -23,6 +23,7 @@ class GradeRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+        
         return [
             'name'          => 'required|string|max:255|unique:grades,name,' .
                 $this->input('id') . ',id,' .
@@ -30,8 +31,10 @@ class GradeRequest extends FormRequest {
             'department_id' => 'required|integer',
             'school_id'     => 'required|integer',
             'educator_ids'  => 'required|string',
+            'tag_ids'       => 'required|array',
             'enabled'       => 'required|boolean',
         ];
+        
     }
     
     protected function prepareForValidation() {

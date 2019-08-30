@@ -423,31 +423,24 @@ class Menu extends Model {
      */
     private function move($id, $parentId) {
         
-        $moved = false;
         try {
-            DB::transaction(function () use ($id, $parentId, &$moved) {
+            DB::transaction(function () use ($id, $parentId) {
                 $menu = $this->find($id);
-                if (!isset($menu)) {
-                    $moved = false;
-                } else {
-                    $menu->parent_id = $parentId === '#' ? null : intval($parentId);
-                    $moved = $menu->save();
-                    /** 当企业类菜单所属运营类菜单发生变化时，更新企业所属运营者及所属部门 */
-                    if ($moved && $menu->menuType->name == '企业') {
-                        $corp = Corp::whereMenuId($menu->id)->first();
-                        $company = Company::whereMenuId($menu->parent_id)->first();
-                        $data = ['parent_id' => $company->department_id];
-                        $moved = $moved && ((new Department)->modify($data, $corp->department_id) ? true : false);
-                        $data = ['company_id' => $company->id];
-                        $moved = $moved && $corp->update($data);
-                    }
+                $menu->parent_id = $parentId === '#' ? null : intval($parentId);
+                $menu->save();
+                /** 当企业类菜单所属运营类菜单发生变化时，更新企业所属运营者及所属部门 */
+                if ($menu->menuType->name == '企业') {
+                    $corp = Corp::whereMenuId($menu->id)->first();
+                    $company = Company::whereMenuId($menu->parent_id)->first();
+                    Department::find($corp->department_id)->update(['parent_id' => $company->department_id]);
+                    $corp->update(['company_id' => $company->id]);
                 }
             });
         } catch (Exception $e) {
             throw $e;
         }
         
-        return $moved;
+        return true;
         
     }
     

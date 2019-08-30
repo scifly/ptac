@@ -20,24 +20,9 @@ class TagComposer {
      */
     public function compose(View $view) {
     
-        $action = explode('/', Request::path())[1];
-        if ($action == 'index') {
-            $data = [
-                'titles' => ['#', '名称', '备注', '创建于', '更新于', '同步', '状态 . 操作'],
-            ];
-        } else {
-            if (Request::route('id')) {
-                $tag = Tag::find(Request::route('id'));
-                $targetIds = $tag->departments->pluck('id')->toArray();
-                $targetsHtml = (new Message)->targetsHtml($tag->users, $targetIds);
-            }
-            $data = [
-                'targets' => $targetsHtml ?? null,
-                'targetIds' => isset($targetIds) ? implode(',', $targetIds) : ''
-            ];
-        }
-        
-        $view->with($data);
+        $view->with(
+            (new Tag)->compose()
+        );
         
     }
     

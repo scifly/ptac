@@ -7,6 +7,7 @@
             @if (!empty($class['id']))
                 {{ Form::hidden('id', $class['id'], ['id' => 'id']) }}
             @endif
+            <!-- 名称 -->
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
@@ -23,18 +24,22 @@
                     </div>
                 </div>
             </div>
+            <!-- 所属年级 -->
             @include('shared.single_select', [
                 'label' => '所属年级',
                 'id' => 'grade_id',
                 'items' => $grades,
                 'icon' => 'fa fa-object-group'
             ])
+            <!-- 班级主任 -->
             @include('shared.multiple_select', [
                 'label' => '班级主任',
                 'id' => 'educator_ids',
                 'items' => $educators,
                 'selectedItems' => $selectedEducators ?? null
             ])
+            <!-- 所属标签 -->
+            @include('shared.tag.tags')
             @if (isset($class['department_id']))
                 {!! Form::hidden('department_id', $class['department_id']) !!}
             @endif

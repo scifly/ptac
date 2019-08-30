@@ -9,6 +9,7 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Support\Facades\{Auth, DB, Request};
+use ReflectionException;
 use Throwable;
 
 /**
@@ -154,25 +155,28 @@ class Tag extends Model {
     /**
      * 更新标签
      *
-     * @param array $data
-     * @param $id
+     * @param array|null $data
+     * @param integer|null $id
      * @return bool
      * @throws Throwable
      */
-    function modify(array $data, $id) {
+    function modify(array $data = null, $id = null) {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                $tag = $this->find($id);
-                TagUser::whereTagId($tag->id)->delete();
-                DepartmentTag::whereTagId($tag->id)->delete();
-                !isset($data['user_ids']) ?: $this->retain(
-                    'TagUser', $id, $data['user_ids']
-                );
-                !isset($data['dept_ids']) ?: $this->retain(
-                    'DepartmentTag', $tag->id, $data['dept_ids'], false
-                );
-                !$tag->update($data) ?: $this->sync([$id], 'update');
+                if ($id) {
+                    $tag = $this->find($id);
+                    TagUser::whereTagId($tag->id)->delete();
+                    DepartmentTag::whereTagId($tag->id)->delete();
+                    !isset($data['user_ids']) ?: $this->retain(
+                        'TagUser', $id, $data['user_ids']
+                    );
+                    !isset($data['dept_ids']) ?: $this->retain(
+                        'DepartmentTag', $tag->id, $data['dept_ids'], false
+                    );
+                    $tag->update($data);
+                }
+                $this->sync($id ? [$id] : Request::input('ids'), 'update');
             });
         } catch (Exception $e) {
             throw $e;
@@ -209,12 +213,59 @@ class Tag extends Model {
     }
     
     /**
+     * 返回view所需数据
+     *
+     * @param null $action
+     * @param Model|null $model
+     * @return array
+     */
+    function compose($action = null, Model $model = null) {
+        
+        $action = $action ?? explode('/', Request::path())[1];
+        switch ($action) {
+            case 'index':
+                return [
+                    'titles' => ['#', '名称', '备注', '创建于', '更新于', '同步', '状态 . 操作'],
+                ];
+            case 'user':
+            case 'department':
+            case 'message':
+                if ($model) {
+                    if ($action != 'message') {
+                        $builder = $model->{'tags'};
+                    } else {
+                        $totag = explode(',', json_decode($model->{'content'}, true)['totag']);
+                        $builder = $this->whereIn('tagid', $totag);
+                    }
+                    $selectedTags = $builder->pluck('name', 'id')->toArray();
+                }
+                
+                return [
+                    'tags'         => $this->list(),
+                    'selectedTags' => $selectedTags ?? null,
+                ];
+            default:
+                if (Request::route('id')) {
+                    $tag = Tag::find(Request::route('id'));
+                    $targetIds = $tag->departments->pluck('id')->toArray();
+                    $targetsHtml = (new Message)->targetsHtml($tag->users, $targetIds);
+                }
+                
+                return [
+                    'targets'   => $targetsHtml ?? null,
+                    'targetIds' => isset($targetIds) ? implode(',', $targetIds) : '',
+                ];
+        }
+        
+    }
+    
+    /**
      * 返回标签列表
      *
      * @return array
      */
     function list() {
-    
+        
         foreach (Tag::whereSchoolId($this->schoolId())->pluck('name', 'id')->toArray() as $id => $name) {
             $tags[$id] = explode('.', $name)[0];
         }
@@ -231,9 +282,7 @@ class Tag extends Model {
      */
     private function sync(array $ids, $action) {
         
-        if ($tag = $this->find($ids[0])) {
-            SyncTag::dispatch($ids, Auth::id(), $action);
-        }
+        empty($ids) ?: SyncTag::dispatch($ids, Auth::id(), $action);
         
     }
     

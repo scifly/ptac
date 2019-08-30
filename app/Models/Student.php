@@ -185,7 +185,7 @@ class Student extends Model {
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 },
-            ]
+            ],
         ];
         $joins = [
             [
@@ -221,10 +221,8 @@ class Student extends Model {
                 (new Card)->store($user);
                 $data['user_id'] = $user->id;
                 $student = $this->create($data);
-                (new DepartmentUser)->store(
-                    $student->user_id,
-                    $student->squad->department_id
-                );
+                (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
+                (new TagUser)->storeByUserId($student->user_id, $data['tag_ids'] ?? []);
             });
         } catch (Exception $e) {
             throw $e;
@@ -247,10 +245,7 @@ class Student extends Model {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                if (!$id) {
-                    $this->batch($this);
-                } else {
-                    $student = $this->find($id);
+                if ($student = $this->find($id)) {
                     # 如果学生班级发生变化，则需更新对应监护人的部门绑定关系
                     if ($student->class_id != $data['class_id']) {
                         $userIds = $student->custodians->pluck('user_id')->toArray();
@@ -280,6 +275,9 @@ class Student extends Model {
                         $student->user_id,
                         $student->squad->department_id
                     );
+                    (new TagUser)->storeByUserId($student->user_id, $data['tag_ids'] ?? []);
+                } else {
+                    $this->batch($this);
                 }
                 empty($userIds = $userIds ?? []) ?: (new User)->sync(
                     array_map(
@@ -427,7 +425,8 @@ class Student extends Model {
                     <td>$snHtml</td>
                 </tr>
             HTML;
-            $list = ''; $i = 0;
+            $list = '';
+            $i = 0;
             foreach ($students as $student) {
                 $user = $student->user;
                 $card = $user->card;
@@ -540,9 +539,10 @@ class Student extends Model {
      * 返回create/edit view所需数据
      *
      * @return array
+     * @throws ReflectionException
      */
     function compose() {
-    
+        
         $action = explode('/', Request::path())[1];
         switch ($action) {
             case 'index':
@@ -565,12 +565,12 @@ class Student extends Model {
                             'label' => '发卡',
                             'icon'  => 'fa fa-credit-card',
                         ],
-                        'grant' => [
+                        'grant'  => [
                             'id'    => 'grant',
                             'label' => '一卡通授权',
                             'icon'  => 'fa fa-credit-card',
                         ],
-                        'face' => [
+                        'face'   => [
                             'id'    => 'face',
                             'label' => '人脸设置',
                             'icon'  => 'fa fa-camera',
@@ -649,11 +649,12 @@ class Student extends Model {
             case 'grant':
                 $data = (new Card)->compose('Student');
                 break;
-            default:
+            default: # 创建/编辑
                 [$grades] = $this->gcList();
-                if (Request::route('id')) {
-                    $student = $this->find(Request::route('id'));
-                    $student->{'card'} = $student->user->card;
+                ;
+                if ($student = $this->find(Request::route('id'))) {
+                    $user = $student->user;
+                    $student->{'card'} = $user->card;
                     $student->user->ent_attrs = json_decode(
                         $student->user->ent_attrs, true
                     );
@@ -665,13 +666,15 @@ class Student extends Model {
                 $builder = empty($grades)
                     ? Squad::whereIn('id', $this->classIds())
                     : Squad::where(['grade_id' => $gradeId, 'enabled' => 1]);
-                $data = array_combine(
-                    ['student', 'grades', 'classes'],
-                    [
-                        $student ?? null,
-                        $grades,
-                        $builder->pluck('name', 'id')->toArray(),
-                    ]
+                $data = array_merge(
+                    array_combine(
+                        ['student', 'grades', 'classes'],
+                        [
+                            $student, $grades,
+                            $builder->pluck('name', 'id')->toArray(),
+                        ]
+                    ),
+                    (new Tag)->compose('user', $user ?? null)
                 );
                 break;
         }
@@ -686,7 +689,7 @@ class Student extends Model {
      * @return array
      */
     private function gcList() {
-    
+        
         $grades = Grade::whereIn('id', $this->gradeIds())
             ->where('enabled', 1)
             ->pluck('name', 'id')

@@ -59,11 +59,8 @@ class SyncTag implements ShouldQueue {
     function handle() {
         
         try {
-            $tag = Tag::find($this->data[0]);
-            $school = $tag->school;
-            ($this->app = $school->app)
-                ? $this->sync($this->app, $school)
-                : $this->corpSync();
+            $school = ($tag = Tag::find($this->data[0]))->school;
+            ($this->app = $school->app) ? $this->sync($this->app, $school) : $this->corpSync();
         } catch (Exception $e) {
             $this->eHandler($this, $e);
             throw $e;
@@ -88,48 +85,50 @@ class SyncTag implements ShouldQueue {
                 $token = Wechat::token('pub', $app->appid, $app->appsecret);
                 if ($this->action != 'delete') {
                     # 同步(创建/更新)标签
-                    $tag = Tag::find($this->data[0]);
-                    $data['tag']['name'] = $tag->name;
-                    $this->action != 'update' ?: $data['tag']['id'] = $tag->tagid;
-                    $this->throw_if($result = $this->invoke($this->action, [$token], $data));
-                    $this->action != 'create' ?: $tag->update(['tagid' => $result['tag']['id']]);
-                    # 同步标签用户绑定关系
-                    if ($this->action == 'update') {
-                        # 获取标签用户绑定关系
-                        $this->throw_if(
-                            $result = $this->invoke('tag/get', [$token], [
-                                'tagid' => $tag->tagid, 'next_openid' => ''
-                            ])
-                        );
-                        # 删除标签用户绑定关系
-                        if (!empty($openidList = $result['data']['openid'])) {
+                    foreach ($this->data as $id) {
+                        $tag = Tag::find($id);
+                        $data['tag']['name'] = $tag->name;
+                        $this->action != 'update' ?: $data['tag']['id'] = $tag->tagid;
+                        $this->throw_if($result = $this->invoke($this->action, [$token], $data));
+                        $this->action != 'create' ?: $tag->update(['tagid' => $result['tag']['id']]);
+                        # 同步标签用户绑定关系
+                        if ($this->action == 'update') {
+                            # 获取标签用户绑定关系
                             $this->throw_if(
-                                $result = $this->invoke('members/batchuntagging', [$token], [
-                                    'tagid' => $tag->tagid, 'openid_list' => $result['data']['openid']
+                                $result = $this->invoke('tag/get', [$token], [
+                                    'tagid' => $tag->tagid, 'next_openid' => ''
                                 ])
                             );
+                            # 删除标签用户绑定关系
+                            if (!empty($openidList = $result['data']['openid'])) {
+                                $this->throw_if(
+                                    $result = $this->invoke('members/batchuntagging', [$token], [
+                                        'tagid' => $tag->tagid, 'openid_list' => $result['data']['openid']
+                                    ])
+                                );
+                            }
                         }
-                    }
-                    # 添加标签绑定的用户
-                    $userIds = $tag->users->pluck('id')->toArray();
-                    foreach ($tag->departments as $department) {
-                        $userIds = array_merge(
-                            $userIds, $department->users->pluck('id')->toArray()
-                        );
-                    }
-                    $openids = Openid::whereIn('user_id', array_unique($userIds))
-                        ->where('app_id', $app->id)
-                        ->pluck('openid')->toArray();
+                        # 添加标签绑定的用户
+                        $userIds = $tag->users->pluck('id')->toArray();
+                        foreach ($tag->departments as $department) {
+                            $userIds = array_merge(
+                                $userIds, $department->users->pluck('id')->toArray()
+                            );
+                        }
+                        $openids = Openid::whereIn('user_id', array_unique($userIds))
+                            ->where('app_id', $app->id)
+                            ->pluck('openid')->toArray();
     
-                    empty($openids) ?: $this->throw_if(
-                        $this->invoke(
-                        'members/batchtagging', [$token], [
-                            'openid_list' => $openids,
-                            'tagid' => $tag->tagid
-                        ])
-                    );
-                    # 设置同步标记
-                    $tag->update(['synced' => 1]);
+                        empty($openids) ?: $this->throw_if(
+                            $this->invoke(
+                                'members/batchtagging', [$token], [
+                                'openid_list' => $openids,
+                                'tagid' => $tag->tagid
+                            ])
+                        );
+                        # 设置同步标记
+                        $tag->update(['synced' => 1]);
+                    }
                 } else {
                     array_map(
                         function ($tagId) use ($token) {

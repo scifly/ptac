@@ -122,7 +122,7 @@ class Custodian extends Model {
                 'conditions' => [
                     'User.id = Custodian.user_id',
                 ],
-            ]
+            ],
         ];
         
         return Datatable::simple(
@@ -348,7 +348,8 @@ class Custodian extends Model {
                     <td>$snHtml</td>
                 </tr>
             HTML;
-            $list = ''; $i = 0;
+            $list = '';
+            $i = 0;
             [$class, $contacts] = $this->custodians(Request::input('sectionId'));
             /** @var User $contact */
             foreach ($contacts as $contact) {
@@ -427,7 +428,7 @@ class Custodian extends Model {
                     )
                 );
             }
-    
+            
             return $list;
         } catch (Exception $e) {
             throw $e;
@@ -492,24 +493,24 @@ class Custodian extends Model {
      * @return array
      */
     function compose($id = null) {
-    
+        
         $action = explode('/', Request::path())[1];
         switch ($action) {
             case 'index':
                 [$grades, $classes] = $this->gcList();
                 $data = [
-                    'buttons'        => [
+                    'buttons' => [
                         'issue' => [
-                            'id' => 'issue',
+                            'id'    => 'issue',
                             'label' => '发卡',
-                            'icon' => 'fa fa-credit-card'
+                            'icon'  => 'fa fa-credit-card',
                         ],
                         'grant' => [
                             'id'    => 'grant',
                             'label' => '一卡通授权',
                             'icon'  => 'fa fa-credit-card',
                         ],
-                        'face' => [
+                        'face'  => [
                             'id'    => 'face',
                             'label' => '人脸设置',
                             'icon'  => 'fa fa-camera',
@@ -521,24 +522,24 @@ class Custodian extends Model {
                         '#', '姓名', '头像',
                         [
                             'title' => '性别',
-                            'html' => $this->singleSelectList(
+                            'html'  => $this->singleSelectList(
                                 [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
-                            )
+                            ),
                         ],
                         '学生', '手机号码',
                         [
                             'title' => '创建于',
-                            'html' => $this->inputDateTimeRange('创建于')
+                            'html'  => $this->inputDateTimeRange('创建于'),
                         ],
                         [
                             'title' => '更新于',
-                            'html' => $this->inputDateTimeRange('更新于')
+                            'html'  => $this->inputDateTimeRange('更新于'),
                         ],
                         [
                             'title' => '状态 . 操作',
-                            'html' => $this->singleSelectList(
+                            'html'  => $this->singleSelectList(
                                 [null => '全部', 0 => '未启用', 1 => '已启用'], 'filter_enabled'
-                            )
+                            ),
                         ],
                     ],
                     'grades'  => $grades,
@@ -560,17 +561,17 @@ class Custodian extends Model {
                 $classes = Squad::whereIn('id', $this->classIds())
                     ->get()->pluck('name', 'id')->toArray();
                 $data = [
-                    'prompt' => '家长列表',
-                    'formId' => 'formCustodian',
+                    'prompt'  => '家长列表',
+                    'formId'  => 'formCustodian',
                     'classes' => [0 => '(请选择一个班级)'] + $classes,
-                    'titles' => $titles,
-                    'columns' => 7
+                    'titles'  => $titles,
+                    'columns' => 7,
                 ];
                 break;
             case 'grant':
                 $data = (new Card)->compose('Custodian');
                 break;
-            default:
+            default:    # 创建/编辑
                 [$grades, $classes] = $this->gcList();
                 $records = Student::with('user:id,realname')
                     ->where(['class_id' => array_key_first($classes), 'enabled' => 1])
@@ -579,28 +580,30 @@ class Custodian extends Model {
                     if (!isset($record['user'])) continue;
                     $students[$record['id']] = $record['user']['realname'] . '-' . $record['sn'];
                 }
-                if (($custodianId = $id ?? Request::route('id')) && Request::method() == 'GET') {
-                    $custodian = $this->find($custodianId);
+                $custodian = $this->find($id ?? Request::route('id'));
+                if ($custodian && Request::method() == 'GET') {
                     $custodian->{'card'} = $custodian->user->card;
                     $custodian->user->ent_attrs = json_decode(
                         $custodian->user->ent_attrs, true
                     );
-                    $relations = CustodianStudent::whereCustodianId($custodianId)->get()->filter(
+                    $relations = CustodianStudent::whereCustodianId($custodian->id)->get()->filter(
                         function (CustodianStudent $cs) {
                             return $this->schoolId() == Student::find($cs->student_id)->squad->grade->school_id;
                         }
                     );
                 }
-                $data = array_combine(
-                    [
-                        'custodian', 'title', 'grades', 'classes',
-                        'students', 'relations', 'relationship'
-                    ],
-                    [
-                        $custodian ?? null, '新增监护关系',
-                        $grades, $classes, $students ?? [],
-                        $relations ?? collect([]), true
-                    ]
+                $data = array_merge(
+                    array_combine(
+                        [
+                            'custodian', 'title', 'grades', 'classes',
+                            'students', 'relations', 'relationship',
+                        ],
+                        [
+                            $custodian, '新增监护关系',
+                            $grades, $classes, $students ?? [],
+                            $relations ?? collect([]), true,
+                        ]
+                    )
                 );
                 break;
         }
@@ -615,13 +618,13 @@ class Custodian extends Model {
      * @return array
      */
     private function gcList() {
-    
+        
         $grades = Grade::whereIn('id', $this->gradeIds())
             ->where('enabled', 1)
             ->pluck('name', 'id')->toArray();
         $classes = Squad::where([
             'grade_id' => array_key_first($grades),
-            'enabled' => 1
+            'enabled'  => 1,
         ])->pluck('name', 'id')->toArray();
         
         return [$grades, $classes];
@@ -633,7 +636,7 @@ class Custodian extends Model {
      * @return array
      */
     private function custodians($classId) {
-    
+        
         $class = Squad::find($classId);
         $userIds = DepartmentUser::whereDepartmentId($class->department_id)
             ->pluck('user_id')->toArray();
@@ -653,7 +656,7 @@ class Custodian extends Model {
      * @return mixed
      */
     private function student(User $user, Squad $class) {
-    
+        
         $students = $user->custodian->students;
         if ($students->count() > 1) {
             $students = $students->filter(

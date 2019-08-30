@@ -151,7 +151,7 @@
                 'label' => '也是监护人',
                 'options' => ['否', '是']
             ])
-            <!-- 所属部门/标签-->
+            <!-- 所属部门-->
             <div class="form-group depart">
                 {!! Form::label('departmentId', '所属部门 & 标签', [
                     'class' => 'col-sm-3 control-label'
@@ -167,28 +167,18 @@
                                 {!! Form::hidden('selectedDepartments[]', $department['id']) !!}
                             </button>
                         @endforeach
-                        @foreach($selectedTags as $id => $tag)
-                            <button type="button" class="btn btn-flat"
-                                    style="margin-right: 5px; margin-bottom: 5px">
-                                <i class="fa fa-tag"></i> {!! $tag !!}
-                                <i class="fa fa-close remove-selected" style="margin-left: 5px;"></i>
-                                {!! Form::hidden('selectedTags[]', $id) !!}
-                            </button>
-                        @endforeach
                     </div>
                     {!! Form::hidden(
                         'selected-node-ids[]',
                         $selectedDepartmentIds,
                         ['id' => 'selected-node-ids']
                     ) !!}
-                    {!! Form::hidden(
-                        'selected-tag-ids[]',
-                        join(',', array_keys($selectedTags)),
-                        ['id' => 'selected-tag-ids']
-                    ) !!}
                     <a id="choose" href="#"><i class="fa fa-sitemap"></i>&nbsp; 选择</a>
                 </div>
             </div>
+            <!-- 所属标签 -->
+            @include('shared.tag.tags')
+            <!-- 一卡通 -->
             @include('shared.card')
             <!-- 状态 -->
             @include('shared.switch', [

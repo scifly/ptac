@@ -1,9 +1,8 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Models\DepartmentType;
+use App\Models\Department;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class DepartmentComposer
@@ -16,14 +15,9 @@ class DepartmentComposer {
      */
     public function compose(View $view) {
         
-        $action = explode('/', Request::path())[1];
-        if ($action == 'index') {
-            //
-        } else {
-            $view->with([
-                'departmentTypes' => DepartmentType::pluck('name', 'id'),
-            ]);
-        }
+        $view->with(
+            (new Department)->compose()
+        );
         
     }
     

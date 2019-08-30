@@ -158,9 +158,10 @@ class Educator extends Model {
         ];
         // $condition = 'Educator.user_id IN (%s) AND Educator.school_id = %s';
         $condition = 'Educator.school_id = ' . $this->schoolId();
+        
         return Datatable::simple(
             $this, $columns, $joins, $condition
-            // sprintf($condition, $this->visibleUserIds(), $this->schoolId())
+        // sprintf($condition, $this->visibleUserIds(), $this->schoolId())
         );
         
     }
@@ -184,15 +185,17 @@ class Educator extends Model {
                 # 教职员工
                 $data['user_id'] = $user->id;
                 $educator = $this->create($data);
-                # 班级科目绑定关系
-                (new ClassEducator)->storeByEducatorId($educator->id, $data['cs']);
-                # 部门用户绑定关系
-                (new DepartmentUser)->storeByUserId($user->id, $data['selectedDepartments']);
+                # 绑定关系
+                $this->bindings($educator, $data);
                 # 如果同时也是监护人
-                $data['singular'] ?: $custodian = Custodian::create([
-                    'user_id' => $user->id,
-                    'enabled' => Constant::ENABLED,
-                ]);
+                if (!$data['singular']) {
+                    Custodian::create(
+                        array_combine(
+                            ['user_id', 'enabled'],
+                            [$user->id, $educator->enabled]
+                        )
+                    );
+                }
                 # 创建企业微信会员
                 $user->sync([[$user->id, '', 'create']]);
             });
@@ -225,24 +228,19 @@ class Educator extends Model {
                     ($user = $educator->user)->update($data['user']);
                     # 一卡通
                     (new Card)->store($user);
-                    # 班级科目绑定关系
-                    (new ClassEducator)->storeByEducatorId(
-                        $educator->id, $data['cs']
-                    );
-                    # 部门用户绑定关系
-                    (new DepartmentUser)->storeByUserId(
-                        $educator->user_id, $data['selectedDepartments']
-                    );
+                    # 绑定关系
+                    $this->bindings($educator, $data);
                     # 如果同时也是监护人
                     $custodian = $user->custodian;
-                    if (!$data['singular']) {
-                        $custodian ?: Custodian::create(
-                            array_combine((new Custodian)->getFillable(), [
-                                $educator->user_id, $educator->enabled,
-                            ])
+                    if (!$data['singular'] && !$custodian) {
+                        Custodian::create(
+                            array_combine(
+                                ['user_id', 'enabled'],
+                                [$educator->user_id, $educator->enabled]
+                            )
                         );
-                    } else {
-                        !$custodian ?: (new Custodian)->remove($custodian->id);
+                    } elseif ($data['singular'] && $custodian) {
+                        $custodian->remove($custodian->id);
                     }
                 }
                 # 同步企业微信
@@ -600,31 +598,31 @@ class Educator extends Model {
                         return !empty(array_intersect($gradeIds, explode(',', $subject->grade_ids)));
                     }
                 );
-                if (($educatorId = $id ?? Request::route('id')) && Request::method() == 'GET') {
-                    $educator = $this->find($educatorId);
-                    $educator->{'card'} = $educator->user->card;
+                ;
+                if (($educator = $this->find($id ?? Request::route('id'))) && Request::method() == 'GET') {
+                    $user = $educator->user;
+                    $educator->{'card'} = $user->card;
                     $selectedDepartmentIds = !$educator ? []
                         : $educator->user->deptIds($educator->user_id);
                     $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
-                    $selectedTags = !$educator ? [] : $educator->user->tags->pluck('name', 'id')->toArray();
                 }
                 $firstOption = [0 => '(请选择)'];
-                $data = array_combine(
-                    [
-                        'educator', 'squads', 'subjects', 'groups',
-                        'selectedDepartmentIds', 'selectedDepartments',
-                        'tags', 'selectedTags'
-                    ],
-                    [
-                        $educator ?? null,
-                        $firstOption + $classes->pluck('name', 'id')->toArray(),
-                        $firstOption + $subjects->pluck('name', 'id')->toArray(),
-                        (new Group)->groupList(),
-                        join(',', $selectedDepartmentIds ?? []),
-                        $selectedDepartments ?? [],
-                        (new Tag)->list(),
-                        $selectedTags ?? [],
-                    ]
+                $data = array_merge(
+                    array_combine(
+                        [
+                            'educator', 'squads', 'subjects', 'groups',
+                            'selectedDepartmentIds', 'selectedDepartments',
+                        ],
+                        [
+                            $educator,
+                            $firstOption + $classes->pluck('name', 'id')->toArray(),
+                            $firstOption + $subjects->pluck('name', 'id')->toArray(),
+                            (new Group)->groupList(),
+                            join(',', $selectedDepartmentIds ?? []),
+                            $selectedDepartments ?? [],
+                        ]
+                    ),
+                    (new Tag)->compose('user', $user ?? null)
                 );
                 break;
         }
@@ -671,6 +669,24 @@ class Educator extends Model {
                 return !in_array($user->group->name, ['监护人', '学生']);
             }
         );
+        
+    }
+    
+    /**
+     * 保存绑定关系(任教科目、部门用户、标签用户)
+     *
+     * @param Educator $educator
+     * @param array $data
+     * @throws Throwable
+     */
+    private function bindings(Educator $educator, array $data) {
+        
+        # 班级科目绑定关系
+        (new ClassEducator)->storeByEducatorId($educator->id, $data['cs']);
+        # 部门用户绑定关系
+        (new DepartmentUser)->storeByUserId($educator->user_id, $data['selectedDepartments']);
+        # 标签用户绑定关系
+        (new TagUser)->storeByUserId($educator->user_id, $data['tag_ids'] ?? []);
         
     }
     

@@ -39,39 +39,36 @@ class DepartmentUser extends Pivot {
      * 按UserId保存记录
      *
      * @param $userId
-     * @param array $departmentIds
+     * @param array $deptIds
      * @param null $custodian
      * @return bool
      * @throws Throwable
      */
-    function storeByUserId($userId, array $departmentIds, $custodian = null) {
+    function storeByUserId($userId, array $deptIds, $custodian = null) {
         
         try {
-            DB::transaction(function () use ($userId, $departmentIds, $custodian) {
+            DB::transaction(function () use ($userId, $deptIds, $custodian) {
                 $enabled = $custodian ? Constant::DISABLED : Constant::ENABLED;
-                $this->where([
-                    'user_id' => $userId,
-                    'enabled' => $enabled,
-                ])->delete();
-                $records = [];
-                $record = ['user_id' => $userId, 'enabled' => $enabled];
-                $departmentIds = array_unique($departmentIds);
-                foreach ($departmentIds as $departmentId) {
-                    $record['department_id'] = $departmentId;
+                $condition = $record = array_combine(
+                    ['user_id', 'enabled'], [$userId, $enabled]
+                );
+                $this->where($condition)->delete();
+                foreach (($deptIds = array_unique($deptIds)) as $deptId) {
+                    $record['department_id'] = $deptId;
                     $records[] = $record;
                 }
                 if ($schoolId = $this->schoolId()) {
-                    $sDepartmentId = School::find($schoolId)->department_id;
+                    $sDeptId = School::find($schoolId)->department_id;
                     $sGroupId = Group::whereName('学校')->first()->id;
                     if (
                         User::find($userId)->group_id == $sGroupId &&
-                        !in_array($sDepartmentId, $departmentIds)
+                        !in_array($sDeptId, $deptIds)
                     ) {
-                        $record['department_id'] = $sDepartmentId;
+                        $record['department_id'] = $sDeptId;
                         $records[] = $record;
                     }
                 }
-                $this->insert($records);
+                $this->insert($records ?? []);
             });
         } catch (Exception $e) {
             throw $e;

@@ -1,9 +1,14 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
+use Illuminate\Support\Facades\DB;
+use Request;
+use Throwable;
 
 /**
  * Class DepartmentTag
@@ -29,5 +34,40 @@ use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
 class DepartmentTag extends Pivot {
     
     protected $fillable = ['department_id', 'tag_id', 'enabled'];
+    
+    /**
+     * 按部门id保存部门标签绑定关系
+     *
+     * @param $deptId
+     * @param array $tagIds
+     * @return bool
+     * @throws Throwable
+     */
+    function storeByDeptId($deptId, array $tagIds) {
+        
+        try {
+            DB::transaction(function () use ($deptId, $tagIds) {
+                $condition = $record = array_combine(
+                    ['department_id', 'enabled'],
+                    [$deptId, Constant::ENABLED]
+                );
+                $this->where($condition)->delete();
+                foreach ($tagIds as $tagId) {
+                    $record['tag_id'] = $tagId;
+                    $records[] = $record;
+                }
+                $this->insert($records ?? []);
+                if (!empty($tagIds)) {
+                    Request::merge(['ids' => $tagIds]);
+                    (new Tag)->modify();
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
     
 }

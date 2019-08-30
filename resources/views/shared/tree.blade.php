@@ -23,7 +23,7 @@
             </div>
             <div id="tree"></div>
         </div>
-        @if (!isset($disabled))
+        @if (isset($tag))
             <div class="col-xs-3">
                 <div class="box box-default box-solid">
                     <div class="box-header with-border">
@@ -36,10 +36,10 @@
                     </div>
                     <div class="box-body">
                         {!! Form::select(
-                            'tagids[]', $tags,
+                            'tag_ids[]', $tags,
                             isset($selectedTags) ? array_keys($selectedTags) : null,
                             [
-                                'id' => 'tagids',
+                                'id' => 'tag_ids',
                                 'multiple' => 'multiple',
                                 'disabled' => sizeof($tags) <= 1,
                                 'class' => 'form-control select2',
@@ -50,7 +50,7 @@
                 </div>
             </div>
         @endif
-        <div class="{!! isset($disabled) ? 'col-xs-6' : 'col-xs-3' !!}">
+        <div class="{!! !isset($tag) ? 'col-xs-6' : 'col-xs-3' !!}">
             <i class="fa fa-check-circle">
                 &nbsp;{!! $selectedTitle ?? '已选择的部门' !!}
             </i>

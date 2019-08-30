@@ -93,6 +93,8 @@
                 'value' => $student['oncampus'] ?? null,
                 'options' => ['是', '否']
             ])
+            <!-- 所属标签 -->
+            @include('shared.tag.tags')
             <!-- 备注 -->
             @include('shared.remark', ['field' => 'remark'])
             <!-- 状态 -->

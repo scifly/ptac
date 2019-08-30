@@ -41,6 +41,7 @@ class EducatorRequest extends FormRequest {
             'singular'                   => 'required|boolean',
             'enabled'                    => 'required|boolean',
             'selectedDepartments'        => 'required|array',
+            'tag_ids'                    => 'nullable|array'
         ];
         $this->batchRules($rules);
         

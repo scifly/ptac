@@ -28,6 +28,7 @@ class SquadRequest extends FormRequest {
             'department_id' => 'required|integer',
             'grade_id'      => 'required|integer',
             'educator_ids'  => 'required|string',
+            'tag_ids'       => 'nullable|array',
             'enabled'       => 'required|boolean',
         ];
         
@@ -42,7 +43,7 @@ class SquadRequest extends FormRequest {
         
         $input = $this->all();
         if (isset($input['educator_ids'])) {
-            $input['educator_ids'] = implode(',', $input['educator_ids']);
+            $input['educator_ids'] = join(',', $input['educator_ids']);
         }
         if (!isset($input['educator_ids'])) {
             $input['educator_ids'] = '0';

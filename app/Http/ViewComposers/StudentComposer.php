@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Models\Student;
 use Illuminate\Contracts\View\View;
+use ReflectionException;
 
 /**
  * Class StudentComposer
@@ -24,6 +25,7 @@ class StudentComposer {
     
     /**
      * @param View $view
+     * @throws ReflectionException
      */
     public function compose(View $view) {
         
@@ -32,7 +34,5 @@ class StudentComposer {
         );
         
     }
-    
-    
     
 }

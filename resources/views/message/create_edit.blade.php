@@ -1,6 +1,7 @@
 @include('shared.tree', [
     'title' => '发送对象',
-    'selectedTitle' => '已选择的发送对象'
+    'selectedTitle' => '已选择的发送对象',
+    'tag' => true
 ])
 <div class="upload-overlay overlay">
     <i class="fa fa-refresh fa-spin"></i>

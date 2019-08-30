@@ -1,10 +1,14 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
+use Illuminate\Support\Facades\DB;
+use Request;
 use Throwable;
 
 /**
@@ -32,6 +36,42 @@ class TagUser extends Pivot {
     use ModelTrait;
     
     protected $fillable = ['tag_id', 'user_id', 'enabled'];
+    
+    /**
+     * 按用户id保存标签用户绑定关系
+     *
+     * @param $userId
+     * @param array $tagIds
+     * @param null $custodian
+     * @return bool
+     * @throws Throwable
+     */
+    function storeByUserId($userId, array $tagIds, $custodian = null) {
+    
+        try {
+            DB::transaction(function () use ($userId, $tagIds, $custodian) {
+                $enabled = $custodian ? Constant::DISABLED : Constant::ENABLED;
+                $condition = $record = array_combine(
+                    ['user_id', 'enabled'], [$userId, $enabled]
+                );
+                $this->where($condition)->delete();
+                foreach ($tagIds as $tagId) {
+                    $record['tag_id'] = $tagId;
+                    $records[] = $record;
+                }
+                $this->insert($records ?? []);
+                if (!empty($tagIds)) {
+                    Request::merge(['ids' => $tagIds]);
+                    (new Tag)->modify();
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+    
+    }
     
     /**
      * 删除标签
