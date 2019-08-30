@@ -17,7 +17,6 @@ use Illuminate\{Bus\Queueable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
     Support\Facades\DB};
-use Pusher\PusherException;
 use Throwable;
 
 /**

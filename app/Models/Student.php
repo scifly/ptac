@@ -539,7 +539,6 @@ class Student extends Model {
      * 返回create/edit view所需数据
      *
      * @return array
-     * @throws ReflectionException
      */
     function compose() {
         

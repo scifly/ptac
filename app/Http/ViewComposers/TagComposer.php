@@ -2,10 +2,8 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\Message;
 use App\Models\Tag;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class TagComposer

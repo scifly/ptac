@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasOne};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Auth, DB, Request};
-use ReflectionException;
 use Throwable;
 
 /**

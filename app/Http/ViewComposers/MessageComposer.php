@@ -3,7 +3,6 @@ namespace App\Http\ViewComposers;
 
 use App\Models\Message;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class MessageComposer
