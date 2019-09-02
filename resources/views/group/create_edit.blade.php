@@ -73,18 +73,21 @@
                             <div class="col-md-3">
                                 <div class="box box-default collapsed-box">
                                     <div class="box-header with-border">
-{{--                                        {!! Form::label(--}}
-{{--                                            'tabs[' . $ta['tab']['id'] . '][enabled]',--}}
-{{--                                            Form::checkbox(--}}
-{{--                                                'tabs[' . $ta['tab']['id'] . '][enabled]',--}}
-{{--                                                $ta['tab']['id'],--}}
-{{--                                                in_array($ta['tab']['id'], $selectedTabIds ?? []),--}}
-{{--                                                ['id' => 'tabs[]', 'class' => 'minimal tabs']--}}
-{{--                                            ),--}}
-{{--                                            ['class' => 'tabsgroup'],--}}
-{{--                                            false--}}
-{{--                                        ) !!}--}}
-                                        <label for="tabs[{{ $ta['tab']['id'] }}]['enabled']" class="tabsgroup">
+                                        {!! Form::label(
+                                            'tabs[' . $ta['tab']['id'] . '][enabled]',
+                                            Form::checkbox(
+                                                'tabs[' . $ta['tab']['id'] . '][enabled]',
+                                                $ta['tab']['id'],
+                                                in_array($ta['tab']['id'], $selectedTabIds ?? []),
+                                                ['id' => 'tabs[]', 'class' => 'minimal tabs']
+                                            )->toHtml() .
+                                            Html::tag('span', $ta['tab']['name'], [
+                                                'style' => 'margin-left: 5px; vertical-align: middle;'
+                                            ])->toHtml(),
+                                            ['class' => 'tabsgroup'],
+                                            false
+                                        ) !!}
+{{--                                        <label for="tabs[{{ $ta['tab']['id'] }}]['enabled']" class="tabsgroup">--}}
 {{--                                            <input name="tabs[{{ $ta['tab']['id'] }}]['enabled']"--}}
 {{--                                                   value="{{ $ta['tab']['id'] }}"--}}
 {{--                                                   id="tabs[]" type="checkbox"--}}
@@ -93,14 +96,14 @@
 {{--                                                   checked--}}
 {{--                                                    @endif--}}
 {{--                                            >&nbsp;--}}
-                                            {!! Form::checkbox(
-                                                'tabs[' . $ta['tab']['id'] . '][enabled]',
-                                                $ta['tab']['id'],
-                                                in_array($ta['tab']['id'], $selectedTabIds ?? []),
-                                                ['id' => 'tabs[]', 'class' => 'minimal tabs']
-                                            )->toHtml() !!}&nbsp;
-                                            <span style="margin-left: 5px; vertical-align: middle;">{{ $ta['tab']['name'] }}</span>
-                                        </label>
+{{--                                            {!! Form::checkbox(--}}
+{{--                                                'tabs[' . $ta['tab']['id'] . '][enabled]',--}}
+{{--                                                $ta['tab']['id'],--}}
+{{--                                                in_array($ta['tab']['id'], $selectedTabIds ?? []),--}}
+{{--                                                ['id' => 'tabs[]', 'class' => 'minimal tabs']--}}
+{{--                                            )->toHtml() !!}&nbsp;--}}
+{{--                                            <span style="margin-left: 5px; vertical-align: middle;">{{ $ta['tab']['name'] }}</span>--}}
+{{--                                        </label>--}}
                                         <div class="box-tools pull-right">
                                             <button type="button" class="btn btn-box-tool" data-widget="collapse">
                                                 <i class="fa fa-plus"></i>
