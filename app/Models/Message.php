@@ -1695,8 +1695,8 @@ class Message extends Model {
             [$optionAll = [null => '全部']],
             array_map(
                 function ($table) use ($optionAll) {
-                    $class = ucfirst(Inflector::camelize($table));
                     $id = Inflector::singularize($table);
+                    $class = ucfirst(Inflector::camelize($id));
                     return $this->htmlSelect(
                         $optionAll + $class::{'whereEnabled'}(1)->pluck('name', 'id'),
                         'filter_' . $id
