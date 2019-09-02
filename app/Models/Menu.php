@@ -360,7 +360,7 @@ class Menu extends Model {
      */
     function menuId($id, $type = '学校') {
         
-        if (!($menu = $this->find($id))) return null;
+        if (!$menu = $this->find($id)) return null;
         $mtName = $menu->menuType->name;
         while ($mtName != $type) {
             if (!($menu = $menu->parent)) return null;
