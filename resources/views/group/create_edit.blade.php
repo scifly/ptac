@@ -16,19 +16,19 @@
                     <div class="form-horizontal">
                         <!-- 角色ID -->
                         @if (!empty($group['id']))
-                            {{ Form::hidden('id', $group['id'], ['id' => 'id']) }}
+                            {!! Form::hidden('id', $group['id'], ['id' => 'id']) !!}
                         @endif
-                        {{ Form::hidden('menu_ids', $selectedMenuIds ?? null, ['id' => 'menu_ids']) }}
-                        {{ Form::hidden(
+                        {!! Form::hidden('menu_ids', $selectedMenuIds ?? null, ['id' => 'menu_ids']) !!}
+                        {!! Form::hidden(
                             'tab_ids',
                             !empty($selectedTabIds) ? implode(',', $selectedTabIds) : null,
                             ['id' => 'tab_ids']
-                        ) }}
-                        {{ Form::hidden(
+                        ) !!}
+                        {!! Form::hidden(
                             'action_ids',
                             !empty($selectedActionIds) ? implode(',', $selectedActionIds) : null,
                             ['id' => 'action_ids']
-                        ) }}
+                        ) !!}
                         <!-- 角色名称 -->
                         <div class="form-group">
                             {!! Form::label('name', '名称', [
@@ -74,18 +74,15 @@
                                 <div class="box box-default collapsed-box">
                                     <div class="box-header with-border">
                                         {!! Form::label(
-                                            'tabs[' . $ta['tab']['id'] . '][enabled]',
+                                            $name = 'tabs[' . ($value = $ta['tab']['id']) . '][enabled]',
                                             Form::checkbox(
-                                                'tabs[' . $ta['tab']['id'] . '][enabled]',
-                                                $ta['tab']['id'],
-                                                in_array($ta['tab']['id'], $selectedTabIds ?? []),
+                                                $name, $value, in_array($value, $selectedTabIds ?? []),
                                                 ['id' => 'tabs[]', 'class' => 'minimal tabs']
-                                            )->toHtml() . '&nbsp;' .
+                                            )->toHtml() . 
                                             Html::tag('span', $ta['tab']['name'], [
-                                                'style' => 'margin-left: 5px; vertical-align: middle;'
+                                                'class' => 'plbl'
                                             ])->toHtml(),
-                                            ['class' => 'tabsgroup'],
-                                            false
+                                            ['class' => 'tabsgroup'], false
                                         ) !!}
                                         <div class="box-tools pull-right">
                                             {!! Form::button(
@@ -99,19 +96,6 @@
                                             @foreach($ta['actions'] as $action)
                                                 <li>
                                                     <p class="help-block">
-{{--                                                        <label for="actions[{{ $action['id'] }}]['enabled']"--}}
-{{--                                                               class="actionsgroup">--}}
-{{--                                                            <input name="actions[{{ $action['id'] }}]['enabled']"--}}
-{{--                                                                   id="actions[{{ $action['id'] }}]['enabled']"--}}
-{{--                                                                   type="checkbox" class="minimal actions"--}}
-{{--                                                                   value="{{ $action['id'] }}"--}}
-{{--                                                                   data-method="{{ $action['method'] }}"--}}
-{{--                                                                   @if (isset($selectedActionIds) && in_array($action['id'], $selectedActionIds))--}}
-{{--                                                                   checked--}}
-{{--                                                                    @endif--}}
-{{--                                                            >&nbsp;--}}
-{{--                                                            <span style="vertical-align: middle;">{{ $action['name'] }}</span>--}}
-{{--                                                        </label>--}}
                                                         {!! Form::label(
                                                             $name = $id = 'actions[' . ($actionId = $action['id']) . '][enabled]',
                                                             Form::checkbox($name, $actionId, in_array(
@@ -119,12 +103,11 @@
                                                                     'id' => $id,
                                                                     'class' => 'minimal actions',
                                                                     'data-method' => $action['method']
-                                                            ])->toHtml() . '&nbsp;' .
+                                                            ])->toHtml() .
                                                             Html::tag('span', $action['name'], [
-                                                                'style' => 'margin-left: 5px; vertical-align: middle;'
+                                                                'class' => 'plbl'
                                                             ])->toHtml(),
-                                                            ['class' => 'actionsgroup'],
-                                                            false
+                                                            ['class' => 'actionsgroup'], false
                                                         ) !!}
                                                     </p>
                                                 </li>

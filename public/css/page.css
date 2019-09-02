@@ -9,6 +9,10 @@
     vertical-align: middle;
     font-weight: normal;
 }
-.msglbl {
+.mlbl {
     margin-top: 7px;
+}
+.plbl {
+    margin-left: 5px;
+    vertical-align: middle;
 }

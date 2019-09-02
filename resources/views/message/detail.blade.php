@@ -13,27 +13,27 @@
                 <div class="form-horizontal">
                     <div class="form-group">
                         @include('shared.label', ['label' => '通信方式：'])
-                        <div class="col-sm-6 msglbl">{!! $commType !!}</div>
+                        <div class="col-sm-6 mlbl">{!! $commType !!}</div>
                     </div>
                     <div class="form-group">
                         @include('shared.label', ['label' => '发送时间：'])
-                        <div class="col-sm-6 msglbl">
+                        <div class="col-sm-6 mlbl">
                             <span class="badge bg-blue">{!! $sentAt !!}</span>
                         </div>
                     </div>
                     <div class="form-group">
                         @include('shared.label', ['label' => '发送对象：'])
-                        <div class="col-sm-6 msglbl">{!! $recipients !!}</div>
+                        <div class="col-sm-6 mlbl">{!! $recipients !!}</div>
                     </div>
                     <div class="form-group">
                         @include('shared.label', ['label' => '发送者：'])
-                        <div class="col-sm-6 msglbl">
+                        <div class="col-sm-6 mlbl">
                             <span class="badge bg-green">{!! $sender !!}</span>
                         </div>
                     </div>
                     <div class="form-group">
                         @include('shared.label', ['label' => '消息内容：'])
-                        <div class="col-sm-6 msglbl">{!! $msgBody !!}</div>
+                        <div class="col-sm-6 mlbl">{!! $msgBody !!}</div>
                     </div>
                 </div>
             </div>
