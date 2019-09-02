@@ -1,6 +1,6 @@
 <div class="upload-button">
-    <label for="{{ $id }}" class="custom-file-upload text-blue">
-        <i class="fa fa-cloud-upload"></i> {{ $label }}
+    <label for="{!! $id !!}" class="custom-file-upload text-blue">
+        <i class="fa fa-cloud-upload"></i> {!! $label !!}
     </label>
     {!! Form::file($id, [
         'id' => $id,
@@ -13,6 +13,6 @@
     </a><br />
     {!! Form::hidden(null, null, ['class' => 'media_id']) !!}
     @if (isset($note))
-        <p class="help-block">{{ $note }}</p>
+        <p class="help-block">{!! $note !!}</p>
     @endif
 </div>
