@@ -121,7 +121,7 @@
                                                                     'data-method' => $action['method']
                                                             ])->toHtml() . '&nbsp;' .
                                                             Html::tag('span', $action['name'], [
-                                                                'style' => 'vertical-align: middle;'
+                                                                'style' => 'margin-left: 5px; vertical-align: middle;'
                                                             ])->toHtml(),
                                                             ['class' => 'actionsgroup'],
                                                             false
