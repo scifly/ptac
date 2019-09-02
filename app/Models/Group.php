@@ -241,19 +241,20 @@ class Group extends Model {
             ];
         } else {
             # 学校列表
-            $condition = ['enabled' => Constant::ENABLED];
+            $where = ['enabled' => Constant::ENABLED];
             if ($id = $this->schoolId()) {
-                $condition['id'] = $id;
+                $where['id'] = $id;
             } elseif ($menuId = (new Menu)->menuId(session('menuId'), '企业')) {
-                $condition['corp_id'] = Corp::whereMenuId($menuId)->first()->id;
+                $where['corp_id'] = Corp::whereMenuId($menuId)->first()->id;
             }
-            $data['schools'] = School::where($condition)->pluck('name', 'id');
+            $data['schools'] = School::where($where)->pluck('name', 'id');
             # 控制器 & 功能列表
             $sGId = Group::whereName('学校')->first()->id;
             $tabs = Tab::whereIn('group_id', [0, $sGId])->where('category', 0)->get();
+            /** @var Tab $tab */
             foreach ($tabs as $tab) {
                 $actionList = [];
-                foreach (Action::whereTabId($tab->id)->get() as $action) {
+                foreach ($tab->actions as $action) {
                     if (!in_array(trim($action->name), ['创建微网站', '保存微网站', '删除微网站'])) {
                         $actionList[] = [
                             'id'     => $action->id,
@@ -264,7 +265,7 @@ class Group extends Model {
                 }
                 $tabActions[] = [
                     'tab'     => ['id' => $tab->id, 'name' => $tab->comment],
-                    'actions' => $actionList ?? [],
+                    'actions' => $actionList,
                 ];
             }
             $data['tabActions'] = $tabActions ?? [];
