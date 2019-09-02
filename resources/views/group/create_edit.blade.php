@@ -99,19 +99,33 @@
                                             @foreach($ta['actions'] as $action)
                                                 <li>
                                                     <p class="help-block">
-                                                        <label for="actions[{{ $action['id'] }}]['enabled']"
-                                                               class="actionsgroup">
-                                                            <input name="actions[{{ $action['id'] }}]['enabled']"
-                                                                   id="actions[{{ $action['id'] }}]['enabled']"
-                                                                   type="checkbox" class="minimal actions"
-                                                                   value="{{ $action['id'] }}"
-                                                                   data-method="{{ $action['method'] }}"
-                                                                   @if (isset($selectedActionIds) && in_array($action['id'], $selectedActionIds))
-                                                                   checked
-                                                                    @endif
-                                                            >&nbsp;
-                                                            <span style="vertical-align: middle;">{{ $action['name'] }}</span>
-                                                        </label>
+{{--                                                        <label for="actions[{{ $action['id'] }}]['enabled']"--}}
+{{--                                                               class="actionsgroup">--}}
+{{--                                                            <input name="actions[{{ $action['id'] }}]['enabled']"--}}
+{{--                                                                   id="actions[{{ $action['id'] }}]['enabled']"--}}
+{{--                                                                   type="checkbox" class="minimal actions"--}}
+{{--                                                                   value="{{ $action['id'] }}"--}}
+{{--                                                                   data-method="{{ $action['method'] }}"--}}
+{{--                                                                   @if (isset($selectedActionIds) && in_array($action['id'], $selectedActionIds))--}}
+{{--                                                                   checked--}}
+{{--                                                                    @endif--}}
+{{--                                                            >&nbsp;--}}
+{{--                                                            <span style="vertical-align: middle;">{{ $action['name'] }}</span>--}}
+{{--                                                        </label>--}}
+                                                        {!! Form::label(
+                                                            $name = $id = 'actions[' . ($actionId = $action['id']) . '][enabled]',
+                                                            Form::checkbox($name, $actionId, in_array(
+                                                                $actionId, $selectedActionIds ?? []), [
+                                                                    'id' => $id,
+                                                                    'class' => 'minimal actions',
+                                                                    'data-method' => $action['method']
+                                                            ])->toHtml() .
+                                                            Html::tag('span', $action['name'], [
+                                                                'style' => 'vertical-align: middel;'
+                                                            ])->toHtml(),
+                                                            ['class' => 'actionsgroup'],
+                                                            false
+                                                        ) !!}
                                                     </p>
                                                 </li>
                                             @endforeach
