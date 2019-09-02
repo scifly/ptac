@@ -252,6 +252,7 @@ class Group extends Model {
             $sGId = Group::whereName('学校')->first()->id;
             $tabs = Tab::whereIn('group_id', [0, $sGId])->where('category', 0)->get();
             foreach ($tabs as $tab) {
+                $actionList = [];
                 foreach (Action::whereTabId($tab->id)->get() as $action) {
                     if (!in_array(trim($action->name), ['创建微网站', '保存微网站', '删除微网站'])) {
                         $actionList[] = [
