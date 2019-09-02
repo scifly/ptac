@@ -98,7 +98,7 @@
                                                 $ta['tab']['id'],
                                                 in_array($ta['tab']['id'], $selectedTabIds ?? []),
                                                 ['id' => 'tabs[]', 'class' => 'minimal tabs']
-                                            ) !!}&nbsp;
+                                            )->toHtml() !!}&nbsp;
                                             <span style="margin-left: 5px; vertical-align: middle;">{{ $ta['tab']['name'] }}</span>
                                         </label>
                                         <div class="box-tools pull-right">
