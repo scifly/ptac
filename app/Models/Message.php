@@ -1698,7 +1698,7 @@ class Message extends Model {
                     $id = Inflector::singularize($table);
                     $class = ucfirst(Inflector::camelize($id));
                     return $this->htmlSelect(
-                        $optionAll + $class::{'whereEnabled'}(1)->pluck('name', 'id'),
+                        $optionAll + $this->model($class)->whereEnabled(1)->pluck('name', 'id'),
                         'filter_' . $id
                     );
                 }, ['comm_types', 'media_types', 'message_types']
