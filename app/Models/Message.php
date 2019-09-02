@@ -5,14 +5,18 @@ use App\Facades\{Datatable, Wechat};
 use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Sms, Snippet};
 use App\Jobs\SendMessage;
 use Carbon\Carbon;
+use Doctrine\Common\Inflector\Inflector;
 use Eloquent;
 use Exception;
+use Form;
+use Html;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo, Relations\HasOne};
 use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\{Auth, DB, Request};
+use Illuminate\Support\HtmlString;
 use Illuminate\View\View;
 use ReflectionClass;
 use ReflectionException;
@@ -450,22 +454,29 @@ class Message extends Model {
         foreach ($targetIds as $targetId) {
             $paths = explode('-', $targetId);
             if (sizeof($paths) > 1) {
-                $user = User::find($paths[2]);
-                $targetsHtml .= sprintf(
-                    Snippet::TREE_NODE,
-                    'fa fa-user',
-                    $user->realname,
-                    $paths[2]
-                );
+                $value = $paths[2];
+                $name = User::find($value)->realname;
+                $icon = 'fa fa-user';
             } else {
-                $department = Department::find($targetId);
-                $targetsHtml .= sprintf(
-                    Snippet::TREE_NODE,
-                    Constant::NODE_TYPES[$department->departmentType->name]['icon'],
-                    $department->name,
-                    $targetId
-                );
+                $value = $targetId;
+                $dept = Department::find($value);
+                $name = $dept->name;
+                $icon = Constant::NODE_TYPES[$dept->departmentType->name]['icon'];
             }
+            $val = join(
+                array_map(
+                    function(HtmlString $element) { return $element->toHtml(); },
+                    [
+                        Html::tag('i', ' ' . $name, ['class' => $icon]),
+                        Html::tag('i', '', ['class' => 'fa fa-close remove-selected']),
+                        Form::hidden('selectedDepartments[]', $value)
+                    ]
+                )
+            );
+            $targetsHtml .= Form::button($val, [
+                'class' => 'btn btn-flat',
+                'style' => 'margin: 0 5px 5px 0;'
+            ])->toHtml();
         }
         
         return $targetsHtml;
@@ -1446,7 +1457,7 @@ class Message extends Model {
         $tags = (new Tag)->list();
         switch ($uri ?? Request::route()->uri) {
             case 'messages/index':
-                [$optionAll, $htmlCommType, $htmlMediaType, $htmlMessageType] = $this->messageFilters();
+                [$optionAll, $htmlCommType, $htmlMediaType, $htmlMessageType] = $this->filters();
                 $titles = [
                     '#', '标题', '批次',
                     ['title' => '通信方式', 'html' => $htmlCommType],
@@ -1457,20 +1468,20 @@ class Message extends Model {
                 return [
                     'titles'       => array_merge($titles, [
                         '接收人数',
-                        ['title' => '发送于', 'html' => $this->inputDateTimeRange('发送于')],
+                        ['title' => '发送于', 'html' => $this->htmlDTRange('发送于')],
                         [
                             'title' => '状态',
-                            'html'  => $this->singleSelectList(
+                            'html'  => $this->htmlSelect(
                                 array_merge($optionAll, [0 => '草稿', 1 => '已发', 2 => '定时']), 'filter_sent'
                             ),
                         ],
                     ]),
                     'rTitles'      => array_merge($titles, [
                         '发送者',
-                        ['title' => '接收于', 'html' => $this->inputDateTimeRange('接收于')],
+                        ['title' => '接收于', 'html' => $this->htmlDTRange('接收于')],
                         [
                             'title' => '状态',
-                            'html'  => $this->singleSelectList(
+                            'html'  => $this->htmlSelect(
                                 array_merge($optionAll, [0 => '未读', 1 => '已读']), 'filter_read'
                             ),
                         ],
@@ -1533,21 +1544,21 @@ class Message extends Model {
                             $text = $content->{'content'};
                             break;
                         case 'image':
-                            list($mediaId, $filename, $filepath) = $this->fileAttrs($content);
+                            [$mediaId, $filename, $filepath] = $this->fileAttrs($content);
                             $accept = 'image/*';
                             break;
                         case 'voice':
-                            list($mediaId, $filename, $filepath) = $this->fileAttrs($content);
+                            [$mediaId, $filename, $filepath] = $this->fileAttrs($content);
                             $accept = 'audio/*';
                             break;
                         case 'video':
                             $title = $content->{'title'};
                             $text = $content->{'description'};
-                            list($mediaId, $filename, $filepath) = $this->fileAttrs($content);
+                            [$mediaId, $filename, $filepath] = $this->fileAttrs($content);
                             $accept = 'video/mp4';
                             break;
                         case 'file':
-                            list($mediaId, $filename, $filepath) = $this->fileAttrs($content);
+                            [$mediaId, $filename, $filepath] = $this->fileAttrs($content);
                             $accept = '*';
                             break;
                         case 'textcard':
@@ -1648,7 +1659,7 @@ class Message extends Model {
                     'filter' => true,
                     'titles' => [
                         '#', '发送者',
-                        ['title' => '发送于', 'html' => $this->inputDateTimeRange('发送于')],
+                        ['title' => '发送于', 'html' => $this->htmlDTRange('发送于')],
                         '内容',
                     ],
                 ];
@@ -1670,6 +1681,29 @@ class Message extends Model {
         $filename = $paths[sizeof($paths) - 1];
         
         return [$mediaId, $filename, $filepath];
+        
+    }
+    
+    /**
+     * 返回消息Datatable过滤器（通信方式、应用及消息类型）下拉列表html
+     *
+     * @return array
+     */
+    function filters() {
+    
+        return array_merge(
+            [$optionAll = [null => '全部']],
+            array_map(
+                function ($table) use ($optionAll) {
+                    $class = ucfirst(Inflector::camelize($table));
+                    $id = Inflector::singularize($table);
+                    return $this->htmlSelect(
+                        $optionAll + $class::{'whereEnabled'}(1)->pluck('name', 'id'),
+                        'filter_' . $id
+                    );
+                }, ['comm_types', 'media_types', 'message_types']
+            )
+        );
         
     }
     

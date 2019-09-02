@@ -148,7 +148,7 @@
                                     $studentPrev = $studentId.prev();
                                 $studentNext.remove();
                                 $studentId.remove();
-                                $studentPrev.after(result['html']['students']['original']['html']);
+                                $studentPrev.after(result['html']['students']);
                             }
                             if ($('#range .checked').find('input').val() === "1") {
                                 $('#' + contact.options.classId).prop('disabled', true);
@@ -181,7 +181,7 @@
                         success: function (result) {
                             $next.remove();
                             $studentId.remove();
-                            $prev.after(result['html']['students']['original']['html']);
+                            $prev.after(result['html']['students']);
                             page.initSelect2();
                         },
                         error: function (e) {

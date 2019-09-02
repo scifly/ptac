@@ -49,28 +49,28 @@ class TabComposer {
                     '#', '控制器', '名称',
                     [
                         'title' => '角色',
-                        'html'  => $this->singleSelectList(
+                        'html'  => $this->htmlSelect(
                             array_merge($optionAll, [0 => '所有'], $roles), 'filter_group'
                         ),
                     ],
                     '默认功能',
                     [
                         'title' => '创建于',
-                        'html'  => $this->inputDateTimeRange('创建于'),
+                        'html'  => $this->htmlDTRange('创建于'),
                     ],
                     [
                         'title' => '更新于',
-                        'html'  => $this->inputDateTimeRange('更新于'),
+                        'html'  => $this->htmlDTRange('更新于'),
                     ],
                     [
                         'title' => '类型',
-                        'html'  => $this->singleSelectList(
+                        'html'  => $this->htmlSelect(
                             array_merge($optionAll, [0 => '后台', 1 => '前端', 2 => '其他']), 'filter_category'
                         ),
                     ],
                     [
                         'title' => '状态 . 操作',
-                        'html'  => $this->singleSelectList(
+                        'html'  => $this->htmlSelect(
                             array_merge($optionAll, [0 => '已禁用', 1 => '已启用']), 'filter_enabled'
                         ),
                     ],

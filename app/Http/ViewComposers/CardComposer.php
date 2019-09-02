@@ -42,15 +42,15 @@ class CardComposer {
                     '#', '卡号', '通行权限', '持卡人', '角色', '手机号码',
                     [
                         'title' => '发卡时间',
-                        'html'  => $this->inputDateTimeRange('发卡时间'),
+                        'html'  => $this->htmlDTRange('发卡时间'),
                     ],
                     [
                         'title' => '更新于',
-                        'html'  => $this->inputDateTimeRange('更新于'),
+                        'html'  => $this->htmlDTRange('更新于'),
                     ],
                     [
                         'title' => '状态 . 操作',
-                        'html'  => $this->singleSelectList(
+                        'html'  => $this->htmlSelect(
                             [null => '全部', 0 => '待发', 1 => '正常', 2 => '挂失'], 'filter_status'
                         ),
                     ],

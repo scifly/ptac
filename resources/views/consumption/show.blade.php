@@ -104,7 +104,7 @@
                 <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body">
-                <input type="hidden" id="detail_id" />
+                {!! Form::hidden('detail_id', null, ['id' => 'detail_id']) !!}
                 <table class="table table-striped table-bordered" id="detail">
                     <tbody></tbody>
                 </table>

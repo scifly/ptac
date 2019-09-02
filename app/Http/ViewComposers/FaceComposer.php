@@ -34,15 +34,15 @@ class FaceComposer {
                     '#', '人脸', '姓名', '角色',
                     [
                         'title' => '创建于',
-                        'html'  => $this->inputDateTimeRange('创建于'),
+                        'html'  => $this->htmlDTRange('创建于'),
                     ],
                     [
                         'title' => '更新于',
-                        'html'  => $this->inputDateTimeRange('更新于'),
+                        'html'  => $this->htmlDTRange('更新于'),
                     ],
                     [
                         'title' => '状态 . 操作',
-                        'html'  => $this->singleSelectList(
+                        'html'  => $this->htmlSelect(
                             [null => '全部', 0 => '未设置', 1 => '白名单', 2 => '黑名单', 3 => 'VIP'], 'filter_state'
                         ),
                     ],

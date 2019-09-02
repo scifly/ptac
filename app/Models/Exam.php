@@ -251,7 +251,7 @@ class Exam extends Model {
         }
         
         return response()->json([
-            'html' => $this->singleSelectList($classes, $action ? $action . '_class_id' : 'class_id'),
+            'html' => $this->htmlSelect($classes, $action ? $action . '_class_id' : 'class_id'),
         ]);
         
     }

@@ -7,6 +7,7 @@ use App\Jobs\CreateSchool;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Form;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
@@ -501,22 +502,19 @@ class School extends Model {
             case 'create':
             case 'edit':
                 $params = [
-                    'schoolTypes'  => SchoolType::whereEnabled(1)->pluck('name', 'id')->toArray(),
+                    'schoolTypes'  => SchoolType::whereEnabled(1)->pluck('name', 'id'),
                     'apps'         => [null => '[所属公众号]'] + App::where('category', 2)
-                            ->pluck('name', 'id')->toArray(),
+                            ->pluck('name', 'id'),
                     'corpId'       => (new Corp)->corpId(),
                     'uris'         => $this->uris(),
                     'apis'         => User::where(['group_id' => Group::whereName('api')->first()->id, 'enabled' => 1])
-                        ->pluck('realname', 'id')->toArray(),
+                        ->pluck('realname', 'id'),
                     'selectedApis' => null,
                     'disabled'     => null,   # disabled - 是否显示'返回列表'和'取消'按钮
                 ];
-                if (Request::route('id')) {
-                    $school = School::find(Request::route('id'));
-                    if ($school->user_ids) {
-                        $params['selectedApis'] = User::whereIn('id', explode(',', $school->user_ids))
-                            ->pluck('realname', 'id')->toArray();
-                    }
+                if ($school = School::find(Request::route('id'))) {
+                    $params['selectedApis'] = User::whereIn('id', explode(',', $school->user_ids))
+                        ->pluck('realname', 'id')->toArray();
                 }
                 
                 return $params;
@@ -557,25 +555,17 @@ class School extends Model {
                 }
             }
         }
-        $tpls = array_map(
-            function ($items) {
-                $html = '<select class="form-control col-sm-6" id="%s" name="%s">';
-                foreach ($items as $key => $value) {
-                    $html .= '<option value="' . $key . '">' . $value . '</option>';
-                }
-                $html .= '</select>';
-                
-                return $html;
-            }, [$grades ?? [], $classes ?? [], $students ?? []]
-        );
         $ids = $names = ['gradeId', 'classId', 'studentId'];
         
         return array_combine(
             ['grades', 'classes', 'students'],
             array_map(
-                function ($tpl, $id, $name) {
-                    return sprintf($tpl, $id, $name);
-                }, $tpls, $ids, $names
+                function ($items, $id, $name) {
+                    return Form::select($name, $items, null, [
+                        'id' => $id, 'class' => 'form-control col-sm-6',
+                    ])->toHtml();
+                    
+                }, [$grades ?? [], $classes ?? [], $students ?? []], $ids, $names
             )
         );
         
@@ -588,7 +578,7 @@ class School extends Model {
      * @param $gradeClass
      * @return array
      */
-    function getClass($gradeId, $gradeClass): array {
+    private function getClass($gradeId, $gradeClass): array {
         
         $classes = $students = [];
         foreach ($gradeClass as $k => $g) {

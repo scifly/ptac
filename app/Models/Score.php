@@ -882,8 +882,8 @@ class Score extends Model {
         }
         
         return response()->json([
-            'students' => $this->singleSelectList($studentList ?? [], 'student_id'),
-            'subjects' => $this->singleSelectList($subjectList, 'subject_id'),
+            'students' => $this->htmlSelect($studentList ?? [], 'student_id'),
+            'subjects' => $this->htmlSelect($subjectList, 'subject_id'),
         ]);
         
     }

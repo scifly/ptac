@@ -276,22 +276,15 @@ class Face extends Model {
      */
     function selector(array $cameras, User $user) {
         
-        $face = $user->face;
-        $selected = $face ? $face->cameras->pluck('id')->toArray() : null;
-        $options = '';
-        foreach ($cameras as $key => $value) {
-            $isSelected = array_key_exists($key, $selected ?? []) ? 'selected>' : '>';
-            $options .= '<option value="' . $key . '" ' . $isSelected . $value . '</option>';
-        }
+        $selected = ($face = $user->face) ? $face->cameras->pluck('id')->toArray() : null;
         $id = 'cameraids-' . $user->id;
-        $name = $id . '[]';
-        $tpl = Html::tag('select', '%s', [
-            'multiple' => 'multiple', 'name' => '%s',
-            'id'       => '%s', 'class' => 'form-control select2',
-            'style'    => '%s',
+
+        return Form::select($id . '[]', $cameras, $selected, [
+            'id' => $id,
+            'multiple' => 'multiple',
+            'class' => 'form-control select2',
+            'style' => 'width: 100%;'
         ])->toHtml();
-        
-        return sprintf($tpl, $name, $id, 'width: 100%;', $options);
         
     }
     

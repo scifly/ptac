@@ -62,19 +62,19 @@ class ScoreComposer {
                     'class_min'  => '班最低',
                 ];
                 $optionAll = [null => '全部'];
-                $htmlClass = $this->singleSelectList(
+                $htmlClass = $this->htmlSelect(
                     $optionAll + Squad::whereIn('id', $this->classIds())->pluck('name', 'id')->toArray(),
                     'filter_class'
                 );
-                $htmlGrade = $this->singleSelectList(
+                $htmlGrade = $this->htmlSelect(
                     $optionAll + Grade::whereIn('id', $this->gradeIds())->pluck('name', 'id')->toArray(),
                     'filter_grade'
                 );
-                $htmlSubject = $this->singleSelectList(
+                $htmlSubject = $this->htmlSelect(
                     $optionAll + Subject::whereSchoolId($this->schoolId())->pluck('name', 'id')->toArray(),
                     'filter_grade'
                 );
-                $htmlExam = $this->singleSelectList(
+                $htmlExam = $this->htmlSelect(
                     $optionAll + Exam::whereIn('id', $this->examIds())->pluck('name', 'id')->toArray(),
                     'filter_grade'
                 );
@@ -115,15 +115,15 @@ class ScoreComposer {
                         '成绩', '年级排名', '班级排名',
                         [
                             'title' => '创建于',
-                            'html'  => $this->inputDateTimeRange('创建于'),
+                            'html'  => $this->htmlDTRange('创建于'),
                         ],
                         [
                             'title' => '更新于',
-                            'html'  => $this->inputDateTimeRange('更新于'),
+                            'html'  => $this->htmlDTRange('更新于'),
                         ],
                         [
                             'title' => '状态 . 操作',
-                            'html'  => $this->singleSelectList(
+                            'html'  => $this->htmlSelect(
                                 [null => '全部', 0 => '已禁用', 1 => '已启用'], 'filter_enabled'
                             ),
                         ],

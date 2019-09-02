@@ -348,36 +348,36 @@ class Module extends Model {
                     '#', '名称',
                     isset($schools) ? [
                         'title' => '所属学校',
-                        'html'  => $this->singleSelectList(
+                        'html'  => $this->htmlSelect(
                             $optionAll + $schools->pluck('name', 'id')->toArray(),
                             'filter_school'
                         ),
                     ] : '学校',
                     [
                         'title' => '控制器',
-                        'html'  => $this->singleSelectList($tabs, 'filter_tab_id'),
+                        'html'  => $this->htmlSelect($tabs, 'filter_tab_id'),
                     ],
                     'uri',
                     [
                         'title' => '所属角色',
-                        'html'  => $this->singleSelectList($groups, 'filter_group_id'),
+                        'html'  => $this->htmlSelect($groups, 'filter_group_id'),
                     ],
                     [
                         'title' => '类型',
-                        'html'  => $this->singleSelectList($types, 'filter_isfree'),
+                        'html'  => $this->htmlSelect($types, 'filter_isfree'),
                     ],
                     [
                         'title' => '创建于',
-                        'html'  => $this->inputDateTimeRange('创建于'),
+                        'html'  => $this->htmlDTRange('创建于'),
                     ],
                     [
                         'title' => '更新于',
-                        'html'  => $this->inputDateTimeRange('更新于'),
+                        'html'  => $this->htmlDTRange('更新于'),
                     ],
                     '排序',
                     [
                         'title' => '状态 . 操作',
-                        'html'  => $this->singleSelectList($statuses, 'filter_enabled'),
+                        'html'  => $this->htmlSelect($statuses, 'filter_enabled'),
                     ],
                 ],
                 'filter' => true,
@@ -433,7 +433,7 @@ class Module extends Model {
             Group::where(['enabled' => 1, 'school_id' => $schoolId])
                 ->pluck('name', 'id')->toArray();
         
-        return $html ? $this->singleSelectList($groups, 'group_id') : $groups;
+        return $html ? $this->htmlSelect($groups, 'group_id') : $groups;
         
     }
     

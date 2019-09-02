@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
 use App\Jobs\{ExportStudent, ImportStudent};
 use Carbon\Carbon;
 use Eloquent;
@@ -68,6 +68,7 @@ class Student extends Model {
         'birthday', 'remark', 'enabled',
     ];
     
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /**
      * 返回指定学生所属的班级对象
      *
@@ -137,6 +138,7 @@ class Student extends Model {
      */
     function modules() { return $this->belongsToMany('App\Models\Module', 'module_student'); }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 学生列表
      *
@@ -217,12 +219,15 @@ class Student extends Model {
         
         try {
             DB::transaction(function () use ($data) {
+                # 创建用户
                 $user = User::create($data['user']);
+                # 保存一卡通
                 (new Card)->store($user);
+                # 创建学籍
                 $data['user_id'] = $user->id;
                 $student = $this->create($data);
-                (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
-                (new TagUser)->storeByUserId($student->user_id, $data['tag_ids'] ?? []);
+                # 保存绑定关系
+                $this->bindings($student, $data);
             });
         } catch (Exception $e) {
             throw $e;
@@ -249,33 +254,32 @@ class Student extends Model {
                     # 如果学生班级发生变化，则需更新对应监护人的部门绑定关系
                     if ($student->class_id != $data['class_id']) {
                         $userIds = $student->custodians->pluck('user_id')->toArray();
-                        $departmentId = Squad::find($data['class_id'])->department_id;
+                        $deptId = Squad::find($data['class_id'])->department_id;
                         foreach ($student->custodians as $custodian) {
                             $condition = [
                                 'user_id'       => $custodian->user_id,
                                 'department_id' => $student->squad->department_id,
                             ];
                             if ($du = DepartmentUser::where($condition)->first()) {
-                                $du->update(['department_id' => $departmentId]);
+                                $du->update(['department_id' => $deptId]);
                             } else {
                                 DepartmentUser::create(
                                     array_combine(
                                         (new DepartmentUser)->getFillable(),
-                                        [$departmentId, $custodian->user_id, 0]
+                                        [$deptId, $custodian->user_id, Constant::DISABLED]
                                     )
                                 );
                             }
                         }
                     }
+                    # 更新用户
                     $student->user->update($data['user']);
                     # 更新一卡通
                     (new Card)->store($student->user);
+                    # 更新学籍
                     $student->update($data);
-                    (new DepartmentUser)->store(
-                        $student->user_id,
-                        $student->squad->department_id
-                    );
-                    (new TagUser)->storeByUserId($student->user_id, $data['tag_ids'] ?? []);
+                    # 保存绑定关系
+                    $this->bindings($student, $data);
                 } else {
                     $this->batch($this);
                 }
@@ -504,6 +508,7 @@ class Student extends Model {
         
     }
     
+    /** Helper function --------------------------------------------------------------------------------------------- */
     /**
      * 获取指定年级对应的班级列表
      *
@@ -579,13 +584,13 @@ class Student extends Model {
                         '#', '姓名', '头像',
                         [
                             'title' => '性别',
-                            'html'  => $this->singleSelectList(
+                            'html'  => $this->htmlSelect(
                                 $optionAll + [0 => '女', 1 => '男'], 'filter_gender'
                             ),
                         ],
                         [
                             'title' => '班级',
-                            'html'  => $this->singleSelectList(
+                            'html'  => $this->htmlSelect(
                                 $optionAll + Squad::whereIn('id', $this->classIds())
                                     ->pluck('name', 'id')->toArray()
                                 , 'filter_class'
@@ -594,25 +599,25 @@ class Student extends Model {
                         '学号',
                         [
                             'title' => '住校',
-                            'html'  => $this->singleSelectList(
+                            'html'  => $this->htmlSelect(
                                 $optionAll + [0 => '否', 1 => '是'], 'filter_oncampus'
                             ),
                         ],
                         [
                             'title' => '生日',
-                            'html'  => $this->inputDateTimeRange('生日', false),
+                            'html'  => $this->htmlDTRange('生日', false),
                         ],
                         [
                             'title' => '创建于',
-                            'html'  => $this->inputDateTimeRange('创建于'),
+                            'html'  => $this->htmlDTRange('创建于'),
                         ],
                         [
                             'title' => '更新于',
-                            'html'  => $this->inputDateTimeRange('更新于'),
+                            'html'  => $this->htmlDTRange('更新于'),
                         ],
                         [
                             'title' => '状态 . 操作',
-                            'html'  => $this->singleSelectList(
+                            'html'  => $this->htmlSelect(
                                 $optionAll + [0 => '已禁用', 1 => '已启用'], 'filter_enabled'
                             ),
                         ],
@@ -649,8 +654,7 @@ class Student extends Model {
                 $data = (new Card)->compose('Student');
                 break;
             default: # 创建/编辑
-                [$grades] = $this->gcList();
-                ;
+                [$grades] = $this->gcList();;
                 if ($student = $this->find(Request::route('id'))) {
                     $user = $student->user;
                     $student->{'card'} = $user->card;
@@ -679,6 +683,20 @@ class Student extends Model {
         }
         
         return $data;
+        
+    }
+    
+    /**
+     * 保存绑定关系
+     *
+     * @param Student $student
+     * @param array $data
+     * @throws Throwable
+     */
+    private function bindings(Student $student, array $data) {
+    
+        (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
+        (new TagUser)->storeByUserId($student->user_id, $data['tag_ids'] ?? []);
         
     }
     

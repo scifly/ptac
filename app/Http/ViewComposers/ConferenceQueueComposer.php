@@ -62,7 +62,7 @@ class ConferenceQueueComposer {
             $data = [
                 'conferenceRooms'   => $conferenceRooms,
                 'educators'         => $educators,
-                'selectedEducators' => (new Educator)->educatorList(
+                'selectedEducators' => (new Educator)->list(
                     ConferenceQueue::find(Request::route('id'))->educator_ids),
             ];
         }

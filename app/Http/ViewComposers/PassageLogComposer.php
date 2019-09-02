@@ -39,32 +39,32 @@ class PassageLogComposer {
                 '#', '持卡人',
                 [
                     'title' => '角色',
-                    'html'  => $this->singleSelectList(
+                    'html'  => $this->htmlSelect(
                         $optionAll + $roles, 'filter_role'
                     ),
                 ],
                 [
                     'title' => '记录类型',
-                    'html' => $this->singleSelectList(
+                    'html' => $this->htmlSelect(
                         $optionAll + [0 => '无记录', 1 => '刷卡记录', 2 => '门磁', 3 => '报警记录'],
                         'filter_category'
                     )
                 ],
                 [
                     'title' => '方向',
-                    'html'  => $this->singleSelectList(
+                    'html'  => $this->htmlSelect(
                         $optionAll + [0 => '出', 1 => '进'], 'filter_direction'
                     ),
                 ],
                 '地点',
                 [
                     'title' => '通行时间',
-                    'html'  => $this->inputDateTimeRange('通行时间'),
+                    'html'  => $this->htmlDTRange('通行时间'),
                 ],
                 '故障原因',
                 [
                     'title' => '状态',
-                    'html'  => $this->singleSelectList(
+                    'html'  => $this->htmlSelect(
                         $optionAll + [0 => '异常', 1 => '正常'], 'filter_status'
                     ),
                 ],

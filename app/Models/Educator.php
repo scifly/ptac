@@ -3,8 +3,7 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
-use App\Jobs\ExportEducator;
-use App\Jobs\ImportEducator;
+use App\Jobs\{ExportEducator, ImportEducator};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -82,19 +81,6 @@ class Educator extends Model {
     function classes() {
         
         return $this->belongsToMany('App\Models\Squad', 'class_educator');
-        
-    }
-    
-    /**
-     * 返回教职员工列表
-     *
-     * @param array $ids
-     * @return array
-     */
-    function educatorList(array $ids) {
-        
-        return $this->with('user')->whereIn('id', $ids)->get()
-            ->pluck('user.realname', 'id')->toArray();
         
     }
     
@@ -539,22 +525,22 @@ class Educator extends Model {
                         '#', '姓名', '头像',
                         [
                             'title' => '性别',
-                            'html'  => $this->singleSelectList(
+                            'html'  => $this->htmlSelect(
                                 [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
                             ),
                         ],
                         '职务', '手机号码',
                         [
                             'title' => '创建于',
-                            'html'  => $this->inputDateTimeRange('创建于'),
+                            'html'  => $this->htmlDTRange('创建于'),
                         ],
                         [
                             'title' => '更新于',
-                            'html'  => $this->inputDateTimeRange('更新于'),
+                            'html'  => $this->htmlDTRange('更新于'),
                         ],
                         [
                             'title' => '状态 . 操作',
-                            'html'  => $this->singleSelectList(
+                            'html'  => $this->htmlSelect(
                                 [null => '全部', 0 => '未启用', 1 => '已启用'], 'filter_enabled'
                             ),
                         ],
@@ -632,6 +618,19 @@ class Educator extends Model {
     }
     
     /**
+     * 返回教职员工列表
+     *
+     * @param array $ids
+     * @return array
+     */
+    function list(array $ids) {
+        
+        return $this->with('user')->whereIn('id', $ids)->get()
+            ->pluck('user.realname', 'id')->toArray();
+        
+    }
+    
+    /**
      * 选中的部门节点
      *
      * @param $departmentIds
@@ -673,7 +672,7 @@ class Educator extends Model {
     }
     
     /**
-     * 保存绑定关系(任教科目、部门用户、标签用户)
+     * 保存绑定关系(任教班级科目、部门用户、标签用户)
      *
      * @param Educator $educator
      * @param array $data

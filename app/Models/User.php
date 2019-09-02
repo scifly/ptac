@@ -86,8 +86,6 @@ class User extends Authenticatable {
     
     use HasApiTokens, Notifiable, ModelTrait;
     
-    const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="ID" name="ID">';
-    
     protected $table = 'users';
     
     /**
@@ -739,17 +737,17 @@ class User extends Authenticatable {
             $builder = Auth::user()->role() == '运营'
                 ? Corp::whereEnabled(1)
                 : Corp::whereId($corp->corpId());
-            $result['corpList'] = $this->selectList(
-                $corps = $builder->pluck('name', 'id')->toArray(),
+            $result['corpList'] = $this->htmlSelect(
+                $corps = $builder->pluck('name', 'id'),
                 'corp_id'
             );
-            Group::find($value)->name != '学校' ?: $corpId = array_key_first($corps);
+            Group::find($value)->name != '学校' ?: $corpId = array_key_first($corps->toArray());
         } else {
             $corpId = $value;
         }
         $condition = ['corp_id' => $corpId ?? 0, 'enabled' => 1];
         $schools = !($corpId ?? 0) ? collect([]) : School::where($condition)->pluck('name', 'id');
-        $result['schoolList'] = $this->selectList($schools->toArray(), 'school_id');
+        $result['schoolList'] = $this->htmlSelect($schools, 'school_id');
         
         return response()->json($result);
         
@@ -792,7 +790,7 @@ class User extends Authenticatable {
                     ],
                 ];
             case 'users/message':
-                [$optionAll, $htmlCommType, $htmlApp, $htmlMessageType] = $this->messageFilters();
+                [$optionAll, $htmlCommType, $htmlApp, $htmlMessageType] = (new Message)->filters();
                 
                 return [
                     'titles'    => [
@@ -801,10 +799,10 @@ class User extends Authenticatable {
                         ['title' => '媒体类型', 'html' => $htmlApp],
                         ['title' => '类型', 'html' => $htmlMessageType],
                         '发送者',
-                        ['title' => '接收于', 'html' => $this->inputDateTimeRange('接收于')],
+                        ['title' => '接收于', 'html' => $this->htmlDTRange('接收于')],
                         [
                             'title' => '状态',
-                            'html'  => $this->singleSelectList(
+                            'html'  => $this->htmlSelect(
                                 array_merge($optionAll, [0 => '未读', 1 => '已读']), 'filter_read'
                             ),
                         ],
@@ -888,24 +886,6 @@ class User extends Authenticatable {
             default:                   # api用户短信充值/查询
                 return (new Message)->compose('recharge');
         }
-        
-    }
-    
-    /**
-     * 获取Select HTML
-     *
-     * @param array $items
-     * @param $field
-     * @return string
-     */
-    private function selectList(array $items, $field) {
-        
-        $html = str_replace('ID', $field, self::SELECT_HTML);
-        foreach ($items as $key => $value) {
-            $html .= '<option value="' . $key . '">' . $value . '</option>';
-        }
-        
-        return $html . '</select>';
         
     }
     

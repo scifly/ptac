@@ -20,8 +20,11 @@ use App\Models\{Action,
     User};
 use App\Policies\Route;
 use Carbon\Carbon;
+use Doctrine\Common\Inflector\Inflector;
+use Form;
 use Illuminate\Database\{Eloquent\Collection, Eloquent\Model, Query\Builder};
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\{Auth, DB, Request, Storage};
 use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\{Exception, IOFactory, Spreadsheet, Writer\Exception as WriterException};
@@ -586,52 +589,20 @@ trait ModelTrait {
     }
     
     /**
-     * 返回消息Datatable过滤器（通信方式、应用及消息类型）下拉列表html
-     *
-     * @return array
-     */
-    function messageFilters() {
-        
-        $optionAll = [null => '全部'];
-        $htmlCommType = $this->singleSelectList(
-            $optionAll + CommType::all()->pluck('name', 'id')->toArray(),
-            'filter_commtype'
-        );
-        $htmlMediaType = $this->singleSelectList(
-            $optionAll + MediaType::all()->pluck('remark', 'id')->toArray(),
-            'filter_mediatype'
-        );
-        $htmlMessageType = $this->singleSelectList(
-            $optionAll + MessageType::whereEnabled(1)->pluck('name', 'id')->toArray(),
-            'filter_message_type'
-        );
-        
-        return [
-            $optionAll,
-            $htmlCommType,
-            $htmlMediaType,
-            $htmlMessageType,
-        ];
-        
-    }
-    
-    /**
      * 返回指定单选列表对应的html
      *
-     * @param array $items
+     * @param array|SCollection $items
      * @param $id
      * @return string
      */
-    function singleSelectList(array $items, $id) {
+    function htmlSelect($items, $id) {
         
-        $html = '<select class="form-control select2" id="%s" name="%s" style="width: %s"' .
-            (sizeof($items) <= 1 ? ' disabled ' : '') . '>';
-        foreach ($items as $key => $value) {
-            $html .= '<option value="' . $key . '">' . $value . '</option>';
-        }
-        $html .= '</select>';
-        
-        return sprintf($html, $id, $id, '100%;');
+        return Form::select($id, $items, null, [
+            'id' => $id,
+            'class' => 'form-control select2',
+            'style' => 'width: 100%;',
+            'disabled' => sizeof($items) <= 1
+        ])->toHtml();
         
     }
     
@@ -642,11 +613,12 @@ trait ModelTrait {
      * @param bool $timepicker
      * @return string
      */
-    function inputDateTimeRange($title, $timepicker = true) {
+    function htmlDTRange($title, $timepicker = true) {
         
-        $class = 'form-control ' . ($timepicker ? 'dtrange' : 'drange');
-        
-        return '<input type="text" class="' . $class . '" title="按' . $title . '过滤" />';
+        return Form::text(null, null, [
+            'class' => 'form-control ' . ($timepicker ? 'dtrange' : 'drange'),
+            'title' => '按' . $title . '过滤'
+        ])->toHtml();
         
     }
     

@@ -1,57 +1,48 @@
 <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                &times;
-            </button>
-            <h4 class="modal-title">
-                {!! $msgTitle; !!}
-            </h4>
+            {!! Form::button('&times;', [
+                'class' => 'close',
+                'data-dismiss' => 'modal',
+                'aria-hidden' => 'true'
+            ]) !!}
+            <h4 class="modal-title">{!! $msgTitle; !!}</h4>
         </div>
         <div class="modal-body">
             <div class="row">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        {!! Form::label('', '通信方式：', [
-                            'class' => 'col-sm-3 control-label'
-                        ]) !!}
-                        <div class="col-sm-6" style="margin-top: 7px;">{!! $commType !!}</div>
+                        @include('shared.label', ['label' => '通信方式：'])
+                        <div class="col-sm-6 msglbl">{!! $commType !!}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('', '发送时间：', [
-                            'class' => 'col-sm-3 control-label'
-                        ]) !!}
-                        <div class="col-sm-6" style="margin-top: 7px;">
+                        @include('shared.label', ['label' => '发送时间：'])
+                        <div class="col-sm-6 msglbl">
                             <span class="badge bg-blue">{!! $sentAt !!}</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('', '发送对象：', [
-                            'class' => 'col-sm-3 control-label'
-                        ]) !!}
-                        <div class="col-sm-6" style="margin-top: 7px;">{!! $recipients !!}</div>
+                        @include('shared.label', ['label' => '发送对象：'])
+                        <div class="col-sm-6 msglbl">{!! $recipients !!}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('', '发送者：', [
-                            'class' => 'col-sm-3 control-label'
-                        ]) !!}
-                        <div class="col-sm-6" style="margin-top: 7px;">
+                        @include('shared.label', ['label' => '发送者：'])
+                        <div class="col-sm-6 msglbl">
                             <span class="badge bg-green">{!! $sender !!}</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('', '消息内容：', [
-                            'class' => 'col-sm-3 control-label'
-                        ]) !!}
-                        <div class="col-sm-6" style="margin-top: 7px;">{!! $msgBody !!}</div>
+                        @include('shared.label', ['label' => '消息内容：'])
+                        <div class="col-sm-6 msglbl">{!! $msgBody !!}</div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">
-                <i class="fa fa-sign-out"> 关闭</i>
-            </button>
+            {!! Form::button(
+                Html::tag('i', ' 关闭', ['class' => 'fa fa-sign-out']),
+                ['class' => 'btn btn-default', 'data-dismiss' => 'modal']
+            ) !!}
         </div>
     </div>
 </div>

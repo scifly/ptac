@@ -81,25 +81,25 @@ class DepartmentUser extends Pivot {
     /**
      * 按部门Id保存记录
      *
-     * @param $departmentId
+     * @param $deptId
      * @param array $userIds
      * @return bool
      * @throws Exception
      * @throws Throwable
      */
-    function storeByDepartmentId($departmentId, array $userIds) {
+    function storeByDepartmentId($deptId, array $userIds) {
         
         try {
-            DB::transaction(function () use ($departmentId, $userIds) {
+            DB::transaction(function () use ($deptId, $userIds) {
                 foreach ($userIds as $userId) {
                     $du = $this->where([
-                        'department_id' => $departmentId,
+                        'department_id' => $deptId,
                         'user_id'       => $userId,
                     ])->first();
                     if (!$du) {
                         $records[] = [
                             'user_id'       => $userId,
-                            'department_id' => $departmentId,
+                            'department_id' => $deptId,
                             'created_at'    => now()->toDateTimeString(),
                             'updated_at'    => now()->toDateTimeString(),
                             'enabled'       => Constant::ENABLED,
@@ -126,17 +126,20 @@ class DepartmentUser extends Pivot {
      * 保存用户部门数据
      *
      * @param integer $userId
-     * @param integer $departmentId
+     * @param integer $deptId
      * @return bool
      * @throws Throwable
      */
-    function store($userId, $departmentId): bool {
+    function store($userId, $deptId): bool {
         
         try {
-            DB::transaction(function () use ($userId, $departmentId) {
+            DB::transaction(function () use ($userId, $deptId) {
                 $this->where('user_id', $userId)->delete();
                 $this->create(
-                    array_combine($this->fillable, [$departmentId, $userId, 1])
+                    array_combine(
+                        $this->fillable,
+                        [$deptId, $userId, 1]
+                    )
                 );
             });
         } catch (Exception $e) {

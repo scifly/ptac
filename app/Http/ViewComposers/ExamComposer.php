@@ -25,7 +25,7 @@ class ExamComposer {
         $action = explode('/', Request::path())[1];
         switch ($action) {
             case 'index':
-                $htmlExamType = $this->singleSelectList(
+                $htmlExamType = $this->htmlSelect(
                     array_merge(
                         [null => '全部'],
                         ExamType::whereSchoolId($this->schoolId())->get()->pluck('name', 'id')->toArray()
@@ -39,23 +39,23 @@ class ExamComposer {
                         '满分', '及格分数',
                         [
                             'title' => '开始日期',
-                            'html' => $this->inputDateTimeRange('开始日期', false)
+                            'html' => $this->htmlDTRange('开始日期', false)
                         ],
                         [
                             'title' => '结束日期',
-                            'html' => $this->inputDateTimeRange('结束日期', false)
+                            'html' => $this->htmlDTRange('结束日期', false)
                         ],
                         [
                             'title' => '创建于',
-                            'html' => $this->inputDateTimeRange('创建于')
+                            'html' => $this->htmlDTRange('创建于')
                         ],
                         [
                             'title' => '更新于',
-                            'html' => $this->inputDateTimeRange('更新于')
+                            'html' => $this->htmlDTRange('更新于')
                         ],
                         [
                             'title' => '状态 . 操作',
-                            'html' => $this->singleSelectList(
+                            'html' => $this->htmlSelect(
                                 [null => '全部', 0 => '已禁用', 1 => '已启用'], 'filter_enabled'
                             )
                         ],

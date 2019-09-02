@@ -52,6 +52,7 @@ class Grade extends Model {
         'educator_ids', 'enabled',
     ];
     
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /**
      * 返回对应的部门对象
      *
@@ -88,6 +89,7 @@ class Grade extends Model {
         
     }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 年级列表
      *
@@ -253,6 +255,7 @@ class Grade extends Model {
         
     }
     
+    /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 返回view所需数据
      *
@@ -270,7 +273,7 @@ class Grade extends Model {
                 ->with('user')->get()->pluck('user.realname', 'id')->toArray();
             if ($grade = Grade::find(Request::route('id'))) {
                 $department = $grade->department;
-                $selectedEducators = (new Educator)->educatorList(
+                $selectedEducators = (new Educator)->list(
                     explode(',', rtrim($grade->educator_ids, ','))
                 );
             }
@@ -299,11 +302,11 @@ class Grade extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );
-        $items = $this->find($id)->classes->pluck('name', 'id')->toArray();
+        $items = $this->find($id)->classes->pluck('name', 'id');
         
         return [
-            $this->singleSelectList($items, 'class_id'),
-            array_key_first($items),
+            $this->htmlSelect($items, 'class_id'),
+            array_key_first($items->toArray()),
         ];
         
     }
@@ -323,7 +326,7 @@ class Grade extends Model {
         //     __('messages.unauthorized')
         // );
         $ids = $this->gradeIds(session('schoolId'), $user->id);
-        $departmentIds = $this->whereIn('id', $ids)->pluck('department_id')->toArray();
+        $departmentIds = $this->whereIn('id', $ids)->pluck('department_id');
         
         return Department::whereIn('id', $departmentIds)->get();
         

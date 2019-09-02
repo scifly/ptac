@@ -47,7 +47,7 @@
 
                         $typeNext.remove();
                         $typeId.remove();
-                        $typePrev.after(result.original['html']);
+                        $typePrev.after(result);
                         page.initSelect2();
                         if (type === 'class') {
                             score.list('student', $('#class_id').val());

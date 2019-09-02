@@ -44,6 +44,7 @@ class Custodian extends Model {
     
     protected $fillable = ['user_id', 'enabled'];
     
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /**
      * 返回对应的用户对象
      *
@@ -67,6 +68,7 @@ class Custodian extends Model {
         
     }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 监护人记录列表
      *
@@ -148,8 +150,8 @@ class Custodian extends Model {
                 (new Card)->store($user);
                 $data['user_id'] = $user->id;
                 $custodian = $this->create($data);
-                # 保存监护人用户&部门绑定关系、监护关系、手机号码
-                $this->storeProperties($custodian, $data);
+                # 保存绑定关系
+                $this->bindings($custodian, $data);
                 # 如果同时也是教职员工
                 if (!$data['singular']) {
                     $schoolId = $this->schoolId();
@@ -178,26 +180,6 @@ class Custodian extends Model {
     }
     
     /**
-     * 保存家长&学生 、家长&部门绑定关系数据
-     *
-     * @param Custodian $custodian
-     * @param array $data
-     * @throws Throwable
-     */
-    function storeProperties(Custodian $custodian, array $data) {
-        
-        # 更新监护人&部门绑定关系
-        (new DepartmentUser)->storeByUserId(
-            $custodian->user_id,
-            $data['departmentIds'] ?? [],
-            true
-        );
-        # 更新监护人&学生关系
-        (new CustodianStudent)->store($custodian->id, $data['relationships'] ?? []);
-        
-    }
-    
-    /**
      * 更新指定的监护人记录
      *
      * @param array $data
@@ -219,8 +201,8 @@ class Custodian extends Model {
                     $user->update($data['user']);
                     (new Card)->store($user);
                     $custodian->update($data);
-                    # 更新监护人用户&部门绑定关系、监护关系、手机号码
-                    $this->storeProperties($custodian, $data);
+                    # 保存绑定关系
+                    $this->bindings($custodian, $data);
                     # 如果同时也是教职员工
                     $educator = $user->educator;
                     if (!$educator && !$data['singular']) {
@@ -436,6 +418,7 @@ class Custodian extends Model {
         
     }
     
+    /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 返回指定年级和班级对应的学生列表
      *
@@ -451,15 +434,10 @@ class Custodian extends Model {
             __('messages.not_acceptable')
         );
         $id = Request::input('id');
-        $result = [];
+        [$classes, $classId] = (new Grade)->classList($id);
+        $result['html']['students'] = (new Squad)->studentList($classId);
         if (Request::input('field') == 'grade') {
-            list($classes, $classId) = (new Grade)->classList($id);
-            $result['html'] = [
-                'classes'  => $classes,
-                'students' => (new Squad)->studentList($classId),
-            ];
-        } else {
-            $result['html']['students'] = (new Squad)->studentList($id);
+            $result['html']['classes'] = $classes;
         }
         
         return response()->json($result);
@@ -522,22 +500,22 @@ class Custodian extends Model {
                         '#', '姓名', '头像',
                         [
                             'title' => '性别',
-                            'html'  => $this->singleSelectList(
+                            'html'  => $this->htmlSelect(
                                 [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
                             ),
                         ],
                         '学生', '手机号码',
                         [
                             'title' => '创建于',
-                            'html'  => $this->inputDateTimeRange('创建于'),
+                            'html'  => $this->htmlDTRange('创建于'),
                         ],
                         [
                             'title' => '更新于',
-                            'html'  => $this->inputDateTimeRange('更新于'),
+                            'html'  => $this->htmlDTRange('更新于'),
                         ],
                         [
                             'title' => '状态 . 操作',
-                            'html'  => $this->singleSelectList(
+                            'html'  => $this->htmlSelect(
                                 [null => '全部', 0 => '未启用', 1 => '已启用'], 'filter_enabled'
                             ),
                         ],
@@ -647,6 +625,26 @@ class Custodian extends Model {
                 function (User $user) { return $user->group->name == '监护人'; }
             ),
         ];
+        
+    }
+    
+    /**
+     * 保存家长&学生 、家长&部门绑定关系数据
+     *
+     * @param Custodian $custodian
+     * @param array $data
+     * @throws Throwable
+     */
+    private function bindings(Custodian $custodian, array $data) {
+        
+        # 更新监护人&部门绑定关系
+        (new DepartmentUser)->storeByUserId(
+            $custodian->user_id,
+            $data['departmentIds'] ?? [],
+            true
+        );
+        # 更新监护人&学生关系
+        (new CustodianStudent)->store($custodian->id, $data['relationships'] ?? []);
         
     }
     

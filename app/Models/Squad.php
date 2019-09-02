@@ -56,6 +56,7 @@ class Squad extends Model {
         'educator_ids', 'enabled',
     ];
     
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /**
      * 返回对应的部门对象
      *
@@ -100,6 +101,7 @@ class Squad extends Model {
         
     }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 班级列表
      *
@@ -254,6 +256,7 @@ class Squad extends Model {
         
     }
     
+    /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 返回view所需数据
      *
@@ -269,7 +272,7 @@ class Squad extends Model {
                     '#', '名称',
                     [
                         'title' => '所属年级',
-                        'html'  => $this->singleSelectList(
+                        'html'  => $this->htmlSelect(
                             [null => '全部'] + Grade::whereIn('id', $this->gradeIds())
                                 ->pluck('name', 'id')->toArray(),
                             'filter_grade_id'
@@ -278,21 +281,21 @@ class Squad extends Model {
                     '班主任',
                     [
                         'title' => '创建于',
-                        'html'  => $this->inputDateTimeRange('创建于'),
+                        'html'  => $this->htmlDTRange('创建于'),
                     ],
                     [
                         'title' => '更新于',
-                        'html'  => $this->inputDateTimeRange('更新于'),
+                        'html'  => $this->htmlDTRange('更新于'),
                     ],
                     [
                         'title' => '同步状态',
-                        'html'  => $this->singleSelectList(
+                        'html'  => $this->htmlSelect(
                             [null => '全部', 0 => '未同步', 1 => '已同步'], 'filter_subscribed'
                         ),
                     ],
                     [
                         'title' => '状态 . 操作',
-                        'html'  => $this->singleSelectList(
+                        'html'  => $this->htmlSelect(
                             [null => '全部', 0 => '未启用', 1 => '已启用'], 'filter_enabled'
                         ),
                     ],
@@ -310,7 +313,7 @@ class Squad extends Model {
             if ($class = $this->find(Request::route('id'))) {
                 $department = $class->department;
                 $educatorIds = $class->educator_ids;
-                $educatorIds == '0' ?: $selectedEducators = (new Educator)->educatorList(
+                $educatorIds == '0' ?: $selectedEducators = (new Educator)->list(
                     explode(',', $educatorIds)
                 );
             }
@@ -342,15 +345,12 @@ class Squad extends Model {
         );
         $class = $this->find($id);
         $students = $class ? $class->students : [];
-        $items = [];
         foreach ($students as $student) {
             if (!$student->user) continue;
             $items[$student->id] = $student->user->realname . '(' . $student->sn . ')';
         }
         
-        return response()->json([
-            'html' => $this->singleSelectList($items, 'student_id'),
-        ]);
+        return $this->htmlSelect($items ?? [], 'student_id');
         
     }
     
