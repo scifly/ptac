@@ -31,9 +31,7 @@
                         ) !!}
                         <!-- 角色名称 -->
                         <div class="form-group">
-                            {!! Form::label('name', '名称', [
-                                'class' => 'col-sm-3 control-label'
-                            ]) !!}
+                            @include('shared.label', ['field' => 'name', 'label' => '名称'])
                             <div class="col-sm-6">
                                 <div class="input-group">
                                     @include('shared.icon_addon', ['class' => 'fa-meh-o'])
@@ -79,9 +77,10 @@
                                                 $name, $value, in_array($value, $selectedTabIds ?? []),
                                                 ['id' => 'tabs[]', 'class' => 'minimal tabs']
                                             )->toHtml() . 
-                                            Html::tag('span', $ta['tab']['name'], [
-                                                'class' => 'plbl'
-                                            ])->toHtml(),
+                                            Html::tag(
+                                                'span', $ta['tab']['name'],
+                                                ['class' => 'plbl']
+                                            )->toHtml(),
                                             ['class' => 'tabsgroup'], false
                                         ) !!}
                                         <div class="box-tools pull-right">
