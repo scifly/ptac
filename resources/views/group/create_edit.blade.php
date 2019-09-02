@@ -69,10 +69,7 @@
                                                 $name, $value, in_array($value, $selectedTabIds ?? []),
                                                 ['id' => 'tabs[]', 'class' => 'minimal tabs']
                                             )->toHtml() . 
-                                            Html::tag(
-                                                'span', $ta['tab']['name'],
-                                                ['class' => 'plbl']
-                                            )->toHtml(),
+                                            Html::tag('span', $ta['tab']['name'], ['class' => 'plbl'])->toHtml(),
                                             ['class' => 'tabsgroup'], false
                                         ) !!}
                                         <div class="box-tools pull-right">
@@ -95,9 +92,7 @@
                                                                     'class' => 'minimal actions',
                                                                     'data-method' => $action['method']
                                                             ])->toHtml() .
-                                                            Html::tag('span', $action['name'], [
-                                                                'class' => 'plbl'
-                                                            ])->toHtml(),
+                                                            Html::tag('span', $action['name'], ['class' => 'plbl'])->toHtml(),
                                                             ['class' => 'actionsgroup'], false
                                                         ) !!}
                                                     </p>
