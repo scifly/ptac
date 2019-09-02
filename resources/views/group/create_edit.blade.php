@@ -18,9 +18,9 @@
                         @if (!empty($group['id']))
                             {!! Form::hidden('id', $group['id'], ['id' => 'id']) !!}
                         @endif
-                        {!! Form::hidden('menu_ids', join(',', $selectedMenuIds ?? []), ['id' => 'menu_ids']) !!}
-                        {!! Form::hidden('tab_ids', join(',', $selectedTabIds ?? []), ['id' => 'tab_ids']) !!}
-                        {!! Form::hidden('action_ids', join(',', $selectedActionIds ?? []), ['id' => 'action_ids']) !!}
+                        {!! Form::hidden($id = 'menu_ids', join(',', $selectedMenuIds ?? []), ['id' => $id]) !!}
+                        {!! Form::hidden($id = 'tab_ids', join(',', $selectedTabIds ?? []), ['id' => $id]) !!}
+                        {!! Form::hidden($id = 'action_ids', join(',', $selectedActionIds ?? []), ['id' => $id]) !!}
                         <!-- 角色名称 -->
                         <div class="form-group">
                             @include('shared.label', ['field' => 'name', 'label' => '名称'])
