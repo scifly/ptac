@@ -2,9 +2,13 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <form class='import' method='post' enctype='multipart/form-data' id="form-import">
-                {{ csrf_field() }}
+                {!! csrf_field() !!}
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    {!! Form::button('×', [
+                        'class' => 'close',
+                        'data-dismiss' => 'modal',
+                        'aria-hidden' => 'true'
+                    ]) !!}
                     <h4 class="modal-title">批量导入</h4>
                 </div>
                 <div class="modal-body with-border">
@@ -22,12 +26,10 @@
                             'items' => $classes
                         ])
                         <div class="form-group">
-                            {{ Form::label('import', '选择导入文件', [
-                                'class' => 'control-label col-sm-3'
-                            ]) }}
+                            @include('shared.label', ['field' => 'import', 'label' => '选择导入文件'])
                             <div class="col-sm-6">
-                                <input type="file" id="fileupload" accept=".xls,.xlsx" name="file">
-                                <p class="help-block">下载<a href="{{URL::asset($importTemplate)}}">模板</a></p>
+                                {!! Form::file('file', ['id' => 'fileupload', 'accept' => '.xls,.xlsx']) !!}
+                                <p class="help-block">下载<a href="{!! URL::asset($importTemplate) !!}">模板</a></p>
                             </div>
                         </div>
                     </div>

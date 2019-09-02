@@ -603,7 +603,7 @@ class Educator extends Model {
                             $educator,
                             $firstOption + $classes->pluck('name', 'id')->toArray(),
                             $firstOption + $subjects->pluck('name', 'id')->toArray(),
-                            (new Group)->groupList(),
+                            (new Group)->list(),
                             join(',', $selectedDepartmentIds ?? []),
                             $selectedDepartments ?? [],
                         ]

@@ -2,8 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{Constant, ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -51,10 +50,9 @@ class Group extends Model {
     
     protected $table = 'groups';
     
-    protected $fillable = [
-        'name', 'school_id', 'remark', 'enabled',
-    ];
+    protected $fillable = ['name', 'school_id', 'remark', 'enabled'];
     
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /**
      * 获取指定角色下的所有用户对象
      *
@@ -90,6 +88,7 @@ class Group extends Model {
      */
     function tabs() { return $this->belongsToMany('App\Models\Tab', 'group_tab'); }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 角色列表
      *
@@ -146,13 +145,10 @@ class Group extends Model {
                 ],
             ],
         ];
-        $menu = new Menu();
-        $currentMenuId = session('menuId');
-        if ($this->schoolId()) {
-            $condition .= 'AND School.id = ' . $this->schoolId();
-        } else if ($corpMenuId = $menu->menuId($currentMenuId, '企业')) {
-            $corpId = Corp::whereMenuId($corpMenuId)->first()->id;
-            $condition .= 'AND Corp.id = ' . $corpId;
+        if ($id = $this->schoolId()) {
+            $condition .= 'AND School.id = ' . $id;
+        } elseif ($menuId = (new Menu)->menuId(session('menuId'), '企业')) {
+            $condition .= 'AND Corp.id = ' . Corp::whereMenuId($menuId)->first()->id;
         }
         
         return Datatable::simple(
@@ -173,38 +169,14 @@ class Group extends Model {
         
         try {
             DB::transaction(function () use ($data) {
-                $group = self::create([
-                    'name'      => $data['name'],
-                    'remark'    => $data['remark'],
-                    'enabled'   => $data['enabled'],
-                    'school_id' => $data['school_id'],
-                ]);
-                $this->binding($group->id, $data);
+                $group = $this->create($data);
+                $this->bindings($group->id, $data);
             });
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 保存角色 & 功能/菜单/卡片绑定关系
-     *
-     * @param $id
-     * @param array $data
-     */
-    private function binding($id, array $data) {
-        
-        array_map(
-            function ($class, $ids, $forward) use ($id, $data) {
-                $this->retain($class, $id, $data[$ids], $forward);
-            },
-            ['ActionGroup', 'GroupMenu', 'GroupTab'],
-            ['action_ids', 'menu_ids', 'tab_ids'],
-            [false, true, true]
-        );
         
     }
     
@@ -220,12 +192,8 @@ class Group extends Model {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                $this->find($id)->update([
-                    'name'    => $data['name'],
-                    'remark'  => $data['remark'],
-                    'enabled' => $data['enabled'],
-                ]);
-                $this->binding($id, $data);
+                $this->find($id)->update($data);
+                $this->bindings($id, $data);
             });
         } catch (Exception $e) {
             throw $e;
@@ -259,6 +227,66 @@ class Group extends Model {
         
     }
     
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 返回composer所需的view数据
+     *
+     * @return array
+     */
+    function compose() {
+    
+        if (explode('/', Request::path())[1] == 'index') {
+            $data = [
+                'titles' => ['#', '名称', '所属学校', '所属企业', '备注', '创建于', '更新于', '状态 . 操作'],
+            ];
+        } else {
+            # 学校列表
+            $condition = ['enabled' => Constant::ENABLED];
+            if ($id = $this->schoolId()) {
+                $condition['id'] = $id;
+            } elseif ($menuId = (new Menu)->menuId(session('menuId'), '企业')) {
+                $condition['corp_id'] = Corp::whereMenuId($menuId)->first()->id;
+            }
+            $data['schools'] = School::where($condition)->pluck('name', 'id');
+            # 控制器 & 功能列表
+            $sGId = Group::whereName('学校')->first()->id;
+            $tabs = Tab::whereIn('group_id', [0, $sGId])->where('category', 0)->get();
+            foreach ($tabs as $tab) {
+                foreach (Action::whereTabId($tab->id)->get() as $action) {
+                    if (!in_array(trim($action->name), ['创建微网站', '保存微网站', '删除微网站'])) {
+                        $actionList[] = [
+                            'id'     => $action->id,
+                            'name'   => $action->name,
+                            'method' => $action->method,
+                        ];
+                    }
+                }
+                $tabActions[] = [
+                    'tab'     => ['id' => $tab->id, 'name' => $tab->comment],
+                    'actions' => $actionList ?? [],
+                ];
+            }
+            $data['tabActions'] = $tabActions ?? [];
+            # 选定的菜单、控制器以及功能id
+            if ($group = Group::find(Request::route('id'))) {
+                $data = array_merge(
+                    $data, array_combine(
+                        ['selectedMenuIds', 'selectedTabIds', 'selectedActionsIds'],
+                        array_map(
+                            function ($property) use ($group) {
+                                return $group->{$property}->pluck('id')->toArray();
+                            }, ['menus', 'tabs', 'actions']
+                        )
+                    )
+                );
+            }
+        
+        }
+        
+        return $data;
+        
+    }
+    
     /**
      * 返回指定学校的菜单树
      *
@@ -278,12 +306,31 @@ class Group extends Model {
      *
      * @return array
      */
-    function groupList() {
+    function list() {
         
         return $this->where([
             'school_id' => $this->schoolId(),
             'enabled'   => 1,
-        ])->pluck('name', 'id')->toArray();
+        ])->pluck('name', 'id');
+        
+    }
+    
+    /**
+     * 保存角色 & 功能/菜单/卡片绑定关系
+     *
+     * @param $id
+     * @param array $data
+     */
+    private function bindings($id, array $data) {
+        
+        array_map(
+            function ($class, $ids, $forward) use ($id, $data) {
+                $this->retain($class, $id, $data[$ids], $forward);
+            },
+            ['ActionGroup', 'GroupMenu', 'GroupTab'],
+            ['action_ids', 'menu_ids', 'tab_ids'],
+            [false, true, true]
+        );
         
     }
     
