@@ -80,7 +80,7 @@
                                                 $ta['tab']['id'],
                                                 in_array($ta['tab']['id'], $selectedTabIds ?? []),
                                                 ['id' => 'tabs[]', 'class' => 'minimal tabs']
-                                            )->toHtml() .
+                                            )->toHtml() . '&nbsp;' . 
                                             Html::tag('span', $ta['tab']['name'], [
                                                 'style' => 'margin-left: 5px; vertical-align: middle;'
                                             ])->toHtml(),
@@ -119,7 +119,7 @@
                                                                     'id' => $id,
                                                                     'class' => 'minimal actions',
                                                                     'data-method' => $action['method']
-                                                            ])->toHtml() .
+                                                            ])->toHtml() . '&nbsp;' .
                                                             Html::tag('span', $action['name'], [
                                                                 'style' => 'vertical-align: middel;'
                                                             ])->toHtml(),
