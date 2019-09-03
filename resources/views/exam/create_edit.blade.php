@@ -5,12 +5,10 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($exam['id']))
-                {{ Form::hidden('id', $exam['id'], ['id' => 'id']) }}
+                {!! Form::hidden('id', $exam['id'], ['id' => 'id']) !!}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         <div class="input-group-addon" style="width: 45px;">
@@ -45,9 +43,7 @@
                 'selectedItems' => $selectedSubjects
             ])
             <div class="form-group">
-                {!! Form::label('daterange', '起止日期', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'daterange', 'label' => '起止日期'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-calendar'])

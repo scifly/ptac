@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
-use Illuminate\Support\Facades\{Auth, DB};
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
@@ -64,6 +64,7 @@ class ConferenceQueue extends Model {
         'event_id', 'status',
     ];
     
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /**
      * 返回举行指定会议的会议室对象
      *
@@ -85,6 +86,7 @@ class ConferenceQueue extends Model {
      */
     function user() { return $this->belongsTo('App\Models\User'); }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 会议列表
      *
@@ -191,6 +193,49 @@ class ConferenceQueue extends Model {
         }
         
         return true;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    
+    function compose() {
+    
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            $data = [
+                'titles' => ['#', '名称', '发起人', '会议室', '开始时间', '结束时间', '备注', '状态 . 操作'],
+            ];
+        } else {
+            $schoolId = $this->schoolId();
+            $conferenceRooms = ConferenceRoom::whereSchoolId($schoolId)->pluck('name', 'id');
+            $user = Auth::user();
+            if (in_array($user->role(), Constant::SUPER_ROLES)) {
+                $educators = Educator::whereSchoolId($schoolId)->with('user')->pluck('user.realname', 'id');
+            } else {
+                $userIds = array_unique(
+                    DepartmentUser::whereIn(
+                        'department_id', $user->departmentIds($user->id)
+                    )->get(['user_id'])->toArray()
+                );
+                $educators = collect([]);
+                foreach ($userIds as $userId) {
+                    $u = User::find($userId);
+                    if ($u->educator) {
+                        $educators[$u->educator->id] = $u->realname;
+                    }
+                }
+            }
+            $cq = ConferenceQueue::find(Request::route('id'));
+            $data = [
+                'conferenceRooms'   => $conferenceRooms,
+                'educators'         => $educators,
+                'selectedEducators' => collect(
+                    explode(',', $cq ? $cq->educator_ids : null)
+                )
+            ];
+        }
+        
+        return $data;
         
     }
     

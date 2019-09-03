@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsT
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use Illuminate\View\View;
+use PhpOffice\PhpSpreadsheet\Exception as PssException;
+use PhpOffice\PhpSpreadsheet\Writer\Exception as PsswException;
 use ReflectionClass;
 use ReflectionException;
 use Throwable;
@@ -373,43 +375,6 @@ class Score extends Model {
     }
     
     /**
-     * 单科/总成绩排名统计
-     *
-     * @param array $ids
-     * @param integer $examId
-     * @param null $subjectId
-     */
-    private function rankScores(array $ids, $examId, $subjectId = null) {
-        
-        array_map(
-            function ($ids, $field) use ($examId, $subjectId) {
-                $className = 'App\\Models\\' . ucfirst($subjectId ? 'score' : 'scoreTotal');
-                $model = (new ReflectionClass($className))->newInstance();
-                $condition = [
-                    ['exam_id', '=', $examId],
-                    ['enabled', '=', 1],
-                ];
-                !$subjectId ?: $condition = array_merge($condition, [['subject_id', '=', $subjectId]]);
-                foreach ($ids as $studentIds) {
-                    $scores = $model->orderBy('score', 'desc')
-                        ->whereIn('student_id', $studentIds)
-                        ->where($condition)->get();
-                    $tempScore = 0;
-                    $rank = 0;
-                    foreach ($scores as $score) {
-                        if ($tempScore != $score->score) {
-                            $tempScore = $score->score;
-                            $rank++;
-                        }
-                        $score->{'update'}([$field => $rank]);
-                    }
-                }
-            }, $ids, ['class_rank', 'grade_rank']
-        );
-        
-    }
-    
-    /**
      * 成绩分析
      *
      * @return JsonResponse
@@ -422,6 +387,726 @@ class Score extends Model {
                 ? view('score.class_stat', $this->classStat(false))->render()
                 : view('score.student_stat', $this->studentStat())->render(),
         ]);
+        
+    }
+    
+    /**
+     * 导入成绩
+     *
+     * @return bool
+     * @throws PssException
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    function import() {
+        
+        $records = $this->uploader(false);
+        $titles = $records[0];
+        array_shift($records);
+        $subjectNames = [];
+        for ($i = ord('D'); $i < ord('D') + sizeof($titles) - 3; $i++) {
+            $subjectNames[] = $titles[chr($i)];
+        }
+        $subjects = Subject::whereIn('name', $subjectNames)
+            ->where('school_id', $this->schoolId())->get();
+        $exam = Exam::find(Request::input('examId'));
+        abort_if(
+            !$exam,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.score.exam_not_found')
+        );
+        $examSubjectIds = explode(',', $exam->subject_ids);
+        foreach ($records as $record) {
+            $basic = [
+                'class'        => $record['A'],
+                'sn'           => $record['B'],
+                'student_name' => $record['C'],
+                'exam_id'      => Request::input('examId'),
+            ];
+            $index = 'D';
+            foreach ($subjects as $subject) {
+                if (!in_array($subject->id, $examSubjectIds)) continue;
+                $data[] = array_merge(
+                    $basic, [
+                        'subject_id' => $subject->id,
+                        'score'      => floatval($record[$index]),
+                    ]
+                );
+                $index = chr(ord($index) + 1);
+            }
+        }
+        ImportScore::dispatch(
+            $data ?? [], Auth::id(), Request::input('classId')
+        );
+        
+        return true;
+        
+    }
+    
+    /**
+     * 导出成绩
+     *
+     * @return mixed
+     * @throws PssException
+     * @throws PsswException
+     */
+    function export() {
+        
+        $classId = Request::query('classId');
+        $examId = Request::query('examId');
+        $studentIds = Squad::find($classId)->students->pluck('id')->toArray();
+        $scores = $this->whereExamId($examId)->whereIn('student_id', $studentIds)->get();
+        $records = [self::EXPORT_TITLES];
+        foreach ($scores as $score) {
+            if (!$score->student) continue;
+            $records[] = [
+                $score->student->user->realname,
+                $score->student->squad->name,
+                $score->student->sn,
+                $score->exam->name,
+                $score->subject->name,
+                $score->score,
+                $score->class_rank,
+                $score->grade_rank,
+            ];
+        }
+        
+        return $this->excel($records);
+        
+    }
+    
+    /**
+     * 待发成绩消息预览
+     *
+     * @return JsonResponse
+     */
+    function preview() {
+        
+        $examId = Request::input('examId');
+        $classId = Request::input('classId');
+        if ($examId && $classId) {
+            $result = $this->messages(
+                $examId, $classId,
+                Request::input('subjectIds') ?? [],
+                Request::input('items') ?? []
+            );
+        } else {
+            $exam = Exam::find($examId);
+            $classes = Squad::whereIn('id', explode(',', $exam->class_ids))->get();
+            $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))->get();
+            $result = [
+                'classes'  => $classes->toArray(),
+                'subjects' => $subjects->toArray(),
+            ];
+        }
+        
+        return response()->json($result);
+        
+    }
+    
+    /** 微信端 ------------------------------------------------------------------------------------------------------- */
+    /**
+     * 返回微信端成绩中心首页
+     *
+     * @return Factory|JsonResponse|View
+     * @throws Throwable
+     */
+    function wIndex() {
+        
+        $user = Auth::user();
+        $schoolId = session('schoolId');
+        $pageSize = 4;
+        $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
+        $exam = new Exam();
+        abort_if(
+            $user->role() == '学生',
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorized')
+        );
+        if (Request::method() == 'POST') {
+            $targetId = Request::input('target_id');
+            $classId = $user->role() == '监护人' ? Student::find($targetId)->class_id : $targetId;
+            $keyword = Request::has('keyword') ? Request::input('keyword') : null;
+            $exams = array_slice($exam->examsByClassId($classId, $keyword), $start, $pageSize);
+            
+            return response()->json(['exams' => $exams]);
+        }
+        if ($user->role() == '监护人') {
+            $targets = $user->custodian->myStudents();
+            $exams = array_slice((new Student)->exams(array_key_first($targets)), $start, $pageSize);
+            $type = 'student';
+        } else {
+            $targets = Squad::whereIn('id', $this->classIds($schoolId))
+                ->where('enabled', 1)->pluck('name', 'id')->toArray();
+            $exams = array_slice($exam->examsByClassId(array_key_first($targets)), $start, $pageSize);
+            $type = 'class';
+        }
+        
+        return view('wechat.score_center.index', [
+            'targets' => $targets,
+            'exams'   => $exams,
+            'type'    => $type,
+        ]);
+        
+    }
+
+    /**
+     * 成绩综合分析
+     *
+     * @return Factory|View|string
+     */
+    function wStat() {
+        
+        $examId = Request::query('examId');
+        $studentId = Request::query('studentId');
+        $exam = Exam::find($examId);
+        $student = Student::find($studentId);
+        abort_if(
+            !$student || !$exam,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+        
+        return view('wechat.score_center.stat', [
+            'data'      => $this->wAnalyze([
+                'exam_id'    => $examId,
+                'student_id' => $studentId,
+            ]),
+            'examName'  => $exam->name,
+            'examDate'  => $exam->start_date,
+            'studentId' => $studentId,
+            'examId'    => $examId,
+        ]);
+        
+    }
+    
+    /**
+     * 返回指定班级、考试的成绩分析数据
+     *
+     * @return Factory|View|string
+     */
+    function analyze() {
+        
+        $schoolId = session('schoolId');
+        $allowedClassIds = $this->classIds($schoolId);
+        $examId = Request::query('examId');
+        $classId = Request::query('classId');
+        $exam = Exam::find($examId);
+        $class = Squad::find($classId);
+        abort_if(
+            !$exam || !$class || !in_array($classId, $allowedClassIds),
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+        $data = $this->classStat(true)
+            ?? [
+                'className'   => $exam->start_date,
+                'examName'    => $exam->name,
+                'oneData'     => [],
+                'rangs'       => [],
+                'totalRanges' => [],
+            ];
+        
+        return view('wechat.score_center.analyze', [
+            'data'    => $data,
+            'examId'  => $examId,
+            'classId' => $classId,
+        ]);
+        
+    }
+    
+    /**
+     * 返回考试详情数据
+     *
+     * @return array|Factory|JsonResponse|View|null|string
+     */
+    function detail() {
+        
+        $user = Auth::user();
+        abort_if(
+            $user->role() == '学生',
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorized')
+        );
+        
+        return Request::has('student')
+            ? $this->studentDetail()
+            : $this->classDetail();
+        
+    }
+
+    /**
+     * 返回用于显示指定学生、考试、科目成绩的图表数据
+     *
+     * @return Factory|JsonResponse|View
+     */
+    function graph() {
+        
+        $studentId = Request::input('student_id');
+        $examId = Request::input('exam_id');
+        $subjectId = Request::input('subject_id');
+        if (Request::method() == 'POST') {
+            if ($examId && $subjectId) {
+                return response()->json(
+                    $this->graphData($studentId, $examId, $subjectId)
+                );
+            }
+        }
+        $exam = Exam::find($examId);
+        $student = Student::find($studentId);
+        $subjectIds = explode(',', $exam->subject_ids);
+        $subjects = Subject::whereIn('id', $subjectIds)->pluck('name', 'id');
+        
+        return view('wechat.score_center.graph', [
+            'subjects' => $subjects,
+            'student'  => $student,
+            'exam'     => $exam,
+        ]);
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 返回composer所需的view数据
+     *
+     * @return array|false
+     * @throws PssException
+     * @throws PsswException
+     */
+    function compose() {
+    
+        # 对当前用户可见的考试列表
+        $exams = Exam::whereEnabled(1)->whereIn('id', $this->examIds())->pluck('name', 'id');
+        $exam = Request::route('id')
+            ? Score::find(Request::route('id'))->exam
+            : Exam::find($exams->keys()->first());
+        # 指定考试对应的班级
+        $classIds = array_intersect(
+            explode(',', $exam ? $exam->class_ids : ''),
+            $this->classIds()
+        );
+        $classes = Squad::whereEnabled(1)->whereIn('id', $classIds)->pluck('name', 'id');
+        # 指定考试对应的科目列表
+        $subjects = Subject::whereEnabled(1)
+            ->whereIn('id', explode(',', $exam ? $exam->subject_ids : ''))
+            ->pluck('name', 'id');
+        $data = array_combine(['exams', 'classes', 'subjects'], [$exams, $classes, $subjects]);
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            # 生成指定考试和班级的成绩导入模板
+            !$exam ?: (new Score)->template($exam->id, $classes->keys()->first());
+            # 发布项
+            $items = collect([
+                'score'      => '分数',
+                'grade_rank' => '年排名',
+                'class_rank' => '班排名',
+                'grade_avg'  => '年平均',
+                'class_avg'  => '班平均',
+                'grade_max'  => '年最高',
+                'class_max'  => '班最高',
+                'grade_min'  => '年最低',
+                'class_min'  => '班最低',
+            ]);
+            [$htmlClass, $htmlGrade, $htmlSubject, $htmlExam] = array_map(
+                function ($class) {
+                    $model = $this->model($class);
+                    $field = $class == 'Squad' ? 'class' : lcfirst($class);
+                    $builder = $class != 'Subject'
+                        ? $model->whereIn('id', $this->{$field . 'Ids'}())
+                        : $model->whereSchoolId($this->schoolId());
+                
+                    return $this->htmlSelect(
+                        $builder->{'pluck'}('name', 'id')->merge([null => '全部'])->sort(),
+                        'filter_' . $field
+                    );
+                }, ['Squad', 'Grade', 'Subject', 'Exam']
+            );
+            $data = array_merge($data, [
+                'buttons'        => [
+                    'send'   => [
+                        'id'    => 'send',
+                        'label' => '成绩发送',
+                        'icon'  => 'fa fa-send-o',
+                    ],
+                    'import' => [
+                        'id'    => 'import',
+                        'label' => '批量导入',
+                        'icon'  => 'fa fa-upload',
+                    ],
+                    'export' => [
+                        'id'    => 'export',
+                        'label' => '批量导出',
+                        'icon'  => 'fa fa-download',
+                    ],
+                    'rank'   => [
+                        'id'    => 'rank',
+                        'label' => ' 排名',
+                        'icon'  => 'fa fa-sort-numeric-asc',
+                    ],
+                    'stat'   => [
+                        'id'    => 'stat',
+                        'label' => '统计分析',
+                        'icon'  => 'fa fa-bar-chart-o',
+                    ],
+                ],
+                'titles'         => [
+                    '#', '姓名', '学号',
+                    ['title' => '年级', 'html' => $htmlGrade],
+                    ['title' => '班级', 'html' => $htmlClass],
+                    ['title' => '科目名称', 'html' => $htmlSubject],
+                    ['title' => '考试名称', 'html' => $htmlExam],
+                    '成绩', '年级排名', '班级排名',
+                    [
+                        'title' => '创建于',
+                        'html'  => $this->htmlDTRange('创建于'),
+                    ],
+                    [
+                        'title' => '更新于',
+                        'html'  => $this->htmlDTRange('更新于'),
+                    ],
+                    [
+                        'title' => '状态 . 操作',
+                        'html'  => $this->htmlSelect(
+                            [null => '全部', 0 => '已禁用', 1 => '已启用'], 'filter_enabled'
+                        ),
+                    ],
+                ],
+                'batch'          => true,
+                'filter'         => true,
+                'items'          => $items,
+                'importTemplate' => $this->filePath('scores') . '.xlsx',
+            ]);
+        } else {
+            if ($action == 'stat') {
+                $classIds = ($class = Squad::find($classes->keys()->first())) ? [$class->id] : [];
+            }
+            $students = ($student = new Student)->whereEnabled(1)->whereIn('class_id', $classIds)->get();
+            $data = array_merge($data, ['students' => $student->list($students)]);
+        }
+    
+        return $data;
+        
+    }
+    
+    /**
+     * 生成指定班级和考试的成绩导入模板
+     *
+     * @param $examId
+     * @param $classId
+     * @return bool
+     * @throws PssException
+     * @throws PsswException
+     */
+    function template($examId, $classId = null) {
+        
+        $exam = Exam::find($examId);
+        $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))
+            ->pluck('name')->toArray();
+        $rows[] = array_merge(['班级', '学号', '姓名'], $subjects);
+        if (!$classId) {
+            $classIds = array_intersect(
+                explode(',', $exam ? $exam->class_ids : ''),
+                $this->classIds()
+            );
+            $classId = $classIds[0] ?? null;
+        }
+        $class = Squad::find($classId);
+        $students = $class ? $class->students : collect([]);
+        foreach ($students as $student) {
+            $rows[] = [
+                $class->name,
+                $student->sn,
+                $student->user->realname,
+            ];
+        }
+        
+        return $this->excel($rows, 'scores', '成绩导入', false);
+        
+    }
+    
+    /**
+     * 返回指定考试/班级对应的班级/学生列表html
+     *
+     * @return JsonResponse
+     */
+    function lists() {
+        
+        $type = Request::input('type');
+        $value = Request::input('id');
+        
+        return response()->json(
+            $type == 'class'
+                ? (new Exam)->classList($value)
+                : (new Squad)->studentList($value)
+        );
+        
+    }
+    
+    /**
+     * 返回指定考试对应的学生及科目列表
+     *
+     * @param $examId
+     * @return array
+     */
+    function ssList($examId) {
+        
+        $exam = Exam::find($examId);
+        # 指定考试对应的科目列表
+        $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))
+            ->where('enabled', 1)->pluck('name', 'id');
+        # 指定考试对应的班级
+        $classIds = Squad::whereIn('id', explode(',', $exam->class_ids))
+            ->where('enabled', 1)->pluck('id');
+        # 指定考试对应的且对当前用户可见的学生列表
+        $students = ($student = new Student)->whereIn(
+            'class_id', $classIds->intersect($this->classIds())
+        )->where('enabled', 1)->get();
+        
+        return response()->json([
+            'subjects' => $this->htmlSelect($subjects, 'subject_id'),
+            'students' => $this->htmlSelect($student->list($students), 'student_id'),
+        ]);
+        
+    }
+    
+    /**
+     * 返回指定班级参加指定考试的所有学生的单科与总成绩的待发消息
+     *
+     * @param integer $examId
+     * @param integer $classId
+     * @param array $subjectIds
+     * @param array $options
+     * @return array
+     */
+    private function messages($examId, $classId, array $subjectIds, array $options) {
+        
+        $stats = [
+            'score'      => '',
+            'grade_rank' => '年排名',
+            'class_rank' => '班排名',
+            'grade_avg'  => '年平均',
+            'class_avg'  => '班平均',
+            'grade_max'  => '年最高',
+            'class_max'  => '班最高',
+            'grade_min'  => '年最低',
+            'class_min'  => '班最低',
+        ];
+        # 参加指定考试的所有学生id
+        $studentIds = Score::whereExamId($examId)->pluck('student_id')->toArray();
+        # 指定班级参加指定考试的所有学生
+        $cStudents = Student::whereClassId($classId)->get();
+        # 指定班级所属年级参加指定考试的所有学生
+        $gStudents = Squad::find($classId)->grade->students;
+        list($cStudentIds, $gStudentIds) = array_map(
+            function (Collection $students) use ($studentIds) {
+                return $students->whereIn('id', $studentIds)
+                    ->pluck('id')->toArray();
+            }, [$cStudents, $gStudents]
+        );
+        $result = [];
+        /** @var Student $student */
+        foreach ($cStudents as $student) {
+            foreach ($subjectIds as $subjectId) {
+                $condition = [
+                    'exam_id'    => $examId,
+                    'student_id' => $student->id,
+                    'subject_id' => $subjectId,
+                ];
+                $subject = Subject::find($subjectId);
+                if ($subject) {
+                    $score = Score::where($condition)->first();
+                    unset($condition['student_id']);
+                    $builder = Score::where($condition);
+                } else {
+                    unset($condition['subject_id']);
+                    $score = ScoreTotal::where($condition)->first();
+                    unset($condition['student_id']);
+                    $builder = ScoreTotal::where($condition);
+                }
+                abort_if(
+                    !$score, HttpStatusCode::INTERNAL_SERVER_ERROR,
+                    __('messages.score.not_found')
+                );
+                foreach ($options as $option) {
+                    $sIds = stripos($option, 'grade') !== false ? $gStudentIds : $cStudentIds;
+                    switch ($option) {
+                        case 'score':
+                        case 'grade_rank':
+                        case 'class_rank':
+                            $msg = $score->{$option};
+                            break;
+                        case 'grade_avg':
+                        case 'class_avg':
+                            $scores = $builder->whereIn('student_id', $sIds)->get();
+                            $msg = !$scores->count() ? 0 : $scores->sum('score') / $scores->count();
+                            break;
+                        case 'grade_max':
+                        case 'class_max':
+                        case 'grade_min':
+                        case 'class_min':
+                            $action = substr($option, 6, 3);
+                            $msg = $builder->whereIn('student_id', $sIds)->{$action}('score');
+                            break;
+                        default:
+                            break;
+                    }
+                    $prefix = ($subject ? $subject->name : ($option == 'score' ? '总分' : '')) . ':' . $stats[$option];
+                    $message[] = $prefix . ($msg ?? '');
+                }
+            }
+            $studentName = $student->user->realname;
+            $content = sprintf(
+                __('messages.score.message_template'),
+                $studentName, Exam::find($examId)->name,
+                implode(',', $message ?? [])
+            );
+            foreach ($student->custodians as $custodian) {
+                $user = $custodian->user;
+                $result[] = [
+                    'custodian' => $user->realname,
+                    'name'      => $studentName,
+                    'mobile'    => $user->mobile,
+                    'content'   => $content,
+                ];
+            }
+        }
+        
+        return $result;
+        
+    }
+    
+    /**
+     * 返回指定学生指定考试的分数详情
+     *
+     * @return Factory|JsonResponse|View
+     */
+    private function studentDetail() {
+        
+        $total = [];
+        $examId = Request::query('examId');
+        $studentId = Request::query(Request::method() == 'GET' ? 'targetId' : 'studentId');
+        $student = Student::find($studentId);
+        # 获取该学生所属班级的所有学生
+        abort_if(
+            !($exam = Exam::find($examId)),
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+        # 获取该次考试该学生所在的年级id
+        $gradeId = $student->squad->grade_id;
+        $classIds = Grade::find($gradeId)->classes->pluck('id')->toArray();
+        # 获取学生所属班级的所有学生ids
+        $classStudentIds = $student->squad->students->pluck('id')->toArray();
+        # 获取该年级所有学生
+        $gradeStudentIds = Student::whereIn('class_id', $classIds)->pluck('id')->toArray();
+        # 获取该次考试所有科目id
+        $subjectList = Subject::whereIn('id', explode(',', $exam->subject_ids))
+            ->pluck('name', 'id')->toArray();
+        $subjectId = Request::method() == 'POST'
+            ? Request::get('subject_id')
+            : array_key_first($subjectList);
+        /** @var Score $score */
+        $scores = $this->subjectScores($studentId, $subjectId, $examId);
+        $score = !$scores->isEmpty() ? $scores->first() : null;
+        $allScores = $this->subjectScores($studentId, $subjectId);
+        foreach ($allScores as $allScore) {
+            $total['names'][] = $allScore->exam->name;
+            $total['scores'][] = $allScore->score;
+            list($classAvg) = $this->subjectAvg($allScore->exam_id, $subjectId, $classStudentIds);
+            $total['avgs'][] = $classAvg;
+        }
+        list($classAvg, $nClassScores) = $this->subjectAvg($examId, $subjectId, $classStudentIds);
+        list($gradeAvg, $nGradeScores) = $this->subjectAvg($examId, $subjectId, $gradeStudentIds);
+        $stat = [
+            'classAvg'     => number_format($classAvg, 2),
+            'nClassScores' => $nClassScores,
+            'gradeAvg'     => number_format($gradeAvg, 2),
+            'nGradeScores' => $nGradeScores,
+        ];
+        
+        return Request::method() == 'POST'
+            ? response()->json([
+                'score' => $score,
+                'stat'  => $stat,
+                'total' => $total,
+                'exam'  => $exam->toArray(),
+            ])
+            : view('wechat.score_center.student', [
+                'score'     => $score,
+                'stat'      => $stat,
+                'total'     => $total,
+                'subjects'  => $subjectList,
+                'exam'      => $exam,
+                'studentId' => $studentId,
+            ]);
+        
+    }
+    
+    /**
+     * 查询指定学生某科目全部的考试分数
+     *
+     * @param $studentId
+     * @param $subjectId
+     * @param null $examId
+     * @return array|Collection|static[]
+     */
+    private function subjectScores($studentId, $subjectId, $examId = null) {
+        
+        $condition = [
+            'student_id' => $studentId,
+            'subject_id' => $subjectId,
+            'enabled'    => 1,
+        ];
+        
+        return $this->where($condition)->get()->when($examId,
+            function (Collection $scores) use ($examId) {
+                return $scores->where('exam_id', $examId);
+            }
+        );
+        
+    }
+    
+    /**
+     * 获取学生某次考试在班上的平均分
+     *
+     * @param $examId
+     * @param $subjectId
+     * @param $studentIds
+     * @return mixed
+     */
+    private function subjectAvg($examId, $subjectId, array $studentIds) {
+        
+        $condition = [
+            'exam_id'    => $examId,
+            'subject_id' => $subjectId,
+            'enabled'    => 1,
+        ];
+        $scores = Score::whereIn('student_id', $studentIds)->where($condition)->get();
+        
+        return [
+            $scores->avg('score') ?? 0,
+            $scores->count(),
+        ];
+        
+    }
+    
+    /**
+     * 指定班级的考试详情
+     *
+     * @return Factory|View
+     */
+    private function classDetail() {
+        
+        $classId = Request::input('targetId');
+        $examId = Request::input('examId');
+        $student = Request::input('student');
+        
+        return $classId && $examId
+            ? view('wechat.score_center.squad', [
+                'data'    => $this->examDetail($examId, $classId, $student),
+                'classId' => $classId,
+                'examId'  => $examId,
+            ])
+            : abort(HttpStatusCode::BAD_REQUEST, '请求无效');
         
     }
     
@@ -621,513 +1306,6 @@ class Score extends Model {
     }
     
     /**
-     * 导入成绩
-     *
-     * @return bool
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     */
-    function import() {
-        
-        $records = $this->uploader(false);
-        $titles = $records[0];
-        array_shift($records);
-        $subjectNames = [];
-        for ($i = ord('D'); $i < ord('D') + sizeof($titles) - 3; $i++) {
-            $subjectNames[] = $titles[chr($i)];
-        }
-        $subjects = Subject::whereIn('name', $subjectNames)
-            ->where('school_id', $this->schoolId())->get();
-        $exam = Exam::find(Request::input('examId'));
-        abort_if(
-            !$exam,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.score.exam_not_found')
-        );
-        $examSubjectIds = explode(',', $exam->subject_ids);
-        foreach ($records as $record) {
-            $basic = [
-                'class'        => $record['A'],
-                'sn'           => $record['B'],
-                'student_name' => $record['C'],
-                'exam_id'      => Request::input('examId'),
-            ];
-            $index = 'D';
-            foreach ($subjects as $subject) {
-                if (!in_array($subject->id, $examSubjectIds)) continue;
-                $data[] = array_merge(
-                    $basic, [
-                        'subject_id' => $subject->id,
-                        'score'      => floatval($record[$index]),
-                    ]
-                );
-                $index = chr(ord($index) + 1);
-            }
-        }
-        ImportScore::dispatch(
-            $data ?? [], Auth::id(), Request::input('classId')
-        );
-        
-        return true;
-        
-    }
-    
-    /**
-     * 导出成绩
-     *
-     * @return mixed
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     */
-    function export() {
-        
-        $classId = Request::query('classId');
-        $examId = Request::query('examId');
-        $studentIds = Squad::find($classId)->students->pluck('id')->toArray();
-        $scores = $this->whereExamId($examId)->whereIn('student_id', $studentIds)->get();
-        $records = [self::EXPORT_TITLES];
-        foreach ($scores as $score) {
-            if (!$score->student) continue;
-            $records[] = [
-                $score->student->user->realname,
-                $score->student->squad->name,
-                $score->student->sn,
-                $score->exam->name,
-                $score->subject->name,
-                $score->score,
-                $score->class_rank,
-                $score->grade_rank,
-            ];
-        }
-        
-        return $this->excel($records);
-        
-    }
-    
-    /**
-     * 待发成绩消息预览
-     *
-     * @return JsonResponse
-     */
-    function preview() {
-        
-        $examId = Request::input('examId');
-        $classId = Request::input('classId');
-        if ($examId && $classId) {
-            $result = $this->messages(
-                $examId, $classId,
-                Request::input('subjectIds') ?? [],
-                Request::input('items') ?? []
-            );
-        } else {
-            $exam = Exam::find($examId);
-            $classes = Squad::whereIn('id', explode(',', $exam->class_ids))->get();
-            $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))->get();
-            $result = [
-                'classes'  => $classes->toArray(),
-                'subjects' => $subjects->toArray(),
-            ];
-        }
-        
-        return response()->json($result);
-        
-    }
-    
-    /** 微信端 ------------------------------------------------------------------------------------------------------- */
-
-    /**
-     * 返回指定班级参加指定考试的所有学生的单科与总成绩的待发消息
-     *
-     * @param integer $examId
-     * @param integer $classId
-     * @param array $subjectIds
-     * @param array $options
-     * @return array
-     */
-    private function messages($examId, $classId, array $subjectIds, array $options) {
-        
-        $stats = [
-            'score'      => '',
-            'grade_rank' => '年排名',
-            'class_rank' => '班排名',
-            'grade_avg'  => '年平均',
-            'class_avg'  => '班平均',
-            'grade_max'  => '年最高',
-            'class_max'  => '班最高',
-            'grade_min'  => '年最低',
-            'class_min'  => '班最低',
-        ];
-        # 参加指定考试的所有学生id
-        $studentIds = Score::whereExamId($examId)->pluck('student_id')->toArray();
-        # 指定班级参加指定考试的所有学生
-        $cStudents = Student::whereClassId($classId)->get();
-        # 指定班级所属年级参加指定考试的所有学生
-        $gStudents = Squad::find($classId)->grade->students;
-        list($cStudentIds, $gStudentIds) = array_map(
-            function (Collection $students) use ($studentIds) {
-                return $students->whereIn('id', $studentIds)
-                    ->pluck('id')->toArray();
-            }, [$cStudents, $gStudents]
-        );
-        $result = [];
-        /** @var Student $student */
-        foreach ($cStudents as $student) {
-            foreach ($subjectIds as $subjectId) {
-                $condition = [
-                    'exam_id'    => $examId,
-                    'student_id' => $student->id,
-                    'subject_id' => $subjectId,
-                ];
-                $subject = Subject::find($subjectId);
-                if ($subject) {
-                    $score = Score::where($condition)->first();
-                    unset($condition['student_id']);
-                    $builder = Score::where($condition);
-                } else {
-                    unset($condition['subject_id']);
-                    $score = ScoreTotal::where($condition)->first();
-                    unset($condition['student_id']);
-                    $builder = ScoreTotal::where($condition);
-                }
-                abort_if(
-                    !$score, HttpStatusCode::INTERNAL_SERVER_ERROR,
-                    __('messages.score.not_found')
-                );
-                foreach ($options as $option) {
-                    $sIds = stripos($option, 'grade') !== false ? $gStudentIds : $cStudentIds;
-                    switch ($option) {
-                        case 'score':
-                        case 'grade_rank':
-                        case 'class_rank':
-                            $msg = $score->{$option};
-                            break;
-                        case 'grade_avg':
-                        case 'class_avg':
-                            $scores = $builder->whereIn('student_id', $sIds)->get();
-                            $msg = !$scores->count() ? 0 : $scores->sum('score') / $scores->count();
-                            break;
-                        case 'grade_max':
-                        case 'class_max':
-                        case 'grade_min':
-                        case 'class_min':
-                            $action = substr($option, 6, 3);
-                            $msg = $builder->whereIn('student_id', $sIds)->{$action}('score');
-                            break;
-                        default:
-                            break;
-                    }
-                    $prefix = ($subject ? $subject->name : ($option == 'score' ? '总分' : '')) . ':' . $stats[$option];
-                    $message[] = $prefix . ($msg ?? '');
-                }
-            }
-            $studentName = $student->user->realname;
-            $content = sprintf(
-                __('messages.score.message_template'),
-                $studentName, Exam::find($examId)->name,
-                implode(',', $message ?? [])
-            );
-            foreach ($student->custodians as $custodian) {
-                $user = $custodian->user;
-                $result[] = [
-                    'custodian' => $user->realname,
-                    'name'      => $studentName,
-                    'mobile'    => $user->mobile,
-                    'content'   => $content,
-                ];
-            }
-        }
-        
-        return $result;
-        
-    }
-    
-    /**
-     * 返回指定考试/班级对应的班级/学生列表html
-     *
-     * @return JsonResponse
-     */
-    function lists() {
-        
-        $type = Request::input('type');
-        $value = Request::input('id');
-        
-        return response()->json(
-            $type == 'class'
-                ? (new Exam)->classList($value)
-                : (new Squad)->studentList($value)
-        );
-        
-    }
-    
-    /**
-     * 返回指定考试对应的学生及科目列表
-     *
-     * @param $examId
-     * @return array
-     */
-    function ssList($examId) {
-        
-        $exam = Exam::find($examId);
-        # 指定考试对应的班级
-        $classIds = Squad::whereIn('id', explode(',', $exam->class_ids))
-            ->where('enabled', 1)->pluck('id')->toArray();
-        # 指定考试对应的科目列表
-        $subjectList = Subject::whereIn('id', explode(',', $exam->subject_ids))
-            ->where('enabled', 1)->pluck('name', 'id')->toArray();
-        # 指定考试对应的且对当前用户可见的学生列表
-        $students = Student::whereIn('class_id', array_intersect($classIds, $this->classIds()))
-            ->where('enabled', 1)->get();
-        foreach ($students as $student) {
-            $studentList[$student->id] = $student->sn . ' - ' . $student->user->realname;
-        }
-        
-        return response()->json([
-            'students' => $this->htmlSelect($studentList ?? [], 'student_id'),
-            'subjects' => $this->htmlSelect($subjectList, 'subject_id'),
-        ]);
-        
-    }
-    
-    /**
-     * 生成指定班级和考试的成绩导入模板
-     *
-     * @param $examId
-     * @param $classId
-     * @return bool
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     */
-    function template($examId, $classId = null) {
-        
-        $exam = Exam::find($examId);
-        $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))
-            ->pluck('name')->toArray();
-        $rows[] = array_merge(['班级', '学号', '姓名'], $subjects);
-        if (!$classId) {
-            $classIds = array_intersect(
-                explode(',', $exam ? $exam->class_ids : ''),
-                $this->classIds()
-            );
-            $classId = $classIds[0] ?? null;
-        }
-        $class = Squad::find($classId);
-        $students = $class ? $class->students : collect([]);
-        foreach ($students as $student) {
-            $rows[] = [
-                $class->name,
-                $student->sn,
-                $student->user->realname,
-            ];
-        }
-        
-        return $this->excel($rows, 'scores', '成绩导入', false);
-        
-    }
-    
-    /**
-     * 返回微信端成绩中心首页
-     *
-     * @return Factory|JsonResponse|View
-     * @throws Throwable
-     */
-    function wIndex() {
-        
-        $user = Auth::user();
-        $schoolId = session('schoolId');
-        $pageSize = 4;
-        $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
-        $exam = new Exam();
-        abort_if(
-            $user->role() == '学生',
-            HttpStatusCode::UNAUTHORIZED,
-            __('messages.unauthorized')
-        );
-        if (Request::method() == 'POST') {
-            $targetId = Request::input('target_id');
-            $classId = $user->role() == '监护人' ? Student::find($targetId)->class_id : $targetId;
-            $keyword = Request::has('keyword') ? Request::input('keyword') : null;
-            $exams = array_slice($exam->examsByClassId($classId, $keyword), $start, $pageSize);
-            
-            return response()->json(['exams' => $exams]);
-        }
-        if ($user->role() == '监护人') {
-            $targets = $user->custodian->myStudents();
-            $exams = array_slice((new Student)->exams(array_key_first($targets)), $start, $pageSize);
-            $type = 'student';
-        } else {
-            $targets = Squad::whereIn('id', $this->classIds($schoolId))
-                ->where('enabled', 1)->pluck('name', 'id')->toArray();
-            $exams = array_slice($exam->examsByClassId(array_key_first($targets)), $start, $pageSize);
-            $type = 'class';
-        }
-        
-        return view('wechat.score_center.index', [
-            'targets' => $targets,
-            'exams'   => $exams,
-            'type'    => $type,
-        ]);
-        
-    }
-    
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-
-    /**
-     * 返回考试详情数据
-     *
-     * @return array|Factory|JsonResponse|View|null|string
-     */
-    function detail() {
-        
-        $user = Auth::user();
-        abort_if(
-            $user->role() == '学生',
-            HttpStatusCode::UNAUTHORIZED,
-            __('messages.unauthorized')
-        );
-        
-        return Request::has('student')
-            ? $this->studentDetail()
-            : $this->classDetail();
-        
-    }
-    
-    /**
-     * 返回指定学生指定考试的分数详情
-     *
-     * @return Factory|JsonResponse|View
-     */
-    private function studentDetail() {
-        
-        $total = [];
-        $examId = Request::query('examId');
-        $studentId = Request::query(Request::method() == 'GET' ? 'targetId' : 'studentId');
-        $student = Student::find($studentId);
-        # 获取该学生所属班级的所有学生
-        abort_if(
-            !($exam = Exam::find($examId)),
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
-        # 获取该次考试该学生所在的年级id
-        $gradeId = $student->squad->grade_id;
-        $classIds = Grade::find($gradeId)->classes->pluck('id')->toArray();
-        # 获取学生所属班级的所有学生ids
-        $classStudentIds = $student->squad->students->pluck('id')->toArray();
-        # 获取该年级所有学生
-        $gradeStudentIds = Student::whereIn('class_id', $classIds)->pluck('id')->toArray();
-        # 获取该次考试所有科目id
-        $subjectList = Subject::whereIn('id', explode(',', $exam->subject_ids))
-            ->pluck('name', 'id')->toArray();
-        $subjectId = Request::method() == 'POST'
-            ? Request::get('subject_id')
-            : array_key_first($subjectList);
-        /** @var Score $score */
-        $scores = $this->subjectScores($studentId, $subjectId, $examId);
-        $score = !$scores->isEmpty() ? $scores->first() : null;
-        $allScores = $this->subjectScores($studentId, $subjectId);
-        foreach ($allScores as $allScore) {
-            $total['names'][] = $allScore->exam->name;
-            $total['scores'][] = $allScore->score;
-            list($classAvg) = $this->subjectAvg($allScore->exam_id, $subjectId, $classStudentIds);
-            $total['avgs'][] = $classAvg;
-        }
-        list($classAvg, $nClassScores) = $this->subjectAvg($examId, $subjectId, $classStudentIds);
-        list($gradeAvg, $nGradeScores) = $this->subjectAvg($examId, $subjectId, $gradeStudentIds);
-        $stat = [
-            'classAvg'     => number_format($classAvg, 2),
-            'nClassScores' => $nClassScores,
-            'gradeAvg'     => number_format($gradeAvg, 2),
-            'nGradeScores' => $nGradeScores,
-        ];
-        
-        return Request::method() == 'POST'
-            ? response()->json([
-                'score' => $score,
-                'stat'  => $stat,
-                'total' => $total,
-                'exam'  => $exam->toArray(),
-            ])
-            : view('wechat.score_center.student', [
-                'score'     => $score,
-                'stat'      => $stat,
-                'total'     => $total,
-                'subjects'  => $subjectList,
-                'exam'      => $exam,
-                'studentId' => $studentId,
-            ]);
-        
-    }
-    
-    /**
-     * 查询指定学生某科目全部的考试分数
-     *
-     * @param $studentId
-     * @param $subjectId
-     * @param null $examId
-     * @return array|Collection|static[]
-     */
-    private function subjectScores($studentId, $subjectId, $examId = null) {
-        
-        $condition = [
-            'student_id' => $studentId,
-            'subject_id' => $subjectId,
-            'enabled'    => 1,
-        ];
-        
-        return $this->where($condition)->get()->when($examId,
-            function (Collection $scores) use ($examId) {
-                return $scores->where('exam_id', $examId);
-            }
-        );
-        
-    }
-    
-    /**
-     * 获取学生某次考试在班上的平均分
-     *
-     * @param $examId
-     * @param $subjectId
-     * @param $studentIds
-     * @return mixed
-     */
-    private function subjectAvg($examId, $subjectId, array $studentIds) {
-        
-        $condition = [
-            'exam_id'    => $examId,
-            'subject_id' => $subjectId,
-            'enabled'    => 1,
-        ];
-        $scores = Score::whereIn('student_id', $studentIds)->where($condition)->get();
-        
-        return [
-            $scores->avg('score') ?? 0,
-            $scores->count(),
-        ];
-        
-    }
-    
-    /**
-     * 指定班级的考试详情
-     *
-     * @return Factory|View
-     */
-    private function classDetail() {
-        
-        $classId = Request::input('targetId');
-        $examId = Request::input('examId');
-        $student = Request::input('student');
-        
-        return $classId && $examId
-            ? view('wechat.score_center.squad', [
-                'data'    => $this->examDetail($examId, $classId, $student),
-                'classId' => $classId,
-                'examId'  => $examId,
-            ])
-            : abort(HttpStatusCode::BAD_REQUEST, '请求无效');
-        
-    }
-    
-    /**
      * 获取指定考试和班级的指定学生或所有学生的各科目考试详情
      *
      * @param integer $examId
@@ -1182,36 +1360,6 @@ class Score extends Model {
     }
     
     /**
-     * 返回用于显示指定学生、考试、科目成绩的图表数据
-     *
-     * @return Factory|JsonResponse|View
-     */
-    function graph() {
-        
-        $studentId = Request::input('student_id');
-        $examId = Request::input('exam_id');
-        $subjectId = Request::input('subject_id');
-        if (Request::method() == 'POST') {
-            if ($examId && $subjectId) {
-                return response()->json(
-                    $this->graphData($studentId, $examId, $subjectId)
-                );
-            }
-        }
-        $exam = Exam::find($examId);
-        $student = Student::find($studentId);
-        $subjectIds = explode(',', $exam->subject_ids);
-        $subjects = Subject::whereIn('id', $subjectIds)->pluck('name', 'id');
-        
-        return view('wechat.score_center.graph', [
-            'subjects' => $subjects,
-            'student'  => $student,
-            'exam'     => $exam,
-        ]);
-        
-    }
-    
-    /**
      * 获取用于显示指定学生指定科目成绩的图表数据
      *
      * @param $studentId
@@ -1243,71 +1391,6 @@ class Score extends Model {
             'class_rank' => $class_rank ?? [],
             'grade_rank' => $grade_rank ?? [],
         ];
-        
-    }
-    
-    /**
-     * 返回指定班级、考试的成绩分析数据
-     *
-     * @return Factory|View|string
-     */
-    function analyze() {
-        
-        $schoolId = session('schoolId');
-        $allowedClassIds = $this->classIds($schoolId);
-        $examId = Request::query('examId');
-        $classId = Request::query('classId');
-        $exam = Exam::find($examId);
-        $class = Squad::find($classId);
-        abort_if(
-            !$exam || !$class || !in_array($classId, $allowedClassIds),
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
-        $data = $this->classStat(true)
-            ?? [
-                'className'   => $exam->start_date,
-                'examName'    => $exam->name,
-                'oneData'     => [],
-                'rangs'       => [],
-                'totalRanges' => [],
-            ];
-        
-        return view('wechat.score_center.analyze', [
-            'data'    => $data,
-            'examId'  => $examId,
-            'classId' => $classId,
-        ]);
-        
-    }
-    
-    /**
-     * 成绩综合分析
-     *
-     * @return Factory|View|string
-     */
-    function wStat() {
-        
-        $examId = Request::query('examId');
-        $studentId = Request::query('studentId');
-        $exam = Exam::find($examId);
-        $student = Student::find($studentId);
-        abort_if(
-            !$student || !$exam,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
-        
-        return view('wechat.score_center.stat', [
-            'data'      => $this->wAnalyze([
-                'exam_id'    => $examId,
-                'student_id' => $studentId,
-            ]),
-            'examName'  => $exam->name,
-            'examDate'  => $exam->start_date,
-            'studentId' => $studentId,
-            'examId'    => $examId,
-        ]);
         
     }
     
@@ -1369,6 +1452,43 @@ class Score extends Model {
         }
         
         return $data;
+        
+    }
+    
+    /**
+     * 单科/总成绩排名统计
+     *
+     * @param array $ids
+     * @param integer $examId
+     * @param null $subjectId
+     */
+    private function rankScores(array $ids, $examId, $subjectId = null) {
+        
+        array_map(
+            function ($ids, $field) use ($examId, $subjectId) {
+                $className = 'App\\Models\\' . ucfirst($subjectId ? 'score' : 'scoreTotal');
+                $model = (new ReflectionClass($className))->newInstance();
+                $condition = [
+                    ['exam_id', '=', $examId],
+                    ['enabled', '=', 1],
+                ];
+                !$subjectId ?: $condition = array_merge($condition, [['subject_id', '=', $subjectId]]);
+                foreach ($ids as $studentIds) {
+                    $scores = $model->orderBy('score', 'desc')
+                        ->whereIn('student_id', $studentIds)
+                        ->where($condition)->get();
+                    $tempScore = 0;
+                    $rank = 0;
+                    foreach ($scores as $score) {
+                        if ($tempScore != $score->score) {
+                            $tempScore = $score->score;
+                            $rank++;
+                        }
+                        $score->{'update'}([$field => $rank]);
+                    }
+                }
+            }, $ids, ['class_rank', 'grade_rank']
+        );
         
     }
     

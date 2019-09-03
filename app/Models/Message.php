@@ -411,10 +411,11 @@ class Message extends Model {
      * 显示指定消息的内容
      *
      * @param $id
-     * @return array
+     * @return null|array
      */
     function detail($id) {
         
+        if (!$id) return null;
         $message = $this->find($id);
         $msl = $message->messageSendinglog;
         $type = MediaType::find($message->media_type_id)->name;
@@ -465,17 +466,17 @@ class Message extends Model {
             }
             $val = join(
                 array_map(
-                    function(HtmlString $element) { return $element->toHtml(); },
+                    function (HtmlString $element) { return $element->toHtml(); },
                     [
                         Html::tag('i', ' ' . $name, ['class' => $icon]),
                         Html::tag('i', '', ['class' => 'fa fa-close remove-selected']),
-                        Form::hidden('selectedDepartments[]', $value)
+                        Form::hidden('selectedDepartments[]', $value),
                     ]
                 )
             );
             $targetsHtml .= Form::button($val, [
                 'class' => 'btn btn-flat',
-                'style' => 'margin: 0 5px 5px 0;'
+                'style' => 'margin: 0 5px 5px 0;',
             ])->toHtml();
         }
         
@@ -1454,7 +1455,6 @@ class Message extends Model {
      */
     function compose($uri = null) {
         
-        $tags = (new Tag)->list();
         switch ($uri ?? Request::route()->uri) {
             case 'messages/index':
                 [$optionAll, $htmlCommType, $htmlMediaType, $htmlMessageType] = $this->filters();
@@ -1464,6 +1464,7 @@ class Message extends Model {
                     ['title' => '格式', 'html' => $htmlMediaType],
                     ['title' => '类型', 'html' => $htmlMessageType],
                 ];
+                $appId = School::find($this->schoolId())->app_id;
                 
                 return [
                     'titles'       => array_merge($titles, [
@@ -1472,7 +1473,7 @@ class Message extends Model {
                         [
                             'title' => '状态',
                             'html'  => $this->htmlSelect(
-                                array_merge($optionAll, [0 => '草稿', 1 => '已发', 2 => '定时']), 'filter_sent'
+                                array_merge($optionAll, ['草稿', '已发', '定时']), 'filter_sent'
                             ),
                         ],
                     ]),
@@ -1482,24 +1483,16 @@ class Message extends Model {
                         [
                             'title' => '状态',
                             'html'  => $this->htmlSelect(
-                                array_merge($optionAll, [0 => '未读', 1 => '已读']), 'filter_read'
+                                array_merge($optionAll, ['未读', '已读']), 'filter_read'
                             ),
                         ],
                     ]),
                     'smsMaxLength' => 300,
                     'messageTypes' => MessageType::whereEnabled(1)->pluck('name', 'id'),
-                    'templates'    => $templates ?? null,
-                    'tags'         => $tags ?? null,
+                    'templates'    => Template::whereAppId($appId)->pluck('title', 'id'),
+                    'tags'         => (new Tag)->list(),
                     'batch'        => true,
                     'filter'       => true,
-                ];
-            case 'messages/edit/{id}':
-            case 'messages/show/{id}':
-                return [
-                    'users'        => User::pluck('realname', 'id'),
-                    'messageTypes' => MessageType::pluck('name', 'id'),
-                    'commtypes'    => CommType::pluck('name', 'id'),
-                    'apps'         => App::pluck('name', 'id'),
                 ];
             case 'message_centers/index':
                 $role = Auth::user()->role();
@@ -1515,15 +1508,14 @@ class Message extends Model {
                         !in_array($role, ['监护人', '学生']),
                     ]);
             case 'message_centers/show/{id}':
-                $id = Request::route('id');
-                $detail = $id ? $this->detail($id) : null;
+                $detail = $this->detail($id = Request::route('id'));
                 $type = $detail['type'];
                 $content = json_decode($detail[$type], true);
                 
                 return [
                     'detail'  => $detail,
                     'content' => $content[$type],
-                    'replies' => $id ? $this->replies($id, $this->find($id)->msl_id) : null,
+                    'replies' => $this->replies($id, $this->find($id)->msl_id),
                 ];
             case 'message_centers/create':
             case 'message_centers/edit/{id?}':
@@ -1533,75 +1525,47 @@ class Message extends Model {
                 $title = $text = $url = $btntxt = $mediaId = $accept = null;
                 $filename = $filepath = $mpnewsList = $timing = null;
                 if (Request::route('id')) {
-                    $messageId = Request::route('id');
-                    $detail = $this->detail($messageId);
-                    $timing = $this->find($messageId)->event_id;
+                    $id = Request::route('id');
+                    $detail = $this->detail($id);
+                    $timing = $this->find($id)->event_id;
                     $type = $detail['type'];
                     $message = json_decode($detail[$type]);
                     $content = $message->{$type};
+                    [$text, $title, $url, $btntxt, $mediaId, $filename, $filepath] = $this->attrs($content);
                     switch ($type) {
-                        case 'text':
-                            $text = $content->{'content'};
-                            break;
-                        case 'image':
-                            [$mediaId, $filename, $filepath] = $this->fileAttrs($content);
-                            $accept = 'image/*';
-                            break;
-                        case 'voice':
-                            [$mediaId, $filename, $filepath] = $this->fileAttrs($content);
-                            $accept = 'audio/*';
-                            break;
-                        case 'video':
-                            $title = $content->{'title'};
-                            $text = $content->{'description'};
-                            [$mediaId, $filename, $filepath] = $this->fileAttrs($content);
-                            $accept = 'video/mp4';
-                            break;
-                        case 'file':
-                            [$mediaId, $filename, $filepath] = $this->fileAttrs($content);
-                            $accept = '*';
-                            break;
-                        case 'textcard':
-                            $title = $content->{'title'};
-                            $text = $content->{'description'};
-                            $url = $content->{'url'};
-                            $btntxt = $content->{'btntxt'};
-                            break;
+                        case 'image': $accept = 'image/*'; break;
+                        case 'voice': $accept = 'audio/*'; break;
+                        case 'video': $accept = 'video/mp4'; break;
+                        case 'file': $accept = '*'; break;
+                        case 'sms': $text = $content; break;
                         case 'mpnews':
                             $articles = $content->{'articles'};
-                            $tpl = <<<HTML
-                                <li id="mpnews-%s" class="weui-uploader__file" style="background-image: %s"
-                                data-media-id="%s" data-author="%s" data-content="%s" data-digest="%s"
-                                data-filename="%s" data-url="%s" data-image="%s" data-title="%s"></li>
-                            HTML;
                             for ($i = 0; $i < sizeof($articles); $i++) {
-                                $article = $articles[$i];
-                                $mpnewsList .= sprintf(
-                                    $tpl, $i,
-                                    'url(/' . $article->{'image_url'} . ')',
-                                    $article->{'thumb_media_id'},
-                                    $article->{'author'},
-                                    $article->{'content'},
-                                    $article->{'digest'},
-                                    $article->{'filename'},
-                                    $article->{'content_source_url'},
-                                    $article->{'image_url'},
-                                    $article->{'title'}
-                                );
+                                $a = $articles[$i];
+                                $mpnewsList .= Html::tag('li', '', [
+                                    'id'            => 'mpnews-' . $i,
+                                    'class'         => 'weui-uploader__file',
+                                    'style'         => 'background-image: ' . 'url(/' . $a->{'image_url'} . ')',
+                                    'data-media-id' => $a->{'thumb_media_id'},
+                                    'data-author'   => $a->{'author'},
+                                    'data-content'  => $a->{'content'},
+                                    'data-digest'   => $a->{'digest'},
+                                    'data-filename' => $a->{'filename'},
+                                    'data-url'      => $a->{'content_source_url'},
+                                    'data-image'    => $a->{'image_url'},
+                                    'data-title'    => $a->{'title'},
+                                ])->toHtml();
                             }
                             break;
-                        case 'sms':
-                            $text = $content;
-                            break;
+                        case 'text':
+                        case 'textcard':
                         default:
                             break;
                     }
-                    $selectedDepartmentIds = !empty($message->{'toparty'})
-                        ? explode('|', $message->{'toparty'}) : [];
-                    $touser = !empty($message->{'touser'})
-                        ? explode('|', $message->{'touser'}) : [];
+                    $selectedDepartmentIds = explode('|', $message->{'toparty'});
+                    $touser = explode('|', $message->{'touser'});
                     $selectedUserIds = User::whereIn('ent_attrs->userid', $touser)->pluck('id')->toArray();
-                    list($departmentHtml, $userHtml) = array_map(
+                    [$departmentHtml, $userHtml] = array_map(
                         function ($ids, $type) {
                             /** @noinspection HtmlUnknownTarget */
                             $tpl = '<a id="%s" class="chosen-results-item" data-uid="%s" data-type="%s">' .
@@ -1673,14 +1637,20 @@ class Message extends Model {
      * @param $msg
      * @return array
      */
-    private function fileAttrs($msg) {
+    private function attrs($msg) {
         
-        $mediaId = $msg->{'media_id'};
-        $filepath = $msg->{'path'};
-        $paths = explode('/', $msg->{'path'});
+        $filepath = $msg->{'path'} ?? null;
+        $paths = explode('/', $filepath);
         $filename = $paths[sizeof($paths) - 1];
         
-        return [$mediaId, $filename, $filepath];
+        return [
+            $msg->{'text'} ?? ($msg->{'description'} ?? null),
+            $msg->{'title'} ?? null,
+            $msg->{'url'} ?? null,
+            $msg->{'btntxt'} ?? null,
+            $msg->{'media_id'} ?? null,
+            $filename, $filepath
+        ];
         
     }
     
@@ -1690,15 +1660,17 @@ class Message extends Model {
      * @return array
      */
     function filters() {
-    
+        
         return array_merge(
             [$optionAll = [null => '全部']],
             array_map(
                 function ($table) use ($optionAll) {
                     $id = Inflector::singularize($table);
                     $class = ucfirst(Inflector::camelize($id));
+                    
                     return $this->htmlSelect(
-                        $optionAll + $this->model($class)->whereEnabled(1)->pluck('name', 'id')->toArray(),
+                        $optionAll + $this->model($class)->whereEnabled(1)
+                            ->pluck('name', 'id')->merge($optionAll)->sort(),
                         'filter_' . $id
                     );
                 }, ['comm_types', 'media_types', 'message_types']

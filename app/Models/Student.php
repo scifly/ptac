@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Arr, Facades\Auth, Facades\DB, Facades\Request};
+use Illuminate\Support\{Arr, Facades\Auth, Facades\DB, Facades\Request, Collection as SCollection};
 use PhpOffice\PhpSpreadsheet\{Exception as PssException, Reader\Exception as PssrException};
 use ReflectionException;
 use Throwable;
@@ -522,6 +522,23 @@ class Student extends Model {
         $result['html']['classes'] = $classes;
         
         return response()->json($result);
+        
+    }
+    
+    /**
+     * 返回学生列表
+     *
+     * @param SCollection|Student[] $students
+     * @return SCollection
+     */
+    function list($students) {
+    
+        $list = collect([]);
+        foreach ($students as $student) {
+            $list[$student->id] = join(' - ', [$student->sn, $student->user->realname]);
+        }
+        
+        return $list;
         
     }
     

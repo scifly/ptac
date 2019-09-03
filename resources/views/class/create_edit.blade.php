@@ -5,13 +5,11 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($class['id']))
-                {{ Form::hidden('id', $class['id'], ['id' => 'id']) }}
+                {!! Form::hidden('id', $class['id'], ['id' => 'id']) !!}
             @endif
             <!-- 名称 -->
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-users'])
@@ -36,7 +34,7 @@
                 'label' => '班级主任',
                 'id' => 'educator_ids',
                 'items' => $educators,
-                'selectedItems' => $selectedEducators ?? null
+                'selectedItems' => $selectedEducators
             ])
             <!-- 所属标签 -->
             @include('shared.tag.tags')

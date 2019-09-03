@@ -19,17 +19,15 @@
 						'icon' => 'fa fa-users'
 					])
 					<div class="form-group">
-						{{ Form::label('subjects', '发布科目', [
-							'class' => 'control-label col-sm-3'
-						]) }}
+						@include('shared.label', ['field' => 'subjects', 'label' => '发布科目'])
 						<div class="col-sm-8" id="subject-list" style="margin-top: 6px;">
-							{{ Form::checkbox('content', -1, false, [
+							{!! Form::checkbox('content', -1, false, [
 								'class' => 'minimal'
-							]) }} 总分&nbsp;
+							]) !!} 总分&nbsp;
 							@foreach ($subjects as $key => $value)
-								{{ Form::checkbox('content', $key, false, [
+								{!! Form::checkbox('content', $key, false, [
 									'class' => 'minimal'
-								]) }} {{ $value }}&nbsp;
+								]) !!} {!! $value !!}&nbsp;
 							@endforeach
 						</div>
 					</div>
@@ -44,11 +42,11 @@
 							   class="display nowrap table table-striped table-bordered table-hover table-condensed">
 							<thead>
 							<tr class="bg-info">
-								<th width="40">
-									{{ Form::checkbox('all', null, false, [
+								<th style="width: 40px;">
+									{!! Form::checkbox('all', null, false, [
 										'class' => 'minimal',
 										'id' => 'select-all'
-									]) }}
+									]) !!}
 								</th>
 								<th>家长姓名</th>
 								<th>姓名</th>

@@ -9,9 +9,7 @@
             @endif
             {!! Form::hidden('corp_id', $corpId, ['id' => 'corp_id']) !!}
             <div class="form-group">
-                {!! Form::label('name', '名称',[
-                    'class' => 'col-sm-3 control-label',
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', [
@@ -26,9 +24,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('address', '地址', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'address', 'label' => '地址'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         <div class="input-group-addon" style="width: 45px;">
@@ -43,9 +39,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('signature', '短消息签名', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'signature', 'label' => '短消息签名'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         <div class="input-group-addon" style="width: 45px;">
@@ -75,7 +69,7 @@
                 'id' => 'user_ids',
                 'icon' => 'fa fa-link',
                 'items' => $apis,
-                'selectedItems' => $selectedApis ?? null,
+                'selectedItems' => $selectedApis,
             ])
             @include('shared.switch', [
                 'id' => 'enabled',

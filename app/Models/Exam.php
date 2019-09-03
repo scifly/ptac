@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
-use Illuminate\Support\Facades\{Auth, DB};
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
@@ -60,6 +60,7 @@ class Exam extends Model {
         'enabled',
     ];
     
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /**
      * 返回指定考试所属的考试类型对象
      *
@@ -74,6 +75,7 @@ class Exam extends Model {
      */
     function scores() { return $this->hasMany('App\Models\Score'); }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 考试列表
      *
@@ -168,6 +170,86 @@ class Exam extends Model {
         }
         
         return true;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    function compose() {
+        
+        $action = explode('/', Request::path())[1];
+        $schoolId = $this->schoolId();
+        if ($action == 'index') {
+            $htmlExamType = $this->htmlSelect(
+                ExamType::whereSchoolId($schoolId)->pluck('name', 'id')->merge([null => '全部'])->sort(),
+                'filter_exam_type'
+            );
+            $data = [
+                'titles' => [
+                    '#', '名称',
+                    ['title' => '类型', 'html' => $htmlExamType],
+                    '满分', '及格分数',
+                    [
+                        'title' => '开始日期',
+                        'html'  => $this->htmlDTRange('开始日期', false),
+                    ],
+                    [
+                        'title' => '结束日期',
+                        'html'  => $this->htmlDTRange('结束日期', false),
+                    ],
+                    [
+                        'title' => '创建于',
+                        'html'  => $this->htmlDTRange('创建于'),
+                    ],
+                    [
+                        'title' => '更新于',
+                        'html'  => $this->htmlDTRange('更新于'),
+                    ],
+                    [
+                        'title' => '状态 . 操作',
+                        'html'  => $this->htmlSelect(
+                            [null => '全部', '已禁用', '已启用'], 'filter_enabled'
+                        ),
+                    ],
+                ],
+                'batch'  => true,
+                'filter' => true,
+            ];
+        } else {
+            $where = ['enabled' => 1];
+            $classes = Squad::whereIn('id', $this->classIds())->where($where);
+            $where['school_id'] = $schoolId;
+            $examtypes = ExamType::where($where);
+            $gradeIds = $classes->pluck('grade_id')->unique();
+            $subjects = Subject::where($where)->get()->filter(
+                function (Subject $subject) use ($gradeIds) {
+                    $subjectGradeIds = explode(',', $subject->grade_ids);
+                    return $gradeIds->intersect($subjectGradeIds)->isNotEmpty();
+                }
+            );
+            $exam = Exam::find(Request::route('id'));
+            $data = array_merge(
+                array_combine(
+                    ['classes', 'examtypes', 'subjects'],
+                    array_map(
+                        function ($records) {
+                            return $records->{'pluck'}('name', 'id');
+                        }, [$classes, $examtypes, $subjects]
+                    )
+                ),
+                array_combine(
+                    ['selectedClasses', 'selectedSubjects'],
+                    array_map(
+                        function ($class, $field) use ($exam) {
+                            if (!$exam) return null;
+                            $where = 'id IN (' . ($exam->{$field} ?? '') . ')';
+                            return $this->model($class)->whereRaw($where)->pluck('id');
+                        }, ['Squad', 'Subject'], ['class_ids', 'subject_ids']
+                    )
+                )
+            );
+        }
+        
+        return $data;
         
     }
     

@@ -51,7 +51,7 @@
                 'label' => '统计科目',
                 'id' => 'subject_ids',
                 'items' => $subjects,
-                'selectedItems' => $selectedSubjects ?? []
+                'selectedItems' => $selectedSubjects
             ])
             @include('shared.switch', [
                 'id' => 'enabled',

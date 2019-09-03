@@ -59,6 +59,7 @@ class Tab extends Model {
         'action_id', 'remark', 'category', 'enabled',
     ];
     
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /**
      * 返回指定卡片所属的菜单对象
      *
@@ -87,6 +88,7 @@ class Tab extends Model {
      */
     function groups() { return $this->belongsToMany('App\Models\Group', 'group_tab'); }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 卡片列表
      *
@@ -227,6 +229,19 @@ class Tab extends Model {
     }
     
     /**
+     * 移除指定的卡片
+     *
+     * @param $id
+     * @return bool|mixed
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        return $this->purge(['Tab', 'MenuTab'], 'tab_id', 'purge', $id);
+        
+    }
+    
+    /**
      * 扫描
      *
      * @return bool
@@ -293,97 +308,65 @@ class Tab extends Model {
         
     }
     
-    /**
-     * 返回所有控制器的完整路径
-     *
-     * @param $rootDir
-     * @param array $allData
-     * @return array
-     */
-    private function controllerPaths($rootDir, $allData = []) {
-        
-        // set filenames invisible if you want
-        $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
-        // run through content of root directory
-        $dirContent = scandir($rootDir);
-        foreach ($dirContent as $key => $content) {
-            // filter all files not accessible
-            $path = $rootDir . '/' . $content;
-            if (!in_array($content, $invisibleFileNames)) {
-                // if content is file & readable, add to array
-                if (is_file($path) && is_readable($path)) {
-                    // save file name with path
-                    $allData[] = $path;
-                    // if content is a directory and readable, add path and name
-                } elseif (is_dir($path) && is_readable($path)) {
-                    // recursive callback to open new directory
-                    $allData = self::controllerPaths($path, $allData);
-                }
-            }
-        }
-        
-        return $allData;
-        
-    }
-    
     /** Helper functions -------------------------------------------------------------------------------------------- */
 
-    /**
-     * 移除指定的卡片
-     *
-     * @param $id
-     * @return bool|mixed
-     * @throws Throwable
-     */
-    function remove($id = null) {
-        
-        return $this->purge(['Tab', 'MenuTab'], 'tab_id', 'purge', $id);
-        
-    }
+    function compose() {
     
-    /**
-     * 获取指定控制器的注释文本
-     *
-     * @param ReflectionClass $controller
-     * @return mixed|string
-     */
-    private function controllerComments(ReflectionClass $controller) {
-        
-        $comment = $controller->getDocComment();
-        $name = 'n/a';
-        preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
-        if (isset($matches[0][0])) {
-            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            $roles = Group::whereIn('name', ['运营', '企业', '学校'])->pluck('name', 'id')->toArray();
+            $optionAll = [null => '全部'];
+            $data = [
+                'batch'  => true, # 需要批量操作
+                'titles' => [
+                    '#', '控制器', '名称',
+                    [
+                        'title' => '角色',
+                        'html'  => $this->htmlSelect(
+                            array_merge($optionAll, $roles), 'filter_group'
+                        ),
+                    ],
+                    '默认功能',
+                    [
+                        'title' => '创建于',
+                        'html'  => $this->htmlDTRange('创建于'),
+                    ],
+                    [
+                        'title' => '更新于',
+                        'html'  => $this->htmlDTRange('更新于'),
+                    ],
+                    [
+                        'title' => '类型',
+                        'html'  => $this->htmlSelect(
+                            array_merge($optionAll, ['后台', '前端', '其他']), 'filter_category'
+                        ),
+                    ],
+                    [
+                        'title' => '状态 . 操作',
+                        'html'  => $this->htmlSelect(
+                            array_merge($optionAll, ['已禁用', '已启用']), 'filter_enabled'
+                        ),
+                    ],
+                ],
+                'filter' => true,
+            ];
         } else {
-            preg_match_all("#\/\*\*\r\n\s{1}\*[^\*]*\*#", $comment, $matches);
-            if (isset($matches[0][0])) {
-                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
-            }
+            $tab = Tab::find(Request::route('id'));
+            $tabMenus = $tab ? $tab->menus : null;
+            $data = [
+                'icons'         => (new Icon)->icons(),
+                'actions'       => (new Action)->actions(),
+                'groups'        => Group::whereIn('name', ['运营', '企业', '学校'])
+                        ->pluck('name', 'id')->merge([0 => '所有'])->sort(),
+                'menus'         => (new Menu)->leaves(1),
+                'selectedMenus' => $tabMenus ? $tabMenus->pluck('id') : collect([]),
+            ];
         }
-        
-        return $name;
+    
+        return $data;
         
     }
-    
-    /**
-     * 获取index方法的action_id
-     *
-     * @param $ctlrName
-     * @return int|mixed
-     */
-    private function indexActionId($ctlrName) {
-        
-        $tab = Tab::whereName($ctlrName)->first();
-        $action = (new Action)->where([
-            'enabled' => 1,
-            'tab_id'  => $tab ? $tab->id : 0,
-            'method'  => 'index',
-        ])->first();
-        
-        return $action ? $action->id : 0;
-        
-    }
-    
+
     /**
      * 根据角色返回可访问的卡片id
      *
@@ -417,6 +400,82 @@ class Tab extends Model {
         }
         
         return $builder->pluck($field ?? 'id')->toArray();
+        
+    }
+
+    /**
+     * 获取指定控制器的注释文本
+     *
+     * @param ReflectionClass $controller
+     * @return mixed|string
+     */
+    private function controllerComments(ReflectionClass $controller) {
+        
+        $comment = $controller->getDocComment();
+        $name = 'n/a';
+        preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
+        if (isset($matches[0][0])) {
+            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+        } else {
+            preg_match_all("#\/\*\*\r\n\s{1}\*[^\*]*\*#", $comment, $matches);
+            if (isset($matches[0][0])) {
+                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+            }
+        }
+        
+        return $name;
+        
+    }
+    
+    /**
+     * 返回所有控制器的完整路径
+     *
+     * @param $rootDir
+     * @param array $allData
+     * @return array
+     */
+    private function controllerPaths($rootDir, $allData = []) {
+        
+        // set filenames invisible if you want
+        $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
+        // run through content of root directory
+        $dirContent = scandir($rootDir);
+        foreach ($dirContent as $key => $content) {
+            // filter all files not accessible
+            $path = $rootDir . '/' . $content;
+            if (!in_array($content, $invisibleFileNames)) {
+                // if content is file & readable, add to array
+                if (is_file($path) && is_readable($path)) {
+                    // save file name with path
+                    $allData[] = $path;
+                    // if content is a directory and readable, add path and name
+                } elseif (is_dir($path) && is_readable($path)) {
+                    // recursive callback to open new directory
+                    $allData = self::controllerPaths($path, $allData);
+                }
+            }
+        }
+        
+        return $allData;
+        
+    }
+    
+    /**
+     * 获取index方法的action_id
+     *
+     * @param $ctlrName
+     * @return int|mixed
+     */
+    private function indexActionId($ctlrName) {
+        
+        $tab = Tab::whereName($ctlrName)->first();
+        $action = (new Action)->where([
+            'enabled' => 1,
+            'tab_id'  => $tab ? $tab->id : 0,
+            'method'  => 'index',
+        ])->first();
+        
+        return $action ? $action->id : 0;
         
     }
     

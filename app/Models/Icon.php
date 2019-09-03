@@ -70,7 +70,7 @@ class Icon extends Model {
      */
     function icons() {
         
-        $data = self::whereEnabled(1)->get();
+        $data = $this->whereEnabled(1)->get();
         $icons = [];
         foreach ($data as $datum) {
             $icons[$datum->iconType->name][$datum->id] = $datum->name;

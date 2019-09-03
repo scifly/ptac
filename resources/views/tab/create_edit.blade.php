@@ -5,12 +5,10 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($tab['id']))
-                {{ Form::hidden('id', $tab['id'], ['id' => 'id']) }}
+                {!! Form::hidden('id', $tab['id'], ['id' => 'id']) !!}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label',
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-folder-o'])
@@ -27,16 +25,14 @@
                 'icon' => 'fa fa-meh-o'
             ])
             <div class="form-group">
-                {!! Form::label('icon_id', '图标', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'icon_id', 'label' => '图标'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-fonticons'])
-                        {{ Form::select('icon_id', $icons, null, [
+                        {!! Form::select('icon_id', $icons, null, [
                             'id' => 'icon_id',
                             'style' => 'width: 100%;'
-                        ]) }}
+                        ]) !!}
                     </div>
                 </div>
             </div>
@@ -49,7 +45,7 @@
                 'label' => '所属菜单',
                 'id' => 'menu_ids',
                 'items' => $menus,
-                'selectedItems' => $selectedMenus ?? null
+                'selectedItems' => $selectedMenus
             ])
             @include('shared.remark')
             @include('shared.switch', [

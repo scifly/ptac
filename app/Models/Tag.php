@@ -261,15 +261,15 @@ class Tag extends Model {
     /**
      * 返回标签列表
      *
-     * @return array
      */
     function list() {
         
-        foreach (Tag::whereSchoolId($this->schoolId())->pluck('name', 'id')->toArray() as $id => $name) {
+        $tags = collect([]);
+        foreach (Tag::whereSchoolId($this->schoolId())->pluck('name', 'id') as $id => $name) {
             $tags[$id] = explode('.', $name)[0];
         }
         
-        return $tags ?? [];
+        return $tags;
         
     }
     

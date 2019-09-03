@@ -13,9 +13,7 @@
             @endif
             <!-- 规则名称 -->
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-reorder'])
@@ -30,9 +28,7 @@
             </div>
             <!-- 规则id -->
             <div class="form-group">
-                {!! Form::label('related_ruleid', '规则id', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'related_ruleid', 'label' => '规则id'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         <div class="input-group-addon" style="width: 45px;">
@@ -61,13 +57,11 @@
                 'id' => 'door_ids',
                 'icon' => 'fa fa-minus-circle',
                 'items' => $doors,
-                'selectedItems' => $selectedDoors ?? null
+                'selectedItems' => $selectedDoors
             ])
             <!-- 起止日期 -->
             <div class="form-group">
-                {!! Form::label('daterange', '起止日期', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'daterange', 'label' => '起止日期'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-calendar'])
@@ -81,9 +75,7 @@
             </div>
             <!-- 通行日 -->
             <div class="form-group">
-                {!! Form::label('weekdays[]', '通行日', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'weekdays[]', 'label' => '通行日'])
                 <div class="col-sm-6">
                     <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead><tr>
@@ -108,9 +100,7 @@
             </div>
             <!-- 通行时段 -->
             <div class="form-group">
-                {!! Form::label('trs[][]', '通行时段', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'trs[][]', 'label' => '通行时段'])
                 <div class="col-sm-6">
                     <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead><tr>

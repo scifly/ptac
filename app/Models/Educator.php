@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use PhpOffice\PhpSpreadsheet\Exception as PssException;
 use PhpOffice\PhpSpreadsheet\Reader\Exception as PssrException;
@@ -618,19 +619,6 @@ class Educator extends Model {
     }
     
     /**
-     * 返回教职员工列表
-     *
-     * @param array $ids
-     * @return array
-     */
-    function list(array $ids) {
-        
-        return $this->with('user')->whereIn('id', $ids)->get()
-            ->pluck('user.realname', 'id')->toArray();
-        
-    }
-    
-    /**
      * 选中的部门节点
      *
      * @param $departmentIds
@@ -656,7 +644,7 @@ class Educator extends Model {
     
     /**
      * @param $deptId
-     * @return \Illuminate\Support\Collection
+     * @return SCollection
      */
     private function users($deptId) {
         

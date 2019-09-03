@@ -73,6 +73,7 @@ class PassageRule extends Model {
         'related_ruleid', 'enabled',
     ];
     
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /**
      * 返回通行规则所属的学校对象
      *
@@ -103,6 +104,7 @@ class PassageRule extends Model {
         
     }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 通行规则列表
      *
@@ -210,47 +212,6 @@ class PassageRule extends Model {
     }
     
     /**
-     * 返回create/edit view所需数据
-     *
-     * @return array
-     */
-    function compose() {
-        
-        $doors = (new Turnstile)->doors();
-        $ruleids = $this->whereSchoolId($this->schoolId())->pluck('name', 'ruleid')->toArray();
-        if (Request::route('id')) {
-            $pr = PassageRule::find(Request::route('id'));
-            $weekdays = str_split($pr->statuses);
-            $trs = array_map(
-                function ($field) use ($pr) {
-                    return explode(' - ', $pr->{$field});
-                }, ['tr1', 'tr2', 'tr3']
-            );
-            $rts = (new RuleTurnstile)->wherePassageRuleId($pr->id)->get();
-            $selectedDoors = [];
-            foreach ($rts as $rt) {
-                $t = $rt->turnstile;
-                $door = join('.', [$t->sn, $rt->door, $t->location]);
-                $selectedDoors[array_search($door, $doors)] = $door;
-            }
-            if ($pr->ruleid) {
-                unset($ruleids[$pr->ruleid]);
-            }
-        }
-        
-        return [
-            $pr ?? null,
-            $weekdays ?? str_split('0000000'),
-            $trs ?? array_fill(
-                0, 3, array_fill(0, 2, '00:00')
-            ),
-            $doors, $selectedDoors ?? null,
-            [0 => '(无关联规则)'] + $ruleids,
-        ];
-        
-    }
-    
-    /**
      * 下发通行规则
      *
      * @param array $deviceids
@@ -303,6 +264,79 @@ class PassageRule extends Model {
         
         return true;
         
+    }
+
+    /** Helper functions */
+    /**
+     * 返回create/edit view所需数据
+     *
+     * @return array
+     */
+    function compose() {
+    
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            $data = [
+                'buttons'        => [
+                    'issue' => [
+                        'id' => 'issue',
+                        'label' => '下发规则',
+                        'icon' => 'fa fa-minus-circle'
+                    ],
+                ],
+                'titles' => [
+                    '#', '名称', '规则id',
+                    [
+                        'title' => '起始日期',
+                        'html'  => $this->htmlDTRange('起始日期', false),
+                    ],
+                    [
+                        'title' => '结束日期',
+                        'html'  => $this->htmlDTRange('结束日期', false),
+                    ],
+                    '适用范围', '时段1', '时段2', '时段3', '关联规则id',
+                    [
+                        'title' => '状态 . 操作',
+                        'html'  => $this->htmlSelect(
+                            [null => '全部', '禁用', '启用'], 'filter_enabled'
+                        ),
+                    ],
+                ],
+            ];
+        } else {
+            $doors = (new Turnstile)->doors();
+            $pr = PassageRule::find(Request::route('id'));
+            $trs = !$pr ? null : array_map(
+                function ($field) use ($pr) {
+                    return explode(' - ', $pr->{$field});
+                }, ['tr1', 'tr2', 'tr3']
+            );
+            $rts = RuleTurnstile::wherePassageRuleId($pr ? $pr->id : null)->get();
+            $selectedDoors = collect([]);
+            foreach ($rts as $rt) {
+                $t = $rt->turnstile;
+                $door = join('.', [$t->sn, $rt->door, $t->location]);
+                $selectedDoors[array_search($door, $doors)] = $door;
+            }
+            $ruleids = $this->whereSchoolId($this->schoolId())->pluck('name', 'ruleid');
+            if ($pr && $pr->ruleid) unset($ruleids[$pr->ruleid]);
+    
+            $data = array_combine(
+                ['pr', 'weekdays', 'trs', 'doors', 'selectedDoors', 'ruleids'],
+                [
+                    $pr,
+                    str_split($pr ? $pr->statuses : '0000000'),
+                    $trs ?? array_fill(
+                        0, 3, array_fill(0, 2, '00:00')
+                    ),
+                    $doors, $selectedDoors,
+                    $ruleids->merge([0 => '(无关联规则)'])->sort(),
+                ]
+            );
+        }
+    
+        return $data;
+    
     }
     
 }

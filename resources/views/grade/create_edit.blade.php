@@ -10,9 +10,7 @@
             @endif
             <!-- 名称 -->
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-object-group'])
@@ -30,7 +28,7 @@
                 'label' => '年级主任',
                 'id' => 'educator_ids',
                 'items' => $educators,
-                'selectedItems' => $selectedEducators ?? []
+                'selectedItems' => $selectedEducators
             ])
             <!-- 所属标签 -->
             @include('shared.tag.tags')

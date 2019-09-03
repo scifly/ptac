@@ -4,13 +4,11 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($major['id']))
-                {{ Form::hidden('id', $major['id'], ['id' => 'id']) }}
+            @if (isset($major))
+                {!! Form::hidden('id', $major['id'], ['id' => 'id']) !!}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-graducation-cap'])
@@ -27,7 +25,7 @@
                 'label' => '包含科目',
                 'id' => 'subject_ids',
                 'items' => $subjects,
-                'selectedItems' => $selectedSubjects ?? null,
+                'selectedItems' => $selectedSubjects,
                 'icon' => 'fa fa-book'
             ])
             @include('shared.remark')

@@ -99,6 +99,7 @@ class School extends Model {
         'sms_used', 'sms_len', 'enabled',
     ];
     
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /**
      * 返回对应的部门对象
      *
@@ -289,6 +290,7 @@ class School extends Model {
         
     }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 学校列表
      *
@@ -483,6 +485,7 @@ class School extends Model {
         
     }
     
+    /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 返回composer所需view数据
      *
@@ -501,23 +504,23 @@ class School extends Model {
                 ];
             case 'create':
             case 'edit':
-                $params = [
-                    'schoolTypes'  => SchoolType::whereEnabled(1)->pluck('name', 'id'),
-                    'apps'         => [null => '[所属公众号]'] + App::where('category', 2)
-                            ->pluck('name', 'id'),
-                    'corpId'       => (new Corp)->corpId(),
-                    'uris'         => $this->uris(),
-                    'apis'         => User::where(['group_id' => Group::whereName('api')->first()->id, 'enabled' => 1])
-                        ->pluck('realname', 'id'),
-                    'selectedApis' => null,
-                    'disabled'     => null,   # disabled - 是否显示'返回列表'和'取消'按钮
-                ];
-                if ($school = School::find(Request::route('id'))) {
-                    $params['selectedApis'] = User::whereIn('id', explode(',', $school->user_ids))
-                        ->pluck('realname', 'id')->toArray();
-                }
+                $apps = App::where('category', 2)->pluck('name', 'id');
+                $school = School::find(Request::route('id'));
+                $where = ['group_id' => Group::whereName('api')->first()->id, 'enabled' => 1];
+                $apis = User::where($where)->pluck('realname', 'id');
+                $selectedApis = collect([]);
+                !$school ?: $selectedApis = User::whereIn('id', explode(',', $school->user_ids))
+                    ->pluck('realname', 'id');
                 
-                return $params;
+                return [
+                        'schoolTypes'  => SchoolType::whereEnabled(1)->pluck('name', 'id'),
+                        'apps'         => $apps->merge([null => '[所属公众号]'])->sort(),
+                        'corpId'       => (new Corp)->corpId(),
+                        'uris'         => $this->uris(),
+                        'apis'         => $apis,
+                        'selectedApis' => $selectedApis,
+                        'disabled'     => null,   # disabled - 是否显示'返回列表'和'取消'按钮
+                ];
             default:
                 return (new Message)->compose('recharge');
         }

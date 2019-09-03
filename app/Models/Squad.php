@@ -308,23 +308,20 @@ class Squad extends Model {
                 ->pluck('name', 'id');
             $educators = Educator::with('user')
                 ->whereIn('id', $this->contactIds('educator'))
-                ->where('enabled', 1)->get()
+                ->where('enabled', 1)
                 ->pluck('user.realname', 'id');
-            if ($class = $this->find(Request::route('id'))) {
-                $department = $class->department;
-                $educatorIds = $class->educator_ids;
-                $educatorIds == '0' ?: $selectedEducators = (new Educator)->list(
-                    explode(',', $educatorIds)
-                );
-            }
+            $class = $this->find(Request::route('id'));
+            $selectedEducators = collect(
+                explode(',', $class ? $class->educator_ids : null)
+            );
             
             return array_merge(
                 [
                     'grades'            => $grades,
                     'educators'         => $educators,
-                    'selectedEducators' => $selectedEducators ?? null,
+                    'selectedEducators' => $selectedEducators,
                 ],
-                (new Tag)->compose('department', $department ?? null)
+                (new Tag)->compose('department', $class ? $class->department : null)
             );
         }
         

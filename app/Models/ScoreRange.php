@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
+use Doctrine\Common\Inflector\Inflector;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Http\JsonResponse;
@@ -49,6 +50,7 @@ class ScoreRange extends Model {
         'updated_at', 'enabled',
     ];
     
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /**
      * 获取指定成绩统计项所属的学校对象
      *
@@ -56,6 +58,7 @@ class ScoreRange extends Model {
      */
     function school() { return $this->belongsTo('App\Models\School'); }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 分数统计范围列表
      *
@@ -184,4 +187,57 @@ class ScoreRange extends Model {
         
     }
     
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 返回composer所需的view数据
+     *
+     * @return array
+     */
+    function compose() {
+        
+        $action = explode('/', Request::path())[1];
+        switch ($action) {
+            case 'index':
+                $data = [
+                    'buttons' => [
+                        'stat' => [
+                            'id'    => 'stat',
+                            'label' => '统计',
+                            'icon'  => 'fa fa-bar-chart',
+                        ],
+                    ],
+                    'titles'  => ['#', '名称', '起始分数', '截止分数', '创建于', '更新于', '状态 . 操作'],
+                ];
+                break;
+            case 'stat':
+                $data = array_combine(
+                    ['grades', 'classes', 'exams'],
+                    array_map(
+                        function ($class) {
+                            $model = $this->model($class);
+                            $field = ($class == 'Grade' ? 'grade' : 'class') . '_ids';
+                            $method = Inflector::camelize($field);
+                            $builder = $model->whereEnabled(1);
+                            $builder = $class == 'Exam'
+                                ? $builder->{'whereRaw'}($field . ' IN(' . join(',', $this->{$method}()) . ')')
+                                : $builder->{'whereIn'}('id', $this->{$method}());
+                            
+                            return $builder->{'pluck'}('name', 'id');
+                        }, ['Grade', 'Squad', 'Exam']
+                    )
+                );
+                break;
+            default:
+                $sr = ScoreRange::find(Request::route('id'));
+                $data = [
+                    'subjects'         => Subject::where(['school_id' => $this->schoolId(), 'enabled' => 1])
+                        ->pluck('name', 'id')->prepend('总分'),
+                    'selectedSubjects' => collect($sr ? explode(',', $sr->subject_ids) : []),
+                ];
+                break;
+        }
+        
+        return $data;
+        
+    }
 }

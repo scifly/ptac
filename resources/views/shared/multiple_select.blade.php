@@ -1,7 +1,5 @@
 <div class="form-group">
-    {!! Form::label($id, $label, [
-        'class' => 'col-sm-3 control-label'
-    ]) !!}
+    @include('shared.label', ['field' => $id, 'label' => $label])
     <div class="col-sm-6">
         <div class="input-group">
             <div class="input-group-addon">

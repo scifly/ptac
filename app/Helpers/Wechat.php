@@ -643,7 +643,7 @@ class Wechat {
      */
     function syncSecret($corpId) {
         
-        return App::where(['corp_id' => $corpId, 'app_id' => 0])->first()->appsecret;
+        return App::where(['corp_id' => $corpId, 'appid' => 0])->first()->appsecret;
         
     }
     

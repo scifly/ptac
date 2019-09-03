@@ -8,6 +8,7 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -43,6 +44,7 @@ class Major extends Model {
         'name', 'remark', 'school_id', 'enabled',
     ];
     
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /**
      * 返回专业所属的学校对象
      *
@@ -57,6 +59,7 @@ class Major extends Model {
      */
     function subjects() { return $this->belongsToMany('App\Models\Subject', 'major_subject'); }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 专业列表
      *
@@ -166,6 +169,30 @@ class Major extends Model {
         }
         
         return true;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 返回composer所需view数据
+     *
+     * @return array
+     */
+    function compose() {
+    
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            $data = ['titles' => ['#', '名称', '备注', '创建于', '更新于', '状态 . 操作']];
+        } else {
+            $major = Major::find(Request::route('id'));
+            $subjects = $major ? $major->subjects : null;
+            $data = [
+                'subjects'         => Subject::whereSchoolId($this->schoolId())->pluck('name', 'id'),
+                'selectedSubjects' => $subjects ? $subjects->pluck('id') : null,
+            ];
+        }
+    
+        return $data;
         
     }
     

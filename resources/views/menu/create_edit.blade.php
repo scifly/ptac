@@ -4,18 +4,14 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($menu['id']))
+            @if (isset($menu))
                 {{ Form::hidden('id', $menu['id'], ['id' => 'id']) }}
-            @endif
-            @if (!empty($menu['position']))
                 {{ Form::hidden('position', $menu['position'], ['id' => 'position']) }}
             @endif
             {{ Form::hidden('parent_id', $parentId ?? null, ['id' => 'parent_id']) }}
             <!-- 名称 -->
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-list-ul'])
@@ -31,24 +27,20 @@
             </div>
             <!-- 图标ID -->
             <div class="form-group">
-                {!! Form::label('icon_id', '图标', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'icon_id', 'label' => '图标'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-fonticons'])
-                        {{ Form::select('icon_id', $icons, null, [
+                        {!! Form::select('icon_id', $icons, null, [
                             'id' => 'icon_id',
                             'style' => 'width: 100%;'
-                        ]) }}
+                        ]) !!}
                     </div>
                 </div>
             </div>
             <!-- 链接地址 -->
             <div class="form-group">
-                {!! Form::label('name', '链接地址', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'uri', 'label' => '链接地址'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-link'])
@@ -67,7 +59,7 @@
                 'id' => 'tab_ids',
                 'icon' => 'fa fa-calendar-check-o',
                 'items' => $tabs,
-                'selectedItems' => $selectedTabs ?? null
+                'selectedItems' => $selectedTabs
             ])
             <!-- 备注 -->
             @include('shared.remark')
