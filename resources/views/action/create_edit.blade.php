@@ -8,9 +8,7 @@
                 {{ Form::hidden('id', $action['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
-                {!! Form::label('name', 'Action名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => 'Action名称'])
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control text-blue',
@@ -21,9 +19,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('method', '方法名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'method', 'label' => '方法名称'])
                 <div class="col-sm-6">
                     {!! Form::text('method', null, [
                         'class' => 'form-control text-blue',
@@ -34,9 +30,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('route', '路由', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'route', 'label' => '路由'])
                 <div class="col-sm-6">
                     {!! Form::text('route', null, [
                         'class' => 'form-control text-blue',
@@ -53,9 +47,7 @@
                 'icon' => 'fa fa-building text-blue'
             ])
             <div class="form-group">
-                {!! Form::label('view', 'view路径', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'view', 'label' => 'view路径'])
                 <div class="col-sm-6">
                     {!! Form::text('view', null, [
                         'class' => 'form-control text-blue',
@@ -65,9 +57,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('js', 'js文件路径', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'js', 'label' => 'js文件路径'])
                 <div class="col-sm-6">
                     {!! Form::text('js', null, [
                         'class' => 'form-control text-blue',
@@ -80,7 +70,7 @@
                 'label' => 'HTTP请求类型',
                 'id' => 'action_type_ids',
                 'items' => $actionTypes,
-                'selectedItems' => $selectedActionTypes ?? null
+                'selectedItems' => $selectedActionTypes
             ])
             @include('shared.remark')
             @include('shared.switch', [

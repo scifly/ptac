@@ -6,10 +6,9 @@
                    style="white-space: nowrap; width: 100%;">
                 <thead>
                 <tr class="bg-info">
-                    <td class="text-center">学生</td>
-                    <td class="text-center">学号</td>
-                    <td class="text-center">监护关系</td>
-                    <td class="text-center">删除</td>
+                    @foreach (['学生', '学号', '监护关系', '删除'] as $title)
+                        <td class="text-center">{!! $title !!}</td>
+                    @endforeach
                 </tr>
                 </thead>
                 <tbody id="tBody">
@@ -39,8 +38,9 @@
                 </tbody>
             </table>
         </div>
-        <button id="add" class="btn btn-box-tool" type="button">
-            <i class="fa fa-user-plus text-blue">&nbsp;新增</i>
-        </button>
+        {!! Form::button(
+            Html::tag('i', ' 新增', ['class' => 'fa fa-user-plus text-blue']),
+            ['id' => 'add', 'class' => 'btn btn-box-tool']
+        ) !!}
     </div>
 </div>

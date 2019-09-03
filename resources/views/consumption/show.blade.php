@@ -46,17 +46,15 @@
                     <div class="input-group">
                         <button type="button" class="btn btn-default pull-right" id="daterange">
                             <span id="range">
-                                <i class="fa fa-calendar"></i>&nbsp; 点击选择日期范围
+                                {!! Html::tag('i', '', ['class' => 'fa fa-calendar']) !!}&nbsp; 点击选择日期范围
                             </span>&nbsp;
-                            <i class="fa fa-caret-down"></i>
+                            {!! Html::tag('i', '', ['class' => 'fa fa-caret-down']) !!}
                         </button>
                     </div>
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('result', '统计结果', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'result', 'label' => '统计结果'])
                 <div class="col-sm-6">
                     <table class="table table-striped table-bordered">
                         <tbody>
@@ -69,18 +67,20 @@
                                 <td class="text-red">总消费</td>
                                 <td class="text-right text-red text-bold" id="a_consume"> - </td>
                                 <td class="text-right detail">
-                                    <button id="consume" title="点击查看详情" class="btn btn-box-tool" style="display: none;">
-                                        <i class="fa fa-bars text-blue"></i>
-                                    </button>
+                                    {!! Form::button(Html::tag('i', '', ['class' => 'fa fa-bars text-blue']), [
+                                        'id' => 'consume', 'title' => '点击查看详情',
+                                        'class' => 'btn btn-box-tool', 'style' => 'display: none;'
+                                    ]) !!}
                                 </td>
                             </tr>
                             <tr>
                                 <td class="text-green">总充值</td>
                                 <td class="text-right text-green text-bold" id="a_charge"> - </td>
                                 <td class="text-right detail">
-                                    <button id="charge" title="点击查看详情" class="btn btn-box-tool" style="display: none;">
-                                        <i class="fa fa-bars text-blue"></i>
-                                    </button>
+                                    {!! Form::button(Html::tag('i', '', ['class' => 'fa fa-bars text-blue']), [
+                                        'id' => 'charge', 'title' => '点击查看详情',
+                                        'class' => 'btn btn-box-tool', 'style' => 'display: none;'
+                                    ]) !!}
                                 </td>
                             </tr>
                         </tbody>
@@ -100,7 +100,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                {!! Form::button('×', ['class' => 'close', 'data-dismiss' => 'modal', 'aria-hidden' => 'true']) !!}
                 <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body">

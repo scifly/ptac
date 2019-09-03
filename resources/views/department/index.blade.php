@@ -7,9 +7,10 @@
             @if(isset($buttons))
                 @foreach($buttons as $button)
                     @can('act', $uris[$button['id']])
-                        <button id="{{ $button['id'] }}" type="button" class="btn btn-box-tool">
-                            <i class="{{ $button['icon'] }} text-blue"> {{ $button['label'] }}</i>
-                        </button>
+                        {!! Form::button(
+                            Html::tag('i', '&nbsp;' . $button['label'], ['class' => $button['icon'] . ' text-blue']),
+                            ['id' => $button['id'], 'class' => 'btn btn-box-tool']
+                        ) !!}
                     @endcan
                 @endforeach
             @endif

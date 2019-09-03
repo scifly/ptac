@@ -41,10 +41,12 @@ class GroupRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        !$this->has('menu_ids') ?: $input['menu_ids'] = explode(',', $input['menu_ids']);
-        !$this->has('tab_ids') ?: $input['tab_ids'] = explode(',', $input['tab_ids']);
-        !$this->has('action_ids') ?: $input['action_ids'] = explode(',', $input['action_ids']);
         !$this->has('school_id') ?: $input['school_id'] = $this->schoolId();
+        array_map(
+            function ($id) use (&$input) { 
+                !$this->has($id) ?: $input[$id] = explode(',', $input[$id]); 
+            }, ['menu_ids', 'tab_ids', 'action_ids']
+        );
         $this->replace($input);
         
     }

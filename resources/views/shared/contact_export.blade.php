@@ -2,16 +2,14 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                {!! Form::button('×', ['class' => 'close', 'data-dismiss' => 'modal', 'aria-hidden' => 'true']) !!}
                 <h4 class="modal-title">{{ $title }}</h4>
             </div>
             <div class="modal-body with-border">
                 <div class="form-horizontal">
                     @if (!isset($relationship))
                         <div class="form-group">
-                            {{ Form::label('range', '导出范围', [
-                                'class' => 'col-sm-3 control-label'
-                            ]) }}
+                            @include('shared.label', ['field' => 'range', 'label' => '导出范围'])
                             <div class="col-sm-6" style="padding-top: 5px;" id="range">
                                 @if (isset($departments))
                                     {!! Form::radio('range', 0, true, ['id' => 'range0', 'class' => 'minimal']) !!}
@@ -62,9 +60,7 @@
                             ])
                             <!-- 监护关系 -->
                             <div class="form-group">
-                                {{ Form::label('relationship', '监护关系', [
-                                    'class' => 'control-label col-sm-3'
-                                ]) }}
+                                @include('shared.label', ['field' => 'relationship', 'label' => '监护关系'])
                                 <div class="col-sm-6">
                                     <div class="input-group">
                                         @include('shared.icon_addon', ['class' => 'fa-link'])

@@ -5,11 +5,12 @@
             @if (isset($buttons))
                 @foreach ($buttons as $key => $btn)
                     @can('act', $uris[$key])
-                        <button id="{!! $btn['id'] !!}" type="button" class="btn btn-box-tool" title="{!! $btn['title'] !!}">
-                            <i class="{!! $btn['icon'] !!} {!! $btn['color'] ?? 'text-blue' !!}">
-                                &nbsp;{!! $btn['label'] !!}
-                            </i>
-                        </button>
+                        {!! Form::button(
+                            Html::tag('i', $btn['label'], [
+                                'class' => join(' ', [$btn['icon'], $btn['color'] ?? 'text-blue'])
+                            ]),
+                            ['id' => $btn['id'], 'class' => 'btn btn-box-tool', 'title' => $btn['title']]
+                        ) !!}
                     @endcan
                 @endforeach
             @endif
@@ -19,18 +20,21 @@
                         (isset($uris['update']) && Auth::user()->{'can'}('act', $uris['update'])) ||
                         (isset($uris['destroy']) && Auth::user()->{'can'}('act', $uris['destroy']))
                     )
-                        <button id="select-all" type="button" class="btn btn-default" title="全选">
-                            <i class="fa fa-check-circle text-blue"></i>
-                        </button>
-                        <button id="deselect-all" type="button" class="btn btn-default" title="取消全选">
-                            <i class="fa fa-check-circle text-gray"></i>
-                        </button>
+                        {!! Form::button(
+                            Html::tag('i', '', ['class' => 'fa fa-check-circle text-blue']),
+                            ['id' => 'select-all', 'class' => 'btn btn-default', 'title' => '全选']
+                        ) !!}
+                        {!! Form::button(
+                            Html::tag('i', '', ['class' => 'fa fa-check-circle text-gray']),
+                            ['id' => 'deselect-all', 'class' => 'btn btn-default', 'title' => '取消全选']
+                        ) !!}
                     @endif
                     @if (isset($uris['destroy']))
                         @can ('act', $uris['destroy'])
-                            <button id="batch-delete" type="button" class="btn btn-default" title="批量删除">
-                                <i class="fa fa-trash text-red"></i>
-                            </button>
+                            {!! Form::button(
+                                Html::tag('i', '', ['class' => 'fa fa-trash text-red']),
+                                ['id' => 'batch-delete', 'class' => 'btn btn-default', 'title' => '批量删除']
+                            ) !!}
                         @endcan
                     @endif
                 </div>
