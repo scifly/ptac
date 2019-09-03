@@ -1669,7 +1669,7 @@ class Message extends Model {
                     $class = ucfirst(Inflector::camelize($id));
                     
                     return $this->htmlSelect(
-                        $optionAll + $this->model($class)->whereEnabled(1)
+                        $this->model($class)->whereEnabled(1)
                             ->pluck('name', 'id')->merge($optionAll)->sort(),
                         'filter_' . $id
                     );
