@@ -475,6 +475,7 @@ class Custodian extends Model {
         $action = explode('/', Request::path())[1];
         switch ($action) {
             case 'index':
+                $nil = collect([null => '全部']);
                 [$grades, $classes] = $this->gcList();
                 $data = [
                     'buttons' => [
@@ -501,7 +502,7 @@ class Custodian extends Model {
                         [
                             'title' => '性别',
                             'html'  => $this->htmlSelect(
-                                [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
+                                $nil->union(['女', '男']), 'filter_gender'
                             ),
                         ],
                         '学生', '手机号码',
@@ -516,7 +517,7 @@ class Custodian extends Model {
                         [
                             'title' => '状态 . 操作',
                             'html'  => $this->htmlSelect(
-                                [null => '全部', 0 => '未启用', 1 => '已启用'], 'filter_enabled'
+                                $nil->union(['未启用', '已启用']), 'filter_enabled'
                             ),
                         ],
                     ],
@@ -541,7 +542,7 @@ class Custodian extends Model {
                 $data = [
                     'prompt'  => '家长列表',
                     'formId'  => 'formCustodian',
-                    'classes' => [0 => '(请选择一个班级)'] + $classes,
+                    'classes' => ['(请选择一个班级)'] + $classes,
                     'titles'  => $titles,
                     'columns' => 7,
                 ];

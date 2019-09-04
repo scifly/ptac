@@ -366,9 +366,9 @@ class Action extends Model {
      */
     function compose() {
     
-        $action = explode('/', Request::path())[1];
-        if ($action == 'index') {
-            $optionAll = [null => '全部'];
+        $actionTypes = ActionType::pluck('name', 'id');
+        if (explode('/', Request::path())[1] == 'index') {
+            $nil = collect([null => '全部']);
             $data = [
                 'titles' => [
                     '#', '名称', '方法', '路由', '控制器',
@@ -376,22 +376,19 @@ class Action extends Model {
                     [
                         'title' => '请求类型',
                         'html' => $this->htmlSelect(
-                            ActionType::pluck('name', 'id')->merge($optionAll)->sort(),
-                            'filter_action_type'
+                            $nil->union($actionTypes), 'filter_action_type'
                         )
                     ],
                     [
                         'title' => '功能类型',
                         'html' => $this->htmlSelect(
-                            array_merge($optionAll, ['后台', '前端', '其他']),
-                            'filter_category'
+                            $nil->union(['后台', '前端', '其他']), 'filter_category'
                         )
                     ],
                     [
                         'title' => '状态 . 操作',
                         'html' => $this->htmlSelect(
-                            array_merge($optionAll, ['已禁用', '已启用']),
-                            'filter_enabled'
+                            $nil->union(['已禁用', '已启用']), 'filter_enabled'
                         )
                     ]
                 ],
@@ -401,7 +398,7 @@ class Action extends Model {
             $actionTypeIds = explode(',', Action::find(Request::route('id'))->action_type_ids);
             $selectedActionTypes = ActionType::whereIn('id', $actionTypeIds)->pluck('id');
             $data = [
-                'actionTypes'         => ActionType::pluck('name', 'id'),
+                'actionTypes'         => $actionTypes,
                 'tabs'                => Tab::pluck('name', 'id'),
                 'selectedActionTypes' => $selectedActionTypes,
             ];

@@ -326,59 +326,67 @@ class Module extends Model {
      * @return array
      */
     function compose() {
-        
-        $action = explode('/', Request::path())[1];
-        $role = Auth::user()->role();
+    
         $where = ['enabled' => 1];
-        $role != '企业' ?: $where['corp_id'] = (new Corp)->corpId();
+        Auth::user()->role() != '企业' ?: $where['corp_id'] = (new Corp)->corpId();
         $schools = School::where($where)->pluck('name', 'id');
-        if ($action == 'index') {
+        $tabs = Tab::where(['enabled' => 1, 'category' => 1])->pluck('comment', 'id');
+        if (explode('/', Request::path())[1] == 'index') {
             $nil = collect([null => '全部']);
-            $where = ['enabled' => 1, 'category' => 1];
-            $tabs = $nil->union(
-                Tab::where($where)->pluck('comment', 'id')
-            );
-            $types = $nil->merge(['基本', '增值']);
-            $statuses = $nil->merge(['未启用', '已启用']);
-            $groups = $nil->union(['公用'])->union(
-                Group::whereIn('name', ['监护人', '教职员工'])->pluck('name', 'id')
-            );
+            $statuses = ['未启用', '已启用'];
+            $groups = Group::whereIn('name', ['监护人', '教职员工'])->pluck('name', 'id');
             
             return [
                 'titles' => [
                     '#', '名称',
-                    isset($schools) ? [
+                    [
                         'title' => '所属学校',
-                        'html'  => $this->htmlSelect($schools->prepend($nil), 'filter_school'),
-                    ] : '学校',
+                        'html'  => $this->htmlSelect(
+                            $nil->union($schools), 'filter_school'
+                        ),
+                    ],
                     [
                         'title' => '控制器',
-                        'html'  => $this->htmlSelect($tabs, 'filter_tab_id'),
+                        'html'  => $this->htmlSelect(
+                            $nil->union($tabs), 'filter_tab_id'
+                        ),
                     ],
                     'uri',
-                    ['title' => '所属角色', 'html' => $this->htmlSelect($groups, 'filter_group_id')],
-                    ['title' => '类型', 'html' => $this->htmlSelect($types, 'filter_isfree')],
-                    ['title' => '创建于', 'html'  => $this->htmlDTRange('创建于')],
-                    ['title' => '更新于', 'html'  => $this->htmlDTRange('更新于')],
+                    [
+                        'title' => '所属角色',
+                        'html'  => $this->htmlSelect(
+                            $nil->union(['公用'])->union($groups), 'filter_group_id'
+                        ),
+                    ],
+                    [
+                        'title' => '类型',
+                        'html'  => $this->htmlSelect(
+                            $nil->union(['基本', '增值']), 'filter_isfree'
+                        ),
+                    ],
+                    ['title' => '创建于', 'html' => $this->htmlDTRange('创建于')],
+                    ['title' => '更新于', 'html' => $this->htmlDTRange('更新于')],
                     '排序',
-                    ['title' => '状态 . 操作', 'html' => $this->htmlSelect($statuses, 'filter_enabled')],
+                    [
+                        'title' => '状态 . 操作',
+                        'html'  => $this->htmlSelect(
+                            $nil->union($statuses), 'filter_enabled'
+                        ),
+                    ],
                 ],
                 'filter' => true,
             ];
         } else {
             $schools->sortKeys();
             $groups = $this->groupList($schools->keys()->first());
-            $tabs = Tab::where(['enabled' => 1, 'category' => 1])->get();
-            if (Request::route('id')) {
-                $media = $this->find(Request::route('id'))->media;
-            }
+            $module = $this->find(Request::route('id'));
             
             return array_combine(
                 ['schools', 'groups', 'tabs', 'media'],
                 [
                     $schools, $groups,
-                    [null => ''] + $tabs->pluck('comment', 'id')->toArray(),
-                    $media ?? null,
+                    collect([null => ''])->union($tabs),
+                    $module ? $module->media : null,
                 ]
             );
         }

@@ -15,8 +15,7 @@ class CompanyComposer {
      */
     public function compose(View $view) {
     
-        $action = explode('/', Request::path())[1];
-        if ($action == 'index') {
+        if (explode('/', Request::path())[1] == 'index') {
             $view->with([
                 'titles' => ['#', '名称', '备注', '创建于', '更新于', '状态 . 操作'],
             ]);

@@ -229,9 +229,10 @@ class ScoreRange extends Model {
                 break;
             default:
                 $sr = ScoreRange::find(Request::route('id'));
+                $subjects = Subject::where(['school_id' => $this->schoolId(), 'enabled' => 1])
+                    ->pluck('name', 'id');
                 $data = [
-                    'subjects'         => Subject::where(['school_id' => $this->schoolId(), 'enabled' => 1])
-                        ->pluck('name', 'id')->prepend('总分'),
+                    'subjects'         => $subjects->prepend('总分'),
                     'selectedSubjects' => collect($sr ? explode(',', $sr->subject_ids) : []),
                 ];
                 break;

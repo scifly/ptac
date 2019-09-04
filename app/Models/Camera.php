@@ -139,6 +139,29 @@ class Camera extends Model {
     }
     
     /**
+     * 返回composer所需的view数据
+     *
+     * @return array
+     */
+    function compose() {
+        
+        return [
+            'buttons' => [
+                'store' => [
+                    'id'    => 'store',
+                    'label' => '刷新',
+                    'icon'  => 'fa fa-refresh',
+                ],
+            ],
+            'titles'  => [
+                '#', '设备名称', 'ip', 'mac', '安装地点',
+                '方向', '创建于', '更新于', '状态',
+            ],
+        ];
+        
+    }
+    
+    /**
      * 返回人脸是设备列表
      *
      * @return array

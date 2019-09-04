@@ -4,13 +4,11 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($_subject['id']))
-                {{ Form::hidden('id', $_subject['id'], ['id' => 'id']) }}
+            @if (isset($_subject))
+                {!! Form::hidden('id', $_subject['id'], ['id' => 'id']) !!}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-book'])
@@ -24,9 +22,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('max_score', '最高分', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'max_score', 'label' => '最高分'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-hand-o-up'])
@@ -42,9 +38,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('pass_score', '及格分', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'pass_score', 'label' => '及格分'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-hand-o-down'])
@@ -64,14 +58,14 @@
                 'id' => 'grade_ids',
                 'items' => $grades,
                 'icon' => 'fa fa-object-group',
-                'selectedItems' => $selectedGrades ?? null
+                'selectedItems' => $selectedGrades
             ])
             @include('shared.multiple_select', [
                 'label' => '包含专业',
                 'id' => 'major_ids',
                 'items' => $majors,
                 'icon' => 'fa fa-graduation-cap',
-                'selectedItems' => $selectedMajors ?? null
+                'selectedItems' => $selectedMajors
             ])
             @include('shared.switch', [
                 'label' => '是否为副科',

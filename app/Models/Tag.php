@@ -244,11 +244,11 @@ class Tag extends Model {
                     'selectedTags' => $selectedTags ?? null,
                 ];
             default:
-                if (Request::route('id')) {
-                    $tag = Tag::find(Request::route('id'));
-                    $targetIds = $tag->departments->pluck('id')->toArray();
-                    $targetsHtml = (new Message)->targetsHtml($tag->users, $targetIds);
-                }
+                $tag = Tag::find(Request::route('id'));
+                $departments = $tag ? $tag->departments : null;
+                $users = $tag ? $tag->users : null;
+                $targetIds = $departments ? $tag->departments->pluck('id')->toArray() : null;
+                $targetsHtml = $users ? (new Message)->targetsHtml($tag->users, $targetIds) : null;
                 
                 return [
                     'targets'   => $targetsHtml ?? null,

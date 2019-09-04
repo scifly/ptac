@@ -298,7 +298,7 @@ class PassageRule extends Model {
                     [
                         'title' => '状态 . 操作',
                         'html'  => $this->htmlSelect(
-                            [null => '全部', '禁用', '启用'], 'filter_enabled'
+                            collect([null => '全部', '禁用', '启用']), 'filter_enabled'
                         ),
                     ],
                 ],

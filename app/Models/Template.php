@@ -244,8 +244,7 @@ class Template extends Model {
                 ];
             default:
                 return [
-                    'apps'       => App::where('category', 2)
-                        ->pluck('name', 'id')->toArray(),
+                    'apps'       => App::where('category', 2)->pluck('name', 'id'),
                     'industries' => Constant::INDUSTRY,
                 ];
         }

@@ -266,21 +266,19 @@ class Subject extends Model {
      * @return array
      */
     function compose() {
-        
-        if (Request::route('id')) {
-            $subject = Subject::find(Request::route('id'));
-            $selectedMajors = $subject->majors->pluck('name', 'id')->toArray();
-            $gradeIds = $subject->grade_ids;
-            $selectedGrades = empty($gradeIds) ? []
-                : Grade::whereIn('id', explode(',', $gradeIds))
-                    ->pluck('name', 'id')->toArray();
-        }
+    
+        $subject = Subject::find(Request::route('id'));
+        $majors = $subject ? $subject->majors : null;
+        $selectedMajors = $majors ? $majors->pluck('name', 'id') : null;
+        $gradeIds = $subject ? $subject->grade_ids : null;
+        $selectedGrades = !$gradeIds ? []
+            : Grade::whereIn('id', explode(',', $gradeIds))->pluck('id');
         
         return [
             Grade::whereIn('id', $this->gradeIds())->pluck('name', 'id'),
             Major::whereSchoolId($this->schoolId())->pluck('name', 'id'),
-            $selectedMajors ?? null,
-            $selectedGrades ?? null,
+            $selectedMajors,
+            $selectedGrades,
         ];
         
     }

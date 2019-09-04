@@ -342,14 +342,16 @@ class ScoreTotal extends Model {
      */
     function compose() {
         
-        $optionAll = [null => '全部'];
+        $nil = collect([null => '全部']);
         [$htmlClass, $htmlGrade, $htmlExam] = array_map(
-            function ($class) use ($optionAll) {
+            function ($class) use ($nil) {
                 $method = ($class == 'Squad' ? 'class' : lcfirst($class)) . 'Ids';
                 
                 return $this->htmlSelect(
-                    $this->model($class)->{'whereIn'}('id', $this->{$method}())
-                        ->pluck('name', 'id')->merge($optionAll)->sort(),
+                    $nil->union(
+                        $this->model($class)->{'whereIn'}('id', $this->{$method}())
+                        ->pluck('name', 'id')
+                    ),
                     'filter_' . lcfirst($class)
                 );
             }, ['Squad', 'Grade', 'Exam']
@@ -373,7 +375,7 @@ class ScoreTotal extends Model {
                 [
                     'title' => '状态',
                     'html'  => $this->htmlSelect(
-                        array_merge($optionAll, ['已禁用', '已启用']), 'filter_enabled'
+                        $nil->union(['已禁用', '已启用']), 'filter_enabled'
                     ),
                 ],
             ],

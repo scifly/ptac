@@ -267,14 +267,16 @@ class Squad extends Model {
         
         $action = explode('/', Request::path())[1];
         if ($action == 'index') {
+            $nil = collect([null => '全部']);
             return [
                 'titles' => [
                     '#', '名称',
                     [
                         'title' => '所属年级',
                         'html'  => $this->htmlSelect(
-                            [null => '全部'] + Grade::whereIn('id', $this->gradeIds())
-                                ->pluck('name', 'id')->toArray(),
+                            $nil->union(
+                                Grade::whereIn('id', $this->gradeIds())->pluck('name', 'id')
+                            ),
                             'filter_grade_id'
                         ),
                     ],
@@ -290,13 +292,13 @@ class Squad extends Model {
                     [
                         'title' => '同步状态',
                         'html'  => $this->htmlSelect(
-                            [null => '全部', 0 => '未同步', 1 => '已同步'], 'filter_subscribed'
+                            $nil->union(['未同步', '已同步']), 'filter_subscribed'
                         ),
                     ],
                     [
                         'title' => '状态 . 操作',
                         'html'  => $this->htmlSelect(
-                            [null => '全部', 0 => '未启用', 1 => '已启用'], 'filter_enabled'
+                            $nil->union(['未启用', '已启用']), 'filter_enabled'
                         ),
                     ],
                 ],

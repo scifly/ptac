@@ -490,6 +490,7 @@ class Educator extends Model {
         $action = explode('/', Request::path())[1];
         switch ($action) {
             case 'index':
+                $nil = collect([null => '全部']);
                 $departments = Department::whereIn('id', $this->departmentIds(Auth::id()))
                     ->pluck('name', 'id')->toArray();
                 $data = [
@@ -527,7 +528,7 @@ class Educator extends Model {
                         [
                             'title' => '性别',
                             'html'  => $this->htmlSelect(
-                                [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
+                                $nil->union(['女', '男']), 'filter_gender'
                             ),
                         ],
                         '职务', '手机号码',
@@ -542,7 +543,7 @@ class Educator extends Model {
                         [
                             'title' => '状态 . 操作',
                             'html'  => $this->htmlSelect(
-                                [null => '全部', 0 => '未启用', 1 => '已启用'], 'filter_enabled'
+                                $nil->union(['未启用', '已启用']), 'filter_enabled'
                             ),
                         ],
                     ],
@@ -566,7 +567,7 @@ class Educator extends Model {
                 $data = [
                     'prompt'  => '教师列表',
                     'formId'  => 'formEducator',
-                    'classes' => [0 => '(请选择一个部门)'] + $departments,
+                    'classes' => ['(请选择一个部门)'] + $departments,
                     'titles'  => $titles,
                     'columns' => 6,
                 ];

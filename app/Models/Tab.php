@@ -322,18 +322,24 @@ class Tab extends Model {
                     '#', '控制器', '名称',
                     [
                         'title' => '角色',
-                        'html'  => $this->htmlSelect($nil->union($roles), 'filter_group'),
+                        'html'  => $this->htmlSelect(
+                            $nil->union($roles), 'filter_group'
+                        ),
                     ],
                     '默认功能',
                     ['title' => '创建于', 'html'  => $this->htmlDTRange('创建于')],
                     ['title' => '更新于', 'html'  => $this->htmlDTRange('更新于')],
                     [
                         'title' => '类型',
-                        'html'  => $this->htmlSelect($nil->union(['后台', '前端', '其他']), 'filter_category'),
+                        'html'  => $this->htmlSelect(
+                            $nil->union(['后台', '前端', '其他']), 'filter_category'
+                        ),
                     ],
                     [
                         'title' => '状态 . 操作',
-                        'html'  => $this->htmlSelect($nil->union(['已禁用', '已启用']), 'filter_enabled'),
+                        'html'  => $this->htmlSelect(
+                            $nil->union(['已禁用', '已启用']), 'filter_enabled'
+                        ),
                     ],
                 ],
                 'filter' => true,

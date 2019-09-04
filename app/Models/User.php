@@ -790,7 +790,8 @@ class User extends Authenticatable {
                     ],
                 ];
             case 'users/message':
-                [$optionAll, $htmlCommType, $htmlApp, $htmlMessageType] = (new Message)->filters();
+                /** @var \Illuminate\Support\Collection $nil */
+                [$nil, $htmlCommType, $htmlApp, $htmlMessageType] = (new Message)->filters();
                 
                 return [
                     'titles'    => [
@@ -803,7 +804,7 @@ class User extends Authenticatable {
                         [
                             'title' => '状态',
                             'html'  => $this->htmlSelect(
-                                array_merge($optionAll, [0 => '未读', 1 => '已读']), 'filter_read'
+                                $nil->union(['未读', '已读']), 'filter_read'
                             ),
                         ],
                     ],

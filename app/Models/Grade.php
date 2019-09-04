@@ -268,7 +268,7 @@ class Grade extends Model {
             return ['titles' => ['#', '名称', '年级主任', '创建于', '更新于', '同步状态', '状态 . 操作']];
         } else {
             $educators = Educator::where(['school_id' => $this->schoolId(), 'enabled' => 1])
-                ->with('user')->get()->pluck('user.realname', 'id')->toArray();
+                ->with('user')->get()->pluck('user.realname', 'id');
             $grade = Grade::find(Request::route('id'));
             $selectedEducators = collect(
                 explode(',', rtrim($grade ? $grade->educator_ids : '', ','))

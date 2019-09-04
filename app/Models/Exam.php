@@ -179,8 +179,9 @@ class Exam extends Model {
         $action = explode('/', Request::path())[1];
         $schoolId = $this->schoolId();
         if ($action == 'index') {
+            $nil = collect([null => '全部']);
             $htmlExamType = $this->htmlSelect(
-                ExamType::whereSchoolId($schoolId)->pluck('name', 'id')->merge([null => '全部'])->sort(),
+                $nil->union(ExamType::whereSchoolId($schoolId)->pluck('name', 'id')),
                 'filter_exam_type'
             );
             $data = [
@@ -207,7 +208,7 @@ class Exam extends Model {
                     [
                         'title' => '状态 . 操作',
                         'html'  => $this->htmlSelect(
-                            [null => '全部', '已禁用', '已启用'], 'filter_enabled'
+                            $nil->union(['已禁用', '已启用']), 'filter_enabled'
                         ),
                     ],
                 ],

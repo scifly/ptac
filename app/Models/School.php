@@ -514,7 +514,7 @@ class School extends Model {
                 
                 return [
                         'schoolTypes'  => SchoolType::whereEnabled(1)->pluck('name', 'id'),
-                        'apps'         => $apps->merge([null => '[所属公众号]'])->sort(),
+                        'apps'         => collect([null => '[所属公众号]'])->union($apps),
                         'corpId'       => (new Corp)->corpId(),
                         'uris'         => $this->uris(),
                         'apis'         => $apis,

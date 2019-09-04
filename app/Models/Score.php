@@ -715,7 +715,7 @@ class Score extends Model {
                         : $model->whereSchoolId($this->schoolId());
                 
                     return $this->htmlSelect(
-                        $builder->{'pluck'}('name', 'id')->merge([null => '全部'])->sort(),
+                        collect([null => '全部'])->union($builder->{'pluck'}('name', 'id')),
                         'filter_' . $field
                     );
                 }, ['Squad', 'Grade', 'Subject', 'Exam']
@@ -766,7 +766,7 @@ class Score extends Model {
                     [
                         'title' => '状态 . 操作',
                         'html'  => $this->htmlSelect(
-                            [null => '全部', 0 => '已禁用', 1 => '已启用'], 'filter_enabled'
+                            collect([null => '全部', '已禁用', '已启用']), 'filter_enabled'
                         ),
                     ],
                 ],

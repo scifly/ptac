@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (isset($pqSubject) && !empty($pqSubject['id']))
-                {{ Form::hidden('id', $pqSubject['id'], ['id' => 'id']) }}
+            @if (isset($pqSubject))
+                {!! Form::hidden('id', $pqSubject['id'], ['id' => 'id']) !!}
             @endif
             <div class="form-group">
                 {!! Form::label('subject', '名称', [

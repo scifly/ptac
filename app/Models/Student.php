@@ -568,7 +568,7 @@ class Student extends Model {
         switch ($action) {
             case 'index':
                 [$grades, $classes] = $this->gcList();
-                $optionAll = [null => '全部'];
+                $nil = collect([null => '全部']);
                 $data = [
                     'buttons'        => [
                         'import' => [
@@ -602,22 +602,22 @@ class Student extends Model {
                         [
                             'title' => '性别',
                             'html'  => $this->htmlSelect(
-                                $optionAll + [0 => '女', 1 => '男'], 'filter_gender'
+                                $nil->union(['女', '男']), 'filter_gender'
                             ),
                         ],
                         [
                             'title' => '班级',
                             'html'  => $this->htmlSelect(
-                                $optionAll + Squad::whereIn('id', $this->classIds())
-                                    ->pluck('name', 'id')->toArray()
-                                , 'filter_class'
+                                $nil->union(
+                                    Squad::whereIn('id', $this->classIds())->pluck('name', 'id')
+                                ), 'filter_class'
                             ),
                         ],
                         '学号',
                         [
                             'title' => '住校',
                             'html'  => $this->htmlSelect(
-                                $optionAll + [0 => '否', 1 => '是'], 'filter_oncampus'
+                                $nil->union(['否', '是']), 'filter_oncampus'
                             ),
                         ],
                         [
@@ -635,7 +635,7 @@ class Student extends Model {
                         [
                             'title' => '状态 . 操作',
                             'html'  => $this->htmlSelect(
-                                $optionAll + [0 => '已禁用', 1 => '已启用'], 'filter_enabled'
+                                $nil->union(['已禁用', '已启用']), 'filter_enabled'
                             ),
                         ],
                     ],

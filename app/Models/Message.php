@@ -1457,7 +1457,7 @@ class Message extends Model {
         
         switch ($uri ?? Request::route()->uri) {
             case 'messages/index':
-                [$optionAll, $htmlCommType, $htmlMediaType, $htmlMessageType] = $this->filters();
+                [$nil, $htmlCommType, $htmlMediaType, $htmlMessageType] = $this->filters();
                 $titles = [
                     '#', '标题', '批次',
                     ['title' => '通信方式', 'html' => $htmlCommType],
@@ -1473,7 +1473,7 @@ class Message extends Model {
                         [
                             'title' => '状态',
                             'html'  => $this->htmlSelect(
-                                array_merge($optionAll, ['草稿', '已发', '定时']), 'filter_sent'
+                                $nil->union(['草稿', '已发', '定时']), 'filter_sent'
                             ),
                         ],
                     ]),
@@ -1483,7 +1483,7 @@ class Message extends Model {
                         [
                             'title' => '状态',
                             'html'  => $this->htmlSelect(
-                                array_merge($optionAll, ['未读', '已读']), 'filter_read'
+                                $nil->union(['未读', '已读']), 'filter_read'
                             ),
                         ],
                     ]),
@@ -1495,6 +1495,7 @@ class Message extends Model {
                     'filter'       => true,
                 ];
             case 'message_centers/index':
+                $nil = collect([0 => '全部']);
                 $role = Auth::user()->role();
                 $part = session('part');
                 if (isset($part) && $part == 'custodian') $role = '监护人';
@@ -1502,8 +1503,8 @@ class Message extends Model {
                 return array_combine(
                     ['messageTypes', 'mediaTypes', 'acronym', 'canSend'],
                     [
-                        array_merge([0 => '全部'], MessageType::pluck('name', 'id')->toArray()),
-                        array_merge([0 => '全部'], MediaType::pluck('remark', 'id')->toArray()),
+                        $nil->union(MessageType::pluck('name', 'id')),
+                        $nil->union(MediaType::pluck('remark', 'id')),
                         School::find(session('schoolId'))->corp->acronym,
                         !in_array($role, ['监护人', '学生']),
                     ]);
@@ -1662,15 +1663,16 @@ class Message extends Model {
     function filters() {
         
         return array_merge(
-            [$optionAll = [null => '全部']],
+            [$nil = collect([null => '全部'])],
             array_map(
-                function ($table) use ($optionAll) {
+                function ($table) use ($nil) {
                     $id = Inflector::singularize($table);
                     $class = ucfirst(Inflector::camelize($id));
                     
                     return $this->htmlSelect(
-                        $this->model($class)->whereEnabled(1)
-                            ->pluck('name', 'id')->merge($optionAll)->sort(),
+                        $nil->union(
+                            $this->model($class)->whereEnabled(1)->pluck('name', 'id')
+                        ),
                         'filter_' . $id
                     );
                 }, ['comm_types', 'media_types', 'message_types']
