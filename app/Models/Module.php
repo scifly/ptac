@@ -356,33 +356,18 @@ class Module extends Model {
                         'html'  => $this->htmlSelect($tabs, 'filter_tab_id'),
                     ],
                     'uri',
-                    [
-                        'title' => '所属角色',
-                        'html'  => $this->htmlSelect($groups, 'filter_group_id'),
-                    ],
-                    [
-                        'title' => '类型',
-                        'html'  => $this->htmlSelect($types, 'filter_isfree'),
-                    ],
-                    [
-                        'title' => '创建于',
-                        'html'  => $this->htmlDTRange('创建于'),
-                    ],
-                    [
-                        'title' => '更新于',
-                        'html'  => $this->htmlDTRange('更新于'),
-                    ],
+                    ['title' => '所属角色', 'html' => $this->htmlSelect($groups, 'filter_group_id')],
+                    ['title' => '类型', 'html' => $this->htmlSelect($types, 'filter_isfree')],
+                    ['title' => '创建于', 'html'  => $this->htmlDTRange('创建于')],
+                    ['title' => '更新于', 'html'  => $this->htmlDTRange('更新于')],
                     '排序',
-                    [
-                        'title' => '状态 . 操作',
-                        'html'  => $this->htmlSelect($statuses, 'filter_enabled'),
-                    ],
+                    ['title' => '状态 . 操作', 'html' => $this->htmlSelect($statuses, 'filter_enabled')],
                 ],
                 'filter' => true,
             ];
         } else {
-            ksort($schools);
-            $groups = $this->groupList(key($schools));
+            $schools->sortKeys();
+            $groups = $this->groupList($schools->keys()->first());
             $tabs = Tab::where(['enabled' => 1, 'category' => 1])->get();
             if (Request::route('id')) {
                 $media = $this->find(Request::route('id'))->media;

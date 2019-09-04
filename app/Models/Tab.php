@@ -325,14 +325,8 @@ class Tab extends Model {
                         'html'  => $this->htmlSelect($nil->union($roles), 'filter_group'),
                     ],
                     '默认功能',
-                    [
-                        'title' => '创建于',
-                        'html'  => $this->htmlDTRange('创建于'),
-                    ],
-                    [
-                        'title' => '更新于',
-                        'html'  => $this->htmlDTRange('更新于'),
-                    ],
+                    ['title' => '创建于', 'html'  => $this->htmlDTRange('创建于')],
+                    ['title' => '更新于', 'html'  => $this->htmlDTRange('更新于')],
                     [
                         'title' => '类型',
                         'html'  => $this->htmlSelect($nil->union(['后台', '前端', '其他']), 'filter_category'),
