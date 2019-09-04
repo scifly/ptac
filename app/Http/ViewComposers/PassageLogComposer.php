@@ -46,14 +46,14 @@ class PassageLogComposer {
                 [
                     'title' => '记录类型',
                     'html' => $this->htmlSelect(
-                        $optionAll + [0 => '无记录', 1 => '刷卡记录', 2 => '门磁', 3 => '报警记录'],
+                        $optionAll + ['无记录', '刷卡记录', '门磁', '报警记录'],
                         'filter_category'
                     )
                 ],
                 [
                     'title' => '方向',
                     'html'  => $this->htmlSelect(
-                        $optionAll + [0 => '出', 1 => '进'], 'filter_direction'
+                        $optionAll + ['出', '进'], 'filter_direction'
                     ),
                 ],
                 '地点',
@@ -65,7 +65,7 @@ class PassageLogComposer {
                 [
                     'title' => '状态',
                     'html'  => $this->htmlSelect(
-                        $optionAll + [0 => '异常', 1 => '正常'], 'filter_status'
+                        $optionAll + ['异常', '正常'], 'filter_status'
                     ),
                 ],
             ],

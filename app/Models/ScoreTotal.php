@@ -55,6 +55,7 @@ class ScoreTotal extends Model {
         'grade_rank', 'enabled',
     ];
     
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /**
      * 返回总分记录所属的学生对象
      *
@@ -89,6 +90,7 @@ class ScoreTotal extends Model {
         
     }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 总成绩记录列表
      *
@@ -329,6 +331,54 @@ class ScoreTotal extends Model {
         }
         
         return true;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 返回composer所需的view数据
+     *
+     * @return array
+     */
+    function compose() {
+        
+        $optionAll = [null => '全部'];
+        [$htmlClass, $htmlGrade, $htmlExam] = array_map(
+            function ($class) use ($optionAll) {
+                $method = ($class == 'Squad' ? 'class' : lcfirst($class)) . 'Ids';
+                
+                return $this->htmlSelect(
+                    $this->model($class)->{'whereIn'}('id', $this->{$method}())
+                        ->pluck('name', 'id')->merge($optionAll)->sort(),
+                    'filter_' . lcfirst($class)
+                );
+            }, ['Squad', 'Grade', 'Exam']
+        );
+        
+        return [
+            'titles' => [
+                '#', '姓名', '学号',
+                ['title' => '年级', 'html' => $htmlGrade],
+                ['title' => '班级', 'html' => $htmlClass],
+                ['title' => '考试名称', 'html' => $htmlExam],
+                '总成绩', '年级排名', '班级排名',
+                [
+                    'title' => '创建于',
+                    'html'  => $this->htmlDTRange('创建于'),
+                ],
+                [
+                    'title' => '更新于',
+                    'html'  => $this->htmlDTRange('更新于'),
+                ],
+                [
+                    'title' => '状态',
+                    'html'  => $this->htmlSelect(
+                        array_merge($optionAll, ['已禁用', '已启用']), 'filter_enabled'
+                    ),
+                ],
+            ],
+            'filter' => true,
+        ];
         
     }
     

@@ -376,7 +376,7 @@ class Action extends Model {
                     [
                         'title' => '请求类型',
                         'html' => $this->htmlSelect(
-                            $optionAll + ActionType::pluck('name', 'id')->toArray(),
+                            ActionType::pluck('name', 'id')->merge($optionAll)->sort(),
                             'filter_action_type'
                         )
                     ],

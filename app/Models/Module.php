@@ -315,7 +315,7 @@ class Module extends Model {
         
         return view('wechat.schools', [
             'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
-            'appId' => session('appId') ? '/' . session('appId') : ''
+            'appId'   => session('appId') ? '/' . session('appId') : '',
         ]);
         
     }
@@ -326,32 +326,30 @@ class Module extends Model {
      * @return array
      */
     function compose() {
-    
+        
         $action = explode('/', Request::path())[1];
+        $role = Auth::user()->role();
+        $where = ['enabled' => 1];
+        $role != '企业' ?: $where['corp_id'] = (new Corp)->corpId();
+        $schools = School::where($where)->pluck('name', 'id');
         if ($action == 'index') {
-            $optionAll = [null => '全部'];
-            $role = Auth::user()->role();
-            if ($role == '运营') {
-                $schools = School::whereEnabled(1);
-            } elseif ($role == '企业') {
-                $schools = School::where(['enabled' => 1, 'corp_id' => (new Corp)->corpId()]);
-            }
-            $tabs = $optionAll + Tab::where(['enabled' => 1, 'category' => 1])
-                    ->pluck('comment', 'id')->toArray();
-            $types = $optionAll + [0 => '基本', 1 => '增值'];
-            $statuses = $optionAll + [0 => '未启用', 1 => '已启用'];
-            $groups = $optionAll + [0 => '公用'] +
-                Group::whereIn('name', ['监护人', '教职员工'])
-                    ->pluck('name', 'id')->toArray();
+            $nil = collect([null => '全部']);
+            $where = ['enabled' => 1, 'category' => 1];
+            $tabs = $nil->union(
+                Tab::where($where)->pluck('comment', 'id')
+            );
+            $types = $nil->merge(['基本', '增值']);
+            $statuses = $nil->merge(['未启用', '已启用']);
+            $groups = $nil->union(['公用'])->union(
+                Group::whereIn('name', ['监护人', '教职员工'])->pluck('name', 'id')
+            );
+            
             return [
                 'titles' => [
                     '#', '名称',
                     isset($schools) ? [
                         'title' => '所属学校',
-                        'html'  => $this->htmlSelect(
-                            $optionAll + $schools->pluck('name', 'id')->toArray(),
-                            'filter_school'
-                        ),
+                        'html'  => $this->htmlSelect($schools->prepend($nil), 'filter_school'),
                     ] : '学校',
                     [
                         'title' => '控制器',
@@ -383,20 +381,8 @@ class Module extends Model {
                 'filter' => true,
             ];
         } else {
-            switch (Auth::user()->role()) {
-                case '运营':
-                    $builder = School::whereEnabled(1)->get();
-                    break;
-                case '企业':
-                    $builder = School::where(['corp_id' => (new Corp)->corpId(), 'enabled' => 1])->get();
-                    break;
-                default:
-                    $builder = School::find($this->schoolId());
-                    break;
-            }
-            $schoolList = $builder->pluck('name', 'id')->toArray();
-            ksort($schoolList);
-            $groups = $this->groupList(key($schoolList));
+            ksort($schools);
+            $groups = $this->groupList(key($schools));
             $tabs = Tab::where(['enabled' => 1, 'category' => 1])->get();
             if (Request::route('id')) {
                 $media = $this->find(Request::route('id'))->media;
@@ -405,7 +391,7 @@ class Module extends Model {
             return array_combine(
                 ['schools', 'groups', 'tabs', 'media'],
                 [
-                    $schoolList, $groups,
+                    $schools, $groups,
                     [null => ''] + $tabs->pluck('comment', 'id')->toArray(),
                     $media ?? null,
                 ]

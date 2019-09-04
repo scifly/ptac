@@ -313,18 +313,16 @@ class Tab extends Model {
     function compose() {
     
         $action = explode('/', Request::path())[1];
+        $roles = Group::whereIn('name', ['运营', '企业', '学校'])->pluck('name', 'id');
         if ($action == 'index') {
-            $roles = Group::whereIn('name', ['运营', '企业', '学校'])->pluck('name', 'id')->toArray();
-            $optionAll = [null => '全部'];
+            $nil = collect([null => '全部']);
             $data = [
                 'batch'  => true, # 需要批量操作
                 'titles' => [
                     '#', '控制器', '名称',
                     [
                         'title' => '角色',
-                        'html'  => $this->htmlSelect(
-                            array_merge($optionAll, $roles), 'filter_group'
-                        ),
+                        'html'  => $this->htmlSelect($nil->union($roles), 'filter_group'),
                     ],
                     '默认功能',
                     [
@@ -337,15 +335,11 @@ class Tab extends Model {
                     ],
                     [
                         'title' => '类型',
-                        'html'  => $this->htmlSelect(
-                            array_merge($optionAll, ['后台', '前端', '其他']), 'filter_category'
-                        ),
+                        'html'  => $this->htmlSelect($nil->union(['后台', '前端', '其他']), 'filter_category'),
                     ],
                     [
                         'title' => '状态 . 操作',
-                        'html'  => $this->htmlSelect(
-                            array_merge($optionAll, ['已禁用', '已启用']), 'filter_enabled'
-                        ),
+                        'html'  => $this->htmlSelect($nil->union(['已禁用', '已启用']), 'filter_enabled'),
                     ],
                 ],
                 'filter' => true,
@@ -356,8 +350,7 @@ class Tab extends Model {
             $data = [
                 'icons'         => (new Icon)->icons(),
                 'actions'       => (new Action)->actions(),
-                'groups'        => Group::whereIn('name', ['运营', '企业', '学校'])
-                        ->pluck('name', 'id')->merge([0 => '所有'])->sort(),
+                'groups'        => collect([0 => '所有'])->union($roles),
                 'menus'         => (new Menu)->leaves(1),
                 'selectedMenus' => $tabMenus ? $tabMenus->pluck('id') : collect([]),
             ];
