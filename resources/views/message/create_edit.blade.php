@@ -39,7 +39,8 @@
         @include('shared.single_select', [
             'label' => '消息模板',
             'id' => 'template_id',
-            'items' => $templates
+            'items' => $templates,
+            'help' => '(如果不选模板，则表示群发)'
         ])
     @endif
     <!-- 消息内容 -->

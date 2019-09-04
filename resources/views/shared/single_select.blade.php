@@ -16,6 +16,8 @@
                 'disabled' => sizeof($items) <= 1
             ]) !!}
         </div>
-        <p id="sms-length" class="help-block">4321i04y3</p>
+        @if (isset($help))
+            <p class="help-block">{!! $help !!}</p>
+        @endif
     </div>
 </div>
