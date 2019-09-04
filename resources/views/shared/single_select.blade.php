@@ -15,6 +15,7 @@
                 'style' => 'width: 100%;',
                 'disabled' => sizeof($items) <= 1
             ]) !!}
+            <p id="sms-length" class="help-block">4321i04y3</p>
         </div>
     </div>
 </div>

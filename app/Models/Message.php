@@ -1164,25 +1164,26 @@ class Message extends Model {
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             __('messages.file_upload_failed')
         );
-        # 上传到企业号后台
-        [$corpid, $secret] = $this->tokenParams();
+        # 上传到企业微信后台
+        [$base, $appid, $appsecret] = $this->tokenParams();
         $type = Request::input('type');
+        $type != 'audio' ?: $type = 'voice';
         $result = json_decode(
             Wechat::invoke(
-                'ent', 'media', 'upload',
-                [Wechat::token('ent', $corpid, $secret), $type == 'audio' ? 'voice' : $type], [
+                $base, 'media', 'upload',
+                [Wechat::token('ent', $appid, $appsecret), $type], [
                 'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
                 'filename'      => $uploadedFile['filename'],
                 'content-type'  => Constant::CONTENT_TYPE[$type],
                 'filelength'    => $file->getSize(),
-            ])
+            ]), true
         );
         abort_if(
-            $result->{'errcode'},
+            $result['errcode'] ?? 0,
             HttpStatusCode::INTERNAL_SERVER_ERROR,
-            Constant::WXERR[$result->{'errcode'}]
+            Constant::WXERR[$result['errcode']]
         );
-        $uploadedFile['media_id'] = $result->{'media_id'};
+        $uploadedFile['media_id'] = $result['media_id'];
         
         return response()->json([
             'message' => __('messages.message.uploaded'),
@@ -1193,25 +1194,19 @@ class Message extends Model {
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
-     * 获取当前请求对应的企业号id和“通讯录同步”Secret
+     * 获取当前请求对应的平台类型（公众号、企业微信）、appid和appsecret
      *
      * @return array
      */
     private function tokenParams() {
-        
-        if (!session('corpId')) {
-            abort_if(
-                !($corpMenuId = (new Menu)->menuId(session('menuId'), '企业')),
-                HttpStatusCode::BAD_REQUEST, __('messages.bad_request')
-            );
-            $corp = Corp::whereMenuId($corpMenuId)->first();
-        } else {
-            $corp = Corp::find(session('corpId'));
-        }
+
+        $school = School::find(session('schoolId') ?? $this->schoolId());
+        $corp = $school->corp;
         
         return [
-            $corp->corpid,
-            Wechat::syncSecret($corp->id),
+            ($app = $school->app) ? 'pub' : 'ent',
+            $app ? $app->appid : $corp->corpid,
+            $app ? $app->appsecret : Wechat::syncSecret($corp->id),
         ];
         
     }
@@ -1465,6 +1460,7 @@ class Message extends Model {
                     ['title' => '类型', 'html' => $htmlMessageType],
                 ];
                 $appId = School::find($this->schoolId())->app_id;
+                $templates = Template::whereAppId($appId)->pluck('title', 'id');
                 
                 return [
                     'titles'       => array_merge($titles, [
@@ -1489,8 +1485,9 @@ class Message extends Model {
                     ]),
                     'smsMaxLength' => 300,
                     'messageTypes' => MessageType::whereEnabled(1)->pluck('name', 'id'),
-                    'templates'    => Template::whereAppId($appId)->pluck('title', 'id'),
+                    'templates'    => collect([''])->union($templates),
                     'tags'         => (new Tag)->list(),
+                    'app'          => $appId,
                     'batch'        => true,
                     'filter'       => true,
                 ];

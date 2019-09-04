@@ -70,11 +70,13 @@
                             <i class="fa fa-file-movie-o"></i>&nbsp;视频
                         </a>
                     </li>
+                    @if (!$app)
                     <li>
                         <a href="#content_file" data-toggle="tab" class="tab">
                             <i class="fa fa-file-o"></i>&nbsp;文件
                         </a>
                     </li>
+                    @endif
                     <li>
                         <a href="#content_card" data-toggle="tab" class="tab">
                             <i class="fa fa-folder-o"></i>&nbsp;卡片
@@ -145,6 +147,7 @@
                             ])
                         </div>
                     </div>
+                    @if (!$app)
                     <!-- 文件 -->
                     <div class="tab-pane" id="content_file">
                         @include('message.file_upload', [
@@ -153,6 +156,7 @@
                             'note' => '大小不得超过20M'
                         ])
                     </div>
+                    @endif
                     <!-- 卡片 -->
                     <div class="tab-pane" id="content_card">
                         {!! Form::text('card-title', null, [

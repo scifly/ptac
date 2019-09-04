@@ -78,8 +78,11 @@ class ScoreTotal extends Model {
      */
     function subjects($id) {
         
-        $st = $this->find($id);
-        abort_if(!$st, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+        abort_if(
+            !$st = $this->find($id),
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         
         return array_map(
             function ($field) use ($st) {
@@ -364,14 +367,8 @@ class ScoreTotal extends Model {
                 ['title' => '班级', 'html' => $htmlClass],
                 ['title' => '考试名称', 'html' => $htmlExam],
                 '总成绩', '年级排名', '班级排名',
-                [
-                    'title' => '创建于',
-                    'html'  => $this->htmlDTRange('创建于'),
-                ],
-                [
-                    'title' => '更新于',
-                    'html'  => $this->htmlDTRange('更新于'),
-                ],
+                ['title' => '创建于', 'html'  => $this->htmlDTRange('创建于')],
+                ['title' => '更新于', 'html'  => $this->htmlDTRange('更新于')],
                 [
                     'title' => '状态',
                     'html'  => $this->htmlSelect(
