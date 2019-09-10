@@ -41,14 +41,11 @@
             'label' => '消息模板',
             'id' => 'template_id',
             'items' => $templates,
-            'help' => '注：不选模板，则表示群发'
         ])
     @endif
     <!-- 消息内容 -->
     <div class="form-group">
-        {!! Form::label('content', '消息内容', [
-            'class' => 'col-sm-3 control-label'
-        ]) !!}
+        @include('shared.label', ['field' => 'content', 'label' => '消息内容'])
         <div class="col-sm-6">
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs" id="message-format">
