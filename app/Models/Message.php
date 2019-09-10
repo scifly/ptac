@@ -416,7 +416,7 @@ class Message extends Model {
             $content = json_decode($detail[$detail['type']]);
             [$toparty, $touser, $totag] = array_map(
                 function ($field) use ($content) {
-                    $to = $content->{$field};
+                    $to = $content->{$field} ?? null;
                     
                     return empty($to) ? [] : explode('|', $to);
                 }, ['toparty', 'touser', 'totag']
