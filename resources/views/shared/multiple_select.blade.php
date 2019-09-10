@@ -14,6 +14,7 @@
                 'class' => 'form-control',
                 'style' => 'width: 100%;',
                 isset($required) ? 'required' : '',
+                'disabled' => sizeof($items) <= 1
             ]) !!}
         </div>
     </div>
