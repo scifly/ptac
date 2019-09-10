@@ -1,7 +1,7 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\{Constant, JobTrait, ModelTrait};
+use App\Helpers\{JobTrait, ModelTrait};
 use App\Models\{ApiMessage,
     CommType,
     MediaType,
@@ -60,18 +60,18 @@ class SendMessageApi implements ShouldQueue {
                 $messageType = MessageType::whereUserId($this->partner->id)->first();
                 $school = School::find($this->schoolId);
                 # 所有手机号码
-                $targets = array_unique(explode(',', $this->mobiles));
+                $targets = collect(explode(',', $this->mobiles))->unique();
                 # 在指定学校通讯录内的手机号码
-                $contacts = User::whereIn('mobile', $targets)
-                    ->pluck('id', 'mobile')->toArray();
+                $contacts = User::whereIn('mobile', $targets)->pluck('id', 'mobile');
                 # 创建发送日志
                 $msl = (new MessageSendingLog)->store([
                     'read_count'     => 0,
                     'received_count' => 0,
                     'recipients'     => 0,
                 ]);
+                
                 # 发送短信
-                $mobiles = array_diff($targets, array_keys($contacts));
+                $mobiles = $targets->diff($contacts->keys());
                 $result = $message->sendSms(
                     $mobiles, $this->content, $this->partner->id
                 );
@@ -84,23 +84,23 @@ class SendMessageApi implements ShouldQueue {
                     'sent'            => $result > 0 ? 1 : 0,
                 ];
                 $apiMessage->log($mobiles, $data);
+                
                 # 发送微信
-                $app = $this->app($school->corp_id);
-                $users = User::whereIn('id', array_values($contacts))->get();
-                $userids = $users->pluck('userid')->toArray();
+                $app = $school->app ?? $this->app($school->corp_id);
+                $userids = User::whereIn('id', $contacts->values())->pluck('userid');
                 $content = [
-                    'touser'  => implode('|', $userids),
+                    'touser'  => $userids->join('|'),
                     'toparty' => '',
-                    'agentid' => $app['agentid'],
+                    'agentid' => $app->category == 1 ? $app['agentid'] : 0,
                     'msgtype' => 'text',
                     'text'    => ['content' => $this->content],
                 ];
                 $this->send(
                     $message->create(
-                        array_combine(Constant::MESSAGE_FIELDS, [
+                        array_combine($message->getFillable(), [
                             CommType::whereName('微信')->first()->id, MediaType::whereName('text')->first()->id,
                             $app->id, $msl->id, $messageType->name . '(文本)', json_encode($content), 0, 0,
-                            'http://', 0, $this->partner->id, 0, $messageType->id, 0, $result,
+                            'http://', 0, $this->partner->id, 0, $messageType->id, 0, $result, null
                         ])
                     )
                 );

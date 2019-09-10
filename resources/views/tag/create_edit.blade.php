@@ -4,14 +4,12 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($tag['id']))
-                {{ Form::hidden('id', $tag['id'], ['id' => 'id']) }}
+            @if (isset($tag))
+                {!! Form::hidden('id', $tag['id'], ['id' => 'id']) !!}
             @endif
             <!-- 标签名称 -->
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-tag'])
@@ -26,9 +24,7 @@
             </div>
             <!-- 部门/用户 -->
             <div class="form-group">
-                {!! Form::label('targets', '部门/用户', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'targets', 'label' => '部门/用户'])
                 <div class="col-sm-6">
                     <div id="checked-nodes">{!! $targets ?? '' !!}</div>
                     {!! Form::hidden('selected-node-ids', $targetIds ?? null, [

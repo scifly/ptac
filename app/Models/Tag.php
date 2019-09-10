@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
+use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
@@ -259,17 +260,28 @@ class Tag extends Model {
     }
     
     /**
-     * 返回标签列表
+     * 返回对当前登录用户可见的标签列表
      *
+     * @param null $schoolId
+     * @return SCollection
      */
-    function list() {
+    function list($schoolId = null) {
         
-        $tags = collect([]);
-        foreach (Tag::whereSchoolId($this->schoolId())->pluck('name', 'id') as $id => $name) {
-            $tags[$id] = explode('.', $name)[0];
+        $tags = $this->whereSchoolId($schoolId ?? $this->schoolId())->get();
+        if (!in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
+            $userIds = collect(explode(',', $this->visibleUserIds()));
+            $deptIds = collect($this->departmentIds());
+            $tags->filter(function (Tag $tag) use ($userIds, $deptIds) {
+                return $userIds->has($tag->users->pluck('id')) &&
+                    $deptIds->has($tag->departments->pluck('id'));
+            });
+        }
+        $list = collect([]);
+        foreach ($tags->pluck('name', 'id') as $id => $name) {
+            $list[$id] = explode('.', $name)[0];
         }
         
-        return $tags;
+        return collect([''])->union($list);
         
     }
     

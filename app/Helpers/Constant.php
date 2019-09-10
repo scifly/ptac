@@ -547,10 +547,6 @@ class Constant {
     const USER_FIELDS = [
         'username', 'group_id', 'password', 'realname', 'gender', 'mobile', 'enabled', 'ent_attrs'
     ];
-    const MESSAGE_FIELDS = [
-        'comm_type_id', 'media_type_id', 'app_id', 'msl_id', 'title', 'content', 'serviceid', 'message_id',
-        'url', 'media_ids', 's_user_id', 'r_user_id', 'message_type_id', 'read', 'sent',
-    ];
     const EVENT_FIELDS = [
         'title', 'remark', 'location', 'contact', 'url', 'start', 'end', 'ispublic', 'iscourse',
         'educator_id', 'subject_id', 'alertable', 'alert_mins', 'user_id', 'enabled',

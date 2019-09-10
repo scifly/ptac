@@ -274,11 +274,12 @@ class Score extends Model {
                 $msgTypeId = MessageType::whereName($msgType)->first()->id;
                 $mediaTypeId = MediaType::whereName('text')->first()->id;
                 $sUserId = Auth::id() ?? 0;
+                /** @var Message $datum */
                 foreach ($data as $datum) {
                     if (!$datum->mobile) continue;
-                    $record = array_combine(Constant::MESSAGE_FIELDS, [
-                        0, $mediaTypeId, $app->id, 0, $msgType, '', '0', 0,
-                        'http://', '0', $sUserId, 0, $msgTypeId, 0, 0,
+                    $record = array_combine($datum->getFillable(), [
+                        0, $mediaTypeId, $app->id, 0, $msgType, '', '0', uniqid(),
+                        'http://', '0', $sUserId, 0, $msgTypeId, 0, 0, null
                     ]);
                     $record['msl_id'] = MessageSendingLog::create([
                         'read_count'      => 0,

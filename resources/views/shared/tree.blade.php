@@ -23,34 +23,7 @@
             </div>
             <div id="tree"></div>
         </div>
-        @if (isset($tag))
-            <div class="col-xs-3">
-                <div class="box box-default box-solid">
-                    <div class="box-header with-border">
-                        <span style="margin-left: 5px; vertical-align: middle;">
-                            {!! Form::label(
-                                'tagids', '<i class="fa fa-tags"> 标签</i>',
-                                ['class' => 'control-label'], false
-                            ) !!}
-                        </span>
-                    </div>
-                    <div class="box-body">
-                        {!! Form::select(
-                            'tag_ids[]', $tags,
-                            isset($selectedTags) ? array_keys($selectedTags) : null,
-                            [
-                                'id' => 'tag_ids',
-                                'multiple' => 'multiple',
-                                'disabled' => sizeof($tags) <= 1,
-                                'class' => 'form-control select2',
-                                'style' => 'width: 100%;'
-                            ])
-                        !!}
-                    </div>
-                </div>
-            </div>
-        @endif
-        <div class="{!! !isset($tag) ? 'col-xs-6' : 'col-xs-3' !!}">
+        <div class="col-xs-6">
             <i class="fa fa-check-circle">
                 &nbsp;{!! $selectedTitle ?? '已选择的部门' !!}
             </i>

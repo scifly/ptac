@@ -175,7 +175,7 @@ $routes = [
     ],
     'partner'                => array_merge(
         $default, ['recharge' => ['{id}' => ['get', 'put']]],
-        ),
+    ),
     'passage_log'            => [
         'index'  => ['get'],
         'store'  => ['post'],
@@ -288,8 +288,7 @@ $routes = [
 ];
 routes($routes);
 /** 微信端路由 -------------------------------------------------------------------------------------------------------- */
-# 未关注的用户查看微信消息详情的链接
-Route::get('sms/{urlcode}', 'Wechat\WechatSmsController@show');
+Route::get('msg/{code}', 'Wechat\MessageCenterController@detail');
 $routes = [
     'message_center' => [
         'index'   => ['get', 'post'],

@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -109,12 +110,12 @@ class ApiMessage extends Model {
     /**
      * 保存接口消息发送日志
      *
-     * @param array $mobiles
+     * @param Collection $mobiles
      * @param array $data
      * @return bool
      * @throws Throwable
      */
-    function log(array $mobiles, array $data) {
+    function log($mobiles, array $data) {
         
         try {
             DB::transaction(function () use ($mobiles, $data) {

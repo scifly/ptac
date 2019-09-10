@@ -1,7 +1,6 @@
 @include('shared.tree', [
     'title' => '发送对象',
-    'selectedTitle' => '已选择的发送对象',
-    'tag' => true
+    'selectedTitle' => '已选择的发送对象'
 ])
 <div class="upload-overlay overlay">
     <i class="fa fa-refresh fa-spin"></i>
@@ -29,20 +28,22 @@
             ]) !!}
         </div>
     </div>
+    <!-- 发送对象标签 -->
+    @include('shared.tag.tags', ['label' => '标签'])
     <!-- 消息类型 -->
     @include('shared.single_select', [
         'label' => '消息类型',
         'id' => 'message_type_id',
         'items' => $messageTypes
     ])
-{{--    @if ($templates->isNotEmpty())--}}
+    @if ($templates->isNotEmpty())
         @include('shared.single_select', [
             'label' => '消息模板',
             'id' => 'template_id',
             'items' => $templates,
-            'help' => '(如果不选模板，则表示群发)'
+            'help' => '注：不选模板，则表示群发'
         ])
-{{--    @endif--}}
+    @endif
     <!-- 消息内容 -->
     <div class="form-group">
         {!! Form::label('content', '消息内容', [

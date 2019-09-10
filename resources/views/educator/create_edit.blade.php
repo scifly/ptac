@@ -5,8 +5,8 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($educator['id']))
-                {{ Form::hidden('id', $educator['id'], ['id' => 'id']) }}
-                {{ Form::hidden('user_id', $educator['user_id'], ['id' => 'user_id']) }}
+                {!! Form::hidden('id', $educator['id'], ['id' => 'id']) !!}
+                {!! Form::hidden('user_id', $educator['user_id'], ['id' => 'user_id']) !!}
                 @include('shared.avatar', ['user' => $educator->user])
             @endif
             <!-- 姓名 -->

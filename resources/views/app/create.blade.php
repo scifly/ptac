@@ -16,9 +16,7 @@
                  'items' => $categories,
             ])
             <div class="name form-group" style="display: none;">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-weixin text-green'])
@@ -31,9 +29,7 @@
                 </div>
             </div>
             <div class="appid form-group">
-                {!! Form::label('appid', 'appid', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'appid', 'label' => 'appid'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         <div class="input-group-addon" style="width: 45px;">
@@ -47,9 +43,7 @@
                 </div>
             </div>
             <div class="appsecret form-group">
-                {!! Form::label('appsecret', 'appsecret', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'appsecret', 'label' => 'appsecret'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         @include('shared.icon_addon', ['class' => 'fa-key'])
@@ -62,9 +56,7 @@
                 </div>
             </div>
             <div class="url form-group" style="display: none;">
-                {!! Form::label('url', 'url', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'url', 'label' => 'url'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         @include('shared.icon_addon', ['class' => 'fa-link'])
@@ -76,9 +68,7 @@
                 </div>
             </div>
             <div class="token form-group" style="display: none;">
-                {!! Form::label('token', 'token', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'token', 'label' => 'token'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         @include('shared.icon_addon', ['class' => 'fa-key'])
@@ -90,9 +80,7 @@
                 </div>
             </div>
             <div class="eak form-group" style="display: none;">
-                {!! Form::label('encoding_aes_key', 'encoding_aes_key', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'encoding_aes_key', 'label' => 'encoding_aes_key'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         @include('shared.icon_addon', ['class' => 'fa-key'])
@@ -101,6 +89,15 @@
                             'placeholder' => '(必填)',
                         ]) !!}
                     </div>
+                </div>
+            </div>
+            <div class="type form-group">
+                @include('shared.label', ['field' => 'type', 'label' => '公众号类型'])
+                <div class="col-sm-6" style="padding-top: 5px;">
+                    {!! Form::radio('type', 1, true, ['id' => 'type1', 'class' => 'minimal']) !!}
+                    {!! Form::label('type1', '服务号', ['class' => 'switch-lbl']) !!}
+                    {!! Form::radio('type', 0, false, ['id' => 'type2', 'class' => 'minimal']) !!}
+                    {!! Form::label('type2', '订阅号', ['class' => 'switch-lbl']) !!}
                 </div>
             </div>
             @include('shared.remark', [

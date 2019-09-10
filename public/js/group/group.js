@@ -21,9 +21,9 @@
                 page.initBackBtn('groups');
                 group.initForm();
                 // on school changed
-                $('#' + group.options.schoolId).on('change', function() {
-                    group.loadTree();
-                });
+                $('#' + group.options.schoolId).on(
+                    'change', function() {group.loadTree();}
+                );
                 $('.collapsed-box').boxWidget('collapse');
                 group.ifTabChecked();
                 group.ifTabUnChecked();

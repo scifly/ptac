@@ -13,9 +13,7 @@
             {!! Form::hidden('corp_id', $corpId, ['id' => 'corp_id']) !!}
             {!! Form::hidden('category', $app['category'], ['id' => 'category']) !!}
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', [
@@ -33,9 +31,7 @@
             </div>
             @if ($app['appid'])
                 <div class="form-group">
-                    {!! Form::label('appid', 'appid', [
-                        'class' => 'col-sm-3 control-label'
-                    ]) !!}
+                    @include('shared.label', ['field' => 'appid', 'label' => 'appid'])
                     <div class="col-sm-6">
                         <div class="input-group" style="width: 100%;">
                             <div class="input-group-addon" style="width: 45px;">
@@ -51,9 +47,7 @@
                 </div>
             @endif
             <div class="form-group">
-                {!! Form::label('appsecret', 'appsecret', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'appsecret', 'label' => 'appsecret'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         @include('shared.icon_addon', ['class' => 'fa-key'])
@@ -67,9 +61,7 @@
             </div>
             @if (isset($url))
                 <div class="form-group">
-                    {!! Form::label('url', 'url', [
-                        'class' => 'col-sm-3 control-label'
-                    ]) !!}
+                    @include('shared.label', ['field' => 'url', 'label' => 'url'])
                     <div class="col-sm-6">
                         <div class="input-group" style="width: 100%;">
                             @include('shared.icon_addon', ['class' => 'fa-link'])
@@ -83,9 +75,7 @@
             @endif
             @if (isset($token))
                 <div class="form-group">
-                    {!! Form::label('token', 'token', [
-                        'class' => 'col-sm-3 control-label'
-                    ]) !!}
+                    @include('shared.label', ['field' => 'token', 'label' => 'token'])
                     <div class="col-sm-6">
                         <div class="input-group" style="width: 100%;">
                             @include('shared.icon_addon', ['class' => 'fa-key'])
@@ -99,9 +89,7 @@
             @endif
             @if (isset($encoding_aes_key))
                 <div class="form-group">
-                    {!! Form::label('encoding_aes_key', 'encoding_aes_key', [
-                        'class' => 'col-sm-3 control-label'
-                    ]) !!}
+                    @include('shared.label', ['field' => 'encoding_aes_key', 'label' => 'encoding_aes_key'])
                     <div class="col-sm-6">
                         <div class="input-group" style="width: 100%;">
                             @include('shared.icon_addon', ['class' => 'fa-key'])
@@ -109,6 +97,17 @@
                                 'class' => 'form-control text-blue',
                                 'placeholder' => '(必填)',
                             ]) !!}
+                        </div>
+                    </div>
+                </div>
+            @endif
+            @if (isset($type))
+                <div class="form-group">
+                    @include('shared.label', ['field' => 'type', 'label' => '公众号类型'])
+                    <div class="col-sm-6">
+                        <div class="input-group" style="width: 100%;">
+                            <span>{!! $type ? '服务号' : '订阅号' !!}</span>
+                            {!! Form::hidden('type', $type, ['id' => 'type']) !!}
                         </div>
                     </div>
                 </div>

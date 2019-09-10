@@ -387,9 +387,8 @@ trait ModelTrait {
         }
         $userIds = array_unique($userIds);
         
-        return (empty($userIds)) ? [0]
-            : User::with($type)->whereIn('id', $userIds)
-                ->get()->pluck($type . '.id')->toArray();
+        return empty($userIds) ? [0]
+            : User::with($type)->whereIn('id', $userIds)->pluck($type . '.id')->toArray();
         
     }
     
@@ -429,27 +428,27 @@ trait ModelTrait {
         $userId = $userId ?? Auth::id();
         $user = User::find($userId);
         $role = $user->role($userId);
-        $d = new Department;
+        $department = new Department;
         if (in_array($role, Constant::SUPER_ROLES)) {
-            $department = $this->schoolId()
+            $dept = $this->schoolId()
                 ? School::find($this->schoolId())->department
                 : $user->departments->first();
             
             return array_unique(
                 array_merge(
-                    [$department->id],
-                    $d->subIds($department->id)
+                    [$dept->id],
+                    $department->subIds($dept->id)
                 )
             );
         }
         foreach ($user->deptIds() as $deptId) {
-            $departmentIds[] = $deptId;
-            $departmentIds = array_merge(
-                $d->subIds($deptId), $departmentIds
+            $deptIds[] = $deptId;
+            $deptIds = array_merge(
+                $department->subIds($deptId), $deptIds
             );
         }
         
-        return array_unique($departmentIds ?? []);
+        return array_unique($deptIds ?? []);
         
     }
     
@@ -625,26 +624,20 @@ trait ModelTrait {
     /**
      * 返回对当前登录用户可见的所有用户id
      *
+     * @param null $schoolId
      * @return string
      */
-    function visibleUserIds() {
-        
-        if (in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
-            $school = School::find($this->schoolId());
-            $departmentId = $school->department_id;
-            $departmentIds = array_merge(
-                [$departmentId], $school->department->subIds($departmentId)
-            );
-        } else {
-            $departmentIds = $this->departmentIds();
+    function visibleUserIds($schoolId = null) {
+    
+        $school = School::find($schoolId ?? $this->schoolId());
+        $userIds = DepartmentUser::whereIn('department_id', $this->departmentIds())->pluck('user_id');
+        if (!in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
+            $userIds = $userIds->union($school->educators->pluck('user_id'));
         }
-        $userIds = implode(',', array_unique(
-                DepartmentUser::whereIn('department_id', array_unique($departmentIds))
-                    ->pluck('user_id')->toArray()
-            )
-        );
         
-        return !empty($userIds) ? $userIds : '0';
+        return $userIds->isNotEmpty()
+            ? $userIds->unique()->join(',')
+            : null;
         
     }
     

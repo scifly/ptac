@@ -3,6 +3,7 @@ namespace App\Helpers;
 
 use App\Models\{Message, Openid, School, User};
 use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -23,43 +24,37 @@ trait JobTrait {
     
         try {
             DB::transaction(function () use ($message, &$results) {
-                $targetSize = ['ent' => 1000, 'pub' => 10000, 'sms' => 2000];
-                [$content, $mobiles, $members] = $message->targets($message);
-                $msgType = $content['msgtype'];
-                $category = $message->app->category;    # 应用类型：1 - 企业应用；2 - 公众号
-                if ($msgType == 'sms') {
-                    $sms = $content['sms'];
-                } else {
-                    /** @var User $user */
-                    foreach ($members as $user) {
-                        $tousers[] = $category == 1
-                            ? json_decode($user->ent_attrs, true)['userid']
-                            : Openid::where(['user_id' => $user->id, 'app_id' => $message->app_id])->first()->openid;
+                $targetSize = ['ent' => 1000, 'sms' => 2000];
+                $logs = [];
+                [$platform, $sms, $wechat] = $message->targets($message);
+                
+                # 发送微信
+                $size = $platform == 1 ? $targetSize['ent'] : 1;
+                [$content, $tousers] = $wechat;
+                /** @var Collection $tousers */
+                foreach ($tousers->chunk($size) as $group) {
+                    if ($platform == 1) {
+                        $users = User::whereIn('ent_attrs->userid', $group);
+                    } else {
+                        $userIds = Openid::whereIn('openid', $group[0])->pluck('user_id');
+                        $users = User::whereIn('id', $userIds);
                     }
-                    $size = $category == 1 ? $targetSize['ent'] : ($msgType != 'tpl' ? $targetSize['pub'] : 1);
-                    $category == 2 ?: $content['toparty'] = $content['totag'] = '';
-                    foreach (array_chunk($tousers ?? [], $size) as $group) {
-                        $content['touser'] = $category == 1 ? join('|', $group)
-                            : ($msgType != 'tpl' ? $group : $group[0]);
-                        $result = $message->sendWx($message, $content);
-                        if ($category == 1) {
-                            $users = User::whereIn('ent_attrs->userid', $group)->get();
-                        } else {
-                            $userIds = Openid::whereIn('openid', $group)->pluck('user_id');
-                            $users = User::whereIn('id', $userIds)->get();
-                        }
-                        $this->log($results, $result, $message, $users);
-                    }
-                    $urlcode = uniqid();
-                    $sms = $msgType == 'text'
-                        ? $content['text']['content']
-                        : config('app.url') . '/sms/' . $urlcode;
+                    $logs[] = [$message->sendWx($message, $content), $users->get()];
                 }
-                # 短信
-                foreach (array_chunk($mobiles, $targetSize['sms']) as $group) {
-                    $result = $message->sendSms($group, $sms ?? '', $message->s_user_id);
-                    $users = User::whereIn('mobile', $group)->get();
-                    $this->log($results, $result, $message, $users, $urlcode ?? null);
+                # 发送短信
+                [$content, $mobiles] = $sms;
+                $size = $targetSize['sms'];
+                /** @var Collection $mobiles */
+                foreach ($mobiles->pluck('mobile')->chunk($size) as $group) {
+                    $logs[] = [
+                        $message->sendSms($group, $content, $message->s_user_id),
+                        User::whereIn('mobile', $group)->get()
+                    ];
+                }
+                # 记录发送日志
+                foreach ($logs as $log) {
+                    [$result, $users] = $log;
+                    $this->log($results, $result, $message, $users);
                 }
             });
         } catch (Exception $e) {
@@ -218,13 +213,15 @@ trait JobTrait {
      * @param $result
      * @param Message $message
      * @param $users
-     * @param null $urlcode
      * @throws Throwable
      */
-    private function log(&$results, $result, Message $message, $users, $urlcode = null) {
+    private function log(&$results, $result, Message $message, $users) {
         
-        $message->log($users, $message, $result, $urlcode);
-        $results[] = array_combine(['message', 'result', 'targets'], [$message, $result, $users]);
+        $message->log($users, $message, $result);
+        $results[] = array_combine(
+            ['message', 'result', 'targets'],
+            [$message, $result, $users]
+        );
         
     }
     

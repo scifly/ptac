@@ -72,6 +72,7 @@ class App extends Model {
         'properties->report_location_flag',
         'properties->isreportenter',
         'properties->home_url',
+        'properties->type'      # 公众号类型：0 - 订阅号，1 - 服务号
     ];
     
     const CATEGORY = [

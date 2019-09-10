@@ -45,6 +45,7 @@ class AppRequest extends FormRequest {
                     'appid'            => 'required|string|max:60',
                     'token'            => 'required|string|max:255',
                     'encoding_aes_key' => 'required|string|max:255',
+                    'type'             => 'required|boolean'
                 ];
                 break;
             default:

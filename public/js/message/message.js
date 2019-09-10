@@ -159,7 +159,7 @@
                     $removeFile.show();
                     $mediaId.val(news['thumb_media_id']);
                     if ($file.attr('class') !== 'help-block') { $file.remove(); }
-                    $mediaId.after($('<img' + ' />', {'src': news['image_url'], 'style': 'height: 200px;'}).prop('outerHTML'));
+                    $mediaId.after($('<img alt=""' + ' />', {'src': news['image_url'], 'style': 'height: 200px;'}).prop('outerHTML'));
                     $removeMpnews.show();
                     $modalMpnews.find('input, textarea').css('background-color', 'beige');
                     $modalMpnews.modal({ backdrop: true });
@@ -195,7 +195,7 @@
                                 'title': title,
                                 'id': 'mpnews-' + message.mpnewsCount
                             };
-                            $contentMpnews.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
+                            $contentMpnews.append($('<img alt=""' + ' />', imgAttrs).prop('outerHTML'));
                             message.mpnewsCount += 1;
                         } else {
                             // 更新图文
@@ -373,7 +373,9 @@
                         success: function (result) {
                             var $msgTypeId = $('#message_type_id'), $tabTitle,
                                 html = '', type = result['message']['msgtype'],
-                                $container, mediaId, src, $time = $('#time'),
+                                tagIds = result['tagIds'], $tagId = $('#tag_id'),
+                                $tagIds = $('#tag_ids'), $templateId = $('#template_id'),
+                                $container, mediaId, src, $time = $('#time'), imgAttrs,
                                 uploadTypes = ['image', 'audio', 'video', 'file'];
 
                             if (type === 'textcard') { type = 'card'; }
@@ -382,6 +384,19 @@
                             $container = $('#content_' + type);
                             // 设置消息类型
                             $msgTypeId.val(result['messageTypeId']).trigger('change');
+                            // 选定标签(公众号：单选)
+                            if ($tagId.length > 0) { $tagId.val(tagIds[0]).trigger('change'); }
+                            // 选定标签(企业号：多选)
+                            if ($tagIds.length > 0) {
+                                for (i = 0; i < tagIds.length; i++) {
+                                    $('#tag_ids option[value=' + tagIds[i] +']').attr('selected', true);
+                                }
+                                $tagIds.trigger('change');
+                            }
+                            // 选定模板
+                            if ($templateId.length > 0) {
+                                $templateId.val(result['templateId']).trigger('change');
+                            }
                             // 显示发送对象列表
                             $('#checked-nodes').html(result['targets']);
                             // 设置发送对象id
@@ -407,12 +422,12 @@
                                     $textContent.val(result['message'][type]['content']);
                                     break;
                                 case 'image':
-                                    var imgAttrs = {
+                                    imgAttrs = {
                                         'src':  src,
                                         'style': 'height: 200px;',
                                         'title': '文件名：' + message.filename(src)
                                     };
-                                    html += $('<img' + ' />', imgAttrs).prop('outerHTML');
+                                    html += $('<img alt=""' + ' />', imgAttrs).prop('outerHTML');
                                     break;
                                 case 'audio':
                                     html += '<i class="fa fa-file-sound-o"> ' + message.filename(src) + '</i>';
@@ -446,7 +461,7 @@
                                             title: message.mpnews['articles'][i]['title'],
                                             id: 'mpnews-' + i
                                         };
-                                        mpnewsList += $('<img' + ' />', imgAttrs).prop('outerHTML');
+                                        mpnewsList += $('<img alt=""' + ' />', imgAttrs).prop('outerHTML');
                                     }
                                     $addMpnews.after(mpnewsList);
                                     break;
@@ -792,7 +807,7 @@
                                     'style': 'height: 200px;',
                                     'title': '文件名：' + filename
                                 };
-                                html += $('<img' + ' />', imgAttrs).prop('outerHTML');
+                                html += $('<img alt=""' + ' />', imgAttrs).prop('outerHTML');
                                 break;
                             case 'audio':
                                 html += '<i class="fa fa-file-sound-o"> ' + filename + '</i>';
@@ -810,7 +825,7 @@
                                     'style': 'height: 200px;',
                                     'title': '文件名：' + filename
                                 };
-                                html += $('<img' + ' />', imgAttrs).prop('outerHTML');
+                                html += $('<img alt=""' + ' />', imgAttrs).prop('outerHTML');
                                 $container = $('#cover-container');
                                 break;
                             default:

@@ -29,7 +29,7 @@ class MessageCenterController extends Controller {
      */
     public function __construct(Message $message) {
         
-        $this->middleware(['corp.auth', 'corp.role']);
+        $this->middleware(['corp.auth', 'corp.role'])->except(['detail']);
         $this->message = $message;
         
     }
@@ -134,6 +134,18 @@ class MessageCenterController extends Controller {
         
         return $this->message->wShow($id);
         
+    }
+    
+    /**
+     * 未关注用户查看消息的链接
+     *
+     * @param $code
+     * @return Factory|View
+     */
+    public function detail($code) {
+    
+        return $this->message->wDetail($code);
+    
     }
     
     /**
