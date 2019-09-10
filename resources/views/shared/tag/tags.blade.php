@@ -3,5 +3,5 @@
     'id' => 'tag_ids',
     'icon' => 'fa fa-tags',
     'items' => $tags,
-    'selectedItems' => $selectedTags
+    'selectedItems' => $selectedTags ?? null
 ])
