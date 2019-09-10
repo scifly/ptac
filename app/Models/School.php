@@ -133,7 +133,7 @@ class School extends Model {
      *
      * @return BelongsTo
      */
-    function app() { return $this->belongsTo('App\Models\App'); }
+    function corpApp() { return $this->belongsTo('App\Models\App'); }
     
     /**
      * 获取隶属指定学校的所有角色对象

@@ -86,7 +86,7 @@ class SendMessageApi implements ShouldQueue {
                 $apiMessage->log($mobiles, $data);
                 
                 # 发送微信
-                $app = $school->app ?? $this->app($school->corp_id);
+                $app = $school->app ?? $this->corpApp($school->corp_id);
                 $userids = User::whereIn('id', $contacts->values())->pluck('userid');
                 $content = [
                     'touser'  => $userids->join('|'),

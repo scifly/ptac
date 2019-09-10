@@ -34,7 +34,7 @@ class CorpAuth {
             $appId = $paths[2] ?? null;
             # 登录先
             if (!Auth::id()) {
-                $app = $appId ? App::find($appId) : $this->app($corp->id);
+                $app = $appId ? App::find($appId) : $this->corpApp($corp->id);
                 $base = Request::route('id') ? 'sns' : 'ent';
                 $id = $base == 'sns' ? $app->appid : $corp->corpid;
                 # step 1: 获取code

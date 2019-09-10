@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\{Auth, DB, Request};
 use Illuminate\View\View;
 use PhpOffice\PhpSpreadsheet\Exception as PssException;
 use PhpOffice\PhpSpreadsheet\Writer\Exception as PsswException;
-use ReflectionClass;
 use ReflectionException;
 use Throwable;
 
@@ -268,8 +267,7 @@ class Score extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $school = School::find($this->schoolId());
-                $corp = $school->corp;
-                $app = $school->app ?? $this->app($corp->id);
+                $app = $school->app ?? $this->corpApp($school->corp_id);
                 $msgType = '成绩消息';
                 $msgTypeId = MessageType::whereName($msgType)->first()->id;
                 $mediaTypeId = MediaType::whereName('text')->first()->id;
@@ -324,12 +322,11 @@ class Score extends Model {
                     Squad::whereIn('id', $classIds)->pluck('grade_id')->toArray()
                 );
                 # 班级/年级id & 学生id对应关系
-                list($cSIds, $gSIds) = array_map(function ($name, $ids) {
+                [$cSIds, $gSIds] = array_map(function ($name, $ids) {
                     return array_combine($ids, array_map(function ($id) use ($name) {
-                        return (new ReflectionClass('App\\Models\\' . ucfirst($name)))
-                            ->newInstance()->find($id)->students->pluck('id')->toArray();
+                        return $this->model($name)->find($id)->students->pluck('id')->toArray();
                     }, $ids));
-                }, ['squad', 'grade'], [$classIds, $gradeIds]);
+                }, ['Squad', 'Grade'], [$classIds, $gradeIds]);
                 # step 1: 单科成绩班级/年级排名
                 foreach ($subjectIds as $subjectId) {
                     $this->rankScores([$cSIds, $gSIds], $examId, $subjectId);
@@ -1008,33 +1005,32 @@ class Score extends Model {
         foreach ($allScores as $allScore) {
             $total['names'][] = $allScore->exam->name;
             $total['scores'][] = $allScore->score;
-            list($classAvg) = $this->subjectAvg($allScore->exam_id, $subjectId, $classStudentIds);
+            [$classAvg] = $this->subjectAvg($allScore->exam_id, $subjectId, $classStudentIds);
             $total['avgs'][] = $classAvg;
         }
-        list($classAvg, $nClassScores) = $this->subjectAvg($examId, $subjectId, $classStudentIds);
-        list($gradeAvg, $nGradeScores) = $this->subjectAvg($examId, $subjectId, $gradeStudentIds);
+        [$classAvg, $nClassScores] = $this->subjectAvg($examId, $subjectId, $classStudentIds);
+        [$gradeAvg, $nGradeScores] = $this->subjectAvg($examId, $subjectId, $gradeStudentIds);
         $stat = [
             'classAvg'     => number_format($classAvg, 2),
             'nClassScores' => $nClassScores,
             'gradeAvg'     => number_format($gradeAvg, 2),
             'nGradeScores' => $nGradeScores,
         ];
-        
+        $detail = [
+            'score' => $score,
+            'stat'  => $stat,
+            'total' => $total,
+        ];
         return Request::method() == 'POST'
-            ? response()->json([
-                'score' => $score,
-                'stat'  => $stat,
-                'total' => $total,
-                'exam'  => $exam->toArray(),
-            ])
-            : view('wechat.score_center.student', [
-                'score'     => $score,
-                'stat'      => $stat,
-                'total'     => $total,
-                'subjects'  => $subjectList,
-                'exam'      => $exam,
-                'studentId' => $studentId,
-            ]);
+            ? response()->json(array_merge($detail, ['exam'  => $exam->toArray()]))
+            : view(
+                'wechat.score_center.student',
+                array_merge($detail, [
+                    'subjects'  => $subjectList,
+                    'exam'      => $exam,
+                    'studentId' => $studentId,
+                ])
+            );
         
     }
     
@@ -1322,8 +1318,7 @@ class Score extends Model {
                 ->whereIn('user_id', $userIds)->get();
         } else {
             # 当前班级下的所有参加考试的学生
-            $students = Student::whereClassId($classId)
-                ->whereIn('id', $studentIds)->get();
+            $students = Student::whereClassId($classId)->whereIn('id', $studentIds)->get();
         }
         $result = [
             'exam'  => Exam::find($examId)->name,
@@ -1407,7 +1402,7 @@ class Score extends Model {
          * @var Collection|ScoreTotal[] $cSTs
          * @var Collection|ScoreTotal[] $gSTs
          */
-        list($STs, $cSTs, $gSTs) = array_map(
+        [$STs, $cSTs, $gSTs] = array_map(
             function (array $studentIds) use ($input) {
                 return ScoreTotal::where(['enabled' => 1, 'exam_id' => $input['exam_id']])
                     ->whereIn('student_id', $studentIds)->get();
@@ -1417,7 +1412,7 @@ class Score extends Model {
                 $class->grade->students->pluck('id')->toArray(),
             ]
         );
-        list($cAvg, $gAvg) = array_map(
+        [$cAvg, $gAvg] = array_map(
             function (Collection $sts) {
                 return number_format($sts->average('score'), 1);
             }, [$cSTs, $gSTs]
@@ -1433,14 +1428,15 @@ class Score extends Model {
             'grade_count' => $st ? $gSTs->count() : '',
         ];
         # 获取指定学生指定考试的各科成绩
-        $scores = Score::where(array_combine(
-            $fields, [$input['exam_id'], $input['student_id'], 1]
-        ))->get();
-        foreach ($scores as $score) {
-            $studentIds = $class->students->pluck('id')->toArray();
-            $cScores = Score::where(array_combine(
-                $fields, [$input['exam_id'], $score->subject_id, 1]
-            ))->whereIn('student_id', $studentIds)->get();
+        $scores = Score::where(
+            array_combine($fields, [$input['exam_id'], $input['student_id'], 1])
+        );
+        foreach ($scores->get() as $score) {
+            $cScores = Score::where(
+                array_combine($fields, [$input['exam_id'], $score->subject_id, 1])
+            )->whereIn(
+                'student_id', $class->students->pluck('id')
+            )->get();
             $data['single'][] = [
                 'sub'   => $score->subject->name,
                 'score' => $score->score,
@@ -1463,15 +1459,16 @@ class Score extends Model {
         
         array_map(
             function ($ids, $field) use ($examId, $subjectId) {
-                $className = 'App\\Models\\' . ucfirst($subjectId ? 'score' : 'scoreTotal');
-                $model = (new ReflectionClass($className))->newInstance();
                 $condition = [
                     ['exam_id', '=', $examId],
                     ['enabled', '=', 1],
                 ];
-                !$subjectId ?: $condition = array_merge($condition, [['subject_id', '=', $subjectId]]);
+                !$subjectId ?: $condition = array_merge(
+                    $condition, [['subject_id', '=', $subjectId]]
+                );
                 foreach ($ids as $studentIds) {
-                    $scores = $model->orderBy('score', 'desc')
+                    $scores = $this->model($subjectId ? 'Score' : 'ScoreTotal')
+                        ->orderBy('score', 'desc')
                         ->whereIn('student_id', $studentIds)
                         ->where($condition)->get();
                     $tempScore = 0;

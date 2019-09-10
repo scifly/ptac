@@ -2,8 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\Snippet;
+use App\Helpers\{Constant, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -69,8 +68,7 @@ class Event extends Model {
         'contact', 'url', 'start',
         'end', 'ispublic', 'iscourse',
         'educator_id', 'subject_id', 'alertable',
-        'alert_mins', 'user_id', 'created_at',
-        'updated_at', 'enabled',
+        'alert_mins', 'user_id', 'enabled',
     ];
     
     /**

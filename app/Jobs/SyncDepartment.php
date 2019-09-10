@@ -153,7 +153,7 @@ class SyncDepartment implements ShouldQueue {
                     $deletions = User::whereIn('id', array_diff($uIds, $uUIds))
                         ->pluck('userid')->toArray();
                     
-                    list($updated, $deleted) = array_map(
+                    [$updated, $deleted] = array_map(
                         function ($members, $method) {
                             return $this->syncMember($members, $method);
                         }, [$updates ?? [], $deletions], ['update', 'delete']

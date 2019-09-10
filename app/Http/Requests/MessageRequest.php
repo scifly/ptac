@@ -55,7 +55,7 @@ class MessageRequest extends FormRequest {
         
         if (!($this->method() == 'update' && !$this->route('id'))) {
             $school = School::find($this->schoolId() ?? session('schoolId'));
-            $app = $school->app ?? $this->app($school->corp_id);
+            $app = $school->app ?? $this->corpApp($school->corp_id);
             [$mediaTypeId, $commTypeId, $messageTypeId] = $this->typeIds();
             $input = array_combine((new Message)->getFillable(), [
                 $commTypeId, $mediaTypeId, $app->id, 0,

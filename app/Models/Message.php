@@ -94,7 +94,7 @@ class Message extends Model {
         'comm_type_id', 'media_type_id', 'app_id', 'msl_id',
         'title', 'content', 'code', 'message_id', 'url',
         'media_ids', 's_user_id', 'r_user_id',
-        'message_type_id', 'read', 'sent', 'event_id'
+        'message_type_id', 'read', 'sent', 'event_id',
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
@@ -380,16 +380,8 @@ class Message extends Model {
                 $message = $this->create($data);
                 # 如果是定时消息，则创建对应的事件
                 if ($time = $data['time'] ?? null) {
-                    $user = Auth::user();
-                    $event = Event::create(
-                        array_combine(Constant::EVENT_FIELDS, [
-                            '定时消息', '定时消息', 'n/a', 'n/a', 'n/a', $time, $time, 0, 0,
-                            $user->educator ? $user->educator->id : 0, 0, 0, 0, $user->id,
-                            isset($draft) ? 1 : 0,
-                        ])
-                    );
                     $message->update([
-                        'event_id' => $event->id,
+                        'event_id' => $this->eventId($time, $draft),
                         'sent'     => 2 # 2 - 定时
                     ]);
                 }
@@ -422,8 +414,8 @@ class Message extends Model {
                 }, ['toparty', 'touser', 'totag']
             );
             $users = User::whereIn('ent_attrs->userid', $touser)->get();
-            $timing = $this->find($id)->event_id ? true : false;
             $event = $this->find($id)->event;
+            $timing = $event ? true : false;
             $start = $event ? strtotime($event->start) : null;
             $time = $timing ? date('Y-m-d H:i', $start) : null;
         } catch (Exception $e) {
@@ -454,45 +446,29 @@ class Message extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (!$id) {
-            try {
-                DB::transaction(function () {
+        try {
+            DB::transaction(function () use ($data, $id) {
+                if (!$id) {
                     $status = Request::input('action') == 'enable' ? true : false;
                     foreach (array_values(Request::input('ids')) as $id) {
                         Request::input('field') == 'read'
                             ? $this->read($id, $status)
                             : $this->find($id)->update(['sent' => $status]);
                     }
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-        } else {
-            try {
-                DB::transaction(function () use ($data, $id) {
+                } else {
                     $message = $this->find($id);
                     if ($time = $data['time'] ?? null) {
                         # 如果设置了发送时间
-                        if ($message->event_id) {
+                        $message->event_id
                             # 如果指定消息已有对应事件，则更新对应事件
-                            Event::find($message->event_id)->update([
+                            ? Event::find($message->event_id)->update([
                                 'start'   => $time,
                                 'end'     => $time,
                                 'enabled' => isset($data['draft']) ? 1 : 0,
-                            ]);
-                        } else {
-                            # 如果指定消息没有对应事件，则创建对应事件
-                            $user = Auth::user();
-                            $draft = $data['draft'] ?? null;
-                            $event = Event::create(
-                                array_combine(Constant::EVENT_FIELDS, [
-                                    '定时消息', '定时消息', 'n/a', 'n/a', 'n/a', $time, $time, 0, 0,
-                                    $user->educator ? $user->educator->id : 0, 0, 0, 0, $user->id,
-                                    isset($draft) ? 1 : 0,
-                                ])
+                            ])
+                            : $data['event_id'] = $this->eventId(
+                                $time, $data['draft'] ?? null
                             );
-                            $data['event_id'] = $event->id;
-                        }
                         $data['sent'] = 2;
                     } else {
                         # 如果没有设置发送时间
@@ -505,10 +481,10 @@ class Message extends Model {
                     }
                     # 更新消息草稿
                     $message->update($data);
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
         return true;
@@ -766,7 +742,7 @@ class Message extends Model {
      * @return Factory|View
      */
     function wDetail($code) {
-    
+        
         return view('wechat.message_center.detail', [
             'message' => $message = $this->where(['code' => $code])->first(),
             'content' => $this->detail($message->id),
@@ -839,6 +815,8 @@ class Message extends Model {
                     ['title' => '格式', 'html' => $htmlMediaType],
                     ['title' => '类型', 'html' => $htmlMessageType],
                 ];
+                $school = School::find($this->schoolId());
+                $app = $school->app ?? $this->corpApp($school->corp_id);
                 
                 return [
                     'titles'       => array_merge($titles, [
@@ -863,8 +841,7 @@ class Message extends Model {
                     ]),
                     'smsMaxLength' => 300,
                     'messageTypes' => MessageType::whereEnabled(1)->pluck('name', 'id'),
-                    'app'          => $appId = School::find($this->schoolId())->app_id,
-                    'templates'    => Template::whereAppId($appId)->pluck('title', 'id'),
+                    'templates'    => $app->templates->pluck('title', 'id'),
                     'tags'         => (new Tag)->list(),
                     'batch'        => true,
                     'filter'       => true,
@@ -1267,7 +1244,7 @@ class Message extends Model {
         return [
             $platform,
             [$sms, $mobiles],
-            [$wx, $targets]
+            [$wx, $targets],
         ];
         
     }
@@ -1664,6 +1641,31 @@ class Message extends Model {
         
         return $builder->orderBy('created_at', 'desc')
             ->skip($skip)->take($records)->get();
+        
+    }
+    
+    /**
+     * 返回消息对应的event_id
+     *
+     * @param $time
+     * @param $draft
+     * @return int
+     * @throws Throwable
+     */
+    private function eventId($time, $draft) {
+        
+        throw_if(
+            !$educator = Auth::user()->educator,
+            new Exception(__('messages.educator.not_found'))
+        );
+        
+        return Event::insertGetId(
+            array_combine((new Event)->getFillable(), [
+                '定时消息', '定时消息', 'n/a', 'n/a', 'n/a',
+                $time, $time, 0, 0, $educator->id, 0, 0, 0,
+                Auth::id(), isset($draft) ? 1 : 0,
+            ])
+        );
         
     }
     

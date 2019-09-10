@@ -790,14 +790,15 @@ trait ModelTrait {
      * @param null $name
      * @return App|Model|object|null
      */
-    function app($corpId, $name = null) {
+    function corpApp($corpId, $name = null) {
         
-        $app = App::where([
+        $val = [
             'corp_id' => $corpId,
             'name'    => $name ?? config('app.name'),
-        ])->first();
+        ];
         abort_if(
-            !$app, HttpStatusCode::NOT_FOUND,
+            !$app = App::where($val)->first(),
+            HttpStatusCode::NOT_FOUND,
             __('messages.app.not_found')
         );
         

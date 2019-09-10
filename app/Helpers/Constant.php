@@ -547,10 +547,6 @@ class Constant {
     const USER_FIELDS = [
         'username', 'group_id', 'password', 'realname', 'gender', 'mobile', 'enabled', 'ent_attrs'
     ];
-    const EVENT_FIELDS = [
-        'title', 'remark', 'location', 'contact', 'url', 'start', 'end', 'ispublic', 'iscourse',
-        'educator_id', 'subject_id', 'alertable', 'alert_mins', 'user_id', 'enabled',
-    ];
     const MEMBER_FIELDS = [
         'userid', 'username', 'position', 'name', 'english_name',
         'mobile', 'email', 'department', 'gender', 'remark', 'enable',
