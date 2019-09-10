@@ -423,7 +423,8 @@ class Message extends Model {
             );
             $users = User::whereIn('ent_attrs->userid', $touser)->get();
             $timing = $this->find($id)->event_id ? true : false;
-            $start = strtotime($this->find($id)->event->start);
+            $event = $this->find($id)->event;
+            $start = $event ? strtotime($event->start) : null;
             $time = $timing ? date('Y-m-d H:i', $start) : null;
         } catch (Exception $e) {
             throw $e;
