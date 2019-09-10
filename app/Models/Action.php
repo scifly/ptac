@@ -453,7 +453,7 @@ class Action extends Model {
         $actionTypes = ActionType::whereIn('id', explode(',', $action_type_ids))
             ->where('enabled', 1)->pluck('name')->toArray();
         
-        return implode(',', $actionTypes);
+        return join(',', $actionTypes);
         
     }
     
@@ -698,7 +698,7 @@ class Action extends Model {
                     $uris[0] = '{acronym}';
                 }
                 
-                return implode('/', $uris);
+                return join('/', $uris);
             }
         }
         
@@ -721,7 +721,7 @@ class Action extends Model {
         $actionTypes = $this->actionMethods($controller, $action);
         $actionTypeIds = ActionType::whereIn('name', $actionTypes)->pluck('id')->toArray();
         
-        return implode(',', $actionTypeIds);
+        return join(',', $actionTypeIds);
         
     }
     

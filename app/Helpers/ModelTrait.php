@@ -94,7 +94,7 @@ trait ModelTrait {
                                 );
                                 /** @var Model $record */
                                 foreach ($records as $record) {
-                                    $val = implode(',', array_diff(
+                                    $val = join(',', array_diff(
                                         explode(',', $record->{$field}), $values
                                     ));
                                     $record->update([$field => $val]);
@@ -515,7 +515,7 @@ trait ModelTrait {
             null, true, true, true
         );
         $records = array_filter(
-            array_values($records), 'implode'
+            array_values($records), 'join'
         );
         abort_if(
             !empty(array_diff(self::EXCEL_TITLES, array_values($records[0]))),

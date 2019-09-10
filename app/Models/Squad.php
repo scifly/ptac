@@ -126,7 +126,7 @@ class Squad extends Model {
             [
                 'db'        => 'Squad.educator_ids', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return implode(', ', Educator::with('user')
+                    return join(', ', Educator::with('user')
                         ->whereIn('id', explode(',', $d))
                         ->get()->pluck('user.realname')->toArray());
                 },
@@ -156,7 +156,7 @@ class Squad extends Model {
                 ],
             ],
         ];
-        $condition = 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
+        $condition = 'Squad.id IN (' . join(',', $this->classIds()) . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition

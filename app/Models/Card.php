@@ -83,7 +83,7 @@ class Card extends Model {
                     $prIds = RuleTurnstile::whereIn('turnstile_id', $turnstileIds)
                         ->pluck('passage_rule_id')->toArray();
                     
-                    return implode('<br />',
+                    return join('<br />',
                         PassageRule::whereIn('id', array_unique($prIds))
                             ->pluck('name')->toArray()
                     );
@@ -209,8 +209,8 @@ class Card extends Model {
         abort_if(
             !empty($ds ?? []),
             HttpStatusCode::NOT_ACCEPTABLE,
-            implode('', [
-                (!empty($sns) ? ('卡号: ' . implode(',', $ds ?? [])) : ''),
+            join('', [
+                (!empty($sns) ? ('卡号: ' . join(',', $ds ?? [])) : ''),
                 '有重复，请检查后重试',
             ])
         );
@@ -415,7 +415,7 @@ class Card extends Model {
             foreach ($users as $user) {
                 if (!$user->card) continue;
                 $list .= sprintf(
-                    $row, implode('', array_map(
+                    $row, join('', array_map(
                         function ($value) use ($td) { return sprintf($td, $value); },
                         [sprintf($authHtml, $user->id), $user->realname, $user->card->sn]
                     ))
@@ -528,7 +528,7 @@ class Card extends Model {
         return [
             'formId'     => 'form' . $type,
             'sections'   => ['(请选择一个部门)'] + $builder->pluck('name', 'id')->toArray(),
-            'turnstiles' => implode('', $tList),
+            'turnstiles' => join('', $tList),
         ];
         
     }

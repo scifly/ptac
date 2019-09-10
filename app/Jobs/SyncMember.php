@@ -132,7 +132,7 @@ class SyncMember implements ShouldQueue {
             }
         }
         $errmsg = !$result['errcode'] ? '' :
-            implode(':', [
+            join(':', [
                 $corp->name,
                 Constant::SYNC_ACTIONS[$action] . '会员',
                 Constant::WXERR[$result['errcode']],

@@ -87,21 +87,21 @@ class PollQuestionnaireParticipantController extends Controller {
                 case 0:
                     #判断是否为数组
                     if (is_array(Input::get('rd_' . $item->id)))
-                        $var = implode(',', Input::get('rd_' . $item->id));
+                        $var = join(',', Input::get('rd_' . $item->id));
                     else
                         $var = Input::get('rd_' . $item->id);
                     break;
                 #多选
                 case 1:
                     if (is_array(Input::get('ck_' . $item->id)))
-                        $var = implode(',', Input::get('ck_' . $item->id));
+                        $var = join(',', Input::get('ck_' . $item->id));
                     else
                         $var = Input::get('ck_' . $item->id);
                     break;
                 #填空
                 case 2:
                     if (is_array(Input::get('text_' . $item->id)))
-                        $var = implode(',', Input::get('text_' . $item->id));
+                        $var = join(',', Input::get('text_' . $item->id));
                     else
                         $var = Input::get('text_' . $item->id);
                     break;

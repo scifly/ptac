@@ -23,7 +23,7 @@ class SHA1 {
         try {
             $array = [$encrypt_msg, $token, $timestamp, $nonce];
             sort($array, SORT_STRING);
-            $str = implode($array);
+            $str = join($array);
             
             return [ErrorCode::$OK, sha1($str)];
         } catch (Exception $e) {

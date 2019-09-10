@@ -51,7 +51,7 @@ class ProcedureLogController extends Controller {
                 ->where('initiator_user_id', $userId)
                 ->groupBy('first_log_id')
                 ->pluck('id')->toArray();
-            $where = 'ProcedureLog.id in (' . implode(',', $ids) . ')';
+            $where = 'ProcedureLog.id in (' . join(',', $ids) . ')';
             
             return response()->json(
                 $this->pl->index($where)
@@ -78,7 +78,7 @@ class ProcedureLogController extends Controller {
                 ->groupBy('first_log_id')
                 ->pluck('id')
                 ->toArray();
-            $where = 'ProcedureLog.id in (' . implode(',', $ids) . ') and FIND_IN_SET(' . $userId . ',ProcedureStep.approver_user_ids)';
+            $where = 'ProcedureLog.id in (' . join(',', $ids) . ') and FIND_IN_SET(' . $userId . ',ProcedureStep.approver_user_ids)';
             
             return response()->json($this->pl->index($where));
         }

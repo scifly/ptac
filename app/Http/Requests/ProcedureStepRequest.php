@@ -41,10 +41,10 @@ class ProcedureStepRequest extends FormRequest {
         
         $input = $this->all();
         if (isset($input['approver_user_ids'])) {
-            $input['approver_user_ids'] = implode(',', $input['approver_user_ids']);
+            $input['approver_user_ids'] = join(',', $input['approver_user_ids']);
         }
         if (isset($input['related_user_ids'])) {
-            $input['related_user_ids'] = implode(',', $input['related_user_ids']);
+            $input['related_user_ids'] = join(',', $input['related_user_ids']);
         }
         $this->replace($input);
         

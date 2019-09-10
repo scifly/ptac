@@ -113,7 +113,7 @@ class ProcedureStep extends Model {
         $userList = User::whereIn('id', explode(',', $d))
             ->pluck('realname')->toArray();
         
-        return implode(',', $userList);
+        return join(',', $userList);
         
     }
     

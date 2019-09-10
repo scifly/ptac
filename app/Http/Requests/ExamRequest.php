@@ -47,10 +47,10 @@ class ExamRequest extends FormRequest {
         if (!$this->has('ids')) {
             $input = $this->all();
             if (isset($input['class_ids'])) {
-                $input['class_ids'] = implode(',', $input['class_ids']);
+                $input['class_ids'] = join(',', $input['class_ids']);
             }
             if (isset($input['subject_ids'])) {
-                $input['subject_ids'] = implode(',', $input['subject_ids']);
+                $input['subject_ids'] = join(',', $input['subject_ids']);
             }
             if (!isset($input['max_scores'])) {
                 $input['max_scores'] = '150';

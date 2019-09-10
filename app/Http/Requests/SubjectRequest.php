@@ -42,7 +42,7 @@ class SubjectRequest extends FormRequest {
         
         $input = $this->all();
         if (isset($input['grade_ids'])) {
-            $input['grade_ids'] = implode(',', $input['grade_ids']);
+            $input['grade_ids'] = join(',', $input['grade_ids']);
         }
         $input['school_id'] = $this->schoolId();
         $this->replace($input);

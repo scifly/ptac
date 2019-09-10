@@ -86,7 +86,7 @@ class ComposerServiceProvider extends ServiceProvider {
                         function ($view) use ($dir, $type) {
                             $path = empty($type) ? [$dir, $view] : [$type, $dir, $view];
                             
-                            return implode('.', $path);
+                            return join('.', $path);
                         }, $views
                     );
                     $dir = $dir != 'class' ? Inflector::camelize($dir) : 'Squad';

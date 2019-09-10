@@ -65,7 +65,7 @@ class PassageRuleRequest extends FormRequest {
         }
         $input['statuses'] = $statuses;
         foreach ($input['trs'] as $key => $tr) {
-            $input['tr' . ($key + 1)] = implode(' - ', $tr);
+            $input['tr' . ($key + 1)] = join(' - ', $tr);
         }
         $this->replace($input);
         

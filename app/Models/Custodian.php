@@ -103,7 +103,7 @@ class Custodian extends Model {
                     $userIds = $students->isNotEmpty() ? $students->pluck('user_id')->toArray() : [0];
                     $realnames = User::whereIn('id', $userIds)->pluck('realname')->toArray();
                     
-                    return implode(',', $realnames);
+                    return join(',', $realnames);
                 },
             ],
             ['db' => 'User.mobile', 'dt' => 5],

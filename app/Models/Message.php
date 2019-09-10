@@ -304,7 +304,7 @@ class Message extends Model {
             );
         }
         $condition = !$received
-            ? 'Message.r_user_id = 0 AND Message.s_user_id IN' . ' (' . implode(',', $userIds) . ')'
+            ? 'Message.r_user_id = 0 AND Message.s_user_id IN' . ' (' . join(',', $userIds) . ')'
             : 'Message.r_user_id = ' . Auth::id();
         
         return Datatable::simple(
@@ -533,7 +533,6 @@ class Message extends Model {
             User::whereIn('ent_attrs->userid', $userids)->pluck('realname')->toArray(),
             Department::whereIn('id', $deptIds)->pluck('name')->toArray()
         );
-        $msgBody = '';
         $content = $message->{$type};
         switch ($type) {
             case 'text':
@@ -557,10 +556,8 @@ class Message extends Model {
             case 'mpnews':
                 $msgBody = view('message.detail_mpnews', ['message' => $content])->render();
                 break;
-            case 'sms':
+            default:    # sms
                 $msgBody = $content;
-                break;
-            default:
                 break;
         }
         
@@ -569,7 +566,7 @@ class Message extends Model {
             'commType'   => CommType::find($this->find($id)->comm_type_id)->name,
             'msgBody'    => $msgBody,
             'sentAt'     => $detail['updated_at'],
-            'recipients' => implode('; ', $recipients),
+            'recipients' => join('; ', $recipients),
             'sender'     => $detail['sender'],
         ])->render();
         
@@ -614,14 +611,8 @@ class Message extends Model {
                     # 如果没有设置发送时间，或者设置了发送时间，
                     # 但发送时间早于当前时间, 则立即发送消息。
                     # 创建原始消息（被发送）记录
-                    $msl = MessageSendingLog::create([
-                        'read_count'      => 0,
-                        'received_count'  => 0,
-                        'recipient_count' => 0,
-                    ]);
-                    $data['msl_id'] = $msl->id;
-                    $data['read'] = 1;
-                    $data['sent'] = 1;
+                    $data['msl_id'] = MessageSendingLog::insertGetId([]);
+                    $data['read'] = $data['sent'] = 1;
                     SendMessage::dispatch([$this->create($data)], Auth::id());
                 } else {
                     # 如果发送时间晚于当前时间，则创建/更新消息
@@ -1256,7 +1247,7 @@ class Message extends Model {
         $wx = $content;
         if ($platform == 1) {
             # 企业微信
-            $wx['touser'] = $wx['toparty'] = '';
+            $wx['toparty'] = $wx['totag'] = '';
         } else {
             # 微信服务号
             $wx['template_id'] = Template::find($wx['template_id'])->templateid;
@@ -1342,14 +1333,14 @@ class Message extends Model {
         if (!$id) return null;
         $message = $this->find($id);
         $content = json_decode($message->content, true);
-        $content['msgtype'] = $type = MediaType::find($message->media_type_id)->name;
+        $content['msgtype'] = $type = $message->mediaType->name;
         $msl = $message->messageSendinglog;
         
         return [
             'id'         => $message->id,
             'title'      => $message->title,
             'updated_at' => $this->humanDate($message->updated_at),
-            'sender'     => User::find($message->s_user_id)->realname,
+            'sender'     => $message->sender->realname,
             'recipients' => $msl ? $msl->recipient_count : 0,
             'msl_id'     => $msl ? $msl->id : 0,
             'type'       => $type,
@@ -1368,17 +1359,15 @@ class Message extends Model {
      */
     private function read($id, $read = true) {
         
-        abort_if(
-            !($message = $this->find($id)),
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
         try {
-            DB::transaction(function () use ($message, $id, $read) {
+            DB::transaction(function () use ($id, $read) {
+                throw_if(
+                    !$message = $this->find($id),
+                    new Exception(__('messages.not_found'))
+                );
                 $message->update(['read' => $read ? 1 : 0]);
                 if ($msl = MessageSendingLog::find($message->msl_id)) {
-                    $msl->read_count += ($read ? 1 : -1);
-                    $msl->save();
+                    $msl->increment('read_count', $read ? 1 : -1);
                 }
             });
         } catch (Exception $e) {
@@ -1398,22 +1387,22 @@ class Message extends Model {
      */
     private function replies($id, $mslId) {
         
-        $user = Auth::user();
-        $replies = MessageReply::whereMslId($mslId)->get();
-        $user->id == $this->find($id)->s_user_id
-            ?: $replies = MessageReply::where(['msl_id' => $mslId, 'user_id' => $user->id])->get();
-        $replyList = [];
+        $where = ['msl_id' => $mslId];
+        Auth::id() == $this->find($id)->sender->id
+            ?: $where = array_merge($where, ['user_id' => Auth::id()]);
+        $replies = MessageReply::where($where)->get();
         foreach ($replies as $reply) {
+            $replier = $reply->user;
             $replyList[] = [
                 'id'         => $reply->id,
                 'content'    => $reply->content,
                 'replied_at' => $this->humanDate($reply->created_at),
-                'realname'   => $reply->user->realname,
-                'avatar_url' => $reply->user->avatar_url,
+                'realname'   => $replier->realname,
+                'avatar_url' => $replier->avatar_url,
             ];
         }
         
-        return $replyList;
+        return $replyList ?? [];
         
     }
     

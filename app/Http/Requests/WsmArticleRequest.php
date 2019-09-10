@@ -48,7 +48,7 @@ class WsmArticleRequest extends FormRequest {
         }
         if (isset($input['media_ids'])) {
             $input['thumbnail_media_id'] = $input['media_ids'][0];
-            $input['media_ids'] = implode(',', $input['media_ids']);
+            $input['media_ids'] = join(',', $input['media_ids']);
         }
         $this->replace($input);
     }

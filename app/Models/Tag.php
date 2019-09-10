@@ -253,7 +253,7 @@ class Tag extends Model {
                 
                 return [
                     'targets'   => $targetsHtml ?? null,
-                    'targetIds' => isset($targetIds) ? implode(',', $targetIds) : '',
+                    'targetIds' => isset($targetIds) ? join(',', $targetIds) : '',
                 ];
         }
         

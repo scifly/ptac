@@ -509,7 +509,7 @@ class Menu extends Model {
         if ($action == 'sort') {
             $menuId = Request::route('id');
             $tabIds = MenuTab::whereMenuId($menuId)->get()->sortBy('tab_order')->pluck('tab_id');
-            $tabIds_ordered = implode(',', $tabIds->toArray());
+            $tabIds_ordered = join(',', $tabIds->toArray());
             $data = [
                 'tabs'   => Tab::whereIn('id', $tabIds)
                     ->orderByRaw(DB::raw("FIELD(id, $tabIds_ordered)"))
@@ -813,7 +813,7 @@ class Menu extends Model {
         }
         krsort($path);
         
-        return implode(' . ', $path);
+        return join(' . ', $path);
         
     }
     

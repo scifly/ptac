@@ -177,7 +177,7 @@ class wechatAppPay {
             foreach ($params as $key => $value) {
                 $array[] = $key . '=' . $value;
             }
-            $string = implode("&", $array);
+            $string = join("&", $array);
         }
         
         return $string;

@@ -65,7 +65,7 @@ class ExportEducator implements ShouldQueue {
                         $collection = $model->where('educator_ids', 'like', '%,' . $educator->id . '%')->get();
                 
                         return $collection->isEmpty() ? ''
-                            : implode(',', $collection->pluck('name')->toArray());
+                            : join(',', $collection->pluck('name')->toArray());
                     }, ['grade', 'squad']
                 );
                 $eces = ClassEducator::whereEducatorId($educator->id)->get();
@@ -74,7 +74,7 @@ class ExportEducator implements ShouldQueue {
                     $squad = $ec->squad;
                     $subject = $ec->subject;
                     if (isset($squad, $subject)) {
-                        $cses[] = implode(':', [$squad->name, $subject->name]);
+                        $cses[] = join(':', [$squad->name, $subject->name]);
                     }
                 }
                 $records[] = [
@@ -87,7 +87,7 @@ class ExportEducator implements ShouldQueue {
                     $user->mobile ?? 'n/a',
                     $grades,
                     $squads,
-                    implode(',', $cses ?? [])
+                    join(',', $cses ?? [])
                 ];
             }
             usort($records, function ($a, $b) {

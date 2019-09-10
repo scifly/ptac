@@ -361,8 +361,8 @@ class Student extends Model {
         abort_if(
             !empty($ds ?? []),
             HttpStatusCode::NOT_ACCEPTABLE,
-            implode('', [
-                (!empty($sns) ? ('学号: ' . implode(',', $sns)) : ''),
+            join('', [
+                (!empty($sns) ? ('学号: ' . join(',', $sns)) : ''),
                 '有重复，请检查后重试',
             ])
         );

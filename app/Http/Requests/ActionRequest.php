@@ -45,7 +45,7 @@ class ActionRequest extends FormRequest {
         
         $input = $this->all();
         if (isset($input['action_type_ids'])) {
-            $input['action_type_ids'] = implode(',', $input['action_type_ids']);
+            $input['action_type_ids'] = join(',', $input['action_type_ids']);
         }
         $this->replace($input);
         

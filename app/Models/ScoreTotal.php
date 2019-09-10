@@ -173,7 +173,7 @@ class ScoreTotal extends Model {
                 ],
             ],
         ];
-        $condition = 'Student.id IN (' . implode(',', $this->contactIds('student')) . ')';
+        $condition = 'Student.id IN (' . join(',', $this->contactIds('student')) . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition

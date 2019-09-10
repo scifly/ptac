@@ -55,7 +55,7 @@ class Datatable {
                 $from .=
                     ' ' . $join['type'] . ' JOIN ' . $join['table'] .
                     ' AS ' . $join['alias'] .
-                    ' ON ' . implode(' AND ', $join['conditions']);
+                    ' ON ' . join(' AND ', $join['conditions']);
             }
         }
         // Build the SQL query string from the request
@@ -72,7 +72,7 @@ class Datatable {
                 : $where . ' AND ' . $condition;
         }
         // Main query to actually get the data
-        $fields = implode(", ", $this->pluck($columns, 'db'));
+        $fields = join(", ", $this->pluck($columns, 'db'));
         $query = "SELECT SQL_CALC_FOUND_ROWS " . $fields . " FROM " . $from . $where . $order . $limit;
         $data = DB::select($query);
         $query = "SELECT " . $useTable . ".id FROM " . $from . $where;
@@ -148,7 +148,7 @@ class Datatable {
         // Main query to actually get the data
         $data = DB::select(
             "SELECT SQL_CALC_FOUND_ROWS `" .
-            implode("`, `", $this->pluck($columns, 'db')) .
+            join("`, `", $this->pluck($columns, 'db')) .
             "` FROM " . $table . $where . $order . $limit
         );
         // Data set length after filtering
@@ -246,7 +246,7 @@ class Datatable {
         if (!$a) {
             return '';
         } else if ($a && is_array($a)) {
-            return implode($join, $a);
+            return join($join, $a);
         }
         
         return $a;
@@ -320,7 +320,7 @@ class Datatable {
                         $column['db'] . ' ' . $dir;
                 }
             }
-            $orderBy = ' ORDER BY ' . implode(', ', $orderBy);
+            $orderBy = ' ORDER BY ' . join(', ', $orderBy);
         }
         
         return $orderBy === ' ORDER BY ' ? '' : $orderBy;
@@ -409,14 +409,14 @@ class Datatable {
         $filters = [];
         if (count($globalSearch)) {
             for ($i = 0; $i < count($globalSearch); $i++) {
-                $filters[$i] = '(' . implode(' OR ', $globalSearch[$i]) . ')';
+                $filters[$i] = '(' . join(' OR ', $globalSearch[$i]) . ')';
             }
-            $where = '(' . implode(' AND ', $filters) . ')';
+            $where = '(' . join(' AND ', $filters) . ')';
         }
         if (count($columnSearch)) {
             $where = $where === '' ?
-                implode(' AND ', $columnSearch) :
-                $where . ' AND ' . implode(' AND ', $columnSearch);
+                join(' AND ', $columnSearch) :
+                $where . ' AND ' . join(' AND ', $columnSearch);
         }
         if ($where !== '') {
             $where = ' WHERE ' . $where;

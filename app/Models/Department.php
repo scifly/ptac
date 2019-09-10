@@ -519,7 +519,7 @@ class Department extends Model {
         );
         krsort($path);
         
-        return implode(' . ', $path);
+        return join(' . ', $path);
         
     }
     

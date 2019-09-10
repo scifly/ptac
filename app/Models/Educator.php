@@ -336,9 +336,9 @@ class Educator extends Model {
         abort_if(
             isset($duplicates),
             HttpStatusCode::NOT_ACCEPTABLE,
-            implode('', [
+            join('', [
                 '手机号码',
-                implode(',', $duplicates ?? []),
+                join(',', $duplicates ?? []),
                 '有重复，请检查后重试。',
             ])
         );

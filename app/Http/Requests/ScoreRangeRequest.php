@@ -43,7 +43,7 @@ class ScoreRangeRequest extends FormRequest {
         
         $input = $this->all();
         if (isset($input['subject_ids'])) {
-            $input['subject_ids'] = implode(',', $input['subject_ids']);
+            $input['subject_ids'] = join(',', $input['subject_ids']);
         }
         $input['school_id'] = $this->schoolId();
         $this->replace($input);

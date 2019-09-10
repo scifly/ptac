@@ -120,7 +120,7 @@ class Grade extends Model {
                         }
                     }
                     
-                    return implode(', ', $educators);
+                    return join(', ', $educators);
                 },
             ],
             ['db' => 'Grade.created_at', 'dt' => 3],
@@ -158,7 +158,7 @@ class Grade extends Model {
         ];
         $condition = 'School.id = ' . $this->schoolId();
         if (!in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
-            $condition .= ' AND Grade.id IN (' . implode(',', $this->gradeIds()) . ')';
+            $condition .= ' AND Grade.id IN (' . join(',', $this->gradeIds()) . ')';
         }
         
         return Datatable::simple(

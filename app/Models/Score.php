@@ -207,7 +207,7 @@ class Score extends Model {
         ];
         $condition = in_array(Auth::user()->role(), Constant::SUPER_ROLES)
             ? 'School.id = ' . $this->schoolId()
-            : 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
+            : 'Squad.id IN (' . join(',', $this->classIds()) . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition
@@ -269,34 +269,30 @@ class Score extends Model {
             DB::transaction(function () use ($data) {
                 $school = School::find($this->schoolId());
                 $corp = $school->corp;
-                $app = $this->app($corp->id);
+                $app = $school->app ?? $this->app($corp->id);
                 $msgType = '成绩消息';
                 $msgTypeId = MessageType::whereName($msgType)->first()->id;
                 $mediaTypeId = MediaType::whereName('text')->first()->id;
                 $sUserId = Auth::id() ?? 0;
-                /** @var Message $datum */
                 foreach ($data as $datum) {
                     if (!$datum->mobile) continue;
-                    $record = array_combine($datum->getFillable(), [
+                    $record = array_combine((new Message)->getFillable(), [
                         0, $mediaTypeId, $app->id, 0, $msgType, '', '0', uniqid(),
                         'http://', '0', $sUserId, 0, $msgTypeId, 0, 0, null
                     ]);
-                    $record['msl_id'] = MessageSendingLog::create([
-                        'read_count'      => 0,
-                        'received_count'  => 0,
-                        'recipient_count' => 0,
-                    ])->id;
-                    foreach (explode(',', $datum->mobile) as $mobile) {
-                        if (!$user = User::whereMobile($mobile)->first()) continue;
-                        $userids[] = json_decode($user->ent_attrs, true)['userid'];
-                    }
+                    $record['msl_id'] = MessageSendingLog::insertGetId([]);
+                    throw_if(
+                        !$user = User::whereMobile($datum->mobile)->first(),
+                        new Exception(__('messages.user.not_found'))
+                    );
                     $record['content'] = json_encode([
-                        'touser'  => implode('|', $userids ?? []),
-                        "msgtype" => "text",
-                        "agentid" => $app->appid,
+                        'touser'  => json_decode($user->ent_attrs, true)['userid'],
+                        'msgtype' => 'text',
+                        'agentid' => $app->category == 1 ? $app->appid : 0,
                         'text'    => [
                             'content' => $datum->content,
                         ],
+                        'template_id' => $app->category == 1 ? Template::first()->id : null
                     ], JSON_UNESCAPED_UNICODE);
                     $messages[] = Message::create($record);
                 }
@@ -358,8 +354,8 @@ class Score extends Model {
                         'enabled'    => 1,
                     ], [
                         'score'          => $total,
-                        'subject_ids'    => implode(',', $ayeIds),
-                        'na_subject_ids' => implode(',', $nayIds),
+                        'subject_ids'    => join(',', $ayeIds),
+                        'na_subject_ids' => join(',', $nayIds),
                         'class_rank'     => 0,
                         'grade_rank'     => 0,
                     ]);
@@ -958,7 +954,7 @@ class Score extends Model {
             $content = sprintf(
                 __('messages.score.message_template'),
                 $studentName, Exam::find($examId)->name,
-                implode(',', $message ?? [])
+                join(',', $message ?? [])
             );
             foreach ($student->custodians as $custodian) {
                 $user = $custodian->user;
@@ -1268,7 +1264,7 @@ class Score extends Model {
         $exams = Exam::whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')
             ->where('enabled', 1)->orderBy('start_date', 'desc')->take(10)->get();
         $subjectIds = array_unique(
-            explode(',', implode(',', $exams->pluck('subject_ids')->toArray()))
+            explode(',', join(',', $exams->pluck('subject_ids')->toArray()))
         );
         $subjects = Subject::orderBy('id')->where('enabled', 1)
             ->whereIn('id', $subjectIds)->get();

@@ -62,7 +62,7 @@ class ExportStudent implements ShouldQueue {
                 foreach ($cses as $cs) {
                     if (!$cs->custodian) continue;
                     $cUser = $cs->custodian->user;
-                    $relationships[] = implode(':', [
+                    $relationships[] = join(':', [
                         $cs->relationship, $cUser->realname,
                         $cUser->gender ? '男' : '女', $cUser->mobile,
                     ]);
@@ -78,7 +78,7 @@ class ExportStudent implements ShouldQueue {
                     $student->sn,
                     $student->oncampus ? '住读' : '走读',
                     $student->remark,
-                    !empty($relationships) ? implode(',', $relationships) : '',
+                    !empty($relationships) ? join(',', $relationships) : '',
                 ];
             }
             # 按年级/班级/学号依次排序

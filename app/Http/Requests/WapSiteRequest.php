@@ -36,7 +36,7 @@ class WapSiteRequest extends FormRequest {
         
         $input = $this->all();
         if (!empty($input['media_ids'])) {
-            $input['media_ids'] = implode(',', $input['media_ids']);
+            $input['media_ids'] = join(',', $input['media_ids']);
         }
         $input['school_id'] = $this->schoolId();
         $this->replace($input);

@@ -173,7 +173,7 @@ class Module extends Model {
                 ],
             ],
         ];
-        $condition = 'Module.school_id IN (' . implode(',', $this->schoolIds()) . ')';
+        $condition = 'Module.school_id IN (' . join(',', $this->schoolIds()) . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition

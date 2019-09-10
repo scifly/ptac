@@ -80,7 +80,7 @@ class CardTurnstile extends Pivot {
                             'turnstile_id' => $turnstileId,
                             'start_date'   => $start,
                             'end_date'     => $end,
-                            'ruleids'      => implode(',', $ruleids[$turnstileId]),
+                            'ruleids'      => join(',', $ruleids[$turnstileId]),
                             'created_at'   => $timestamp,
                             'updated_at'   => $timestamp,
                             'enabled'      => 1,
