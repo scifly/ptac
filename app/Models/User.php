@@ -287,40 +287,32 @@ class User extends Authenticatable {
                 ],
             ],
         ];
-        $sql = 'User.group_id IN (%s)';
         [$rootGId, $corpGId, $schoolGId] = array_map(
-            function ($name) { return Group::whereName($name)->first()->id; },
-            ['运营', '企业', '学校']
+            function ($name) {
+                return Group::whereName($name)->first()->id;
+            }, ['运营', '企业', '学校']
         );
         $rootMenu = Menu::find((new Menu)->rootId(true));
         switch ($rootMenu->menuType->name) {
             case '根':
-                $condition = sprintf($sql, join(',', [$rootGId, $corpGId, $schoolGId]));
+                $gIds = [$rootGId, $corpGId, $schoolGId];
+                $users = null;
                 break;
             case '企业':
+                $gIds = [$corpGId, $schoolGId];
                 $corp = Corp::whereMenuId($rootMenu->id)->first();
-                $userIds = Department::find($corp->department_id)
-                    ->users->pluck('id')->toArray();
+                $users = Department::find($corp->department_id)->users;
                 foreach ($corp->schools as $school) {
-                    $userIds = array_merge(
-                        $userIds,
-                        Department::find($school->department_id)->users->pluck('id')->toArray()
-                    );
+                    $users = $users->merge(Department::find($school->department_id)->users);
                 }
-                !empty($userIds) ?: $userIds = [0];
-                $condition = sprintf($sql, join(',', [$corpGId, $schoolGId])) .
-                    ' AND User.id IN (' . join(',', array_unique($userIds)) . ')';
                 break;
-            case '学校':
-                $userIds = Department::find(School::whereMenuId($rootMenu->id)->first()->department_id)
-                    ->users->pluck('id')->toArray();
-                !empty($userIds) ?: $userIds = [0];
-                $condition = sprintf($sql, join(',', [$schoolGId])) .
-                    ' AND User.id IN (' . join(',', $userIds) . ')';
-                break;
-            default:
+            default: #'学校':
+                $gIds = [$schoolGId];
+                $users = Department::find(School::whereMenuId($rootMenu->id)->first()->department_id)->users;
                 break;
         }
+        $condition = sprintf('User.group_id IN (%s)', collect($gIds)->join(',')) .
+            !isset($users) ? '' : ' AND User.id IN (' . $users->pluck('id')->join(',') . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition ?? ''

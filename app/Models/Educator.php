@@ -594,7 +594,7 @@ class Educator extends Model {
                         : $educator->user->deptIds($educator->user_id);
                     $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
                 }
-                $firstOption = [0 => '(请选择)'];
+                $nil = collect([0 => '(请选择)']);
                 $data = array_merge(
                     array_combine(
                         [
@@ -603,8 +603,8 @@ class Educator extends Model {
                         ],
                         [
                             $educator,
-                            $firstOption + $classes->pluck('name', 'id')->toArray(),
-                            $firstOption + $subjects->pluck('name', 'id')->toArray(),
+                            $nil->union($classes->pluck('name', 'id')),
+                            $nil->union($subjects->pluck('name', 'id')),
                             (new Group)->list(),
                             join(',', $selectedDepartmentIds ?? []),
                             $selectedDepartments ?? [],

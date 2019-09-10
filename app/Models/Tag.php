@@ -248,12 +248,12 @@ class Tag extends Model {
                 $tag = Tag::find(Request::route('id'));
                 $departments = $tag ? $tag->departments : null;
                 $users = $tag ? $tag->users : null;
-                $targetIds = $departments ? $tag->departments->pluck('id')->toArray() : null;
+                $targetIds = $departments ? $departments->pluck('id') : null;
                 $targetsHtml = $users ? (new Message)->targetsHtml($tag->users, $targetIds) : null;
                 
                 return [
                     'targets'   => $targetsHtml ?? null,
-                    'targetIds' => isset($targetIds) ? join(',', $targetIds) : '',
+                    'targetIds' => isset($targetIds) ? $targetIds->join(',') : '',
                 ];
         }
         

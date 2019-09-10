@@ -3,16 +3,13 @@ namespace App\Helpers;
 
 use App\Models\{Action,
     App,
-    CommType,
     Corp,
     Department,
     DepartmentUser,
     Exam,
     Grade,
     Group,
-    MediaType,
     Menu,
-    MessageType,
     School,
     Squad,
     Student,
@@ -20,7 +17,6 @@ use App\Models\{Action,
     User};
 use App\Policies\Route;
 use Carbon\Carbon;
-use Doctrine\Common\Inflector\Inflector;
 use Form;
 use Illuminate\Database\{Eloquent\Collection, Eloquent\Model, Query\Builder};
 use Illuminate\Foundation\Http\FormRequest;
@@ -344,19 +340,19 @@ trait ModelTrait {
         $user = User::find($userId ?? Auth::id());
         $schoolId = $schoolId ?? $this->schoolId();
         if (in_array($user->role($user->id), Constant::SUPER_ROLES)) {
-            $examIds = School::find($schoolId)->exams->pluck('id')->toArray();
+            $exams = School::find($schoolId)->exams;
         } else {
             $classIds = $this->classIds($schoolId);
-            $examIds = School::find($schoolId)->exams->filter(
+            $exams = School::find($schoolId)->exams->filter(
                 function (Exam $exam) use ($classIds) {
-                    $class_ids = explode(',', $exam->class_ids);
-                    
-                    return !empty(array_intersect($classIds, $class_ids));
+                    return !empty(
+                        array_intersect($classIds, explode(',', $exam->class_ids))
+                    );
                 }
-            )->pluck('id')->toArray();
+            );
         }
         
-        return $examIds;
+        return $exams->pluck('id')->toArray();
         
     }
     

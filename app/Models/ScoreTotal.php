@@ -51,8 +51,8 @@ class ScoreTotal extends Model {
     protected $table = 'score_totals';
     protected $fillable = [
         'student_id', 'exam_id', 'score',
-        'subject_ids', 'na_subject_ids', 'class_rank',
-        'grade_rank', 'enabled',
+        'subject_ids', 'na_subject_ids',
+        'class_rank', 'grade_rank', 'enabled',
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */

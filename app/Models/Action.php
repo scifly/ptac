@@ -450,10 +450,8 @@ class Action extends Model {
      */
     private function actionTypes($action_type_ids) {
         
-        $actionTypes = ActionType::whereIn('id', explode(',', $action_type_ids))
-            ->where('enabled', 1)->pluck('name')->toArray();
-        
-        return join(',', $actionTypes);
+        return ActionType::whereIn('id', explode(',', $action_type_ids))
+            ->where('enabled', 1)->pluck('name')->join(',');
         
     }
     
@@ -715,13 +713,10 @@ class Action extends Model {
      */
     private function actionTypeIds($controller, $action) {
         
-        if (in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
-            return null;
-        }
+        if (in_array($controller, Constant::EXCLUDED_CONTROLLERS)) return null;
         $actionTypes = $this->actionMethods($controller, $action);
-        $actionTypeIds = ActionType::whereIn('name', $actionTypes)->pluck('id')->toArray();
         
-        return join(',', $actionTypeIds);
+        return ActionType::whereIn('name', $actionTypes)->pluck('id')->join(',');
         
     }
     
