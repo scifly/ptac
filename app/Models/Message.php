@@ -413,10 +413,10 @@ class Message extends Model {
         
         try {
             $detail = $this->detail($id);
-            $content = json_decode($detail[$detail['type']]);
+            $content = json_decode($detail[$detail['type']], true);
             [$toparty, $touser, $totag] = array_map(
                 function ($field) use ($content) {
-                    $to = $content->{$field} ?? null;
+                    $to = $content[$field] ?? null;
                     
                     return empty($to) ? [] : explode('|', $to);
                 }, ['toparty', 'touser', 'totag']
@@ -435,7 +435,7 @@ class Message extends Model {
             'targets'           => $this->targetsHtml($users, $toparty),
             'messageTypeId'     => $this->find($id)->message_type_id,
             'tagIds'            => $totag,
-            'templateId'        => $content->{'template_id'} ?? 0,
+            'templateId'        => $content['template_id'] ?? 0,
             'messageFormat'     => $detail['type'],
             'message'           => $content,
             'timing'            => $timing,
@@ -1332,7 +1332,7 @@ class Message extends Model {
     }
     
     /**
-     * 显示指定消息的内容
+     * 返回指定消息的内容
      *
      * @param $id
      * @return null|array
@@ -1342,11 +1342,8 @@ class Message extends Model {
         if (!$id) return null;
         $message = $this->find($id);
         $content = json_decode($message->content, true);
-        $type = MediaType::find($message->media_type_id)->name;
-        $type !== 'tpl' ?: $type = $content['tpl']['type'];
-        $content['msgtype'] = $type;
+        $content['msgtype'] = $type = MediaType::find($message->media_type_id)->name;
         $msl = $message->messageSendinglog;
-        if (CommType::find($message->comm_type_id)->name == '短信') $type = 'sms';
         
         return [
             'id'         => $message->id,
