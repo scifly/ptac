@@ -402,14 +402,10 @@ trait ModelTrait {
             [$departmentId],
             (new Department)->subIds($departmentId)
         );
-        $userIds = DepartmentUser::whereIn('department_id', $departmentIds)
-            ->pluck('user_id')->toArray();
-        if (!$type) return array_unique($userIds);
-        $contact = (new ReflectionClass('App\\Models\\' . ucfirst($type)))->newInstance();
+        $builder = DepartmentUser::whereIn('department_id', $departmentIds);
+        !$type ?: $builder = $this->model(ucfirst($type))->whereIn('user_id', $builder->pluck('user_id'));
         
-        return array_unique(
-            $contact->whereIn('user_id', $userIds)->pluck('user_id')->toArray()
-        );
+        return $builder->pluck('user_id')->unique()->toArray();
         
     }
     
