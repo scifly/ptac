@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Requests;
 
-use App\Helpers\{Constant, ModelTrait};
+use App\Helpers\{ModelTrait};
 use App\Models\{App, CommType, MediaType, Message, School, User};
 use Illuminate\Foundation\Http\FormRequest;
 

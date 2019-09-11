@@ -2,15 +2,14 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\HttpStatusCode;
-use App\Models\PollQuestionnaire;
-use App\Models\PollQuestionnaireAnswer;
-use App\Models\PollQuestionnaireParticipant;
-use App\Models\PollQuestionnaireSubject;
-use App\Models\PollQuestionnaireSubjectChoice;
+use App\Models\{PollQuestionnaire,
+    PollQuestionnaireAnswer,
+    PollQuestionnaireParticipant,
+    PollQuestionnaireSubject,
+    PollQuestionnaireSubjectChoice};
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
 use Illuminate\View\View;
 
 /**
@@ -86,24 +85,24 @@ class PollQuestionnaireParticipantController extends Controller {
                 #单选
                 case 0:
                     #判断是否为数组
-                    if (is_array(Input::get('rd_' . $item->id)))
-                        $var = join(',', Input::get('rd_' . $item->id));
+                    if (is_array($q->input('rd_' . $item->id)))
+                        $var = join(',', $q->input('rd_' . $item->id));
                     else
-                        $var = Input::get('rd_' . $item->id);
+                        $var = $q->input('rd_' . $item->id);
                     break;
                 #多选
                 case 1:
-                    if (is_array(Input::get('ck_' . $item->id)))
-                        $var = join(',', Input::get('ck_' . $item->id));
+                    if (is_array($q->input('ck_' . $item->id)))
+                        $var = join(',', $q->input('ck_' . $item->id));
                     else
-                        $var = Input::get('ck_' . $item->id);
+                        $var = $q->input('ck_' . $item->id);
                     break;
                 #填空
                 case 2:
-                    if (is_array(Input::get('text_' . $item->id)))
-                        $var = join(',', Input::get('text_' . $item->id));
+                    if (is_array($q->input('text_' . $item->id)))
+                        $var = join(',', $q->input('text_' . $item->id));
                     else
-                        $var = Input::get('text_' . $item->id);
+                        $var = $q->input('text_' . $item->id);
                     break;
             }
             #存储答案

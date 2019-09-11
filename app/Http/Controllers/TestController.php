@@ -7,7 +7,6 @@ use Auth;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -23,7 +22,7 @@ use Throwable;
  */
 class TestController extends Controller {
     
-    use DetectsApplicationNamespace, ModelTrait;
+    use ModelTrait;
     protected $pusher;
     protected $keyId = 'LTAIk1710IrzHBg4';
     protected $keySecret = 'xxO5XaXx3O7kB3YR14XSdFulw1x56k';

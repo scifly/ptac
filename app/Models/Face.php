@@ -246,11 +246,16 @@ class Face extends Model {
                 ['id' => $id, 'class' => 'medias']
             )->toHtml() . $image;
         # 上传/删除
-        $upload = '<i class="fa fa-cloud-upload" title="上传"></i>';
-        $remove = '<i class="fa fa-remove text-red" title="删除" style="margin-left:5px; display: '
-            . ($media ? 'inline' : 'none') . '"></i>';
+        $upload = Html::tag('i', '', [
+            'class' => 'fa fa-cloud-upload', 'title' => '上传'
+        ])->toHtml();
+        $remove = Html::tag('i', '', [
+            'class' => 'fa fa-remove text-red',
+            'title' => '删除',
+            'style' => 'margin-left: 5px; display: ' . ($media ? 'inline' : 'none')
+        ])->toHtml();
         $actions = Form::label(
-            'face-' . $uid, $upload . $remove,
+            'face-' . $uid, join([$upload, $remove]),
             ['class' => 'custom-file-upload text-blue'], false
         )->toHtml();
         # 上传控件

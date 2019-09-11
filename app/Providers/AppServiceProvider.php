@@ -1,7 +1,7 @@
 <?php
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 
@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider {
             /** @noinspection PhpUnusedParameterInspection */
             $attribute, $value, $params, $validator
         ) {
-            $other = Input::get($params[0]);
+            $other = Request::input($params[0]);
             return intval($value) > intval($other);
         });
 
@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider {
             /** @noinspection PhpUnusedParameterInspection */
             $attribute, $value, $params, $validator
         ) {
-            $other = Input::get($params[0]);
+            $other = Request::input($params[0]);
             return intval($value) >= intval($other);
         });
 
