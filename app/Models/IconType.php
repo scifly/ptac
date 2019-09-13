@@ -29,6 +29,7 @@ use Throwable;
  * @method static Builder|IconType newQuery()
  * @method static Builder|IconType query()
  * @mixin Eloquent
+ * @property-read int|null $icons_count
  */
 class IconType extends Model {
     

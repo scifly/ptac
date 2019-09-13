@@ -50,6 +50,7 @@ use Throwable;
  * @method static Builder|Module newQuery()
  * @method static Builder|Module query()
  * @mixin Eloquent
+ * @property-read int|null $students_count
  */
 class Module extends Model {
     
@@ -328,7 +329,7 @@ class Module extends Model {
     function compose() {
     
         $where = ['enabled' => 1];
-        Auth::user()->role() != '企业' ?: $where['corp_id'] = (new Corp)->corpId();
+        Auth::user()->role() != '企业' ?: $where['corp_id'] = $this->corpId();
         $schools = School::where($where)->pluck('name', 'id');
         $tabs = Tab::where(['enabled' => 1, 'category' => 1])->pluck('comment', 'id');
         if (explode('/', Request::path())[1] == 'index') {

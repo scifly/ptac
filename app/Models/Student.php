@@ -12,7 +12,8 @@ use Illuminate\Database\Eloquent\{Builder,
     Model,
     Relations\BelongsTo,
     Relations\BelongsToMany,
-    Relations\HasMany};
+    Relations\HasMany,
+    Relations\HasOne};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\{Arr, Facades\Auth, Facades\DB, Facades\Request, Collection as SCollection};
 use PhpOffice\PhpSpreadsheet\{Exception as PssException, Reader\Exception as PssrException};
@@ -53,6 +54,12 @@ use Throwable;
  * @method static Builder|Student newQuery()
  * @method static Builder|Student query()
  * @mixin Eloquent
+ * @property-read Bed $bed
+ * @property-read int|null $consumptions_count
+ * @property-read int|null $custodians_count
+ * @property-read int|null $modules_count
+ * @property-read int|null $score_totals_count
+ * @property-read int|null $scores_count
  */
 class Student extends Model {
     
@@ -69,74 +76,46 @@ class Student extends Model {
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回指定学生所属的班级对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function squad() { return $this->belongsTo('App\Models\Squad', 'class_id', 'id'); }
     
-    /**
-     * 返回指定学生所属的年级对象
-     *
-     * @param $id
-     * @return Grade
-     */
-    function grade($id) { return $this->find($id)->squad->grade; }
+    /** @return HasOne */
+    function bed() { return $this->hasOne('App\Models\Bed'); }
     
-    /**
-     * 返回指定学生所属的学校对象
-     *
-     * @param $id
-     * @return School
-     */
-    function school($id) { return $this->find($id)->squad->grade->school; }
-    
-    /**
-     * 获取指定学生的所有监护人对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function custodians() {
         
         return $this->belongsToMany('App\Models\Custodian', 'custodian_student');
         
     }
     
-    /**
-     * 获取指定学生对应的用户对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function user() { return $this->belongsTo('App\Models\User'); }
     
-    /**
-     * 获取指定学生所有的分数对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function scores() { return $this->hasMany('App\Models\Score'); }
     
-    /**
-     * 获取指定学生所有的总分对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function scoreTotals() { return $this->hasMany('App\Models\ScoreTotal'); }
     
-    /**
-     * 获取指定学生的所有消费/充值记录
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function consumptions() { return $this->hasMany('App\Models\Consumption'); }
     
-    /**
-     * 返回指定学生订阅的所有增值应用模块
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function modules() { return $this->belongsToMany('App\Models\Module', 'module_student'); }
+    
+    /**
+     * @param $id
+     * @return Grade
+     */
+    function grade($id) { return $this->find($id)->squad->grade; }
+    
+    /**
+     * @param $id
+     * @return School
+     */
+    function school($id) { return $this->find($id)->squad->grade->school; }
+    
     
     /** crud -------------------------------------------------------------------------------------------------------- */
     /**

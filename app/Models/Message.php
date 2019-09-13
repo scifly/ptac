@@ -25,7 +25,7 @@ use Throwable;
  * App\Models\Message 消息
  *
  * @property int $id
- * @property int $comm_type_id 通信方式id
+ * @property int $message_type_id 消息类型ID
  * @property int $media_type_id 媒体类型id
  * @property int $app_id 应用id
  * @property int $msl_id 消息发送批次id
@@ -34,16 +34,13 @@ use Throwable;
  * @property string $code 消息详情代码
  * @property int $message_id 关联的消息ID
  * @property string $url HTML页面地址
- * @property string $media_ids 多媒体IDs
  * @property int $s_user_id 发送者用户ID
  * @property int $r_user_id 接收者用户IDs
- * @property int $message_type_id 消息类型ID
  * @property int $read 是否已读
  * @property int $sent 消息发送是否成功
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int|null $event_id
- * @property-read CommType $commType
  * @property-read MessageType $messageType
  * @property-read MediaType $mediaType
  * @property-read User $receiver
@@ -52,14 +49,12 @@ use Throwable;
  * @property-read App|null $app
  * @property-read MessageSendingLog $messageSendinglog
  * @method static Builder|Message whereAppId($value)
- * @method static Builder|Message whereCommTypeId($value)
+ * @method static Builder|Message whereMessageTypeId($value)
  * @method static Builder|Message whereMediaTypeId($value)
  * @method static Builder|Message whereContent($value)
  * @method static Builder|Message whereCreatedAt($value)
  * @method static Builder|Message whereId($value)
- * @method static Builder|Message whereMediaIds($value)
  * @method static Builder|Message whereMessageId($value)
- * @method static Builder|Message whereMessageTypeId($value)
  * @method static Builder|Message whereMslId($value)
  * @method static Builder|Message whereEventId($value)
  * @method static Builder|Message whereRUserId($value)
@@ -91,77 +86,39 @@ class Message extends Model {
     </div>';
     protected $table = 'messages';
     protected $fillable = [
-        'comm_type_id', 'media_type_id', 'app_id', 'msl_id',
+        'message_type_id', 'media_type_id', 'app_id', 'msl_id',
         'title', 'content', 'code', 'message_id', 'url',
-        'media_ids', 's_user_id', 'r_user_id',
-        'message_type_id', 'read', 'sent', 'event_id',
+        's_user_id', 'r_user_id', 'read', 'sent', 'event_id'
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回指定消息所属的消息类型对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function messageType() { return $this->belongsTo('App\Models\MessageType'); }
     
-    /**
-     * 返回制定消息所属的媒体类型对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function mediaType() { return $this->belongsTo('App\Models\MediaType'); }
     
-    /**
-     * 返回指定消息所属的用户对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function sender() { return $this->belongsTo('App\Models\User', 's_user_id', 'id'); }
     
-    /**
-     * 返回指定消息接收的用户对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function receiver() { return $this->belongsTo('App\Models\User', 'r_user_id', 'id'); }
     
-    /**
-     * 返回对应的消息发送日志对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function messageSendinglog() {
         
         return $this->belongsTo('App\Models\MessageSendingLog', 'msl_id', 'id');
         
     }
     
-    /**
-     * 返回对应的通信类型对象
-     *
-     * @return BelongsTo
-     */
-    function commType() { return $this->belongsTo('App\Models\CommType'); }
-    
-    /**
-     * 返回对应的事件对象
-     *
-     * @return BelongsTo`
-     */
+    /** @return BelongsTo` */
     function event() { return $this->belongsTo('App\Models\Event'); }
     
-    /**
-     * 返回对应的企业微信应用
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function app() { return $this->belongsTo('App\Models\App'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
     /**
-     * 消息列表
-     *
      * @return array
      * @throws ReflectionException
      */
@@ -183,15 +140,20 @@ class Message extends Model {
                 },
             ],
             [
-                'db'        => 'Message.comm_type_id', 'dt' => 3,
+                'db'        => 'Message.event_id', 'dt' => 3,
                 'formatter' => function ($d, $row) {
-                    $row['sent'] == 1 ?:
-                        $type = '(' . (!$row['event_id']
-                                ? sprintf(Snippet::BADGE, 'text-red', '草稿')
-                                : sprintf(Snippet::BADGE, 'text-orange', '定时')
-                            ) . ')';
+                    $mt = MediaType::find($row['media_type_id'])->name;
+                    $ct =  $mt->name == 'sms' ? $mt->remark : '微信';
+                    if ($row['sent'] != 1) {
+                        $type = sprintf(
+                            Snippet::BADGE,
+                            !$d ? 'text-red' : 'text-orange',
+                            !$d ? '草稿' : '定时'
+                        );
+                        $type = '(' . $type . ')';
+                    }
                     
-                    return CommType::find($d)->name . ($type ?? '');
+                    return $ct . ($type ?? '');
                 },
             ],
             [
@@ -257,17 +219,8 @@ class Message extends Model {
             ['db' => 'Message.' . ($received ? 'sent' : 'read'), 'dt' => 9],
             ['db' => 'Message.content', 'dt' => 10],
             ['db' => 'Message.app_id', 'dt' => 11],
-            ['db' => 'Message.event_id', 'dt' => 12],
         ];
         $joins = [
-            [
-                'table'      => 'comm_types',
-                'alias'      => 'CommType',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'CommType.id = Message.comm_type_id',
-                ],
-            ],
             [
                 'table'      => 'media_types',
                 'alias'      => 'MediaType',
@@ -343,6 +296,14 @@ class Message extends Model {
                     'User.id = Message.s_user_id',
                 ],
             ],
+            [
+                'table' => 'media_types',
+                'alias' => 'MediaType',
+                'type' => 'INNER',
+                'conditions' => [
+                    'MediaType.id = Message.media_type_id'
+                ]
+            ]
         ];
         switch ($sender) {
             case 'corp':
@@ -357,7 +318,7 @@ class Message extends Model {
         }
         $userIds = join(',', $builder->pluck('user_id')->toArray());
         !empty($userIds) ?: $userIds = 0;
-        $condition = 'Message.comm_type_id = 2 AND s_user_id IN (' . $userIds . ')';
+        $condition = 'MediaType.name = \'sms\' AND s_user_id IN (' . $userIds . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition
@@ -539,7 +500,6 @@ class Message extends Model {
         
         return view('message.detail', [
             'msgTitle'   => $detail['title'],
-            'commType'   => CommType::find($this->find($id)->comm_type_id)->name,
             'msgBody'    => $msgBody,
             'sentAt'     => $detail['updated_at'],
             'recipients' => join('; ', $recipients),
@@ -808,10 +768,9 @@ class Message extends Model {
         
         switch ($uri ?? Request::route()->uri) {
             case 'messages/index':
-                [$nil, $htmlCommType, $htmlMediaType, $htmlMessageType] = $this->filters();
+                [$nil, $htmlMediaType, $htmlMessageType] = $this->filters();
                 $titles = [
                     '#', '标题', '批次',
-                    ['title' => '通信方式', 'html' => $htmlCommType],
                     ['title' => '格式', 'html' => $htmlMediaType],
                     ['title' => '类型', 'html' => $htmlMessageType],
                 ];
@@ -1023,7 +982,7 @@ class Message extends Model {
                         ),
                         'filter_' . $id
                     );
-                }, ['comm_types', 'media_types', 'message_types']
+                }, ['media_types', 'message_types']
             )
         );
         
@@ -1205,7 +1164,7 @@ class Message extends Model {
             }
         );
         # 获取发送对象的手机号码、userid(企业微信)或openid(微信服务号)
-        if ($message->commType->name == '短信') {
+        if ($message->mediaType->name == 'sms') {
             [$mobiles, $members] = [$users, collect([])];
         } else {
             $val = ($platform == 1 ? 'ent' : 'pub') . '_attrs->subscribed';
@@ -1661,9 +1620,7 @@ class Message extends Model {
         
         return Event::insertGetId(
             array_combine((new Event)->getFillable(), [
-                '定时消息', '定时消息', 'n/a', 'n/a', 'n/a',
-                $time, $time, 0, 0, $educator->id, 0, 0, 0,
-                Auth::id(), isset($draft) ? 1 : 0,
+                $time, $time, null, isset($draft) ? 1 : 0,
             ])
         );
         

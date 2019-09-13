@@ -90,17 +90,4 @@ class UserController extends Controller {
         
     }
     
-    /**
-     * 待办事项
-     *
-     * @throws Throwable
-     */
-    public function event() {
-        
-        return Request::get('draw')
-            ? response()->json($this->event->index())
-            : $this->output();
-        
-    }
-    
 }

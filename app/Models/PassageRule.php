@@ -59,6 +59,8 @@ use Throwable;
  * @method static Builder|PassageRule whereTargets($value)
  * @method static Builder|PassageRule whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read int|null $cards_count
+ * @property-read int|null $turnstiles_count
  */
 class PassageRule extends Model {
     

@@ -35,6 +35,8 @@ use Throwable;
  * @method static Builder|Icon newQuery()
  * @method static Builder|Icon query()
  * @mixin Eloquent
+ * @property-read int|null $menus_count
+ * @property-read int|null $tabs_count
  */
 class Icon extends Model {
     

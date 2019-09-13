@@ -33,6 +33,8 @@ use Throwable;
  * @method static Builder|MessageType newQuery()
  * @method static Builder|MessageType query()
  * @mixin Eloquent
+ * @property-read int|null $api_messages_count
+ * @property-read int|null $messages_count
  */
 class MessageType extends Model {
     

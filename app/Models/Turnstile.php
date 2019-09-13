@@ -43,6 +43,8 @@ use Throwable;
  * @method static Builder|Turnstile query()
  * @method static Builder|Turnstile whereDoors($value)
  * @mixin Eloquent
+ * @property-read int|null $cards_count
+ * @property-read int|null $passage_rules_count
  */
 class Turnstile extends Model {
     

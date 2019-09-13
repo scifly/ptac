@@ -34,6 +34,7 @@ use Throwable;
  * @method static Builder|WapSite newQuery()
  * @method static Builder|WapSite query()
  * @mixin Eloquent
+ * @property-read int|null $wap_site_modules_count
  */
 class WapSite extends Model {
     

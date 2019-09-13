@@ -81,6 +81,18 @@ use Throwable;
  * @method static Builder|User whereUpdatedAt($value)
  * @method static Builder|User whereUsername($value)
  * @mixin Eloquent
+ * @property-read int|null $_tags_count
+ * @property-read int|null $clients_count
+ * @property-read int|null $departments_count
+ * @property-read int|null $events_count
+ * @property-read int|null $notifications_count
+ * @property-read int|null $openids_count
+ * @property-read int|null $orders_count
+ * @property-read int|null $poll_questionnaires_count
+ * @property-read int|null $pq_answers_count
+ * @property-read int|null $pq_participants_count
+ * @property-read int|null $tags_count
+ * @property-read int|null $tokens_count
  */
 class User extends Authenticatable {
     
@@ -774,21 +786,13 @@ class User extends Authenticatable {
     function compose() {
     
         switch (Request::route()->uri) {
-            case 'users/event':
-                return [
-                    'titles' => [
-                        '#', '名称', '备注', '地点', '开始时间', '结束时间',
-                        '公共事件', '课程', '提醒', '创建者', '更新于',
-                    ],
-                ];
             case 'users/message':
                 /** @var \Illuminate\Support\Collection $nil */
-                [$nil, $htmlCommType, $htmlApp, $htmlMessageType] = (new Message)->filters();
+                [$nil, $htmlApp, $htmlMessageType] = (new Message)->filters();
                 
                 return [
                     'titles'    => [
                         '#', '标题', '消息批次',
-                        ['title' => '通信方式', 'html' => $htmlCommType],
                         ['title' => '媒体类型', 'html' => $htmlApp],
                         ['title' => '类型', 'html' => $htmlMessageType],
                         '发送者',
@@ -874,8 +878,7 @@ class User extends Authenticatable {
                 ];
             case 'partners/create':    # api用户创建/编辑
             case 'partners/edit/{id?}':
-                $corpId = (new Corp)->corpId();
-                return ['schools' => School::whereCorpId($corpId)->pluck('name', 'id')];
+                return ['schools' => School::whereCorpId($this->corpId())->pluck('name', 'id')];
             default:                   # api用户短信充值/查询
                 return (new Message)->compose('recharge');
         }

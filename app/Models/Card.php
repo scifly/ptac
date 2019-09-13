@@ -35,6 +35,7 @@ use Throwable;
  * @method static Builder|Card whereUserId($value)
  * @method static Builder|Card whereSn($value)
  * @mixin Eloquent
+ * @property-read int|null $turnstiles_count
  */
 class Card extends Model {
     

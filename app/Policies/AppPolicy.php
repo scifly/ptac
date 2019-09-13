@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
 use App\Models\{App, Corp, Menu, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
@@ -13,20 +14,9 @@ use Illuminate\Support\Facades\Request;
  */
 class AppPolicy {
 
-    use HandlesAuthorization;
+    use HandlesAuthorization, ModelTrait;
     
     protected $menu;
-    
-    /**
-     * Create a new policy instance.
-     *
-     * @param Menu $menu
-     */
-    public function __construct(Menu $menu) {
-        
-        $this->menu = $menu;
-        
-    }
     
     /**
      * Determine whether the user can (e)dit/(u)pdate/sync (m)enu of the app
@@ -37,25 +27,20 @@ class AppPolicy {
      * @return bool
      */
     function operation(User $user, App $app = null, $abort = false) {
-
+    
         abort_if(
             $abort && !$app,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $action = explode('/', Request::path())[1];
-        switch ($user->role()) {
-            case '运营':
-                return true;
-            case '企业':
-                if ($action != 'index') {
-                    $rootMenuId = $this->menu->rootId();
-                    $corp = Corp::whereMenuId($rootMenuId)->first();
-                    return $corp->id == $app->corp_id;
-                }
-                return true;
-            default:
-                return false;
+        $role = $user->role();
+        if ($role == '运营') {
+            return true;
+        } elseif ($role == '企业') {
+            return explode('/', Request::path())[1] != 'index'
+                ? $this->corpId() == $app->corp_id : true;
+        } else {
+            return false;
         }
 
     }

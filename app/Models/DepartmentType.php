@@ -29,6 +29,7 @@ use Throwable;
  * @method static Builder|DepartmentType newQuery()
  * @method static Builder|DepartmentType query()
  * @mixin Eloquent
+ * @property-read int|null $departments_count
  */
 class DepartmentType extends Model {
     

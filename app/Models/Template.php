@@ -43,6 +43,7 @@ use Throwable;
  * @method static Builder|Template whereTitle($value)
  * @method static Builder|Template whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read App $corpApp
  */
 class Template extends Model {
     
@@ -105,7 +106,7 @@ class Template extends Model {
                 ],
             ],
         ];
-        $condition = 'App.corp_id = ' . (new Corp)->corpId();
+        $condition = 'App.corp_id = ' . $this->corpId();
         
         return Datatable::simple(
             $this, $columns, $joins, $condition
@@ -165,7 +166,7 @@ class Template extends Model {
     function fetch() {
         
         GetTemplateList::dispatch(
-            (new Corp)->corpId(), Auth::id()
+            $this->corpId(), Auth::id()
         );
 
         return true;

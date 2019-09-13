@@ -43,6 +43,8 @@ use Throwable;
  * @method static Builder|Tag newQuery()
  * @method static Builder|Tag query()
  * @mixin Eloquent
+ * @property-read int|null $departments_count
+ * @property-read int|null $users_count
  */
 class Tag extends Model {
     

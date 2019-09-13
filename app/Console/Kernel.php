@@ -36,7 +36,7 @@ class Kernel extends ConsoleKernel {
         
         $schedule->job(new SendScheduledMessage)
             ->when(function () {
-                return Event::whereEnabled(1)->get()->count() > 0;
+                return Event::whereEnabled(1)->count() > 0;
             })->everyMinute();
         
         // $schedule->job(new GatherPassageLog)->everyMinute();

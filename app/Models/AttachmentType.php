@@ -30,6 +30,7 @@ use Throwable;
  * @method static Builder|AttachmentType newQuery()
  * @method static Builder|AttachmentType query()
  * @mixin Eloquent
+ * @property-read int|null $attachments_count
  */
 class AttachmentType extends Model {
     

@@ -47,6 +47,7 @@ use Throwable;
  * @method static Builder|Educator newQuery()
  * @method static Builder|Educator query()
  * @mixin Eloquent
+ * @property-read int|null $classes_count
  */
 class Educator extends Model {
     
@@ -305,7 +306,7 @@ class Educator extends Model {
                 # 删除教职员工
                 Request::replace(['ids' => $ids]);
                 $this->purge([
-                    class_basename($this), 'ConferenceParticipant',
+                    class_basename($this), 'Participant',
                     'EducatorAppeal', 'ClassEducator', 'Event',
                 ], 'educator_id');
             });

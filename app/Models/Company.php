@@ -45,6 +45,8 @@ use Throwable;
  * @method static Builder|Company newQuery()
  * @method static Builder|Company query()
  * @mixin Eloquent
+ * @property-read int|null $corps_count
+ * @property-read int|null $schools_count
  */
 class Company extends Model {
     

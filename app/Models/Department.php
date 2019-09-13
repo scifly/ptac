@@ -54,6 +54,9 @@ use Throwable;
  * @method static Builder|Department newQuery()
  * @method static Builder|Department query()
  * @mixin Eloquent
+ * @property-read int|null $children_count
+ * @property-read int|null $tags_count
+ * @property-read int|null $users_count
  */
 class Department extends Model {
     

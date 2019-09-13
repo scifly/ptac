@@ -5,7 +5,7 @@
             options: $.extend({}, options),
             mpnews: { articles: [] },
             mpnewsCount: 0,
-            dtOptions: [{className: 'text-center', targets: [2, 3, 4, 5, 6, 7]}],
+            dtOptions: [{className: 'text-center', targets: [2, 3, 4, 5, 6]}],
             id: 0,
             index: function () {
                 var $batchBtns = $('.btn-group'),

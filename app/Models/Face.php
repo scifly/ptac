@@ -40,6 +40,7 @@ use Throwable;
  * @method static Builder|Face whereMediaId($value)
  * @method static Builder|Face whereUserId($value)
  * @mixin Eloquent
+ * @property-read int|null $cameras_count
  */
 class Face extends Model {
     

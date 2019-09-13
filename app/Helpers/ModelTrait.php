@@ -21,7 +21,7 @@ use Form;
 use Illuminate\Database\{Eloquent\Collection, Eloquent\Model, Query\Builder};
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection as SCollection;
-use Illuminate\Support\Facades\{Auth, DB, Request, Storage};
+use Illuminate\Support\Facades\{Auth, DB, Request, Session, Storage};
 use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\{Exception, IOFactory, Spreadsheet, Writer\Exception as WriterException};
 use ReflectionClass;
@@ -82,9 +82,9 @@ trait ModelTrait {
                                 $records = $model->all()->filter(
                                     function (Model $record) use ($values, $field) {
                                         return !empty(
-                                        array_intersect(
-                                            explode(',', $record->{$field}), $values
-                                        )
+                                            array_intersect(
+                                                explode(',', $record->{$field}), $values
+                                            )
                                         );
                                     }
                                 );
@@ -247,6 +247,30 @@ trait ModelTrait {
         $schoolMenuId = (new Menu)->menuId(session('menuId'));
         
         return $schoolMenuId ? School::whereMenuId($schoolMenuId)->first()->id : null;
+        
+    }
+    
+    /**
+     * 根据角色 & 菜单id获取corp_id
+     *
+     * @return int|mixed
+     */
+    function corpId() {
+        
+        if (!$menuId = Session::exists('menuId')) return null;
+        $user = Auth::user();
+        $menu = new Menu;
+        switch ($user->role()) {
+            case '运营':
+            case '企业':
+                $cMId = $menu->menuId($menuId, '企业');
+                return !$cMId ?: $this->where('menu_id', $cMId)->first()->id;
+            case '学校':
+                $sMId = $menu->menuId($menuId);
+                return School::whereMenuId($sMId)->first()->corp_id;
+            default:
+                return School::find($user->educator->school_id)->corp_id;
+        }
         
     }
     

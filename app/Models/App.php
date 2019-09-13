@@ -53,6 +53,10 @@ use Throwable;
  * @method static Builder|App whereProperties($value)
  * @method static Builder|App whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read int|null $messages_count
+ * @property-read int|null $openids_count
+ * @property-read int|null $schools_count
+ * @property-read int|null $templates_count
  */
 class App extends Model {
     
@@ -162,7 +166,7 @@ class App extends Model {
         
         return Datatable::simple(
             $this, $columns, $joins,
-            'App.corp_id = ' . (new Corp)->corpId()
+            'App.corp_id = ' . $this->corpId()
         );
         
     }
@@ -223,7 +227,7 @@ class App extends Model {
      */
     function compose() {
         
-        $corpId = (new Corp)->corpId();
+        $corpId = $this->corpId();
         switch (Request::route()->uri) {
             case 'apps/index':
                 return [

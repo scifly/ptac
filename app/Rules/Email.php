@@ -1,7 +1,7 @@
 <?php
 namespace App\Rules;
 
-use App\Models\Corp;
+use App\Helpers\ModelTrait;
 use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Request;
@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Request;
  * @package App\Rules
  */
 class Email implements Rule {
+    
+    use ModelTrait;
     
     private $email;
 
@@ -24,13 +26,11 @@ class Email implements Rule {
     public function passes($attribute, $value) {
     
         $this->email = $value;
-        # 当前企业id
-        $corpId = (new Corp)->corpId();
         # email所属用户id
         $userId = Request::input('user_id') ?? Request::input('id');
         # email所属用户
         $user = User::whereEmail($value)->first();
-        $existed = !$user ? false : in_array($corpId, $user->corpIds($user->id));
+        $existed = !$user ? false : in_array($this->corpId(), $user->corpIds($user->id));
         Request::method() == 'POST' ?: $existed &= $user->id != $userId;
 
         return !$existed;

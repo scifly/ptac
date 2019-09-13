@@ -30,6 +30,7 @@ use Throwable;
  * @method static Builder|MediaType newQuery()
  * @method static Builder|MediaType query()
  * @mixin Eloquent
+ * @property-read int|null $medias_count
  */
 class MediaType extends Model {
     

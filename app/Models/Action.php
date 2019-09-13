@@ -50,6 +50,7 @@ use Throwable;
  * @method static Builder|Action newQuery()
  * @method static Builder|Action query()
  * @mixin Eloquent
+ * @property-read int|null $groups_count
  */
 class Action extends Model {
     

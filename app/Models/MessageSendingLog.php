@@ -30,6 +30,8 @@ use Throwable;
  * @method static Builder|MessageSendingLog newQuery()
  * @method static Builder|MessageSendingLog query()
  * @mixin Eloquent
+ * @property-read int|null $api_messages_count
+ * @property-read int|null $messages_count
  */
 class MessageSendingLog extends Model {
     

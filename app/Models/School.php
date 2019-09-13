@@ -86,6 +86,29 @@ use Throwable;
  * @method static Builder|School newQuery()
  * @method static Builder|School query()
  * @mixin Eloquent
+ * @property-read Collection|Building[] $buildings
+ * @property-read int|null $buildings_count
+ * @property-read int|null $classes_count
+ * @property-read int|null $conference_rooms_count
+ * @property-read App $corpApp
+ * @property-read int|null $educators_count
+ * @property-read int|null $exam_types_count
+ * @property-read int|null $exams_count
+ * @property-read int|null $grades_count
+ * @property-read int|null $groups_count
+ * @property-read int|null $majors_count
+ * @property-read int|null $passage_logs_count
+ * @property-read int|null $passage_rules_count
+ * @property-read int|null $poll_questionnaires_count
+ * @property-read int|null $procedures_count
+ * @property-read Collection|Room[] $rooms
+ * @property-read int|null $rooms_count
+ * @property-read int|null $semesters_count
+ * @property-read int|null $subject_modules_count
+ * @property-read int|null $subjects_count
+ * @property-read int|null $tags_count
+ * @property-read int|null $turnstiles_count
+ * @property-read int|null $wap_site_modules_count
  */
 class School extends Model {
     
@@ -100,159 +123,87 @@ class School extends Model {
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回对应的部门对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function department() { return $this->belongsTo('App\Models\Department'); }
     
-    /**
-     * 返回对应的菜单对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function menu() { return $this->belongsTo('App\Models\Menu'); }
     
-    /**
-     * 返回所属学校类型对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function schoolType() { return $this->belongsTo('App\Models\SchoolType'); }
     
-    /**
-     * 返回所属企业对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function corp() { return $this->belongsTo('App\Models\Corp'); }
     
-    /**
-     * 返回所属应用对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function corpApp() { return $this->belongsTo('App\Models\App'); }
     
-    /**
-     * 获取隶属指定学校的所有角色对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function groups() { return $this->hasMany('App\Models\Group'); }
     
-    /**
-     * 获取指定学校所有的考勤机对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function turnstiles() { return $this->hasMany('App\Models\Turnstile'); }
     
-    /**
-     * 获取所有的会议室对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function conferenceRooms() { return $this->hasMany('App\Models\ConferenceRoom'); }
     
-    /**
-     * 获取指定学校的所有调查问卷对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
+    function buildings() { return $this->hasMany('App\Models\Building'); }
+    
+    /** @return HasManyThrough */
+    function rooms() { return $this->hasManyThrough('App\Models\Room', 'App\Models\Building'); }
+    
+    /** @return HasMany */
     function pollQuestionnaires() { return $this->hasMany('App\Models\PollQuestionnaire'); }
     
-    /**
-     * 获取指定学校的所有审批流程对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function procedures() { return $this->hasMany('App\Models\Procedure'); }
     
-    /**
-     * 获取指定学校所有的学期对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function semesters() { return $this->hasMany('App\Models\Semester'); }
     
-    /**
-     * 获取指定学校所有的科目对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function subjects() { return $this->hasMany('App\Models\Subject'); }
     
-    /**
-     * 获取指定学校的所有教职员工组对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function tags() { return $this->hasMany('App\Models\Tag'); }
     
-    /**
-     * 获取指定学校的所有年级对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function grades() { return $this->hasMany('App\Models\Grade'); }
     
-    /**
-     * 获取指定学校的所有专业对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function majors() { return $this->hasMany('App\Models\Major'); }
     
-    /**
-     * 获取指定学校包含的所有考试类型对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function examTypes() { return $this->hasMany('App\Models\ExamType'); }
     
-    /**
-     * 获取指定学校包含的所有考试对象
-     *
-     * @return HasManyThrough
-     */
+    /** @return HasManyThrough */
     function exams() {
         
-        return $this->hasManyThrough('App\Models\Exam', 'App\Models\ExamType');
-        
+        return $this->hasManyThrough(
+            'App\Models\Exam',
+            'App\Models\ExamType'
+        );
+    
     }
     
-    /**
-     * 获取指定学校所有的教职员工对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function educators() { return $this->hasMany('App\Models\Educator'); }
     
-    /**
-     * 获取指定学校的微网站对象
-     *
-     * @return HasOne
-     */
+    /** @return HasOne */
     function wapSite() { return $this->hasOne('App\Models\WapSite'); }
     
-    /**
-     * 通过WapSite中间对象获取所有的微网站模块对象
-     *
-     * @return HasManyThrough
-     */
+    /** @return HasManyThrough */
     function wapSiteModules() {
         
-        return $this->hasManyThrough('App\Models\WapSiteModule', 'App\Models\WapSite');
-        
+        return $this->hasManyThrough(
+            'App\Models\WapSiteModule',
+            'App\Models\WapSite'
+        );
+    
     }
     
-    /**
-     * 通过Grade中间对象获取所有的班级对象
-     *
-     * @return HasManyThrough
-     */
+    /** @return HasManyThrough */
     function classes() {
         
         return $this->hasManyThrough(
@@ -262,25 +213,13 @@ class School extends Model {
         
     }
     
-    /**
-     * 获取指定学校的门禁通行记录
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function passageLogs() { return $this->hasMany('App\Models\PassageLog'); }
     
-    /**
-     * 获取指定学校的门禁通行规则
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function passageRules() { return $this->hasMany('App\Models\PassageRule'); }
     
-    /**
-     * 通过Subject中间对象获取所有的科目次分类对象
-     *
-     * @return HasManyThrough
-     */
+    /** @return HasManyThrough */
     function subjectModules() {
         
         return $this->hasManyThrough(
@@ -350,7 +289,7 @@ class School extends Model {
         ];
         
         return Datatable::simple(
-            $this, $columns, $joins, 'School.corp_id = ' . (new Corp)->corpId()
+            $this, $columns, $joins, 'School.corp_id = ' . $this->corpId()
         );
         
     }
@@ -515,7 +454,7 @@ class School extends Model {
                 return [
                         'schoolTypes'  => SchoolType::whereEnabled(1)->pluck('name', 'id'),
                         'apps'         => collect([null => '[所属公众号]'])->union($apps),
-                        'corpId'       => (new Corp)->corpId(),
+                        'corpId'       => $this->corpId(),
                         'uris'         => $this->uris(),
                         'apis'         => $apis,
                         'selectedApis' => $selectedApis,

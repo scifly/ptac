@@ -1,1 +1,0 @@
-page.index('conference_rooms');

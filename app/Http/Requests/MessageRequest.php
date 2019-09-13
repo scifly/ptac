@@ -2,7 +2,7 @@
 namespace App\Http\Requests;
 
 use App\Helpers\{ModelTrait};
-use App\Models\{App, CommType, MediaType, Message, School, User};
+use App\Models\{App, MediaType, Message, School, User};
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -30,9 +30,7 @@ class MessageRequest extends FormRequest {
             'required|integer', 'required|integer',
             'required|string|max:64', 'required|string',
             'required|string|max:255', 'required|integer',
-            'required|string|max:255',
-            'required|string|max:255',
-            'required|integer', 'required|integer',
+            'required|url|max:255', 'required|integer',
             'required|integer', 'required|boolean',
             'required|boolean', 'nullable|integer'
         ]);
@@ -56,13 +54,12 @@ class MessageRequest extends FormRequest {
         if (!($this->method() == 'update' && !$this->route('id'))) {
             $school = School::find($this->schoolId() ?? session('schoolId'));
             $app = $school->app ?? $this->corpApp($school->corp_id);
-            [$mediaTypeId, $commTypeId, $messageTypeId] = $this->typeIds();
+            [$messageTypeId, $mediaTypeId] = $this->typeIds();
             $input = array_combine((new Message)->getFillable(), [
-                $commTypeId, $mediaTypeId, $app->id, 0,
-                $this->title($this->input('type')),
-                '', uniqid(), 0, 'http://', 0,
-                $this->user()->id ?? 0, 0,
-                $messageTypeId, 0, 0, null
+                $messageTypeId, $mediaTypeId, $app->id, 0,
+                $this->title($this->input('type')), '',
+                uniqid(), 0, 'http://', $this->user()->id ?? 0,
+                0, 0, 0, null
             ]);
             if ($this->has('targetIds')) {
                 # 从后台发送消息
@@ -137,12 +134,9 @@ class MessageRequest extends FormRequest {
      */
     private function typeIds() {
     
-        $type = $this->input('type');
-        
         return [
-            MediaType::whereName($type)->first()->id,
-            CommType::whereName($type == 'sms' ? '短信' : '微信')->first()->id,
             $this->input('message_type_id'),
+            MediaType::whereName($this->input('type'))->first()->id,
         ];
         
     }

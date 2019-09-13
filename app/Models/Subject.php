@@ -51,6 +51,12 @@ use Throwable;
  * @method static Builder|Subject newQuery()
  * @method static Builder|Subject query()
  * @mixin Eloquent
+ * @property-read int|null $classes_count
+ * @property-read int|null $educators_count
+ * @property-read int|null $events_count
+ * @property-read int|null $majors_count
+ * @property-read int|null $scores_count
+ * @property-read int|null $subject_modules_count
  */
 class Subject extends Model {
     

@@ -59,6 +59,8 @@ $routes = [
         'update' => ['{id}' => 'put'],
     ],
     'app'                    => $default,
+    'bed'                    => $default,
+    'building'               => $default,
     'camera'                 => [
         'index' => ['get'],
         'store' => ['post'],
@@ -74,8 +76,8 @@ $routes = [
         'export' => ['get'],
     ],
     'conference_room'        => $default,
-    'conference_queue'       => $default,
-    'conference_participant' => [
+    'conference'       => $default,
+    'participant' => [
         'index' => ['get'],
         'store' => ['post'],
         'show'  => ['{id}' => 'get'],
@@ -175,7 +177,7 @@ $routes = [
     ],
     'partner'                => array_merge(
         $default, ['recharge' => ['{id}' => ['get', 'put']]],
-    ),
+        ),
     'passage_log'            => [
         'index'  => ['get'],
         'store'  => ['post'],
@@ -185,6 +187,8 @@ $routes = [
         $default,
         ['issue' => ['post']]
     ),
+    'room'                   => $default,
+    'room_type'              => $default,
     'school'                 => array_merge(
         $default, ['recharge' => ['{id}' => ['get', 'put']]]
     ),
@@ -254,7 +258,6 @@ $routes = [
         'update'  => ['put'],
         'reset'   => ['get', 'post'],
         'message' => ['get'],
-        'event'   => ['get'],
     ],
     'wap_site'               => [
         'index'  => ['get'],
@@ -320,8 +323,8 @@ foreach (Corp::pluck('acronym')->toArray() as $acronym) {
     Route::group(['prefix' => $acronym . '/wechat'], function () {
         $c = 'Wechat\WechatController';
         Route::get('/{id?}', $c . '@index');
-        Route::get('schools/{id?}', $c . '@schools');
-        Route::get('roles/{id?}', $c . '@roles');
+        Route::get('/schools/{id?}', $c . '@schools');
+        Route::get('/roles/{id?}', $c . '@roles');
         Route::get('/signup/{id}', $c . '@signup');
     });
     Route::match(

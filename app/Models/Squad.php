@@ -44,6 +44,9 @@ use Throwable;
  * @method static Builder|Squad newQuery()
  * @method static Builder|Squad query()
  * @mixin Eloquent
+ * @property-read int|null $educators_count
+ * @property-read int|null $students_count
+ * @property-read int|null $subjects_count
  */
 class Squad extends Model {
     

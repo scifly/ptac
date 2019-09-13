@@ -40,6 +40,7 @@ use Throwable;
  * @method static Builder|PollQuestionnaireSubject newQuery()
  * @method static Builder|PollQuestionnaireSubject query()
  * @mixin Eloquent
+ * @property-read int|null $pqs_choices_count
  */
 class PollQuestionnaireSubject extends Model {
     

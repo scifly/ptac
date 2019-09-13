@@ -40,6 +40,7 @@ use Throwable;
  * @method static Builder|Media newModelQuery()
  * @method static Builder|Media newQuery()
  * @method static Builder|Media query()
+ * @property-read int|null $menus_count
  */
 class Media extends Model {
     

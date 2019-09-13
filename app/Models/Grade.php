@@ -42,6 +42,8 @@ use Throwable;
  * @method static Builder|Grade newQuery()
  * @method static Builder|Grade query()
  * @mixin Eloquent
+ * @property-read int|null $classes_count
+ * @property-read int|null $students_count
  */
 class Grade extends Model {
     

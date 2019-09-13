@@ -22,15 +22,6 @@ class SendScheduledMessage implements ShouldQueue {
         SerializesModels, JobTrait;
     
     /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    function __construct() {
-        //
-    }
-    
-    /**
      * Execute the job.
      *
      * @return bool
@@ -40,14 +31,15 @@ class SendScheduledMessage implements ShouldQueue {
         
         try {
             DB::transaction(function () {
-                $events = Event::whereEnabled(1)
-                    ->where('start', '<=', date(now()))
-                    ->take(500)->get();
+                $events = Event::where([
+                    ['enabled', '=', 1],
+                    ['start', '<=', date(now())]
+                ])->take(500)->get();
                 foreach ($events as $event) {
                     $message = Message::whereEventId($event->id)->first();
                     if (!$message) continue;
-                    $sent = $this->send($message);
-                    if ($sent) $event->update(['enabled' => 0]);
+                    # todo -
+                    if ($this->send($message)) $event->delete();
                 }
             });
         } catch (Exception $e) {
@@ -64,7 +56,7 @@ class SendScheduledMessage implements ShouldQueue {
      */
     function failed(Exception $e) {
     
-        throw $e;
+        $this->eHandler($this, $e);
         
     }
     

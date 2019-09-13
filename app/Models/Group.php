@@ -43,6 +43,10 @@ use Throwable;
  * @method static Builder|Group newQuery()
  * @method static Builder|Group query()
  * @mixin Eloquent
+ * @property-read int|null $actions_count
+ * @property-read int|null $menus_count
+ * @property-read int|null $tabs_count
+ * @property-read int|null $users_count
  */
 class Group extends Model {
     

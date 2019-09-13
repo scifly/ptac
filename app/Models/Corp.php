@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasManyThrough};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\{Auth, DB, Request, Session};
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
@@ -61,6 +61,11 @@ use Throwable;
  * @method static Builder|Corp whereSmsUsed($value)
  * @method static Builder|Corp whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read int|null $apps_count
+ * @property-read int|null $educators_count
+ * @property-read int|null $grades_count
+ * @property-read int|null $schools_count
+ * @property-read int|null $tags_count
  */
 class Corp extends Model {
     
@@ -72,79 +77,43 @@ class Corp extends Model {
         'apikey', 'sms_balance', 'sms_used', 'enabled',
     ];
     
-    /**
-     * 返回对应的部门对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function department() { return $this->belongsTo('App\Models\Department'); }
     
-    /**
-     * 返回对应的菜单对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function menu() { return $this->belongsTo('App\Models\Menu'); }
     
-    /**
-     * 获取所属运营者公司对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function company() { return $this->belongsTo('App\Models\Company'); }
     
-    /**
-     * 获取指定企业包含的所有应用
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function apps() { return $this->hasMany('App\Models\App'); }
     
-    /**
-     * 获取下属学校对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function schools() { return $this->hasMany('App\Models\School'); }
     
-    /**
-     * 通过School中间对象获取所有教职员工对象
-     *
-     * @return HasManyThrough
-     */
+    /** @return HasManyThrough */
     function educators() {
         
         return $this->hasManyThrough('App\Models\Educator', 'App\Models\School');
         
     }
     
-    /**
-     * 通过School中间对象获取所有年级对象
-     *
-     * @return HasManyThrough
-     */
+    /** @return HasManyThrough */
     function grades() {
         
         return $this->hasManyThrough('App\Models\Grade', 'App\Models\School');
         
     }
     
-    /**
-     * 通过School中间对象获取所有教职员工组对象
-     *
-     * @return HasManyThrough
-     */
+    /** @return HasManyThrough */
     function tags() {
         
         return $this->hasManyThrough('App\Models\Tag', 'App\Models\School');
         
     }
     
-    /**
-     * 企业列表
-     *
-     * @return mixed
-     */
+    /** @return mixed */
     function index() {
         
         $columns = [
@@ -198,8 +167,6 @@ class Corp extends Model {
     }
     
     /**
-     * 保存企业
-     *
      * @param array $data
      * @return mixed|bool|null
      * @throws Throwable
@@ -227,8 +194,6 @@ class Corp extends Model {
     }
     
     /**
-     * 更新企业
-     *
      * @param array $data
      * @param $id
      * @return mixed|bool|null
@@ -252,8 +217,6 @@ class Corp extends Model {
     }
     
     /**
-     * 短信充值
-     *
      * @param $id
      * @param array $data
      * @return JsonResponse
@@ -266,8 +229,6 @@ class Corp extends Model {
     }
     
     /**
-     * 删除企业
-     *
      * @param $id
      * @return bool
      * @throws Throwable
@@ -307,35 +268,9 @@ class Corp extends Model {
         
     }
     
-    /**
-     * 根据角色 & 菜单id获取corp_id
-     *
-     * @return int|mixed
-     */
-    function corpId() {
-        
-        if (!$menuId = Session::exists('menuId')) return null;
-        $user = Auth::user();
-        $menu = new Menu;
-        switch ($user->role()) {
-            case '运营':
-            case '企业':
-                $cMId = $menu->menuId($menuId, '企业');
-                return !$cMId ?: $this->where('menu_id', $cMId)->first()->id;
-            case '学校':
-                $sMId = $menu->menuId($menuId);
-                return School::whereMenuId($sMId)->first()->corp_id;
-            default:
-                return School::find($user->educator->school_id)->corp_id;
-        }
-        
-    }
     
-    /**
-     * 返回composer所需view数据
-     *
-     * @return array
-     */
+    
+    /** @return array */
     function compose() {
         
         switch (explode('/', Request::path())[1]) {

@@ -35,6 +35,7 @@ use Throwable;
  * @method static Builder|Major newQuery()
  * @method static Builder|Major query()
  * @mixin Eloquent
+ * @property-read int|null $subjects_count
  */
 class Major extends Model {
     

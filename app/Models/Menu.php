@@ -59,6 +59,9 @@ use Throwable;
  * @method static Builder|Menu newQuery()
  * @method static Builder|Menu query()
  * @mixin Eloquent
+ * @property-read int|null $children_count
+ * @property-read int|null $groups_count
+ * @property-read int|null $tabs_count
  */
 class Menu extends Model {
     

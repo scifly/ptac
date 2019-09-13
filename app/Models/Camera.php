@@ -41,6 +41,7 @@ use Throwable;
  * @method static Builder|Camera whereUpdatedAt($value)
  * @mixin Eloquent
  * @property int $cameraid
+ * @property-read int|null $faces_count
  */
 class Camera extends Model {
     

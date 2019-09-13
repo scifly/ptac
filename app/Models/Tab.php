@@ -49,6 +49,9 @@ use Throwable;
  * @method static Builder|Tab query()
  * @mixin Eloquent
  * @property-read Collection|Group[] $groups
+ * @property-read int|null $actions_count
+ * @property-read int|null $groups_count
+ * @property-read int|null $menus_count
  */
 class Tab extends Model {
     

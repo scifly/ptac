@@ -32,6 +32,7 @@ use Throwable;
  * @method static Builder|Custodian newQuery()
  * @method static Builder|Custodian query()
  * @mixin Eloquent
+ * @property-read int|null $students_count
  */
 class Custodian extends Model {
     

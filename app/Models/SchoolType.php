@@ -30,6 +30,7 @@ use Throwable;
  * @method static Builder|SchoolType newQuery()
  * @method static Builder|SchoolType query()
  * @mixin Eloquent
+ * @property-read int|null $schools_count
  */
 class SchoolType extends Model {
     

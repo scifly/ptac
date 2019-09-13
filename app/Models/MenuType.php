@@ -29,6 +29,7 @@ use Throwable;
  * @method static Builder|MenuType newQuery()
  * @method static Builder|MenuType query()
  * @mixin Eloquent
+ * @property-read int|null $menus_count
  */
 class MenuType extends Model {
     

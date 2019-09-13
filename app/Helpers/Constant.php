@@ -33,14 +33,6 @@ class Constant {
             'data' => [],
         ],
         [
-            'id'   => 'CommType',
-            'name' => '通信方式',
-            'data' => [
-                ['微信', ''],
-                ['短信', ''],
-            ],
-        ],
-        [
             'id'   => 'DepartmentType',
             'name' => '部门类型',
             'data' => [
@@ -82,6 +74,7 @@ class Constant {
                 ['voice', '语音'],
                 ['textcard', '卡片'],
                 ['mpnews', '图文'],
+                ['sms', '短信'],
             ],
         ],
         [

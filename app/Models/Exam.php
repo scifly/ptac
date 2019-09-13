@@ -46,6 +46,7 @@ use Throwable;
  * @method static Builder|Exam newQuery()
  * @method static Builder|Exam query()
  * @mixin Eloquent
+ * @property-read int|null $scores_count
  */
 class Exam extends Model {
     

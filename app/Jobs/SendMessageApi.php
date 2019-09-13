@@ -3,7 +3,6 @@ namespace App\Jobs;
 
 use App\Helpers\{JobTrait, ModelTrait};
 use App\Models\{ApiMessage,
-    CommType,
     MediaType,
     Message,
     MessageSendingLog,
@@ -98,9 +97,10 @@ class SendMessageApi implements ShouldQueue {
                 $this->send(
                     $message->create(
                         array_combine($message->getFillable(), [
-                            CommType::whereName('微信')->first()->id, MediaType::whereName('text')->first()->id,
-                            $app->id, $msl->id, $messageType->name . '(文本)', json_encode($content), 0, 0,
-                            'http://', 0, $this->partner->id, 0, $messageType->id, 0, $result, null
+                            $messageType->id, MediaType::whereName('text')->first()->id,
+                            $app->id, $msl->id, $messageType->name . '(文本)',
+                            json_encode($content), 0, 0, 'http://', 0,
+                            $this->partner->id, 0, 0, $result, null
                         ])
                     )
                 );
@@ -119,6 +119,10 @@ class SendMessageApi implements ShouldQueue {
      * @param Exception $e
      * @throws Exception
      */
-    function failed(Exception $e) { throw $e; }
+    function failed(Exception $e) {
+    
+        $this->eHandler($this, $e);
+        
+    }
     
 }

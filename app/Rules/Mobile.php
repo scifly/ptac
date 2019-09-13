@@ -1,7 +1,7 @@
 <?php
 namespace App\Rules;
 
-use App\Models\Corp;
+use App\Helpers\ModelTrait;
 use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Request;
@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Request;
  * @package App\Rules
  */
 class Mobile implements Rule {
+    
+    use ModelTrait;
     
     private $mobile;
     
@@ -22,12 +24,10 @@ class Mobile implements Rule {
     public function passes($attribute, $value) {
 
         $this->mobile = $value;
-        # 当前企业id
-        $corpId = (new Corp)->corpId();
         # mobile所属用户id
         $userId = Request::input('user_id') ?? Request::input('id');
         $user = User::whereMobile($value)->first();
-        $existed = !$user ? false : in_array($corpId, $user->corpIds($user->id));
+        $existed = !$user ? false : in_array($this->corpId(), $user->corpIds($user->id));
         Request::method() == 'POST' ?: $existed &= $user->id != $userId;
         
         return $existed && preg_match('/^1[3456789][0-9]{9}$/', $value);

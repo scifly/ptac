@@ -53,6 +53,10 @@ use Throwable;
  * @method static Builder|PollQuestionnaire newQuery()
  * @method static Builder|PollQuestionnaire query()
  * @mixin Eloquent
+ * @property-read int|null $pq_answers_count
+ * @property-read int|null $pq_choices_count
+ * @property-read int|null $pq_participants_count
+ * @property-read int|null $pq_subjects_count
  */
 class PollQuestionnaire extends Model {
     

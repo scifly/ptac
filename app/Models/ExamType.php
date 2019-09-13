@@ -34,6 +34,7 @@ use Throwable;
  * @method static Builder|ExamType newQuery()
  * @method static Builder|ExamType query()
  * @mixin Eloquent
+ * @property-read int|null $exams_count
  */
 class ExamType extends Model {
     

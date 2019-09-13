@@ -30,6 +30,7 @@ use Throwable;
  * @method static Builder|ProcedureType newQuery()
  * @method static Builder|ProcedureType query()
  * @mixin Eloquent
+ * @property-read int|null $procedures_count
  */
 class ProcedureType extends Model {
     

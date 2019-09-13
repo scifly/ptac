@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Models\ConferenceQueue;
+use App\Models\Conference;
 use Illuminate\Contracts\View\View;
 
 /**
@@ -16,7 +16,7 @@ class ConferenceQueueComposer {
     public function compose(View $view) {
         
         $view->with(
-            (new ConferenceQueue)->compose()
+            (new Conference)->compose()
         );
         
     }
