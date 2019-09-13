@@ -183,7 +183,7 @@ class Bed extends Model {
         $nil = collect([0 => '全部']);
         $students = Student::with('user')->whereIn(
             'id', $this->contactIds('student')
-        )->pluck('user.realname', 'id');
+        )->get()->pluck('user.realname', 'id');
     
         return explode('/', Request::path())[1] == 'index'
             ? [
