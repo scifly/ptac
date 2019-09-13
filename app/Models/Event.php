@@ -1,13 +1,11 @@
 <?php
 namespace App\Models;
 
-use App\Facades\Datatable;
-use App\Helpers\{Constant, ModelTrait, Snippet};
+use App\Helpers\{ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo, Relations\HasOne};
-use Illuminate\Http\JsonResponse;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -37,7 +35,7 @@ use Throwable;
  * @method static Builder|Event newQuery()
  * @method static Builder|Event query()
  * @mixin Eloquent
- * @property-read \App\Models\Room|null $room
+ * @property-read Room|null $room
  */
 class Event extends Model {
     

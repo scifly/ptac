@@ -49,7 +49,7 @@ use Throwable;
  * @mixin Eloquent
  * @property-read int|null $conference_participants_count
  * @property-read int|null $participants_count
- * @property-read \App\Models\Educator $user
+ * @property-read Educator $user
  */
 class Conference extends Model {
     

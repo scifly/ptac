@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\HasMany};
 use Illuminate\Support\Carbon;
 
@@ -25,7 +26,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|RoomFunction whereName($value)
  * @method static Builder|RoomFunction whereRemark($value)
  * @method static Builder|RoomFunction whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class RoomFunction extends Model {
 

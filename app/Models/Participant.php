@@ -35,8 +35,8 @@ use Throwable;
  * @mixin Eloquent
  * @property int $conference_id 会议id
  * @property string $signed_up 与会者签到时间
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Participant whereConferenceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Participant whereSignedUp($value)
+ * @method static Builder|Participant whereConferenceId($value)
+ * @method static Builder|Participant whereSignedUp($value)
  */
 class Participant extends Model {
     
