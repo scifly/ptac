@@ -48,6 +48,8 @@ use Throwable;
  * @method static Builder|Conference query()
  * @mixin Eloquent
  * @property-read int|null $conference_participants_count
+ * @property-read int|null $participants_count
+ * @property-read \App\Models\Educator $user
  */
 class Conference extends Model {
     

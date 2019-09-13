@@ -45,6 +45,8 @@ use Throwable;
  * @method static Builder|Room whereUpdatedAt($value)
  * @method static Builder|Room whereVolume($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Bed[] $beds
+ * @property-read int|null $beds_count
  */
 class Room extends Model {
 

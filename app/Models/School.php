@@ -43,7 +43,6 @@ use Throwable;
  * @property-read Collection|Turnstile[] $turnstiles
  * @property-read Collection|Squad[] $classes
  * @property-read Collection|SubjectModule[] $subjectModules
- * @property-read Collection|ConferenceRoom[] $conferenceRooms
  * @property-read Corp $corp
  * @property-read Department $department
  * @property-read Collection|Educator[] $educators
@@ -143,9 +142,6 @@ class School extends Model {
     
     /** @return HasMany */
     function turnstiles() { return $this->hasMany('App\Models\Turnstile'); }
-    
-    /** @return HasMany */
-    function conferenceRooms() { return $this->hasMany('App\Models\ConferenceRoom'); }
     
     /** @return HasMany */
     function buildings() { return $this->hasMany('App\Models\Building'); }

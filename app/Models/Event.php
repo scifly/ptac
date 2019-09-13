@@ -37,6 +37,7 @@ use Throwable;
  * @method static Builder|Event newQuery()
  * @method static Builder|Event query()
  * @mixin Eloquent
+ * @property-read \App\Models\Room|null $room
  */
 class Event extends Model {
     
