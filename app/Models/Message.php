@@ -202,12 +202,13 @@ class Message extends Model {
                         $status = Snippet::status($row['read'], '已读', '未读');
                         $status .= sprintf($html, 'show_' . $id, '详情', 'fa-laptop');
                     } else {
-                        $status = sprintf(Snippet::DT_STATUS, 'text-green', '已发');
-                        if ($d == 0) {
-                            $status = sprintf(Snippet::DT_STATUS, 'text-red', '草稿');
-                        } elseif ($d == 2) {
-                            $status = sprintf(Snippet::DT_STATUS, 'text-orange', '定时');
-                        }
+                        $statuses = [
+                            ['red', '草稿'],
+                            ['green', '已发'],
+                            ['orange', '定时']
+                        ];
+                        [$color, $title] = $statuses[$d];
+                        $status = sprintf(Snippet::DT_STATUS, 'text-' . $color, $title);
                         $status .= $d != 1
                             ? sprintf($html, 'edit_' . $id, '编辑', 'fa-edit')
                             : sprintf($html, 'show_' . $id, '详情', 'fa-laptop');
@@ -425,7 +426,7 @@ class Message extends Model {
                             ? Event::find($message->event_id)->update([
                                 'start'   => $time,
                                 'end'     => $time,
-                                'enabled' => isset($data['draft']) ? 1 : 0,
+                                'enabled' => isset($data['draft']) ? 0 : 1,
                             ])
                             : $data['event_id'] = $this->eventId(
                                 $time, $data['draft'] ?? null
@@ -1620,7 +1621,7 @@ class Message extends Model {
         
         return Event::insertGetId(
             array_combine((new Event)->getFillable(), [
-                $time, $time, null, isset($draft) ? 1 : 0,
+                $time, $time, null, isset($draft) ? 0 : 1,
             ])
         );
         
