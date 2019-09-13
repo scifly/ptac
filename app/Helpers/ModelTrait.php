@@ -408,7 +408,7 @@ trait ModelTrait {
         $userIds = array_unique($userIds);
         
         return empty($userIds) ? [0]
-            : User::with($type)->whereIn('id', $userIds)->pluck($type . '.id')->toArray();
+            : User::with($type)->whereIn('id', $userIds)->get()->pluck($type . '.id')->toArray();
         
     }
     
