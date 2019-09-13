@@ -79,19 +79,19 @@ class Bed extends Model {
         ];
         $joins = [
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
-                'conditions' => [
-                    'User.id = Student.user_id'
-                ]
-            ],
-            [
                 'table' => 'rooms',
                 'alias' => 'Room',
                 'type' => 'INNER',
                 'conditions' => [
                     'Room.id = Bed.room_id'
+                ]
+            ],
+            [
+                'table' => 'buildings',
+                'alias' => 'Building',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Building.id = Room.building_id'
                 ]
             ],
             [
@@ -103,11 +103,11 @@ class Bed extends Model {
                 ]
             ],
             [
-                'table' => 'buildings',
-                'alias' => 'Building',
+                'table' => 'users',
+                'alias' => 'User',
                 'type' => 'INNER',
                 'conditions' => [
-                    'Building.id = Room.building_id'
+                    'User.id = Student.user_id'
                 ]
             ],
         ];
