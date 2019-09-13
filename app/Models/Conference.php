@@ -211,11 +211,6 @@ class Conference extends Model {
             ];
         } else {
             $schoolId = $this->schoolId();
-            $rooms = School::find($schoolId)->rooms->filter(
-                function (Room $room) {
-                    return $room->roomType->roomFunction->name == '会议';
-                }
-            );
             $user = Auth::user();
             if (in_array($user->role(), Constant::SUPER_ROLES)) {
                 $educators = Educator::whereSchoolId($schoolId)->with('user')->pluck('user.realname', 'id');
@@ -235,7 +230,7 @@ class Conference extends Model {
             }
             $conference = Conference::find(Request::route('id'));
             $data = [
-                'rooms'   => $rooms->pluck('name', 'id'),
+                'rooms'   => (new Room)->rooms('会议'),
                 'educators'         => $educators,
                 'selectedEducators' => collect(
                     explode(',', $conference ? $conference->educator_ids : null)

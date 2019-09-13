@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -195,6 +196,20 @@ class Room extends Model {
                 'rts' => $rts,
                 'buildings' => $buildings
             ];
+        
+    }
+    
+    /**
+     * @param $type
+     * @return Collection
+     */
+    function rooms($type) {
+        
+        return School::find($this->schoolId())->rooms->filter(
+            function (Room $room) use ($type) {
+                return $room->roomType->roomFunction->name == $type;
+            }
+        )->pluck('name', 'id');
         
     }
     

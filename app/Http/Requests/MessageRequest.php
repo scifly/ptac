@@ -54,12 +54,11 @@ class MessageRequest extends FormRequest {
         if (!($this->method() == 'update' && !$this->route('id'))) {
             $school = School::find($this->schoolId() ?? session('schoolId'));
             $app = $school->app ?? $this->corpApp($school->corp_id);
-            [$messageTypeId, $mediaTypeId] = $this->typeIds();
             $input = array_combine((new Message)->getFillable(), [
-                $messageTypeId, $mediaTypeId, $app->id, 0,
-                $this->title($this->input('type')), '',
-                uniqid(), 0, 'http://', $this->user()->id ?? 0,
-                0, 0, 0, null
+                $this->input('message_type_id'),
+                MediaType::whereName($this->input('type'))->first()->id,
+                $app->id, 0, $this->title($this->input('type')), '',
+                uniqid(), 0, 'http://', $this->user()->id ?? 0, 0, 0, 0, null
             ]);
             if ($this->has('targetIds')) {
                 # 从后台发送消息
@@ -124,20 +123,6 @@ class MessageRequest extends FormRequest {
         }
         
         return mb_substr($str, 0, 64);
-        
-    }
-    
-    /**
-     * 获取消息基本参数：媒体/通讯/消息类型
-     *
-     * @return array
-     */
-    private function typeIds() {
-    
-        return [
-            $this->input('message_type_id'),
-            MediaType::whereName($this->input('type'))->first()->id,
-        ];
         
     }
     

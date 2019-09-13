@@ -1,1 +1,1 @@
-<?php
+@include('shared.index')

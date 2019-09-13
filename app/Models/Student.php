@@ -309,7 +309,7 @@ class Student extends Model {
                 }
                 Request::replace(['ids' => $ids]);
                 $this->purge([
-                    class_basename($this), 'Consumption',
+                    class_basename($this), 'Bed', 'Consumption',
                     'CustodianStudent', 'ScoreTotal', 'Score',
                 ], 'student_id');
             });

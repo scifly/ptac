@@ -1,9 +1,14 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
+use App\Helpers\ModelTrait;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
-use Illuminate\Support\Carbon;
+use Illuminate\Support\{Carbon, Facades\DB, Facades\Request};
+use ReflectionException;
+use Throwable;
 
 /**
  * Class Bed
@@ -36,6 +41,8 @@ use Illuminate\Support\Carbon;
  */
 class Bed extends Model {
     
+    use ModelTrait;
+    
     protected $fillable = [
         'room_id', 'student_id', 'name',
         'position', 'remark', 'enabled'
@@ -47,12 +54,155 @@ class Bed extends Model {
     /** @return BelongsTo */
     function room() { return $this->belongsTo('App\Models\Room'); }
     
-    function index() { }
+    /** @return array */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Bed.id', 'dt' => 0],
+            ['db' => 'Bed.name', 'dt' => 1],
+            ['db' => 'Room.name as rname', 'dt' => 2],
+            ['db' => 'User.realname', 'dt' => 3],
+            [
+                'db' => 'Bed.position', 'dt' => 4,
+                'formatter' => function ($d) {
+                    return !$d ? '-' : ($d == 1 ? '上铺' : '下铺');
+                }
+            ],
+            ['db' => 'Bed.created_at', 'dt' => 5, 'dr' => true],
+            ['db' => 'Bed.updated_at', 'dt' => 6, 'dr' => true],
+            [
+                'db' => 'Bed.enabled', 'dt' => 7,
+                'formatter' => function ($d, $row) {
+                    return Datatable::status($d, $row, false);
+                }
+            ],
+        ];
+        $joins = [
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Student.user_id'
+                ]
+            ],
+            [
+                'table' => 'rooms',
+                'alias' => 'Room',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Room.id = Bed.room_id'
+                ]
+            ],
+            [
+                'table' => 'students',
+                'alias' => 'Student',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Student.id = Bed.student_id'
+                ]
+            ],
+            [
+                'table' => 'buildings',
+                'alias' => 'Building',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Building.id = Room.building_id'
+                ]
+            ],
+        ];
+        $condition = 'Building.school_id = ' . $this->schoolId();
+        
+        return Datatable::simple(
+            $this, $columns, $joins, $condition
+        );
+        
+    }
     
-    function store() { }
+    /**
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
     
-    function modify() { }
+    /**
+     * @param array $data
+     * @param $id
+     * @return bool
+     * @throws Throwable
+     */
+    function modify(array $data, $id) {
+        
+        try {
+            DB::transaction(function () use ($data, $id) {
+                throw_if(
+                    !$bed = $this->find($id),
+                    new Exception(__('messages.not_found'))
+                );
+                $bed->update($data);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
     
-    function remove() { }
+    /**
+     * @param $id
+     * @return bool
+     * @throws Throwable
+     */
+    function remove($id) {
+    
+        try {
+            DB::transaction(function () use ($id) {
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                Request::replace(['ids' => $ids]);
+                $this->purge(['Bed'], 'bed_id');
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
+        
+    }
+    
+    /**
+     * @return array
+     * @throws ReflectionException
+     */
+    function compose() {
+    
+        $nil = collect([0 => '全部']);
+        $students = Student::with('user')->whereIn(
+            'id', $this->contactIds('student')
+        )->pluck('user.realname', 'id');
+    
+        return explode('/', Request::path())[1] == 'index'
+            ? [
+                'titles' => [
+                    '#', '名称','所属寝室', '学生',
+                    [
+                        'title' => '类型',
+                        'html' => $this->htmlSelect($nil->union(['-', '下铺', '上铺']), 'filter_position')
+                    ],
+                    '创建于', '更新于', '状态 . 操作'
+                ],
+                'filter' => true,
+                'batch' => true
+            ]
+            : [
+                'rooms' => (new Room)->rooms('住宿'),
+                'students' => $students
+            ];
+        
+    }
     
 }

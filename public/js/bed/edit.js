@@ -1,0 +1,1 @@
+page.edit('formBed', 'beds');
