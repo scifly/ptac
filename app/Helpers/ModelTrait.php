@@ -858,7 +858,7 @@ trait ModelTrait {
         
         $dt = DepartmentType::whereRemark($type)->first();
         $color = $dt ? $dt->color : '';
-        $class = $dt ? $dt->class : $d;
+        $class = $dt ? $dt->icon : $d;
         $icon = Html::tag('i', '', [
             'class' => 'fa ' . $class . (!empty($color) ? ' ' . $color : ''),
             'style' => 'width: 20px; margin: 0 5px;'
