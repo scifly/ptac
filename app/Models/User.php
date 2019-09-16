@@ -327,7 +327,7 @@ class User extends Authenticatable {
             !isset($users) ? '' : ' AND User.id IN (' . $users->pluck('id')->join(',') . ')';
         
         return Datatable::simple(
-            $this, $columns, $joins, $condition ?? ''
+            $this, $columns, $joins, $condition ?? null
         );
         
     }
