@@ -743,7 +743,7 @@ class Menu extends Model {
             $mIcon = $menu['icon'];
             $mUri = $menu['uri'];
             // $hasChildren = $this->find($mId)->children->count();
-            $hasChildren = $this->whereParentId($mId)->where('enabled', 1)->get()->count();
+            $hasChildren = $this->whereParentId($mId)->where('enabled', 1)->count();
             $mUrl = empty($mUri) ? 'pages/' . $mId : $mUri;
             if ($currentParent == $menu['parent_id']) {
                 if ($hasChildren) {
@@ -783,14 +783,14 @@ class Menu extends Model {
      */
     private function nodes($id, &$nodes = []) {
         
-        $htmlDefaultIcon = '<i class="fa fa-circle-o"></i>';
-        $htmlIcon = '<i class="%s"></i>';
         $children = $this->find($id)->children;
         foreach ($children as $child) {
             $name = $child['name'];
             if (isset($child['parent_id'])) {
                 $icon = $this->find($child['id'])->icon;
-                $iconHtml = $icon ? sprintf($htmlIcon, $icon->name) : $htmlDefaultIcon;
+                $iconHtml = Html::tag('i', '', [
+                    'class' => $icon ? $icon->name : 'fa fa-circle-o'
+                ])->toHtml();
                 $name = $iconHtml . '&nbsp;&nbsp;' . $name;
             }
             $nodes[] = [
