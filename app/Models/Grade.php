@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -104,25 +104,15 @@ class Grade extends Model {
             [
                 'db'        => 'Grade.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return Snippet::icon($d, 'grade');
+                    return $this->iconHtml($d, 'grade');
                 },
             ],
             [
                 'db'        => 'Grade.educator_ids', 'dt' => 2,
                 'formatter' => function ($d) {
-                    if (empty($d)) {
-                        return '';
-                    }
-                    $educatorIds = explode(',', $d);
-                    $educators = [];
-                    foreach ($educatorIds as $id) {
-                        $educator = Educator::find($id);
-                        if (!empty($educator) && $educator->user) {
-                            $educators[] = $educator->user->realname;
-                        }
-                    }
-                    
-                    return join(', ', $educators);
+                    Educator::with('user')
+                        ->whereIn('id', explode(',', $d))
+                        ->get()->pluck('user.realname')->join(', ');
                 },
             ],
             ['db' => 'Grade.created_at', 'dt' => 3],
@@ -130,7 +120,7 @@ class Grade extends Model {
             [
                 'db'        => 'Department.synced as synced', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return $this->synced($d);
+                    return $d ? '是' : '否';
                 },
             ],
             [

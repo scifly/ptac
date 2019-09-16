@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{HttpStatusCode, ModelTrait};
 use App\Http\Requests\ConsumptionRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -81,8 +81,7 @@ class Consumption extends Model {
             [
                 'db'        => 'Consumption.ctype', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return sprintf(
-                        Snippet::BADGE,
+                    return $this->badge(
                         $d ? 'text-red' : 'text-green',
                         $d ? '消费' : '充值'
                     );

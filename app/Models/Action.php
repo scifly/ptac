@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, ModelTrait, Snippet};
+use App\Helpers\{Constant, ModelTrait};
 use App\Models\ActionType as ActionType;
 use Carbon\Carbon;
 use Doctrine\Common\Inflector\Inflector;
@@ -99,37 +99,37 @@ class Action extends Model {
             [
                 'db'        => 'Action.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return empty($d) ? '-' : sprintf(Snippet::ICON, 'fa fa-gears', '') . $d;
+                    return !empty($d) ? $this->iconHtml('fa fa-gears') . $d : '-';
                 },
             ],
             [
                 'db'        => 'Action.method', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Snippet::BADGE, 'text-green', $d) : '-';
+                    return $this->badge('text-green', $d);
                 },
             ],
             [
                 'db'        => 'Action.route', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Snippet::BADGE, 'text-yellow', $d) : '-';
+                    return $this->badge('text-yellow', $d);
                 },
             ],
             [
                 'db'        => 'Tab.name as controller', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Snippet::BADGE, 'text-red', $d) : '-';
+                    return $this->badge('text-red', $d);
                 },
             ],
             [
                 'db'        => 'Action.view', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Snippet::BADGE, 'text-light-blue', $d) : '-';
+                    return $this->badge('text-light-blue', $d);
                 },
             ],
             [
                 'db'        => 'Action.js', 'dt' => 6,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Snippet::BADGE, 'text-maroon', $d) : '-';
+                    return $this->badge('text-maroon', $d);
                 },
             ],
             [
@@ -148,7 +148,7 @@ class Action extends Model {
                         '其他' => 'text-gray',
                     ];
                     
-                    return sprintf(Snippet::BADGE, $colors[$category], $category);
+                    return $this->badge($colors[$category], $category);
                 },
             ],
             [

@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -83,13 +83,13 @@ class Custodian extends Model {
             [
                 'db'        => 'User.avatar_url', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::avatar($d);
+                    return $this->avatar($d);
                 },
             ],
             [
                 'db'        => 'User.gender', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return $d ? Snippet::MALE : Snippet::FEMALE;
+                    return $this->gender($d);
                 },
             ],
             [

@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{HttpStatusCode, ModelTrait};
 use Eloquent;
 use Exception;
 use Form;
@@ -73,21 +73,19 @@ class Card extends Model {
             [
                 'db'        => 'Card.sn', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return $d ?? sprintf(Snippet::BADGE, 'text-gray', '[尚未发卡]');
+                    return $d ?? $this->badge('text-gray', '[尚未发卡]');
                 },
             ],
             [
                 'db'        => 'User.card_id', 'dt' => 2,
                 'formatter' => function ($d) {
                     if (!$card = $this->find($d)) return '';
-                    $turnstileIds = $card->turnstiles->pluck('id')->toArray();
+                    $turnstileIds = $card->turnstiles->pluck('id');
                     $prIds = RuleTurnstile::whereIn('turnstile_id', $turnstileIds)
-                        ->pluck('passage_rule_id')->toArray();
+                        ->pluck('passage_rule_id');
                     
-                    return join('<br />',
-                        PassageRule::whereIn('id', array_unique($prIds))
-                            ->pluck('name')->toArray()
-                    );
+                    return PassageRule::whereIn('id', $prIds->unique())
+                            ->pluck('name')->join('<br />');
                 },
             ],
             ['db' => 'User.realname', 'dt' => 3],
@@ -109,10 +107,7 @@ class Card extends Model {
                         ['text-green', '正常'],
                         ['text-red', '挂失'],
                     ];
-                    $status = sprintf(
-                        Snippet::BADGE,
-                        $colors[$d ?? 0][0], $colors[$d ?? 0][1]
-                    );
+                    $status = $this->badge($colors[$d ?? 0][0], $colors[$d ?? 0][1]);
                     
                     return $row['card_id'] ? Datatable::status($status, $row, false) : $status;
                 },

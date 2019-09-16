@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -71,7 +71,7 @@ class WapSite extends Model {
             [
                 'db'        => 'School.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return Snippet::icon($d, 'school');
+                    return $this->iconHtml($d, 'school');
                 },
             ],
             ['db' => 'WapSite.site_title', 'dt' => 2],

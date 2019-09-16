@@ -121,15 +121,14 @@ class Corp extends Model {
             [
                 'db'        => 'Corp.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return Snippet::icon($d, 'corp');
+                    return $this->iconHtml($d, 'corp');
                 },
             ],
             ['db' => 'Corp.acronym', 'dt' => 2],
             [
                 'db'        => 'Company.name as companyname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-building text-blue', '') .
-                        '<span class="text-blue">' . $d . '</span>';
+                    return $this->iconHtml($d, 'company');
                 },
             ],
             ['db' => 'Corp.corpid', 'dt' => 4],

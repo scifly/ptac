@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, ModelTrait, Snippet};
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -104,13 +104,9 @@ class Tab extends Model {
             [
                 'db'        => 'Tab.name', 'dt' => 1,
                 'formatter' => function ($d, $row) {
-                    $iconId = $this->find($row['id'])->icon_id;
+                    $icon = $this->find($row['id']);
                     
-                    return sprintf(
-                            Snippet::ICON,
-                            $iconId ? Icon::find($iconId)->name : 'fa-calendar-check-o text-gray',
-                            ''
-                        ) . $d;
+                    return $this->iconHtml($icon ? $icon->name : 'fa-calendar-check-o text-gray') . $d;
                 },
             ],
             ['db' => 'Tab.comment', 'dt' => 2],
@@ -125,15 +121,13 @@ class Tab extends Model {
                         '学校' => 'text-fuchsia',
                     ];
                     
-                    return sprintf(Snippet::BADGE, $colors[$group], $group);
+                    return $this->badge($colors[$group], $group);
                 },
             ],
             [
                 'db'        => 'Action.name as actionname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return !empty($d)
-                        ? sprintf(Snippet::ICON, 'fa-gears', '') . $d
-                        : '-';
+                    return !empty($d) ? $this->iconHtml('fa-gears') . $d : '-';
                 },
             ],
             ['db' => 'Tab.created_at', 'dt' => 5],
@@ -148,7 +142,7 @@ class Tab extends Model {
                         '其他' => 'text-gray',
                     ];
                     
-                    return sprintf(Snippet::BADGE, $colors[$category], $category);
+                    return $this->badge($colors[$category], $category);
                 },
             ],
             [

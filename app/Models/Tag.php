@@ -104,7 +104,7 @@ class Tag extends Model {
             [
                 'db'        => 'Tag.synced', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return $this->synced($d);
+                    return $d ? '是' : '否';
                 },
             ],
             [

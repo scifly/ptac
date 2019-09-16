@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{ModelTrait, Snippet};
+use App\Helpers\{ModelTrait};
 use App\Jobs\SyncApp;
 use Eloquent;
 use Exception;
@@ -139,8 +139,7 @@ class App extends Model {
             [
                 'db'        => 'Corp.name as corpname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
-                        '<span class="text-green">' . $d . '</span>';
+                    return $this->iconHtml($d,'corp');
                 },
             ],
             ['db' => 'App.description', 'dt' => 4],

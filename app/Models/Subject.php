@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{ModelTrait, Snippet};
+use App\Helpers\{ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -149,14 +149,13 @@ class Subject extends Model {
             [
                 'db'        => 'Subject.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-book', '') . $d;
+                    return $this->iconHtml('fa-book') . $d;
                 },
             ],
             [
                 'db'        => 'Subject.isaux', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return sprintf(
-                        Snippet::BADGE,
+                    return $this->badge(
                         $d ? 'text-green' : 'text-gray',
                         $d ? '是' : '否'
                     );

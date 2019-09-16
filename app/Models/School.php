@@ -238,7 +238,7 @@ class School extends Model {
             [
                 'db'        => 'School.name as schoolname', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return Snippet::icon($d, 'school');
+                    return $this->iconHtml($d, 'school');
                 },
             ],
             ['db' => 'School.address', 'dt' => 2],

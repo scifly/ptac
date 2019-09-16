@@ -4,7 +4,6 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -145,7 +144,7 @@ class PollQuestionnaire extends Model {
             [
                 'db'        => 'School.name as school_name', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::icon($d, 'school');
+                    return $this->iconHtml($d, 'school');
                 },
             ],
             ['db' => 'User.realname', 'dt' => 3],

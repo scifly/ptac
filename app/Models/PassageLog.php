@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{ModelTrait, Snippet};
+use App\Helpers\ModelTrait;
 use App\Jobs\GatherPassageLog;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
@@ -106,8 +106,7 @@ class PassageLog extends Model {
             [
                 'db'        => 'PassageLog.direction', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return sprintf(
-                        Snippet::BADGE,
+                    return $this->badge(
                         $d ? 'text-green' : 'text-red',
                         $d ? '进' : '出'
                     );
@@ -121,8 +120,7 @@ class PassageLog extends Model {
                 'formatter' => function ($d, $row) {
                     return $row['role'] == '监护人'
                         ? ' - '
-                        : sprintf(
-                            Snippet::BADGE,
+                        : $this->badge(
                             $d ? 'text-green' : 'text-red',
                             $d ? '正常' : '异常'
                         );

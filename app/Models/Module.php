@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Contracts\View\Factory;
@@ -111,7 +111,7 @@ class Module extends Model {
             [
                 'db'        => 'School.name as schoolname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::icon($d, 'school');
+                    return $this->iconHtml($d, 'school');
                 },
             ],
             [

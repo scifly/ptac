@@ -190,7 +190,7 @@ class Datatable {
         );
         
         return
-            (isset($status) ? Snippet::status($status) : '') .
+            (isset($status) ? $this->state($status) : '') .
             ($show ? ($user->can('act', $this->uris()['show']) ? $showUri : '') : '') .
             ($edit ? ($user->can('act', $this->uris()['edit']) ? $editUri : '') : '') .
             ($del ? ($user->can('act', $this->uris()['destroy']) ? $delUri : '') : '');

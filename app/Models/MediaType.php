@@ -15,22 +15,26 @@ use Throwable;
  *
  * @property int $id
  * @property string $name 媒体类型名称
+ * @property string|null $color 图标颜色
+ * @property string|null $icon 图标class
  * @property string $remark 媒体类型备注
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read Media[] $medias
+ * @property-read int|null $medias_count
  * @method static Builder|MediaType whereCreatedAt($value)
  * @method static Builder|MediaType whereEnabled($value)
  * @method static Builder|MediaType whereId($value)
  * @method static Builder|MediaType whereName($value)
+ * @method static Builder|MediaType whereColor($value)
+ * @method static Builder|MediaType whereIcon($value)
  * @method static Builder|MediaType whereRemark($value)
  * @method static Builder|MediaType whereUpdatedAt($value)
  * @method static Builder|MediaType newModelQuery()
  * @method static Builder|MediaType newQuery()
  * @method static Builder|MediaType query()
  * @mixin Eloquent
- * @property-read int|null $medias_count
  */
 class MediaType extends Model {
     
@@ -38,7 +42,7 @@ class MediaType extends Model {
     
     protected $table = 'media_types';
     
-    protected $fillable = ['name', 'remark', 'enabled'];
+    protected $fillable = ['name', 'color', 'icon', 'remark', 'enabled'];
     
     /**
      * 获取指定媒体类型包含的所有媒体对象

@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -107,15 +107,15 @@ class ScoreTotal extends Model {
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'Student.sn', 'dt' => 2],
             [
-                'db'        => 'Grade.name as gradename', 'dt' => 3,
+                'db'        => 'Grade.name as gname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return Snippet::icon($d, 'grade');
+                    return $this->iconHtml($d, 'grade');
                 },
             ],
             [
-                'db'        => 'Squad.name', 'dt' => 4,
+                'db'        => 'Squad.name as cname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return Snippet::icon($d, 'squad');
+                    return $this->iconHtml($d, 'squad');
                 },
             ],
             ['db' => 'Exam.name as examname', 'dt' => 5],
@@ -353,7 +353,7 @@ class ScoreTotal extends Model {
                 return $this->htmlSelect(
                     $nil->union(
                         $this->model($class)->{'whereIn'}('id', $this->{$method}())
-                        ->pluck('name', 'id')
+                            ->pluck('name', 'id')
                     ),
                     'filter_' . lcfirst($class)
                 );
@@ -367,8 +367,8 @@ class ScoreTotal extends Model {
                 ['title' => '班级', 'html' => $htmlClass],
                 ['title' => '考试名称', 'html' => $htmlExam],
                 '总成绩', '年级排名', '班级排名',
-                ['title' => '创建于', 'html'  => $this->htmlDTRange('创建于')],
-                ['title' => '更新于', 'html'  => $this->htmlDTRange('更新于')],
+                ['title' => '创建于', 'html' => $this->htmlDTRange('创建于')],
+                ['title' => '更新于', 'html' => $this->htmlDTRange('更新于')],
                 [
                     'title' => '状态',
                     'html'  => $this->htmlSelect(

@@ -261,20 +261,20 @@ class User extends Authenticatable {
             [
                 'db'        => 'Groups.name as role', 'dt' => 2,
                 'formatter' => function ($d, $row) {
-                    return Snippet::icon($d, $row['remark']);
+                    return $this->iconHtml($d, $row['remark']);
                 },
             ],
             ['db' => 'User.realname', 'dt' => 3],
             [
                 'db'        => 'User.avatar_url', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return Snippet::avatar($d);
+                    return $this->avatar($d);
                 },
             ],
             [
                 'db'        => 'User.gender', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return Snippet::gender($d);
+                    return $this->gender($d);
                 },
             ],
             ['db' => 'User.mobile', 'dt' => 6],
@@ -345,8 +345,7 @@ class User extends Authenticatable {
             [
                 'db'        => 'School.name', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university text-purple', '') .
-                        '<span class="text-purple">' . $d . '</span>';
+                    return $this->iconHtml($d, 'school');
                 },
             ],
             ['db' => 'User.username', 'dt' => 3],

@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
 use App\Jobs\{ExportStudent, ImportStudent};
 use Carbon\Carbon;
 use Eloquent;
@@ -131,26 +131,26 @@ class Student extends Model {
             [
                 'db'        => 'User.avatar_url', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::avatar($d);
+                    return $this->avatar($d);
                 },
             ],
             [
                 'db'        => 'User.gender as gender', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return Snippet::gender($d);
+                    return $this->gender($d);
                 },
             ],
             [
-                'db'        => 'Student.class_id', 'dt' => 4,
+                'db'        => 'Squad.name as cname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return Snippet::icon(Squad::find($d)->name, 'squad');
+                    return $this->iconHtml($d, 'squad');
                 },
             ],
             ['db' => 'Student.sn', 'dt' => 5],
             [
                 'db'        => 'Student.oncampus', 'dt' => 6,
                 'formatter' => function ($d) {
-                    return $d == 1 ? '是' : '否';
+                    return $d ? '是' : '否';
                 },
             ],
             [

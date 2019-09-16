@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
 use App\Jobs\{ExportEducator, ImportEducator};
 use Carbon\Carbon;
 use Eloquent;
@@ -99,13 +99,13 @@ class Educator extends Model {
             [
                 'db'        => 'User.avatar_url', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::avatar($d);
+                    return $this->avatar($d);
                 },
             ],
             [
                 'db'        => 'User.gender', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return Snippet::gender($d);
+                    return $this->gender($d);
                 },
             ],
             ['db' => 'Groups.name', 'dt' => 4],
@@ -630,13 +630,13 @@ class Educator extends Model {
         
         $departments = Department::whereIn('id', $departmentIds)->get();
         foreach ($departments as $department) {
-            $dType = DepartmentType::find($department['department_type_id'])->name;
+            $departmentType = DepartmentType::find($department['department_type_id']);
             $nodes[] = [
                 'id'     => $department->id,
                 'parent' => $department->parent_id ?? '#',
                 'text'   => $department->name,
-                'icon'   => Constant::NODE_TYPES[$dType]['icon'],
-                'type'   => Constant::NODE_TYPES[$dType]['type'],
+                'icon'   => $departmentType->icon,
+                'type'   => $departmentType->remark,
             ];
         }
         

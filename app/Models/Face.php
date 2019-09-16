@@ -108,10 +108,7 @@ class Face extends Model {
                         ['text-red', '黑名单'],
                         ['text-orange', 'VIP'],
                     ];
-                    $state = sprintf(
-                        Snippet::BADGE,
-                        $colors[$d ?? 0][0], $colors[$d ?? 0][1]
-                    );
+                    $state = $this->badge($colors[$d ?? 0][0], $colors[$d ?? 0][1]);
                     [$config, $remove] = array_map(
                         function ($prefix, $title, $style) use ($row) {
                             return sprintf(
@@ -340,7 +337,7 @@ class Face extends Model {
      *
      * @param $mediaId
      */
-    private function exists($mediaId) {
+    function exists($mediaId) {
         
         abort_if(
             $this->whereMediaId($mediaId)->first() ? true : false,

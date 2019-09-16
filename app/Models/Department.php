@@ -1,11 +1,12 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
 use App\Jobs\SyncDepartment;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Html;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
@@ -367,26 +368,21 @@ class Department extends Model {
         for ($i = 0; $i < sizeof($departments); $i++) {
             $id = $departments[$i]['id'];
             $parentId = $i == 0 ? '#' : $departments[$i]['parent_id'];
-            $departmentTypeId = $departments[$i]['department_type_id'];
-            $departmentType = DepartmentType::find($departmentTypeId);
+            $dt = DepartmentType::find($departments[$i]['department_type_id']);
             $name = $departments[$i]['name'];
             $enabled = $departments[$i]['enabled'];
-            $color = Constant::NODE_TYPES[$departmentType->name]['color'];
-            $type = $departmentType->remark;
-            $title = '';
-            $syncMark = '';
+            $type = $dt->remark;
             if (!in_array($type, ['root', 'company', 'corp'])) {
                 $synced = $departments[$i]['synced'];
                 $title = $synced ? '已同步' : '未同步';
-                $syncMark = $synced
-                    ? ' <span class="text-green">*</span>'
-                    : ' <span class="text-red">*</span>';
+                $syncMark = Html::tag('span', '*', [
+                    'class' => 'text-' . ($synced ? 'green' : 'red')
+                ])->toHtml();
             }
-            $text = sprintf(
-                Snippet::NODE_TEXT,
-                $enabled ? $color : 'text-gray',
-                $title, $name, $syncMark
-            );
+            $text = Html::tag('span', $name, [
+                'class' => $enabled ? $dt->color : 'text-gray',
+                'title' => $title ?? ''
+            ])->toHtml() . ($syncMark ?? '');
             $selectable = $isSuperRole ? 1 : (in_array($id, $allowedDepartmentIds) ? 1 : 0);
             $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
             $nodes[] = [

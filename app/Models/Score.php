@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
 use App\Jobs\{ImportScore, SendMessage};
 use Carbon\Carbon;
 use Eloquent;
@@ -101,40 +101,30 @@ class Score extends Model {
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'Student.sn', 'dt' => 2],
             [
-                'db'        => 'Grade.id as grade_id', 'dt' => 3,
+                'db'        => 'Grade.name as gname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return Snippet::icon(Grade::find($d)->name, 'grade');
+                    return $this->iconHtml($d, 'grade');
                 },
             ],
             [
-                'db'        => 'Squad.id as squad_id', 'dt' => 4,
+                'db'        => 'Squad.name as cname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return Snippet::icon(Squad::find($d)->name, 'squad');
+                    return $this->iconHtml($d, 'squad');
                 },
             ],
-            [
-                'db'        => 'Score.subject_id', 'dt' => 5,
-                'formatter' => function ($d) {
-                    return Subject::find($d)->name;
-                },
-            ],
-            [
-                'db'        => 'Score.exam_id', 'dt' => 6,
-                'formatter' => function ($d) {
-                    return Exam::find($d)->name;
-                },
-            ],
+            ['db' => 'Subject.name as sname', 'dt' => 5],
+            ['db' => 'Exam.name as ename', 'dt' => 6],
             ['db' => 'Score.score', 'dt' => 7],
             [
                 'db'        => 'Score.grade_rank', 'dt' => 9,
                 'formatter' => function ($d) {
-                    return $d === 0 ? "未统计" : $d;
+                    return !$d ? "未统计" : $d;
                 },
             ],
             [
                 'db'        => 'Score.class_rank', 'dt' => 8,
                 'formatter' => function ($d) {
-                    return $d === 0 ? "未统计" : $d;
+                    return !$d ? "未统计" : $d;
                 },
             ],
             ['db' => 'Score.created_at', 'dt' => 10, 'dr' => true],

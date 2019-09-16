@@ -130,25 +130,6 @@ class Constant {
         'update' => '更新',
         'delete' => '删除',
     ];
-    const MEDIA_TYPE_ICONS = [
-        'text'     => '<i class="fa fa-file-text-o"></i>',
-        'image'    => '<i class="fa fa-file-image-o"></i>',
-        'voice'    => '<i class="fa fa-file-sound-o"></i>',
-        'video'    => '<i class="fa fa-file-movie-o"></i>',
-        'file'     => '<i class="fa fa-file-o"></i>',
-        'textcard' => '<i class="fa fa-folder-o"></i>',
-        'mpnews'   => '<i class="fa fa-th-list"></i>',
-        'sms'      => '<i class="fa fa-file-text"></i>',
-    ];
-    const NODE_TYPES = [
-        '根'  => ['color' => 'text-gray', 'type' => 'root', 'icon' => 'fa fa-sitemap'],
-        '运营' => ['color' => 'text-blue', 'type' => 'company', 'icon' => 'fa fa-building'],
-        '企业' => ['color' => 'text-green', 'type' => 'corp', 'icon' => 'fa fa-weixin'],
-        '学校' => ['color' => 'text-purple', 'type' => 'school', 'icon' => 'fa fa-university'],
-        '年级' => ['color' => 'text-black', 'type' => 'grade', 'icon' => 'fa fa-object-group'],
-        '班级' => ['color' => 'text-black', 'type' => 'squad', 'icon' => 'fa fa-users'],
-        '其他' => ['color' => 'text-black', 'type' => 'other', 'icon' => 'fa fa-folder'],
-    ];
     # 控制器相对路径
     const CONTROLLER_DIR = 'app/Http/Controllers';
     # 无需扫描的控制器

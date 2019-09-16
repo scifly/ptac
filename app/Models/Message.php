@@ -88,7 +88,7 @@ class Message extends Model {
     protected $fillable = [
         'message_type_id', 'media_type_id', 'app_id', 'msl_id',
         'title', 'content', 'code', 'message_id', 'url',
-        's_user_id', 'r_user_id', 'read', 'sent', 'event_id'
+        's_user_id', 'r_user_id', 'read', 'sent', 'event_id',
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
@@ -130,23 +130,24 @@ class Message extends Model {
             [
                 'db'        => 'Message.title', 'dt' => 1,
                 'formatter' => function ($d, $row) {
-                    return '[' . MediaType::find($row['media_type_id'])->remark . ']' . '&nbsp;' . mb_substr($d, 0, 10);
+                    $mt = MediaType::find($row['media_type_id']);
+                    
+                    return '[' . $mt->remark . ']' . '&nbsp;' . mb_substr($d, 0, 10);
                 },
             ],
             [
                 'db'        => 'Message.msl_id', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return $d ? $d : sprintf(Snippet::BADGE, 'text-gray', '(n/a)');
+                    return $d ? $d : $this->badge('text-gray', '(n/a)');
                 },
             ],
             [
                 'db'        => 'Message.event_id', 'dt' => 3,
                 'formatter' => function ($d, $row) {
                     $mt = MediaType::find($row['media_type_id'])->name;
-                    $ct =  $mt->name == 'sms' ? $mt->remark : '微信';
+                    $ct = $mt->name == 'sms' ? $mt->remark : '微信';
                     if ($row['sent'] != 1) {
-                        $type = sprintf(
-                            Snippet::BADGE,
+                        $type = $this->badge(
                             !$d ? 'text-red' : 'text-orange',
                             !$d ? '草稿' : '定时'
                         );
@@ -161,23 +162,20 @@ class Message extends Model {
                 'formatter' => function ($d) {
                     $mt = MediaType::find($d);
                     
-                    return Constant::MEDIA_TYPE_ICONS[$mt->name] . '&nbsp;' . $mt->remark;
+                    return Html::tag(
+                        'i', '&nbsp;' . $mt->remark,
+                        ['class' => $mt->icon]
+                    )->toHtml();
                 },
             ],
-            [
-                'db'        => 'Message.message_type_id', 'dt' => 5,
-                'formatter' => function ($d) {
-                    return MessageType::find($d)->name;
-                },
-            ],
+            ['db' => 'MessageType.name', 'dt' => 5],
             [
                 'db'        => 'User.realname', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     if ($d) return $d;
                     $msl = $this->find($row['id'])->messageSendinglog;
                     
-                    return sprintf(
-                        Snippet::BADGE,
+                    return $this->badge(
                         'text-gray',
                         ($msl ? $msl->recipient_count : '0') . ' 人'
                     );
@@ -189,7 +187,7 @@ class Message extends Model {
                     return $row['sent'] == 1 ? $d
                         : ($row['sent'] == 2
                             ? $this->humanDate(Event::find($row['event_id'])->start)
-                            : sprintf(Snippet::BADGE, 'text-gray', '(n/a)')
+                            : $this->badge('text-gray', '(n/a)')
                         );
                 },
             ],
@@ -199,13 +197,13 @@ class Message extends Model {
                     $id = $row['id'];
                     $html = '<a id="%s" title="%s" href="#"><i class="fa %s" style="margin-left: 15px;"></i></a>';
                     if ($received) {
-                        $status = Snippet::status($row['read'], '已读', '未读');
+                        $status = $this->state($row['read'], '已读', '未读');
                         $status .= sprintf($html, 'show_' . $id, '详情', 'fa-laptop');
                     } else {
                         $statuses = [
                             ['red', '草稿'],
                             ['green', '已发'],
-                            ['orange', '定时']
+                            ['orange', '定时'],
                         ];
                         [$color, $title] = $statuses[$d];
                         $status = sprintf(Snippet::DT_STATUS, 'text-' . $color, $title);
@@ -298,13 +296,13 @@ class Message extends Model {
                 ],
             ],
             [
-                'table' => 'media_types',
-                'alias' => 'MediaType',
-                'type' => 'INNER',
+                'table'      => 'media_types',
+                'alias'      => 'MediaType',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'MediaType.id = Message.media_type_id'
-                ]
-            ]
+                    'MediaType.id = Message.media_type_id',
+                ],
+            ],
         ];
         switch ($sender) {
             case 'corp':
@@ -424,13 +422,13 @@ class Message extends Model {
                         $message->event_id
                             # 如果指定消息已有对应事件，则更新对应事件
                             ? Event::find($message->event_id)->update([
-                                'start'   => $time,
-                                'end'     => $time,
-                                'enabled' => isset($data['draft']) ? 0 : 1,
-                            ])
+                            'start'   => $time,
+                            'end'     => $time,
+                            'enabled' => isset($data['draft']) ? 0 : 1,
+                        ])
                             : $data['event_id'] = $this->eventId(
-                                $time, $data['draft'] ?? null
-                            );
+                            $time, $data['draft'] ?? null
+                        );
                         $data['sent'] = 2;
                     } else {
                         # 如果没有设置发送时间
@@ -1237,7 +1235,7 @@ class Message extends Model {
                 $value = $targetId;
                 $dept = Department::find($value);
                 $name = $dept->name;
-                $icon = Constant::NODE_TYPES[$dept->departmentType->name]['icon'];
+                $icon = $dept->departmentType->icon;
             }
             $val = join(
                 array_map(

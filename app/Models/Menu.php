@@ -1,10 +1,11 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Html;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
@@ -72,7 +73,19 @@ class Menu extends Model {
         'menu_type_id', 'position', 'media_id',
         'action_id', 'icon_id', 'enabled',
     ];
-    
+    const TREE = <<<HTML
+        <li class="treeview%s">
+            <a href="#">
+                <i class="%s"></i> <span>%s</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+    HTML;
+    const /** @noinspection HtmlUnknownTarget */
+        SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> <span>%s</span></a></li>';
+        
     /** properties -------------------------------------------------------------------------------------------------- */
     /**
      * 获取菜单所属类型
@@ -135,7 +148,7 @@ class Menu extends Model {
      *
      * @return BelongsTo
      */
-    function icon() { return $this->belongsTo('App\Models\Icon'); }
+    function iconHtml() { return $this->belongsTo('App\Models\Icon'); }
     
     /**
      * 获取指定菜单的子菜单
@@ -560,23 +573,21 @@ class Menu extends Model {
             'menu_type_id' => $root->menu_type_id,
             'enabled'      => 1,
         ];
-        $tree = [];
         foreach ($subs as $key => $sub) {
             $name = $sub['name'];
             if (isset($sub['parent_id'])) {
                 $icon = $sub['icon'];
-                $iconHtml = $icon
-                    ? sprintf(Snippet::MENU_ICON, $icon)
-                    : Snippet::MENU_DEFAULT_ICON;
+                $iconHtml = Html::tag('i', '', [
+                    'class' => !$icon ? 'fa fa-circle-o' : $icon,
+                    'style' => 'width: 20px;'
+                ])->toHtml();
                 $name = $iconHtml . '&nbsp;&nbsp;' . $name;
             }
-            $menuType = MenuType::find($sub['menu_type_id'])->name;
-            $type = Constant::NODE_TYPES[$menuType]['type'];
-            $color = Constant::NODE_TYPES[$menuType]['color'];
-            $text = sprintf(
-                Snippet::NODE_TEXT,
-                $sub['enabled'] ? $color : 'text-gray', '', $name, ''
-            );
+            $mt = MenuType::find($sub['menu_type_id']);
+            $type = $mt->remark;
+            $text = Html::tag('span', $name, [
+                'class' => $sub['enabled'] ? $mt->color : 'text-gray'
+            ])->toHtml();
             if ($type == '企业') {
                 $corpId = Corp::whereMenuId($key)->first()->id;
             } elseif ($type == '学校') {
@@ -591,7 +602,7 @@ class Menu extends Model {
             ];
         }
         
-        return response()->json($tree);
+        return response()->json($tree ?? []);
         
     }
     
@@ -740,12 +751,12 @@ class Menu extends Model {
             if ($currentParent == $menu['parent_id']) {
                 if ($hasChildren) {
                     $html .= sprintf(
-                        Snippet::TREE,
+                        self::TREE,
                         $mId == $activeId ? ' active' : '', $mIcon, $mName
                     );
                 } else {
                     $html .= sprintf(
-                        Snippet::SIMPLE,
+                        self::SIMPLE,
                         $mId == $activeId ? ' class="active"' : '', $mId, $mUrl, $mIcon, $mName
                     );
                 }

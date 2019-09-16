@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -117,21 +117,21 @@ class Squad extends Model {
             [
                 'db'        => 'Squad.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return Snippet::icon($d, 'squad');
+                    return $this->iconHtml($d, 'squad');
                 },
             ],
             [
-                'db'        => 'Squad.grade_id', 'dt' => 2,
+                'db'        => 'Grade.name as gname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::icon(Grade::find($d)->name, 'grade');
+                    return $this->iconHtml($d, 'grade');
                 },
             ],
             [
                 'db'        => 'Squad.educator_ids', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return join(', ', Educator::with('user')
+                    return Educator::with('user')
                         ->whereIn('id', explode(',', $d))
-                        ->get()->pluck('user.realname')->toArray());
+                        ->get()->pluck('user.realname')->join(', ');
                 },
             ],
             ['db' => 'Squad.created_at', 'dt' => 4],
@@ -139,7 +139,7 @@ class Squad extends Model {
             [
                 'db'        => 'Department.synced', 'dt' => 6,
                 'formatter' => function ($d) {
-                    return $this->synced($d);
+                    return $d ? '是' : '否';
                 },
             ],
             [

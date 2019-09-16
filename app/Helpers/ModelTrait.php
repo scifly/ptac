@@ -5,6 +5,7 @@ use App\Models\{Action,
     App,
     Corp,
     Department,
+    DepartmentType,
     DepartmentUser,
     Exam,
     Grade,
@@ -18,6 +19,7 @@ use App\Models\{Action,
 use App\Policies\Route;
 use Carbon\Carbon;
 use Form;
+use Html;
 use Illuminate\Database\{Eloquent\Collection, Eloquent\Model, Query\Builder};
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection as SCollection;
@@ -184,36 +186,6 @@ trait ModelTrait {
     }
     
     /**
-     * 返回同步状态图标html
-     *
-     * @param boolean $value
-     * @return string
-     */
-    function synced($value) {
-        
-        $color = $value ? 'text-green' : 'text-gray';
-        $title = $value ? '已同步' : '未同步';
-        
-        return sprintf(Snippet::ICON, 'fa-weixin ' . $color, $title);
-        
-    }
-    
-    /**
-     * 返回关注状态图标html
-     *
-     * @param boolean $value
-     * @return string
-     */
-    function subscribed($value) {
-        
-        $color = $value ? 'text-green' : 'text-gray';
-        $title = $value ? '已关注' : '未关注';
-        
-        return sprintf(Snippet::ICON, 'fa-registered ' . $color, $title);
-        
-    }
-    
-    /**
      * 获取当前控制器包含的方法所对应的路由对象数组
      *
      * @return array
@@ -264,7 +236,7 @@ trait ModelTrait {
             case '运营':
             case '企业':
                 $cMId = $menu->menuId($menuId, '企业');
-                return !$cMId ?: $this->where('menu_id', $cMId)->first()->id;
+                return !$cMId ?: (new Corp)->where('menu_id', $cMId)->first()->id;
             case '学校':
                 $sMId = $menu->menuId($menuId);
                 return School::whereMenuId($sMId)->first()->corp_id;
@@ -819,6 +791,81 @@ trait ModelTrait {
         );
         
         return $app;
+        
+    }
+    
+    /**
+     * @param $class
+     * @param $content
+     * @return string
+     */
+    function badge($class, $content = null) {
+    
+        return $content ? Html::tag('span', $content, ['class' => $class])->toHtml() : '-';
+        
+    }
+    
+    /**
+     * @param $status
+     * @param string $enabled
+     * @param string $disabled
+     * @return string
+     */
+    function state($status, $enabled = '已启用', $disabled = '未启用') {
+        
+        if (!is_numeric($status)) return $status;
+        $color = 'text-' . ($status ? 'green' : 'gray');
+        $title = $status ? $enabled : $disabled;
+        
+        return Html::tag('i', '', [
+            'class' => 'fa fa-circle ' . $color,
+            'title' => $title,
+            'style' => 'width: 20px; margin: 0 10px;'
+        ])->toHtml();
+        
+    }
+    
+    /**
+     * @param $d
+     * @return string
+     */
+    function avatar($d) {
+        
+        return Html::image(!empty($d) ? $d : '/img/default.png', '', [
+            'class' => 'img-circle', 'style' => 'height:16px;'
+        ])->toHtml();
+        
+    }
+    
+    /**
+     * @param $d
+     * @return string
+     */
+    function gender($d) {
+        
+        return Html::tag('i', '', [
+            'class' => 'fa fa-' . ($d ? 'mars' : 'venus')
+        ])->toHtml();
+        
+    }
+    
+    /**
+     * @param $d
+     * @param $type
+     * @return string
+     */
+    function iconHtml($d, $type = null) {
+        
+        $dt = DepartmentType::whereRemark($type)->first();
+        $color = $dt ? $dt->color : '';
+        $class = $dt ? $dt->class : $d;
+        $icon = Html::tag('i', '', [
+            'class' => 'fa ' . $class . (!empty($color) ? ' ' . $color : ''),
+            'style' => 'width: 20px; margin: 0 5px;'
+        ])->toHtml();
+        $text = $dt ? Html::tag('span', $d, ['class' => $color])->toHtml() : '';
+        
+        return join([$icon, $text]);
         
     }
     

@@ -3,7 +3,6 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -94,7 +93,7 @@ class Icon extends Model {
             [
                 'db'        => 'Icon.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, $d, '') . $d;
+                    return $this->iconHtml($d) . $d;
                 },
             ],
             ['db' => 'IconType.name as icontypename', 'dt' => 2],

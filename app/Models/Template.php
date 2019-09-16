@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\{Datatable, Wechat};
-use App\Helpers\{Constant, ModelTrait, Snippet};
+use App\Helpers\{Constant, ModelTrait};
 use App\Http\Requests\TemplateRequest;
 use App\Jobs\GetTemplateList;
 use Eloquent;
@@ -75,8 +75,7 @@ class Template extends Model {
             [
                 'db'        => 'App.name', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
-                        '<span class="text-green">' . $d . '</span>';
+                    return $this->iconHtml($d, 'corp');
                 },
             ],
             ['db' => 'Template.primary_industry', 'dt' => 3],

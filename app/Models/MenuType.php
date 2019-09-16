@@ -14,28 +14,32 @@ use Throwable;
  *
  * @property int $id
  * @property string $name 菜单类型
+ * @property string $color 图标颜色
+ * @property string $icon 图标class
  * @property string $remark 备注
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read Collection|Menu[] $menus
+ * @property-read int|null $menus_count
  * @method static Builder|MenuType whereCreatedAt($value)
  * @method static Builder|MenuType whereEnabled($value)
  * @method static Builder|MenuType whereId($value)
  * @method static Builder|MenuType whereName($value)
+ * @method static Builder|MenuType whereColor($value)
+ * @method static Builder|MenuType whereIcon($value)
  * @method static Builder|MenuType whereRemark($value)
  * @method static Builder|MenuType whereUpdatedAt($value)
  * @method static Builder|MenuType newModelQuery()
  * @method static Builder|MenuType newQuery()
  * @method static Builder|MenuType query()
  * @mixin Eloquent
- * @property-read int|null $menus_count
  */
 class MenuType extends Model {
     
     use ModelTrait;
     
-    protected $fillable = ['name', 'remark', 'enabled'];
+    protected $fillable = ['name', 'color', 'icon', 'remark', 'enabled'];
     
     /**
      * 获取指定菜单类型所包含的所有菜单对象

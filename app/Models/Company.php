@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{ModelTrait, Snippet};
+use App\Helpers\{ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -101,8 +101,7 @@ class Company extends Model {
             [
                 'db'        => 'Company.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-building text-blue', '') .
-                        '<span class="text-blue">' . $d . '</span>';
+                    return $this->iconHtml($d, 'company');
                 },
             ],
             ['db' => 'Company.remark', 'dt' => 2],

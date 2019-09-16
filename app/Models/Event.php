@@ -6,8 +6,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**
@@ -24,6 +23,7 @@ use Throwable;
  * @property-read Subject $subject
  * @property-read User $user
  * @property-read Message $message
+ * @property-read Room|null $room
  * @method static Builder|Event whereCreatedAt($value)
  * @method static Builder|Event whereRoomId($value)
  * @method static Builder|Event whereEnabled($value)
@@ -35,7 +35,6 @@ use Throwable;
  * @method static Builder|Event newQuery()
  * @method static Builder|Event query()
  * @mixin Eloquent
- * @property-read Room|null $room
  */
 class Event extends Model {
     

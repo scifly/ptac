@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, ModelTrait, Snippet};
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -105,19 +105,19 @@ class Group extends Model {
             [
                 'db'        => 'Groups.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-meh-o', '') . $d;
+                    return $this->iconHtml('fa-meh-o') . $d;
                 },
             ],
             [
                 'db'        => 'School.name as schoolname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::icon($d, 'school');
+                    return $this->iconHtml($d, 'school');
                 },
             ],
             [
                 'db'        => 'Corp.name as corpname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return Snippet::icon($d, 'corp');
+                    return $this->iconHtml($d, 'corp');
                 },
             ],
             ['db' => 'Groups.remark', 'dt' => 4],

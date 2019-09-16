@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, ModelTrait, Snippet};
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
@@ -78,10 +78,10 @@ class Participant extends Model {
             [
                 'db'        => 'Participant.status', 'dt' => 6,
                 'formatter' => function ($d) {
-                    $color = $d ? 'text-green' : 'text-yellow';
-                    $text = $d ? '签到已到' : '签到未到';
-                    
-                    return sprintf(Snippet::BADGE, $color, $text);
+                    return $this->badge(
+                        'text-' . ($d ? 'green' : 'yellow'),
+                        $d ? '签到已到' : '签到未到'
+                    );
                 },
             ],
         ];
