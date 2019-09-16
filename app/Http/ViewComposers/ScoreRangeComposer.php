@@ -2,6 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
+use App\Models\ScoreRange;
 use Illuminate\Contracts\View\View;
 
 /**
@@ -17,7 +18,9 @@ class ScoreRangeComposer {
      */
     public function compose(View $view) {
     
-    
+        $view->with(
+            (new ScoreRange)->compose()
+        );
         
     }
     
