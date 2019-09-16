@@ -84,7 +84,7 @@ class Menu extends Model {
             <ul class="treeview-menu">
     HTML;
     const /** @noinspection HtmlUnknownTarget */
-        SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"> <span>%s</span></i></a></li>';
+        SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> <span>%s</span></a></li>';
         
     /** properties -------------------------------------------------------------------------------------------------- */
     /**
