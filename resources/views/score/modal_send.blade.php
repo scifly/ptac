@@ -35,6 +35,7 @@
 						'id' => 'items',
 						'label' => '发布项目',
 						'items' => $items,
+						'selectedItems' => $selectedItems ?? null,
 						'required' => 'true'
 					])
 					<div class="form-group" style="margin: 0 5px;">
