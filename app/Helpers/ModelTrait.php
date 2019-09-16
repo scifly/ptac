@@ -860,7 +860,7 @@ trait ModelTrait {
         $color = $dt ? $dt->color : '';
         $class = $dt ? $dt->icon : $d;
         $icon = Html::tag('i', '', [
-            'class' => 'fa ' . $class . (!empty($color) ? ' ' . $color : ''),
+            'class' => $class . (!empty($color) ? ' ' . $color : ''),
             'style' => 'width: 20px; margin: 0 5px;'
         ])->toHtml();
         $text = $dt ? Html::tag('span', $d, ['class' => $color])->toHtml() : '';
