@@ -326,7 +326,7 @@ class User extends Authenticatable {
         $condition = sprintf(
             'User.group_id IN (%s)',
             collect($gIds)->join(',')
-        ) . (!isset($users) ? '' : ' AND User.id IN (' . $users->pluck('id')->join(',') . ')');
+        ) . ($users->isEmpty() ? '' : ' AND User.id IN (' . $users->pluck('id')->join(',') . ')');
         
         return Datatable::simple(
             $this, $columns, $joins, $condition ?? null
