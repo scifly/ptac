@@ -323,13 +323,11 @@ class User extends Authenticatable {
                 $users = Department::find(School::whereMenuId($rootMenu->id)->first()->department_id)->users;
                 break;
         }
-        $condition = sprintf(
-            'User.group_id IN (%s)',
-            collect($gIds)->join(',')
-        ) . ($users->isEmpty() ? '' : ' AND User.id IN (' . $users->pluck('id')->join(',') . ')');
+        $condition = sprintf('User.group_id IN (%s)', collect($gIds)->join(',')) .
+            ($users->isEmpty() ? '' : ' AND User.id IN (' . $users->pluck('id')->join(',') . ')');
         
         return Datatable::simple(
-            $this, $columns, $joins, $condition ?? null
+            $this, $columns, $joins, $condition
         );
         
     }
