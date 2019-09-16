@@ -638,11 +638,12 @@ class Menu extends Model {
         }
         foreach ($menus as $menu) {
             if (!$disabled && !$menu['enabled']) continue;
+            $icon = Icon::find($menu['icon_id'] ?? null);
             $subs[$menu['id']] = [
                 'parent_id'    => $menu['parent_id'],
                 'name'         => $menu['name'],
                 'uri'          => $menu['uri'],
-                'icon'         => $menu['icon_id'] ? Icon::find($menu['icon_id'])->name : 'fa fa-circle-o',
+                'icon'         => $icon ? $icon->name : 'fa fa-circle-o',
                 'menu_type_id' => $menu['menu_type_id'],
                 'enabled'      => $menu['enabled'],
             ];
