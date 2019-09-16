@@ -85,82 +85,40 @@ class Menu extends Model {
     HTML;
     const /** @noinspection HtmlUnknownTarget */
         SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> <span>%s</span></a></li>';
-        
+    
     /** properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 获取菜单所属类型
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function menuType() { return $this->belongsTo('App\Models\MenuType'); }
     
-    /**
-     * 返回菜单所属的媒体对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function media() { return $this->belongsTo('App\Models\Media'); }
     
-    /**
-     * 获取对应的公司对象
-     *
-     * @return HasOne
-     */
+    /** @return HasOne */
     function company() { return $this->hasOne('App\Models\Company'); }
     
-    /**
-     * 获取对应的企业对象
-     *
-     * @return HasOne
-     */
+    /** @return HasOne */
     function corp() { return $this->hasOne('App\Models\Corp'); }
     
-    /**
-     * 获取对应的学校对象
-     *
-     * @return HasOne
-     */
+    /** @return HasOne */
     function school() { return $this->hasOne('App\Models\School'); }
     
-    /**
-     * 获取指定菜单所属的所有角色对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function groups() { return $this->belongsToMany('App\Models\Group', 'group_menu'); }
     
-    /**
-     * 获取菜单包含的卡片
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function tabs() { return $this->belongsToMany('App\Models\Tab', 'menu_tab'); }
     
-    /**
-     * 获取上级菜单
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function parent() { return $this->belongsTo('App\Models\Menu', 'parent_id'); }
     
-    /**
-     * 获取图标
-     *
-     * @return BelongsTo
-     */
-    function iconHtml() { return $this->belongsTo('App\Models\Icon'); }
+    /** @return BelongsTo */
+    function icon() { return $this->belongsTo('App\Models\Icon'); }
     
-    /**
-     * 获取指定菜单的子菜单
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function children() { return $this->hasMany('App\Models\Menu', 'parent_id', 'id'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
     /**
-     * 菜单列表(菜单移动、排序)
-     *
      * @return bool|JsonResponse
      * @throws Throwable
      */
@@ -213,8 +171,6 @@ class Menu extends Model {
     }
     
     /**
-     * 创建菜单
-     *
      * @param array $data
      * @return bool|mixed
      * @throws Throwable
@@ -244,22 +200,15 @@ class Menu extends Model {
      * @return $this|Model
      */
     function stow(Model $model, $beLongsTo = null) {
-        
-        $icons = [
-            'company' => 'fa fa-building',
-            'corp'    => 'fa fa-weixin',
-            'school'  => 'fa fa-university',
-        ];
-        $class = lcfirst(class_basename($model));
-        
+
         return $this->create([
             'parent_id'    => $beLongsTo
                 ? $model->{$beLongsTo}->menu_id
                 : $this->where('parent_id', null)->first()->id,
             'name'         => $model->{'name'},
             'remark'       => $model->{'remark'},
-            'menu_type_id' => MenuType::whereRemark($class)->first()->id,
-            'icon_id'      => Icon::whereName($icons[$class])->first()->id,
+            'menu_type_id' => ($menuType = MenuType::whereRemark(lcfirst(class_basename($model)))->first())->id,
+            'icon_id'      => Icon::whereName($menuType->icon)->first()->id,
             'position'     => $this->all()->max('position') + 1,
             'enabled'      => $model->{'enabled'},
         ]);
@@ -267,8 +216,6 @@ class Menu extends Model {
     }
     
     /**
-     * 更新菜单
-     *
      * @param array $data
      * @param $id
      * @return bool|mixed
@@ -326,8 +273,6 @@ class Menu extends Model {
     }
     
     /**
-     * 删除指定菜单及其所有子菜单
-     *
      * @param $id
      * @return bool|mixed
      * @throws Throwable
@@ -399,6 +344,7 @@ class Menu extends Model {
                 return !$subRoot ? $rootMId : ($smId ?? ($cmId ?? $rootMId));
             case '企业':
                 $cmId = $cmId ?? Corp::whereDepartmentId($deptId)->first()->menu_id;
+                
                 return !$subRoot ? $cmId : ($smId ?? $cmId);
             case '学校':
                 return $smId ?? School::whereDepartmentId($deptId)->first()->menu_id;
@@ -454,7 +400,9 @@ class Menu extends Model {
         $nodes[] = [
             'id'     => $rootMenu['id'],
             'parent' => '#',
-            'text'   => '<i class="fa fa-university"></i>&nbsp;&nbsp;' . $rootMenu['name'],
+            'text'   => Html::tag('i', '', [
+                    'class' => 'fa fa-university',
+                ])->toHtml() . '&nbsp;&nbsp;' . $rootMenu['name'],
             'type'   => 'school',
         ];
         
@@ -520,7 +468,7 @@ class Menu extends Model {
      * @return array
      */
     function compose() {
-    
+        
         $action = explode('/', Request::path())[1];
         if ($action == 'sort') {
             $menuId = Request::route('id');
@@ -549,7 +497,7 @@ class Menu extends Model {
                 'selectedTabs' => $menuTabs ? $menuTabs->pluck('id') : null,
             ];
         }
-    
+        
         return $data;
         
     }
@@ -579,14 +527,14 @@ class Menu extends Model {
                 $icon = $sub['icon'];
                 $iconHtml = Html::tag('i', '', [
                     'class' => !$icon ? 'fa fa-circle-o' : $icon,
-                    'style' => 'width: 20px;'
+                    'style' => 'width: 20px;',
                 ])->toHtml();
                 $name = $iconHtml . '&nbsp;&nbsp;' . $name;
             }
             $mt = MenuType::find($sub['menu_type_id']);
             $type = $mt->remark;
             $text = Html::tag('span', $name, [
-                'class' => $sub['enabled'] ? $mt->color : 'text-gray'
+                'class' => $sub['enabled'] ? $mt->color : 'text-gray',
             ])->toHtml();
             if ($type == '企业') {
                 $corpId = Corp::whereMenuId($key)->first()->id;
@@ -789,7 +737,7 @@ class Menu extends Model {
             if (isset($child['parent_id'])) {
                 $icon = $this->find($child['id'])->icon;
                 $iconHtml = Html::tag('i', '', [
-                    'class' => $icon ? $icon->name : 'fa fa-circle-o'
+                    'class' => $icon ? $icon->name : 'fa fa-circle-o',
                 ])->toHtml();
                 $name = $iconHtml . '&nbsp;&nbsp;' . $name;
             }

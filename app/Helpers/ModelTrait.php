@@ -869,5 +869,21 @@ trait ModelTrait {
         
     }
     
+    /**
+     * @param $id
+     * @param $title
+     * @param $class
+     * @return string
+     */
+    function anchor($id, $title, $class) {
+    
+        return Html::link(
+            '#', Html::tag('i', '', ['class' => 'fa ' . $class]),
+            ['id' => $id, 'title' => $title, 'style' => 'margin-left: 15px;'],
+            null, false
+        )->toHtml();
+    
+    }
+    
 }
 

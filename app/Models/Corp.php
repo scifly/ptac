@@ -137,10 +137,10 @@ class Corp extends Model {
             [
                 'db'        => 'Corp.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    $rechargeLink = sprintf(
-                        Snippet::DT_ANCHOR,
+                    $rechargeLink = $this->anchor(
                         'recharge_' . $row['id'],
-                        '短信充值 & 查询', 'fa-money'
+                        '短信充值 & 查询',
+                        'fa-money'
                     );
                     
                     return Datatable::status($d, $row, false) .

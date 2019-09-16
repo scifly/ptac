@@ -183,7 +183,7 @@ class Datatable {
         $id = is_array($row) ? $row['id'] : $row;
         list($showUri, $editUri, $delUri) = array_map(
             function ($name, $title, $class) use ($id) {
-                return sprintf(Snippet::DT_ANCHOR, $name . $id, $title, $class);
+                return $this->anchor($name . $id, $title, $class);
             },
             ['show_', 'edit_', ''], ['详情', '编辑', '删除'],
             ['fa-bars', 'fa-pencil', 'fa-remove text-red']

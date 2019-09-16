@@ -111,10 +111,7 @@ class Face extends Model {
                     $state = $this->badge($colors[$d ?? 0][0], $colors[$d ?? 0][1]);
                     [$config, $remove] = array_map(
                         function ($prefix, $title, $style) use ($row) {
-                            return sprintf(
-                                Snippet::DT_ANCHOR,
-                                $prefix . $row['id'], $title, $style
-                            );
+                            return $this->anchor($prefix . $row['id'], $title, $style);
                         }, ['cfg_', ''], ['设置', '删除'],
                         ['fa-pencil', 'fa-remove text-red']
                     );

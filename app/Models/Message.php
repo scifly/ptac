@@ -206,13 +206,17 @@ class Message extends Model {
                             ['orange', '定时'],
                         ];
                         [$color, $title] = $statuses[$d];
-                        $status = sprintf(Snippet::DT_STATUS, 'text-' . $color, $title);
+                        $status = Html::tag('i', '', [
+                            'title' => $title,
+                            'class' => 'fa fa-circle text-' . $color,
+                            'style' => 'width: 20px; margin: 0 10px;'
+                        ])->toHtml();
                         $status .= $d != 1
                             ? sprintf($html, 'edit_' . $id, '编辑', 'fa-edit')
                             : sprintf($html, 'show_' . $id, '详情', 'fa-laptop');
                     }
                     
-                    return $status . sprintf(Snippet::DT_ANCHOR, $id, '删除', 'fa-remove text-red');
+                    return $status . $this->anchor($id, '删除', 'fa-remove text-red');
                 },
             ],
             ['db' => 'Message.' . ($received ? 'sent' : 'read'), 'dt' => 9],
