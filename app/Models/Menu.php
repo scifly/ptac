@@ -619,14 +619,12 @@ class Menu extends Model {
         $user = Auth::user();
         if ($rootId == 1) {
             $menus = $this->where('id', '<>', 1)
-                ->orderBy('position')
-                ->get()->toArray();
+                ->orderBy('position')->get()->toArray();
         } else {
             if (!in_array($user->role(), Constant::SUPER_ROLES)) {
                 $menus = GroupMenu::with('menu')
                     ->where('group_id', $user->group_id)
-                    ->get()->pluck('menu')
-                    ->toArray();
+                    ->get()->pluck('menu')->toArray();
                 $arr = [];
                 foreach ($menus as $key => $menu) {
                     $arr[$key] = $menu['position'];
@@ -639,14 +637,12 @@ class Menu extends Model {
             }
         }
         foreach ($menus as $menu) {
-            $icon = 'fa fa-circle-o';
-            if ($menu['icon_id']) $icon = Icon::find($menu['icon_id'])->name;
             if (!$disabled && !$menu['enabled']) continue;
             $subs[$menu['id']] = [
                 'parent_id'    => $menu['parent_id'],
                 'name'         => $menu['name'],
                 'uri'          => $menu['uri'],
-                'icon'         => $icon,
+                'icon'         => $menu['icon_id'] ? Icon::find($menu['icon_id'])->name : 'fa fa-circle-o',
                 'menu_type_id' => $menu['menu_type_id'],
                 'enabled'      => $menu['enabled'],
             ];
