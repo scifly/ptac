@@ -808,6 +808,7 @@ class User extends Authenticatable {
                     'filter'    => true,
                 ];
             case 'users/reset':
+            case 'users/edit':
                 return ['disabled' => true];
             case 'operators/index':
                 return [
