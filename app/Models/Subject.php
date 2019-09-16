@@ -37,6 +37,12 @@ use Throwable;
  * @property-read Collection|Squad[] $classes
  * @property-read Collection|Educator[] $educators
  * @property-read Collection|Score[] $scores
+ * @property-read int|null $classes_count
+ * @property-read int|null $educators_count
+ * @property-read int|null $events_count
+ * @property-read int|null $majors_count
+ * @property-read int|null $scores_count
+ * @property-read int|null $subject_modules_count
  * @method static Builder|Subject whereCreatedAt($value)
  * @method static Builder|Subject whereEnabled($value)
  * @method static Builder|Subject whereGradeIds($value)
@@ -51,12 +57,6 @@ use Throwable;
  * @method static Builder|Subject newQuery()
  * @method static Builder|Subject query()
  * @mixin Eloquent
- * @property-read int|null $classes_count
- * @property-read int|null $educators_count
- * @property-read int|null $events_count
- * @property-read int|null $majors_count
- * @property-read int|null $scores_count
- * @property-read int|null $subject_modules_count
  */
 class Subject extends Model {
     

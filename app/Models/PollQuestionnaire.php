@@ -39,6 +39,10 @@ use Throwable;
  * @property-read Collection|PollQuestionnaireSubjectChoice[] $pqChoices
  * @property-read Collection|PollQuestionnaireParticipant[] $pqParticipants
  * @property-read Collection|PollQuestionnaireSubject[] $pqSubjects
+ * @property-read int|null $pq_answers_count
+ * @property-read int|null $pq_choices_count
+ * @property-read int|null $pq_participants_count
+ * @property-read int|null $pq_subjects_count
  * @method static Builder|PollQuestionnaire whereCreatedAt($value)
  * @method static Builder|PollQuestionnaire whereEnabled($value)
  * @method static Builder|PollQuestionnaire whereEnd($value)
@@ -52,10 +56,6 @@ use Throwable;
  * @method static Builder|PollQuestionnaire newQuery()
  * @method static Builder|PollQuestionnaire query()
  * @mixin Eloquent
- * @property-read int|null $pq_answers_count
- * @property-read int|null $pq_choices_count
- * @property-read int|null $pq_participants_count
- * @property-read int|null $pq_subjects_count
  */
 class PollQuestionnaire extends Model {
     

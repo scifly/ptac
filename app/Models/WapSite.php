@@ -23,6 +23,7 @@ use Throwable;
  * @property int $enabled
  * @property-read School $school
  * @property-read Collection|WapSiteModule[] $wapSiteModules
+ * @property-read int|null $wap_site_modules_count
  * @method static Builder|WapSite whereCreatedAt($value)
  * @method static Builder|WapSite whereEnabled($value)
  * @method static Builder|WapSite whereId($value)
@@ -34,7 +35,6 @@ use Throwable;
  * @method static Builder|WapSite newQuery()
  * @method static Builder|WapSite query()
  * @mixin Eloquent
- * @property-read int|null $wap_site_modules_count
  */
 class WapSite extends Model {
     

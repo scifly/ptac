@@ -25,6 +25,7 @@ use Throwable;
  * @property int $status 状态
  * @property-read User $user
  * @property-read Collection|Turnstile[] $turnstiles
+ * @property-read int|null $turnstiles_count
  * @method static Builder|Card newModelQuery()
  * @method static Builder|Card newQuery()
  * @method static Builder|Card query()
@@ -35,7 +36,6 @@ use Throwable;
  * @method static Builder|Card whereUserId($value)
  * @method static Builder|Card whereSn($value)
  * @mixin Eloquent
- * @property-read int|null $turnstiles_count
  */
 class Card extends Model {
     

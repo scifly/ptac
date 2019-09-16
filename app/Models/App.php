@@ -35,6 +35,10 @@ use Throwable;
  * @property-read Collection|Openid[] $openids
  * @property-read Collection|School[] $schools
  * @property-read Collection|Template[] $templates
+ * @property-read int|null $messages_count
+ * @property-read int|null $openids_count
+ * @property-read int|null $schools_count
+ * @property-read int|null $templates_count
  * @method static Builder|App newModelQuery()
  * @method static Builder|App newQuery()
  * @method static Builder|App query()
@@ -53,10 +57,6 @@ use Throwable;
  * @method static Builder|App whereProperties($value)
  * @method static Builder|App whereUpdatedAt($value)
  * @mixin Eloquent
- * @property-read int|null $messages_count
- * @property-read int|null $openids_count
- * @property-read int|null $schools_count
- * @property-read int|null $templates_count
  */
 class App extends Model {
     

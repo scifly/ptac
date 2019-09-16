@@ -29,6 +29,8 @@ use Throwable;
  * @property-read School $school
  * @property-read User $creator
  * @property-read Collection|Department[] $departments
+ * @property-read int|null $departments_count
+ * @property-read int|null $users_count
  * @method static Builder|Tag whereCreatedAt($value)
  * @method static Builder|Tag whereEnabled($value)
  * @method static Builder|Tag whereId($value)
@@ -43,8 +45,6 @@ use Throwable;
  * @method static Builder|Tag newQuery()
  * @method static Builder|Tag query()
  * @mixin Eloquent
- * @property-read int|null $departments_count
- * @property-read int|null $users_count
  */
 class Tag extends Model {
     

@@ -23,6 +23,8 @@ use Throwable;
  * @property-read IconType $iconType
  * @property-read Collection|Menu[] $menus
  * @property-read Collection|Tab[] $tabs
+ * @property-read int|null $menus_count
+ * @property-read int|null $tabs_count
  * @method static Builder|Icon whereCreatedAt($value)
  * @method static Builder|Icon whereEnabled($value)
  * @method static Builder|Icon whereIconTypeId($value)
@@ -34,8 +36,6 @@ use Throwable;
  * @method static Builder|Icon newQuery()
  * @method static Builder|Icon query()
  * @mixin Eloquent
- * @property-read int|null $menus_count
- * @property-read int|null $tabs_count
  */
 class Icon extends Model {
     

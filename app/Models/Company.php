@@ -32,6 +32,8 @@ use Throwable;
  * @property-read Collection|School[] $schools
  * @property-read Department $department
  * @property-read Menu $menu
+ * @property-read int|null $corps_count
+ * @property-read int|null $schools_count
  * @method static Builder|Company whereCorpid($value)
  * @method static Builder|Company whereId($value)
  * @method static Builder|Company whereName($value)
@@ -45,8 +47,6 @@ use Throwable;
  * @method static Builder|Company newQuery()
  * @method static Builder|Company query()
  * @mixin Eloquent
- * @property-read int|null $corps_count
- * @property-read int|null $schools_count
  */
 class Company extends Model {
     

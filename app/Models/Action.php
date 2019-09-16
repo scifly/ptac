@@ -33,6 +33,7 @@ use Throwable;
  * @property int $enabled
  * @property-read Tab $tab
  * @property-read Collection|Group[] $groups
+ * @property-read int|null $groups_count
  * @method static Builder|Action whereActionTypeIds($value)
  * @method static Builder|Action whereController($value)
  * @method static Builder|Action whereTabId($value)
@@ -50,7 +51,6 @@ use Throwable;
  * @method static Builder|Action newQuery()
  * @method static Builder|Action query()
  * @mixin Eloquent
- * @property-read int|null $groups_count
  */
 class Action extends Model {
     

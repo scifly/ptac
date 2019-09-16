@@ -40,6 +40,12 @@ use Throwable;
  * @property-read User $user
  * @property-read Collection|Consumption[] $consumptions
  * @property-read Collection|Module[] $modules
+ * @property-read Bed $bed
+ * @property-read int|null $consumptions_count
+ * @property-read int|null $custodians_count
+ * @property-read int|null $modules_count
+ * @property-read int|null $score_totals_count
+ * @property-read int|null $scores_count
  * @method static Builder|Student whereBirthday($value)
  * @method static Builder|Student whereClassId($value)
  * @method static Builder|Student whereCreatedAt($value)
@@ -54,12 +60,6 @@ use Throwable;
  * @method static Builder|Student newQuery()
  * @method static Builder|Student query()
  * @mixin Eloquent
- * @property-read Bed $bed
- * @property-read int|null $consumptions_count
- * @property-read int|null $custodians_count
- * @property-read int|null $modules_count
- * @property-read int|null $score_totals_count
- * @property-read int|null $scores_count
  */
 class Student extends Model {
     

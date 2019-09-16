@@ -33,6 +33,10 @@ use Throwable;
  * @property-read Icon|null $icon
  * @property-read Collection|Menu[] $menus
  * @property-read Collection|Action[] $actions
+ * @property-read Collection|Group[] $groups
+ * @property-read int|null $actions_count
+ * @property-read int|null $groups_count
+ * @property-read int|null $menus_count
  * @method static Builder|Tab whereActionId($value)
  * @method static Builder|Tab whereComment($value)
  * @method static Builder|Tab whereCreatedAt($value)
@@ -48,10 +52,6 @@ use Throwable;
  * @method static Builder|Tab newQuery()
  * @method static Builder|Tab query()
  * @mixin Eloquent
- * @property-read Collection|Group[] $groups
- * @property-read int|null $actions_count
- * @property-read int|null $groups_count
- * @property-read int|null $menus_count
  */
 class Tab extends Model {
     

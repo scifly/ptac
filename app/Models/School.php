@@ -63,28 +63,6 @@ use Throwable;
  * @property-read Collection|PassageLog[] $passageLogs
  * @property-read Collection|PassageRule[] $passageRules
  * @property-read App|null $app
- * @method static Builder|School whereAddress($value)
- * @method static Builder|School whereCorpId($value)
- * @method static Builder|School whereCreatedAt($value)
- * @method static Builder|School whereDepartmentId($value)
- * @method static Builder|School whereEnabled($value)
- * @method static Builder|School whereId($value)
- * @method static Builder|School whereAppId($value)
- * @method static Builder|School whereLatitude($value)
- * @method static Builder|School whereLongitude($value)
- * @method static Builder|School whereMenuId($value)
- * @method static Builder|School whereName($value)
- * @method static Builder|School whereSchoolTypeId($value)
- * @method static Builder|School whereSignature($value)
- * @method static Builder|School whereSmsBalance($value)
- * @method static Builder|School whereSmsUsed($value)
- * @method static Builder|School whereSmsLen($value)
- * @method static Builder|School whereUpdatedAt($value)
- * @method static Builder|School whereUserIds($value)
- * @method static Builder|School newModelQuery()
- * @method static Builder|School newQuery()
- * @method static Builder|School query()
- * @mixin Eloquent
  * @property-read Collection|Building[] $buildings
  * @property-read int|null $buildings_count
  * @property-read int|null $classes_count
@@ -108,6 +86,28 @@ use Throwable;
  * @property-read int|null $tags_count
  * @property-read int|null $turnstiles_count
  * @property-read int|null $wap_site_modules_count
+ * @method static Builder|School whereAddress($value)
+ * @method static Builder|School whereCorpId($value)
+ * @method static Builder|School whereCreatedAt($value)
+ * @method static Builder|School whereDepartmentId($value)
+ * @method static Builder|School whereEnabled($value)
+ * @method static Builder|School whereId($value)
+ * @method static Builder|School whereAppId($value)
+ * @method static Builder|School whereLatitude($value)
+ * @method static Builder|School whereLongitude($value)
+ * @method static Builder|School whereMenuId($value)
+ * @method static Builder|School whereName($value)
+ * @method static Builder|School whereSchoolTypeId($value)
+ * @method static Builder|School whereSignature($value)
+ * @method static Builder|School whereSmsBalance($value)
+ * @method static Builder|School whereSmsUsed($value)
+ * @method static Builder|School whereSmsLen($value)
+ * @method static Builder|School whereUpdatedAt($value)
+ * @method static Builder|School whereUserIds($value)
+ * @method static Builder|School newModelQuery()
+ * @method static Builder|School newQuery()
+ * @method static Builder|School query()
+ * @mixin Eloquent
  */
 class School extends Model {
     

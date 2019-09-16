@@ -30,6 +30,8 @@ use Throwable;
  * @property-read Department $department
  * @property-read School $school
  * @property-read Collection|Student[] $students
+ * @property-read int|null $classes_count
+ * @property-read int|null $students_count
  * @method static Builder|Grade whereCreatedAt($value)
  * @method static Builder|Grade whereDepartmentId($value)
  * @method static Builder|Grade whereEducatorIds($value)
@@ -42,8 +44,6 @@ use Throwable;
  * @method static Builder|Grade newQuery()
  * @method static Builder|Grade query()
  * @mixin Eloquent
- * @property-read int|null $classes_count
- * @property-read int|null $students_count
  */
 class Grade extends Model {
     

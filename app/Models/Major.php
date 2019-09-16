@@ -24,6 +24,7 @@ use Throwable;
  * @property-read MajorSubject $majorSubject
  * @property-read School $school
  * @property-read Collection|Subject[] $subjects
+ * @property-read int|null $subjects_count
  * @method static Builder|Major whereCreatedAt($value)
  * @method static Builder|Major whereEnabled($value)
  * @method static Builder|Major whereId($value)
@@ -35,7 +36,6 @@ use Throwable;
  * @method static Builder|Major newQuery()
  * @method static Builder|Major query()
  * @mixin Eloquent
- * @property-read int|null $subjects_count
  */
 class Major extends Model {
     

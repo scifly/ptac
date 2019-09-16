@@ -22,6 +22,7 @@ use Throwable;
  * @property boolean $enabled
  * @property-read Collection|Student[] $students
  * @property-read User $user
+ * @property-read int|null $students_count
  * @method static Builder|Custodian whereCreatedAt($value)
  * @method static Builder|Custodian whereId($value)
  * @method static Builder|Custodian whereUpdatedAt($value)
@@ -32,7 +33,6 @@ use Throwable;
  * @method static Builder|Custodian newQuery()
  * @method static Builder|Custodian query()
  * @mixin Eloquent
- * @property-read int|null $students_count
  */
 class Custodian extends Model {
     

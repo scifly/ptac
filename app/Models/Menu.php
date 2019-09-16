@@ -44,6 +44,9 @@ use Throwable;
  * @property-read School $school
  * @property-read Collection|Tab[] $tabs
  * @property-read Collection|GroupMenu[] $groupMenus
+ * @property-read int|null $children_count
+ * @property-read int|null $groups_count
+ * @property-read int|null $tabs_count
  * @method static Builder|Menu whereCreatedAt($value)
  * @method static Builder|Menu whereEnabled($value)
  * @method static Builder|Menu whereIconId($value)
@@ -60,9 +63,6 @@ use Throwable;
  * @method static Builder|Menu newQuery()
  * @method static Builder|Menu query()
  * @mixin Eloquent
- * @property-read int|null $children_count
- * @property-read int|null $groups_count
- * @property-read int|null $tabs_count
  */
 class Menu extends Model {
     

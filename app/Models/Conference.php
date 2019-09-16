@@ -30,6 +30,9 @@ use Throwable;
  * @property-read Collection|Participant[] $participants
  * @property-read Room $room
  * @property-read Educator $educator
+ * @property-read int|null $conference_participants_count
+ * @property-read int|null $participants_count
+ * @property-read Educator $user
  * @method static Builder|Conference whereUrl($value)
  * @method static Builder|Conference whereRoomId($value)
  * @method static Builder|Conference whereCreatedAt($value)
@@ -47,9 +50,6 @@ use Throwable;
  * @method static Builder|Conference newQuery()
  * @method static Builder|Conference query()
  * @mixin Eloquent
- * @property-read int|null $conference_participants_count
- * @property-read int|null $participants_count
- * @property-read Educator $user
  */
 class Conference extends Model {
     

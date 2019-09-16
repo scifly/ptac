@@ -60,6 +60,18 @@ use Throwable;
  * @property-read Student $student
  * @property-read Collection|Tag[] $tags
  * @property-read Collection|Token[] $tokens
+ * @property-read int|null $_tags_count
+ * @property-read int|null $clients_count
+ * @property-read int|null $departments_count
+ * @property-read int|null $events_count
+ * @property-read int|null $notifications_count
+ * @property-read int|null $openids_count
+ * @property-read int|null $orders_count
+ * @property-read int|null $poll_questionnaires_count
+ * @property-read int|null $pq_answers_count
+ * @property-read int|null $pq_participants_count
+ * @property-read int|null $tags_count
+ * @property-read int|null $tokens_count
  * @method static Builder|User newModelQuery()
  * @method static Builder|User newQuery()
  * @method static Builder|User query()
@@ -81,18 +93,6 @@ use Throwable;
  * @method static Builder|User whereUpdatedAt($value)
  * @method static Builder|User whereUsername($value)
  * @mixin Eloquent
- * @property-read int|null $_tags_count
- * @property-read int|null $clients_count
- * @property-read int|null $departments_count
- * @property-read int|null $events_count
- * @property-read int|null $notifications_count
- * @property-read int|null $openids_count
- * @property-read int|null $orders_count
- * @property-read int|null $poll_questionnaires_count
- * @property-read int|null $pq_answers_count
- * @property-read int|null $pq_participants_count
- * @property-read int|null $tags_count
- * @property-read int|null $tokens_count
  */
 class User extends Authenticatable {
     

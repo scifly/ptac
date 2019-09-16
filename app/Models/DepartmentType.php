@@ -21,6 +21,7 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read Collection|Department[] $departments
+ * @property-read int|null $departments_count
  * @method static Builder|DepartmentType whereCreatedAt($value)
  * @method static Builder|DepartmentType whereEnabled($value)
  * @method static Builder|DepartmentType whereId($value)
@@ -33,7 +34,6 @@ use Throwable;
  * @method static Builder|DepartmentType newQuery()
  * @method static Builder|DepartmentType query()
  * @mixin Eloquent
- * @property-read int|null $departments_count
  */
 class DepartmentType extends Model {
     

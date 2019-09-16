@@ -41,6 +41,9 @@ use Throwable;
  * @property-read Squad $squad
  * @property-read Collection|User[] $users
  * @property-read Collection|Tag[] $tags
+ * @property-read int|null $children_count
+ * @property-read int|null $tags_count
+ * @property-read int|null $users_count
  * @method static Builder|Department whereCreatedAt($value)
  * @method static Builder|Department whereDepartmentTypeId($value)
  * @method static Builder|Department whereEnabled($value)
@@ -55,9 +58,6 @@ use Throwable;
  * @method static Builder|Department newQuery()
  * @method static Builder|Department query()
  * @mixin Eloquent
- * @property-read int|null $children_count
- * @property-read int|null $tags_count
- * @property-read int|null $users_count
  */
 class Department extends Model {
     

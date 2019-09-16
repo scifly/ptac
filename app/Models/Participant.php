@@ -19,6 +19,8 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $status 状态（0 - 签到已到 1 - 签到未到）
+ * @property int $conference_id 会议id
+ * @property string $signed_up 与会者签到时间
  * @property-read Conference $conferenceQueues
  * @property-read Educator $educator
  * @property-read Conference $conferenceQueue
@@ -32,11 +34,9 @@ use Throwable;
  * @method static Builder|Participant newModelQuery()
  * @method static Builder|Participant newQuery()
  * @method static Builder|Participant query()
- * @mixin Eloquent
- * @property int $conference_id 会议id
- * @property string $signed_up 与会者签到时间
  * @method static Builder|Participant whereConferenceId($value)
  * @method static Builder|Participant whereSignedUp($value)
+ * @mixin Eloquent
  */
 class Participant extends Model {
     

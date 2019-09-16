@@ -32,6 +32,9 @@ use Throwable;
  * @property-read Grade $grade
  * @property-read Collection|Student[] $students
  * @property-read Collection|Subject[] $subjects
+ * @property-read int|null $educators_count
+ * @property-read int|null $students_count
+ * @property-read int|null $subjects_count
  * @method static Builder|Squad whereCreatedAt($value)
  * @method static Builder|Squad whereDepartmentId($value)
  * @method static Builder|Squad whereEducatorIds($value)
@@ -44,9 +47,6 @@ use Throwable;
  * @method static Builder|Squad newQuery()
  * @method static Builder|Squad query()
  * @mixin Eloquent
- * @property-read int|null $educators_count
- * @property-read int|null $students_count
- * @property-read int|null $subjects_count
  */
 class Squad extends Model {
     

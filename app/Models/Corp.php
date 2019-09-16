@@ -43,6 +43,11 @@ use Throwable;
  * @property-read Menu $menu
  * @property-read Collection|School[] $schools
  * @property-read Collection|Tag[] $tags
+ * @property-read int|null $apps_count
+ * @property-read int|null $educators_count
+ * @property-read int|null $grades_count
+ * @property-read int|null $schools_count
+ * @property-read int|null $tags_count
  * @method static Builder|Corp newModelQuery()
  * @method static Builder|Corp newQuery()
  * @method static Builder|Corp query()
@@ -61,11 +66,6 @@ use Throwable;
  * @method static Builder|Corp whereSmsUsed($value)
  * @method static Builder|Corp whereUpdatedAt($value)
  * @mixin Eloquent
- * @property-read int|null $apps_count
- * @property-read int|null $educators_count
- * @property-read int|null $grades_count
- * @property-read int|null $schools_count
- * @property-read int|null $tags_count
  */
 class Corp extends Model {
     
