@@ -512,17 +512,16 @@ class Menu extends Model {
         if ($action == 'sort') {
             $menuId = Request::route('id');
             $tabIds = MenuTab::whereMenuId($menuId)->get()->sortBy('tab_order')->pluck('tab_id');
-            $tabIds_ordered = join(',', $tabIds->toArray());
             $data = [
                 'tabs'   => Tab::whereIn('id', $tabIds)
-                    ->orderByRaw(DB::raw("FIELD(id, $tabIds_ordered)"))
+                    ->orderByRaw(DB::raw("FIELD(id, {$tabIds->join(',')})"))
                     ->get(),
                 'menuId' => $menuId,
             ];
         } else {
             $role = Auth::user()->role();
             $gIds = Group::whereIn('name', Constant::SUPER_ROLES)
-                ->pluck('id', 'name')->toArray();
+                ->pluck('id', 'name');
             $tabs = Tab::whereEnabled(1)->get();
             if ($role == '企业') {
                 $tabs = $tabs->where('group_id', '<>', $gIds['运营']);
