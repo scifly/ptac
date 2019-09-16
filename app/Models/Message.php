@@ -144,7 +144,7 @@ class Message extends Model {
             [
                 'db'        => 'Message.event_id', 'dt' => 3,
                 'formatter' => function ($d, $row) {
-                    $mt = MediaType::find($row['media_type_id'])->name;
+                    $mt = MediaType::find($row['media_type_id']);
                     $ct = $mt->name == 'sms' ? $mt->remark : '微信';
                     if ($row['sent'] != 1) {
                         $type = $this->badge(
