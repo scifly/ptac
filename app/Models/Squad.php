@@ -158,6 +158,14 @@ class Squad extends Model {
                     'Department.id = Squad.department_id',
                 ],
             ],
+            [
+                'table'      => 'grades',
+                'alias'      => 'Grade',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Grade.id = Squad.grade_id',
+                ],
+            ],
         ];
         $condition = 'Squad.id IN (' . join(',', $this->classIds()) . ')';
         
