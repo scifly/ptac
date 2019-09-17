@@ -40,20 +40,12 @@ class ExamType extends Model {
     
     use ModelTrait;
     
-    protected $fillable = ['name', 'remark', 'school_id', 'enabled'];
+    protected $fillable = ['school_id', 'name', 'remark', 'enabled'];
     
-    /**
-     * 返回所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\School'); }
     
-    /**
-     * 获取指定考试类型包含的所有考试对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function exams() { return $this->hasMany('App\Models\Exam'); }
     
     /**

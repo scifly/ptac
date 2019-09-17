@@ -41,11 +41,7 @@ class MenuType extends Model {
     
     protected $fillable = ['name', 'color', 'icon', 'remark', 'enabled'];
     
-    /**
-     * 获取指定菜单类型所包含的所有菜单对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function menus() { return $this->hasMany('App\Models\Menu'); }
     
     /**

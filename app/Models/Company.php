@@ -3,7 +3,6 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\{ModelTrait};
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder,
@@ -12,6 +11,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\HasMany,
     Relations\HasManyThrough};
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -20,32 +20,30 @@ use Throwable;
  * App\Models\Company 运营者公司
  *
  * @property int $id
+ * @property int $department_id
+ * @property int $menu_id
  * @property string $name 运营者公司名称
  * @property string $remark 运营者公司备注
- * @property string $corpid 与运营者公司对应的企业号id
- * @property int $menu_id 对应的菜单ID
- * @property int $department_id 对应的部门ID
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
- * @property-read Collection|Company[] $corps
- * @property-read Collection|School[] $schools
+ * @property-read Collection|Corp[] $corps
+ * @property-read int|null $corps_count
  * @property-read Department $department
  * @property-read Menu $menu
- * @property-read int|null $corps_count
+ * @property-read Collection|School[] $schools
  * @property-read int|null $schools_count
- * @method static Builder|Company whereCorpid($value)
- * @method static Builder|Company whereId($value)
- * @method static Builder|Company whereName($value)
- * @method static Builder|Company whereRemark($value)
- * @method static Builder|Company whereCreatedAt($value)
- * @method static Builder|Company whereUpdatedAt($value)
- * @method static Builder|Company whereDepartmentId($value)
- * @method static Builder|Company whereMenuId($value)
- * @method static Builder|Company whereEnabled($value)
  * @method static Builder|Company newModelQuery()
  * @method static Builder|Company newQuery()
  * @method static Builder|Company query()
+ * @method static Builder|Company whereCreatedAt($value)
+ * @method static Builder|Company whereDepartmentId($value)
+ * @method static Builder|Company whereEnabled($value)
+ * @method static Builder|Company whereId($value)
+ * @method static Builder|Company whereMenuId($value)
+ * @method static Builder|Company whereName($value)
+ * @method static Builder|Company whereRemark($value)
+ * @method static Builder|Company whereUpdatedAt($value)
  * @mixin Eloquent
  */
 class Company extends Model {
@@ -53,41 +51,20 @@ class Company extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'name', 'remark', 'department_id',
-        'menu_id', 'enabled',
+        'department_id', 'menu_id', 'name', 'remark', 'enabled',
     ];
     
-    /**
-     * 返回对应的部门对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function department() { return $this->belongsTo('App\Models\Department'); }
     
-    /**
-     * 返回对应的菜单对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function menu() { return $this->belongsTo('App\Models\Menu'); }
     
-    /**
-     * 获取指定运营者公司下属的企业对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function corps() { return $this->hasMany('App\Models\Corp'); }
     
-    /**
-     * 通过Corp中间对象获取所有的学校对象
-     *
-     * @return HasManyThrough
-     */
-    function schools() {
-        
-        return $this->hasManyThrough('App\Models\School', 'App\Models\Corp');
-        
-    }
+    /** @return HasManyThrough */
+    function schools() { return $this->hasManyThrough('App\Models\School', 'App\Models\Corp'); }
     
     /**
      * 运营者列表

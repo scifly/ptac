@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\{Datatable, Wechat};
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Sms, Snippet};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Sms};
 use App\Jobs\SendMessage;
 use Carbon\Carbon;
 use Doctrine\Common\Inflector\Inflector;
@@ -69,6 +69,7 @@ use Throwable;
  * @method static Builder|Message newQuery()
  * @method static Builder|Message query()
  * @mixin Eloquent
+ * @property-read MessageSendingLog $msgLog
  */
 class Message extends Model {
     
@@ -105,11 +106,7 @@ class Message extends Model {
     function receiver() { return $this->belongsTo('App\Models\User', 'r_user_id', 'id'); }
     
     /** @return BelongsTo */
-    function messageSendinglog() {
-        
-        return $this->belongsTo('App\Models\MessageSendingLog', 'msl_id', 'id');
-        
-    }
+    function msgLog() { return $this->belongsTo('App\Models\MessageSendingLog', 'msl_id', 'id'); }
     
     /** @return BelongsTo` */
     function event() { return $this->belongsTo('App\Models\Event'); }

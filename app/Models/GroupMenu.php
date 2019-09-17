@@ -25,16 +25,16 @@ use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot}
  * @method static Builder|GroupMenu newModelQuery()
  * @method static Builder|GroupMenu newQuery()
  * @method static Builder|GroupMenu query()
+ * @property-read Group $group
  */
 class GroupMenu extends Pivot {
     
     protected $fillable = ['group_id', 'menu_id', 'enabled'];
     
-    /**
-     * 返回指定记录所属的菜单对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function menu() { return $this->belongsTo('App\Models\Menu'); }
+    
+    /** @return BelongsTo */
+    function group() { return $this->belongsTo('App\Models\Group'); }
     
 }

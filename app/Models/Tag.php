@@ -45,6 +45,8 @@ use Throwable;
  * @method static Builder|Tag newQuery()
  * @method static Builder|Tag query()
  * @mixin Eloquent
+ * @property-read Collection|Department[] $depts
+ * @property-read int|null $depts_count
  */
 class Tag extends Model {
     
@@ -55,33 +57,17 @@ class Tag extends Model {
         'remark', 'enabled', 'synced',
     ];
     
-    /**
-     * 返回指定标签所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\School'); }
     
-    /**
-     * 返回指定标签的创建者用户对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function creator() { return $this->belongsTo('App\Models\User'); }
     
-    /**
-     * 获取指定标签包含的所有用户对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function users() { return $this->belongsToMany('App\Models\User', 'tags_users'); }
     
-    /**
-     * 获取指定标签包含的所有部门对象
-     *
-     * @return BelongsToMany
-     */
-    function departments() { return $this->belongsToMany('App\Models\Department', 'department_tag'); }
+    /** @return BelongsToMany */
+    function depts() { return $this->belongsToMany('App\Models\Department', 'department_tag'); }
     
     /**
      * 标签列表

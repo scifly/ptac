@@ -2,24 +2,19 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{ModelTrait, Snippet};
+use App\Helpers\ModelTrait;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder,
-    Collection,
-    Model,
-    Relations\BelongsTo,
-    Relations\HasMany,
-    Relations\HasManyThrough};
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo, Relations\HasMany, Relations\HasManyThrough};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
  * Class Corp
  *
- * @package App\Models
  * @property int $id
  * @property string $name 企业名称
  * @property int $company_id 所属运营者公司ID
@@ -36,17 +31,17 @@ use Throwable;
  * @property int $sms_used 已使用的短信数量
  * @property int $enabled
  * @property-read Collection|App[] $apps
+ * @property-read int|null $apps_count
  * @property-read Company $company
  * @property-read Department $department
  * @property-read Collection|Educator[] $educators
+ * @property-read int|null $educators_count
  * @property-read Collection|Grade[] $grades
+ * @property-read int|null $grades_count
  * @property-read Menu $menu
  * @property-read Collection|School[] $schools
- * @property-read Collection|Tag[] $tags
- * @property-read int|null $apps_count
- * @property-read int|null $educators_count
- * @property-read int|null $grades_count
  * @property-read int|null $schools_count
+ * @property-read Collection|Tag[] $tags
  * @property-read int|null $tags_count
  * @method static Builder|Corp newModelQuery()
  * @method static Builder|Corp newQuery()
@@ -72,8 +67,8 @@ class Corp extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'name', 'acronym', 'company_id', 'corpid',
-        'menu_id', 'department_id', 'departmentid', 'mchid',
+        'name', 'company_id', 'acronym', 'corpid',
+        'department_id',  'menu_id', 'departmentid', 'mchid',
         'apikey', 'sms_balance', 'sms_used', 'enabled',
     ];
     
@@ -93,25 +88,13 @@ class Corp extends Model {
     function schools() { return $this->hasMany('App\Models\School'); }
     
     /** @return HasManyThrough */
-    function educators() {
-        
-        return $this->hasManyThrough('App\Models\Educator', 'App\Models\School');
-        
-    }
+    function educators() { return $this->hasManyThrough('App\Models\Educator', 'App\Models\School'); }
     
     /** @return HasManyThrough */
-    function grades() {
-        
-        return $this->hasManyThrough('App\Models\Grade', 'App\Models\School');
-        
-    }
+    function grades() { return $this->hasManyThrough('App\Models\Grade', 'App\Models\School'); }
     
     /** @return HasManyThrough */
-    function tags() {
-        
-        return $this->hasManyThrough('App\Models\Tag', 'App\Models\School');
-        
-    }
+    function tags() { return $this->hasManyThrough('App\Models\Tag', 'App\Models\School'); }
     
     /** @return mixed */
     function index() {

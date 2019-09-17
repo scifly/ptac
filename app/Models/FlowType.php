@@ -3,8 +3,10 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
+use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Model, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
@@ -16,24 +18,24 @@ use Throwable;
  * @property string $name 流程名称
  * @property mixed $steps 流程步骤
  * @property string $remark 流程备注
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Flow[] $flows
+ * @property-read Collection|Flow[] $flows
  * @property-read int|null $flows_count
- * @property-read \App\Models\School $school
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FlowType newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FlowType newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FlowType query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FlowType whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FlowType whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FlowType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FlowType whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FlowType whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FlowType whereSchoolId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FlowType whereSteps($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\FlowType whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @property-read School $school
+ * @method static Builder|FlowType newModelQuery()
+ * @method static Builder|FlowType newQuery()
+ * @method static Builder|FlowType query()
+ * @method static Builder|FlowType whereCreatedAt($value)
+ * @method static Builder|FlowType whereEnabled($value)
+ * @method static Builder|FlowType whereId($value)
+ * @method static Builder|FlowType whereName($value)
+ * @method static Builder|FlowType whereRemark($value)
+ * @method static Builder|FlowType whereSchoolId($value)
+ * @method static Builder|FlowType whereSteps($value)
+ * @method static Builder|FlowType whereUpdatedAt($value)
+ * @mixin Eloquent
  */
 class FlowType extends Model {
     

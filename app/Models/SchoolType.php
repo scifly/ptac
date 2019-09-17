@@ -38,11 +38,7 @@ class SchoolType extends Model {
     
     protected $fillable = ['name', 'remark', 'enabled'];
     
-    /**
-     * 获取指定学校类型下属的所有学校对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function schools() { return $this->hasMany('App\Models\School'); }
     
     /**

@@ -3,7 +3,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
+use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
 
 /**
  * App\Models\GroupTab
@@ -24,9 +24,17 @@ use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
  * @method static Builder|GroupTab newModelQuery()
  * @method static Builder|GroupTab newQuery()
  * @method static Builder|GroupTab query()
+ * @property-read Group $group
+ * @property-read Tab $tab
  */
 class GroupTab extends Pivot {
     
     protected $fillable = ['group_id', 'tab_id', 'enabled'];
+    
+    /** @return BelongsTo */
+    function group() { return $this->belongsTo('App\Models\Group'); }
+    
+    /** @return BelongsTo */
+    function tab() { return $this->belongsTo('App\Models\Tab'); }
     
 }

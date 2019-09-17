@@ -52,44 +52,22 @@ class Group extends Model {
     
     use ModelTrait;
     
-    protected $table = 'groups';
-    
     protected $fillable = ['name', 'school_id', 'remark', 'enabled'];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 获取指定角色下的所有用户对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function users() { return $this->hasMany('App\Models\User'); }
     
-    /**
-     * 返回指定角色所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\School'); }
     
-    /**
-     * 获取指定角色可以访问的菜单对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function menus() { return $this->belongsToMany('App\Models\Menu', 'group_menu'); }
     
-    /**
-     * 获取指定角色可以访问的功能对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function actions() { return $this->belongsToMany('App\Models\Action', 'action_group'); }
     
-    /**
-     * 获取指定角色可以访问的卡片对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function tabs() { return $this->belongsToMany('App\Models\Tab', 'group_tab'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
@@ -232,11 +210,7 @@ class Group extends Model {
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
-    /**
-     * 返回composer所需的view数据
-     *
-     * @return array
-     */
+    /** @return array */
     function compose() {
     
         if (explode('/', Request::path())[1] == 'index') {

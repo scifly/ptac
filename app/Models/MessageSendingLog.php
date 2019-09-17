@@ -37,24 +37,12 @@ class MessageSendingLog extends Model {
     
     use ModelTrait;
     
-    protected $fillable = [
-        'read_count',
-        'received_count',
-        'recipient_count',
-    ];
+    protected $fillable = ['read_count', 'received_count', 'recipient_count'];
     
-    /**
-     * 返回指定消息发送记录包含的所有消息对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function messages() { return $this->hasMany('App\Models\Message'); }
     
-    /**
-     * 返回指定消息发送记录包含的所有接口消息对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function apiMessages() { return $this->hasMany('App\Models\ApiMessage'); }
     
     /**

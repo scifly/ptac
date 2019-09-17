@@ -20,8 +20,8 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
- * @property-read Collection|Department[] $departments
- * @property-read int|null $departments_count
+ * @property-read Collection|Department[] $depts
+ * @property-read int|null $depts_count
  * @method static Builder|DepartmentType whereCreatedAt($value)
  * @method static Builder|DepartmentType whereEnabled($value)
  * @method static Builder|DepartmentType whereId($value)
@@ -41,12 +41,8 @@ class DepartmentType extends Model {
     
     protected $fillable = ['name', 'color', 'icon', 'remark', 'enabled'];
     
-    /**
-     * 获取指定部门类型包含的所有部门对象
-     *
-     * @return HasMany
-     */
-    function departments() { return $this->hasMany('App\Models\Department'); }
+    /** @return HasMany */
+    function depts() { return $this->hasMany('App\Models\Department'); }
     
     /**
      * 删除部门类型

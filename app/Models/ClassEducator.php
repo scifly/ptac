@@ -2,11 +2,11 @@
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
-use Illuminate\Support\{Facades\DB};
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
@@ -22,17 +22,16 @@ use Throwable;
  * @property-read Educator $educator
  * @property-read Squad $squad
  * @property-read Subject $subject
- * @property-read Educator $classes
- * @method static Builder|ClassEducator whereClassId($value)
- * @method static Builder|ClassEducator whereCreatedAt($value)
- * @method static Builder|ClassEducator whereEducatorId($value)
- * @method static Builder|ClassEducator whereId($value)
- * @method static Builder|ClassEducator whereSubjectId($value)
- * @method static Builder|ClassEducator whereUpdatedAt($value)
- * @method static Builder|ClassEducator whereEnabled($value)
  * @method static Builder|ClassEducator newModelQuery()
  * @method static Builder|ClassEducator newQuery()
  * @method static Builder|ClassEducator query()
+ * @method static Builder|ClassEducator whereClassId($value)
+ * @method static Builder|ClassEducator whereCreatedAt($value)
+ * @method static Builder|ClassEducator whereEducatorId($value)
+ * @method static Builder|ClassEducator whereEnabled($value)
+ * @method static Builder|ClassEducator whereId($value)
+ * @method static Builder|ClassEducator whereSubjectId($value)
+ * @method static Builder|ClassEducator whereUpdatedAt($value)
  * @mixin Eloquent
  */
 class ClassEducator extends Pivot {
@@ -41,25 +40,13 @@ class ClassEducator extends Pivot {
     
     protected $fillable = ['educator_id', 'class_id', 'subject_id', 'enabled'];
     
-    /**
-     * 返回所属的教职员工对象
-     *
-     * @return BelongsTo
-     */
-    function classes() { return $this->belongsTo('App\Models\Educator'); }
+    /** @return BelongsTo */
+    function educator() { return $this->belongsTo('App\Models\Educator'); }
     
-    /**
-     * 返回所属的班级对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function squad() { return $this->belongsTo('App\Models\Squad', 'class_id', 'id'); }
     
-    /**
-     * 返回所属的科目对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function subject() { return $this->belongsTo('App\Models\Subject'); }
     
     /**
@@ -110,19 +97,6 @@ class ClassEducator extends Pivot {
     }
     
     /**
-     * 更新教职员工班级绑定关系
-     *
-     * @param array $data
-     * @param $id
-     * @return bool
-     */
-    function modify(array $data, $id) {
-        
-        return $this->find($id)->update($data);
-        
-    }
-    
-    /**
      * 删除教职员工班级绑定关系
      *
      * @param null $id
@@ -131,7 +105,7 @@ class ClassEducator extends Pivot {
      */
     function remove($id = null) {
         
-        return $this->purge([class_basename($this)], 'id', 'purge', $id);
+        return $this->purge(['ClassEducator'], 'id', 'purge', $id);
         
     }
     

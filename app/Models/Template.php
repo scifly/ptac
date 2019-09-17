@@ -55,11 +55,7 @@ class Template extends Model {
         'content', 'example', 'enabled',
     ];
     
-    /**
-     * 返回指定模板所属的应用对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function corpApp() { return $this->belongsTo('App\Models\App'); }
     
     /**

@@ -3,7 +3,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
+use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
 
 /**
  * App\Models\MajorSubject 专业与科目关系
@@ -30,5 +30,11 @@ use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
 class MajorSubject extends Pivot {
     
     protected $fillable = ['major_id', 'subject_id', 'enabled'];
+    
+    /** @return BelongsTo */
+    function major() { return $this->belongsTo('App\Models\Major'); }
+    
+    /** @return BelongsTo */
+    function subject() { return $this->belongsTo('App\Models\Subject'); }
     
 }

@@ -17,7 +17,7 @@ use App\Models\{Action,
     Tab,
     User};
 use App\Policies\Route;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Form;
 use Html;
 use Illuminate\Database\{Eloquent\Collection, Eloquent\Model, Query\Builder};
@@ -640,7 +640,7 @@ trait ModelTrait {
         Carbon::setLocale('zh');
         
         return isset($date)
-            ? Carbon::createFromFormat('Y-m-d H:i:s', $date)->{'diffForHumans'}()
+            ? Carbon::createFromFormat('Y-m-d H:i:s', $date)->diffForHumans()
             : '(n/a)';
         
     }

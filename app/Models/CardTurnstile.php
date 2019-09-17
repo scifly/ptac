@@ -8,17 +8,14 @@ use Illuminate\Support\{Carbon, Facades\DB};
 use Throwable;
 
 /**
- * 一卡通 & 门禁绑定关系
- * 
  * Class CardTurnstile
  *
- * @package App\Models
  * @property int $id
  * @property int $card_id
  * @property int $turnstile_id
- * @property Carbon $start_date
- * @property Carbon $end_date
- * @property string $ruleids
+ * @property string|null $start_date 起始日期
+ * @property string|null $end_date 截止日期
+ * @property string $ruleids 通行规则ids
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
@@ -30,11 +27,11 @@ use Throwable;
  * @method static Builder|CardTurnstile whereCardId($value)
  * @method static Builder|CardTurnstile whereCreatedAt($value)
  * @method static Builder|CardTurnstile whereEnabled($value)
- * @method static Builder|CardTurnstile whereId($value)
- * @method static Builder|CardTurnstile whereTurnstileId($value)
- * @method static Builder|CardTurnstile whereStartDate($value)
  * @method static Builder|CardTurnstile whereEndDate($value)
+ * @method static Builder|CardTurnstile whereId($value)
  * @method static Builder|CardTurnstile whereRuleids($value)
+ * @method static Builder|CardTurnstile whereStartDate($value)
+ * @method static Builder|CardTurnstile whereTurnstileId($value)
  * @method static Builder|CardTurnstile whereUpdatedAt($value)
  * @mixin Eloquent
  */
@@ -45,18 +42,10 @@ class CardTurnstile extends Pivot {
         'end_date', 'ruleids', 'enabled',
     ];
     
-    /**
-     * 返回指定绑定关系对应的一卡通对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function card() { return $this->belongsTo('App\Models\Card'); }
     
-    /**
-     * 返回指定绑定关系对应的门禁对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function turnstile() { return $this->belongsTo('App\Models\Turnstile'); }
     
     /**

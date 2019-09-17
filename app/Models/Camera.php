@@ -7,24 +7,26 @@ use Eloquent;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsToMany};
-use Illuminate\Support\{Carbon, Facades\DB};
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
  * Class Camera - 人脸识别设备
  *
- * @package App\Models
  * @property int $id
- * @property int $school_id 所属学校id
- * @property string $name 设备名称
- * @property string $ip ip地址
- * @property string $mac mac地址
- * @property string|null $location 安装地点
- * @property int|null $direction 方向(0-进，1-出）
+ * @property int $cameraid
+ * @property int $school_id
+ * @property string $name
+ * @property string $ip
+ * @property string $mac
+ * @property string|null $location
+ * @property int|null $direction
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property int $status 状态(0-离线，1-在线)
+ * @property int $status
  * @property-read Collection|Face[] $faces
+ * @property-read int|null $faces_count
  * @method static Builder|Camera newModelQuery()
  * @method static Builder|Camera newQuery()
  * @method static Builder|Camera query()
@@ -40,8 +42,6 @@ use Throwable;
  * @method static Builder|Camera whereStatus($value)
  * @method static Builder|Camera whereUpdatedAt($value)
  * @mixin Eloquent
- * @property int $cameraid
- * @property-read int|null $faces_count
  */
 class Camera extends Model {
     
@@ -56,16 +56,8 @@ class Camera extends Model {
         'mac', 'location', 'direction', 'status',
     ];
     
-    /**
-     * 返回指定设备所包含的所有人脸对象
-     *
-     * @return BelongsToMany
-     */
-    function faces() {
-        
-        return $this->belongsToMany('App\Models\Face', 'camera_face');
-        
-    }
+    /** @return BelongsToMany */
+    function faces() { return $this->belongsToMany('App\Models\Face', 'camera_face'); }
     
     /**
      * 人脸识别设备列表

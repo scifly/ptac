@@ -13,12 +13,11 @@ use Throwable;
 /**
  * Class Bed
  *
- * @package App\Models
  * @property int $id
  * @property int $room_id 所属寝室id
  * @property int $student_id 所属学生id
  * @property string $name 床位号
- * @property int|null $position 0 - 下铺，1 - 上铺
+ * @property int|null $position 0: -，1: 上铺, 2: 下铺
  * @property string|null $remark 备注
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -120,6 +119,8 @@ class Bed extends Model {
     }
     
     /**
+     * 保存床位
+     *
      * @param array $data
      * @return bool
      */
@@ -130,6 +131,8 @@ class Bed extends Model {
     }
     
     /**
+     * 更新床位
+     *
      * @param array $data
      * @param $id
      * @return bool
@@ -154,6 +157,8 @@ class Bed extends Model {
     }
     
     /**
+     * 删除床位
+     *
      * @param $id
      * @return bool
      * @throws Throwable

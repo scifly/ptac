@@ -35,6 +35,8 @@ use Throwable;
  * @method static Builder|WapSiteModule query()
  * @mixin Eloquent
  * @property-read int|null $wsm_articles_count
+ * @property-read Collection|WsmArticle[] $articles
+ * @property-read int|null $articles_count
  */
 class WapSiteModule extends Model {
     
@@ -42,33 +44,16 @@ class WapSiteModule extends Model {
     
     protected $table = 'wap_site_modules';
     
-    protected $fillable = [
-        'id', 'wap_site_id', 'name',
-        'media_id', 'enabled',
-    ];
+    protected $fillable = ['id', 'wap_site_id', 'name', 'media_id', 'enabled'];
     
-    /**
-     * @return HasMany
-     */
-    function wsmArticles() {
-        
-        return $this->hasMany('App\Models\WsmArticle', 'wsm_id', 'id');
-        
-    }
-    
-    /**
-     * 返回所属的媒体对象
-     *
-     * @return BelongsTo
-     */
-    function media() { return $this->belongsTo('App\Models\Media'); }
-    
-    /**
-     * 返回所属的微网站对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function wapsite() { return $this->belongsTo('App\Models\WapSite', 'wap_site_id'); }
+    
+    /** @return HasMany */
+    function articles() { return $this->hasMany('App\Models\WsmArticle', 'wsm_id', 'id'); }
+    
+    /** @return BelongsTo */
+    function media() { return $this->belongsTo('App\Models\Media'); }
     
     /**
      * 返回微网站栏目列表（后台）

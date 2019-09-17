@@ -40,15 +40,14 @@ class Event extends Model {
     
     use ModelTrait;
     
-    protected $table = 'events';
-    protected $fillable = [
-        'start', 'end', 'room_id', 'enabled',
-    ];
+    protected $fillable = ['start', 'end', 'room_id', 'enabled'];
     
     /** @return BelongsTo */
     function room() { return $this->belongsTo('App\Models\Room'); }
     
     /**
+     * 保存事件
+     *
      * @param array $data
      * @return bool
      */
@@ -59,6 +58,8 @@ class Event extends Model {
     }
     
     /**
+     * 更新事件
+     *
      * @param array $data
      * @param $id
      * @return bool

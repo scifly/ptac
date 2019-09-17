@@ -6,6 +6,7 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -34,14 +35,16 @@ use Throwable;
  * @method static Builder|SmsCharge whereUpdatedAt($value)
  * @method static Builder|SmsCharge whereUserId($value)
  * @mixin Eloquent
+ * @property-read User $user
  */
 class SmsCharge extends Model {
     
     protected $table = 'sms_charges';
     
-    protected $fillable = [
-        'user_id', 'target', 'targetid', 'amount'
-    ];
+    protected $fillable = ['user_id', 'target', 'targetid', 'amount'];
+    
+    /** @return BelongsTo */
+    function user() { return $this->belongsTo('App\Models\User'); }
     
     /**
      * 保存充值记录

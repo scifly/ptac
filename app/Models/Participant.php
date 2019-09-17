@@ -37,29 +37,19 @@ use Throwable;
  * @method static Builder|Participant whereConferenceId($value)
  * @method static Builder|Participant whereSignedUp($value)
  * @mixin Eloquent
+ * @property-read Conference $conference
  */
 class Participant extends Model {
     
     use ModelTrait;
     
-    protected $fillable = [
-        'educator_id', 'attendance_time',
-        'conference_queue_id', 'status',
-    ];
+    protected $fillable = ['educator_id', 'conference_id', 'signed_up', 'status'];
     
-    /**
-     * 返回与会者的教职员工对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function educator() { return $this->belongsTo('\App\Models\Educator'); }
     
-    /**
-     * 返回与会者参加的会议对象
-     *
-     * @return BelongsTo
-     */
-    function conferenceQueue() { return $this->belongsTo('App\Models\Conference'); }
+    /** @return BelongsTo */
+    function conference() { return $this->belongsTo('App\Models\Conference'); }
     
     /**
      * 与会者列表

@@ -17,7 +17,6 @@ use Throwable;
 /**
  * Class Building
  *
- * @package App\Models
  * @property int $id
  * @property int $school_id 所属学校id
  * @property string $name 名称
@@ -48,9 +47,7 @@ class Building extends Model {
     
     use ModelTrait;
     
-    protected $fillable = [
-        'school_id', 'name', 'floors', 'remark', 'enabled',
-    ];
+    protected $fillable = ['school_id', 'name', 'floors', 'remark', 'enabled'];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
     /** @return BelongsTo */

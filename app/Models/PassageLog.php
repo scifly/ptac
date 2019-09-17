@@ -59,28 +59,14 @@ class PassageLog extends Model {
         'clocked_at', 'reason', 'status',
     ];
     
-    /**
-     * 返回通行记录所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\School'); }
     
-    /**
-     * 返回通行记录所属的用户对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function user() { return $this->belongsTo('App\Models\User'); }
     
-    /**
-     * 返回通行记录所属的门禁对象
-     *
-     * @return BelongsTo
-     */
-    function turnstile() {
-        return $this->belongsTo('App\Models\Turnstile');
-    }
+    /** @return BelongsTo */
+    function turnstile() { return $this->belongsTo('App\Models\Turnstile'); }
     
     /**
      * 门禁通行记录列表

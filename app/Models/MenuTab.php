@@ -5,7 +5,7 @@ use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
+use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -30,10 +30,18 @@ use Throwable;
  * @method static Builder|MenuTab newModelQuery()
  * @method static Builder|MenuTab newQuery()
  * @method static Builder|MenuTab query()
+ * @property-read Menu $menu
+ * @property-read Tab $tab
  */
 class MenuTab extends Pivot {
     
     protected $fillable = ['menu_id', 'tab_id', 'tab_order', 'enabled'];
+    
+    /** @return BelongsTo */
+    function menu() { return $this->belongsTo('App\Models\Menu'); }
+    
+    /** @return BelongsTo */
+    function tab() { return $this->belongsTo('App\Models\Tab'); }
     
     /**
      * 保存菜单 & 卡片绑定关系

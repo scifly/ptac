@@ -2,10 +2,10 @@
 namespace App\Models;
 
 use App\Helpers\Constant;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -42,18 +42,10 @@ class CustodianStudent extends Pivot {
         'expiration', 'enabled',
     ];
     
-    /**
-     * 返回所属的监护人对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function custodian() { return $this->belongsTo('App\Models\Custodian'); }
     
-    /**
-     * 返回所属的学生对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function student() { return $this->belongsTo('App\Models\Student'); }
     
     /**

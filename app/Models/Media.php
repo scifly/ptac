@@ -7,7 +7,7 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{
     Builder, Collection, Model, Relations\BelongsTo,
-    Relations\HasMany, Relations\HasOne
+    Relations\HasMany
 };
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\{DB, Request, Storage};
@@ -41,43 +41,28 @@ use Throwable;
  * @method static Builder|Media newQuery()
  * @method static Builder|Media query()
  * @property-read int|null $menus_count
+ * @property-read Collection|WsmArticle[] $articles
+ * @property-read int|null $articles_count
+ * @property-read MediaType $mType
+ * @property-read Collection|WapSiteModule[] $wsms
+ * @property-read int|null $wsms_count
  */
 class Media extends Model {
     
     use ModelTrait;
     
-    protected $table = 'medias';
+    protected $fillable = ['media_type_id', 'path', 'remark', 'enabled'];
     
-    protected $fillable = [
-        'path', 'remark', 'media_type_id', 'enabled',
-    ];
+    /** @return BelongsTo */
+    function mType() { return $this->belongsTo('App\Models\MediaType'); }
     
-    /**
-     * 返回指定媒体所属的媒体类型对象
-     *
-     * @return BelongsTo
-     */
-    function mediaType() { return $this->belongsTo('App\Models\MediaType'); }
+    /** @return HasMany */
+    function wsms() { return $this->hasMany('App\Models\WapSiteModule'); }
     
-    /**
-     * 返回对应的网站模块对象
-     *
-     * @return HasOne
-     */
-    function wapSiteModule() { return $this->hasOne('App\Models\WapSiteModule'); }
+    /** @return HasMany */
+    function articles() { return $this->hasMany('App\Models\WsmArticle'); }
     
-    /**
-     * 返回对应的网站文章对象
-     *
-     * @return HasOne
-     */
-    function wsmArticle() { return $this->hasOne('App\Models\WsmArticle'); }
-    
-    /**
-     * 获取指定媒体所包含的所有菜单对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function menus() { return $this->hasMany('App\Models\Menu'); }
     
     /**

@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{ModelTrait, Snippet};
+use App\Helpers\ModelTrait;
 use App\Jobs\CreateSchool;
 use Carbon\Carbon;
 use Eloquent;
@@ -52,8 +52,8 @@ use Throwable;
  * @property-read Collection|Group[] $groups
  * @property-read Collection|Major[] $majors
  * @property-read Menu $menu
- * @property-read Collection|Poll[] $pollQuestionnaires
- * @property-read Collection|FlowType[] $procedures
+ * @property-read Collection|Poll[] $polls
+ * @property-read Collection|FlowType[] $flowTypes
  * @property-read SchoolType $schoolType
  * @property-read Collection|Semester[] $semesters
  * @property-read Collection|Subject[] $subjects
@@ -76,8 +76,7 @@ use Throwable;
  * @property-read int|null $majors_count
  * @property-read int|null $passage_logs_count
  * @property-read int|null $passage_rules_count
- * @property-read int|null $poll_questionnaires_count
- * @property-read int|null $procedures_count
+ * @property-read int|null $polls_count
  * @property-read Collection|Room[] $rooms
  * @property-read int|null $rooms_count
  * @property-read int|null $semesters_count
@@ -86,6 +85,7 @@ use Throwable;
  * @property-read int|null $tags_count
  * @property-read int|null $turnstiles_count
  * @property-read int|null $wap_site_modules_count
+ * @property-read int|null $flow_types_count
  * @method static Builder|School whereAddress($value)
  * @method static Builder|School whereCorpId($value)
  * @method static Builder|School whereCreatedAt($value)
@@ -108,8 +108,10 @@ use Throwable;
  * @method static Builder|School newQuery()
  * @method static Builder|School query()
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\FlowType[] $flowTypes
- * @property-read int|null $flow_types_count
+ * @property-read Collection|ComboType[] $comboTypes
+ * @property-read int|null $combo_types_count
+ * @property-read Collection|Prize[] $prizes
+ * @property-read int|null $prizes_count
  */
 class School extends Model {
     
@@ -152,10 +154,16 @@ class School extends Model {
     function rooms() { return $this->hasManyThrough('App\Models\Room', 'App\Models\Building'); }
     
     /** @return HasMany */
-    function pollQuestionnaires() { return $this->hasMany('App\Models\Poll'); }
+    function polls() { return $this->hasMany('App\Models\Poll'); }
     
     /** @return HasMany */
     function flowTypes() { return $this->hasMany('App\Models\FlowType'); }
+    
+    /** @return HasMany */
+    function prizes() { return $this->hasMany('App\Models\Prize'); }
+    
+    /** @return HasMany */
+    function comboTypes() { return $this->hasMany('App\Models\ComboType'); }
     
     /** @return HasMany */
     function semesters() { return $this->hasMany('App\Models\Semester'); }

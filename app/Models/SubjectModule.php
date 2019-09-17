@@ -35,17 +35,9 @@ class SubjectModule extends Model {
     
     use ModelTrait;
     
-    protected $table = 'subject_modules';
-    protected $fillable = [
-        'subject_id', 'name',
-        'weight', 'enabled',
-    ];
+    protected $fillable = ['subject_id', 'name', 'weight', 'enabled'];
     
-    /**
-     * 返回科目次分类所属的科目对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function subject() { return $this->belongsTo('App\Models\Subject'); }
     
     /**

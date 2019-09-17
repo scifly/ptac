@@ -42,6 +42,8 @@ use Throwable;
  * @method static Builder|WsmArticle newQuery()
  * @method static Builder|WsmArticle query()
  * @mixin Eloquent
+ * @property-read Media $media
+ * @property-read WapSiteModule $module
  */
 class WsmArticle extends Model {
     
@@ -50,10 +52,8 @@ class WsmArticle extends Model {
     protected $table = 'wsm_articles';
     
     protected $fillable = [
-        'id', 'wsm_id', 'name',
-        'summary', 'thumbnail_media_id', 'content',
-        'media_ids', 'created_at', 'updated_at',
-        'enabled',
+        'id', 'wsm_id', 'name', 'summary', 'thumbnail_media_id',
+        'content', 'media_ids', 'created_at', 'updated_at', 'enabled',
     ];
     
     protected $media;
@@ -70,26 +70,18 @@ class WsmArticle extends Model {
         
     }
     
-    /**
-     * 返回网站文章所属的微网站模块对象
-     *
-     * @return BelongsTo
-     */
-    function wapSiteModule() {
+    /** @return BelongsTo */
+    function module() {
         
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
-        
+    
     }
     
-    /**
-     * 返回所属的缩略图媒体对象
-     *
-     * @return BelongsTo
-     */
-    function thumbnailMedia() {
+    /** @return BelongsTo */
+    function media() {
         
         return $this->belongsTo('App\Models\Media', 'thumbnail_media_id', 'id');
-        
+    
     }
     
     /**

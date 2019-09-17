@@ -92,6 +92,7 @@ class ComboTypeController extends Controller {
      * @param ComboTypeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(ComboTypeRequest $request, $id) {
         

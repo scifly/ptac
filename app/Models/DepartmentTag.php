@@ -2,10 +2,10 @@
 namespace App\Models;
 
 use App\Helpers\Constant;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
+use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Request;
 use Throwable;
@@ -20,6 +20,8 @@ use Throwable;
  * @property Carbon|null $created_at 创建于
  * @property Carbon|null $updated_at 更新于
  * @property int $enabled 状态
+ * @property-read Department $dept
+ * @property-read Tag $tag
  * @method static Builder|DepartmentTag whereCreatedAt($value)
  * @method static Builder|DepartmentTag whereDepartmentId($value)
  * @method static Builder|DepartmentTag whereEnabled($value)
@@ -34,6 +36,12 @@ use Throwable;
 class DepartmentTag extends Pivot {
     
     protected $fillable = ['department_id', 'tag_id', 'enabled'];
+    
+    /** @return BelongsTo */
+    function tag() { return $this->belongsTo('App\Models\Tag'); }
+    
+    /** @return BelongsTo */
+    function dept() { return $this->belongsTo('App\Models\Department'); }
     
     /**
      * 按部门id保存部门标签绑定关系

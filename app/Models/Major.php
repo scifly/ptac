@@ -41,23 +41,13 @@ class Major extends Model {
     
     use ModelTrait;
     
-    protected $fillable = [
-        'name', 'remark', 'school_id', 'enabled',
-    ];
+    protected $fillable = ['school_id', 'name', 'remark', 'enabled'];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回专业所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\School'); }
     
-    /**
-     * 获取指定专业所包含的科目对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function subjects() { return $this->belongsToMany('App\Models\Subject', 'major_subject'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */

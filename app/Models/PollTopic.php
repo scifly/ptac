@@ -3,8 +3,10 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\{Constant, ModelTrait};
+use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Model, Relations\BelongsTo, Relations\HasMany, Relations\HasOne};
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\{Auth, DB};
 use Throwable;
 
@@ -16,24 +18,26 @@ use Throwable;
  * @property string $topic 题目名称
  * @property int $category 题目类型：0 - 单选，1 - 多选, 2 - 填空
  * @property mixed $content 题目内容
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
- * @property-read \App\Models\Poll $poll
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollReply[] $pollReplies
+ * @property-read Poll $poll
+ * @property-read Collection|PollReply[] $pollReplies
  * @property-read int|null $poll_replies_count
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollTopic newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollTopic newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollTopic query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollTopic whereCategory($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollTopic whereContent($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollTopic whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollTopic whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollTopic whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollTopic wherePollId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollTopic whereTopic($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollTopic whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @method static Builder|PollTopic newModelQuery()
+ * @method static Builder|PollTopic newQuery()
+ * @method static Builder|PollTopic query()
+ * @method static Builder|PollTopic whereCategory($value)
+ * @method static Builder|PollTopic whereContent($value)
+ * @method static Builder|PollTopic whereCreatedAt($value)
+ * @method static Builder|PollTopic whereEnabled($value)
+ * @method static Builder|PollTopic whereId($value)
+ * @method static Builder|PollTopic wherePollId($value)
+ * @method static Builder|PollTopic whereTopic($value)
+ * @method static Builder|PollTopic whereUpdatedAt($value)
+ * @mixin Eloquent
+ * @property-read Collection|PollReply[] $replies
+ * @property-read int|null $replies_count
  */
 class PollTopic extends Model {
     
@@ -48,7 +52,7 @@ class PollTopic extends Model {
     function poll() { return $this->belongsTo('App\Models\Poll', 'pq_id'); }
     
     /** @return HasMany */
-    function pollReplies() { return $this->hasMany('App\Models\PollReply'); }
+    function replies() { return $this->hasMany('App\Models\PollReply'); }
     
     /**
      * 投票问卷问题列表

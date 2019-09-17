@@ -4,18 +4,26 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Sms};
 use App\Jobs\SyncMember;
+use Eloquent;
 use Exception;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\{Relations\BelongsTo,
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Relations\BelongsTo,
     Relations\BelongsToMany,
     Relations\HasMany,
     Relations\HasOne};
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\{Auth, DB, Hash, Request};
 use Illuminate\View\View;
+use Laravel\Passport\Client;
 use Laravel\Passport\HasApiTokens;
+use Laravel\Passport\Token;
 use Throwable;
 
 /**
@@ -35,58 +43,66 @@ use Throwable;
  * @property mixed|null $ent_attrs 企业微信相关属性
  * @property mixed|null $api_attrs api相关属性
  * @property string|null $remember_token "记住我"令牌，登录时用
- * @property \Illuminate\Support\Carbon|null $created_at 创建于
- * @property \Illuminate\Support\Carbon|null $updated_at 更新于
+ * @property Carbon|null $created_at 创建于
+ * @property Carbon|null $updated_at 更新于
  * @property int $enabled 状态：1 - 启用，0 - 禁用
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $_tags
+ * @property-read Collection|Tag[] $_tags
  * @property-read int|null $_tags_count
- * @property-read \App\Models\Card $card
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Passport\Client[] $clients
+ * @property-read Card $card
+ * @property-read Collection|Client[] $clients
  * @property-read int|null $clients_count
- * @property-read \App\Models\Custodian $custodian
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Department[] $departments
+ * @property-read Custodian $custodian
+ * @property-read Collection|Department[] $departments
  * @property-read int|null $departments_count
- * @property-read \App\Models\Educator $educator
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
+ * @property-read Educator $educator
+ * @property-read Collection|Event[] $events
  * @property-read int|null $events_count
- * @property-read \App\Models\Face $face
- * @property-read \App\Models\Group $group
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read Face $face
+ * @property-read Group $group
+ * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Openid[] $openids
+ * @property-read Collection|Openid[] $openids
  * @property-read int|null $openids_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Order[] $orders
+ * @property-read Collection|Order[] $orders
  * @property-read int|null $orders_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollReply[] $pollReplies
+ * @property-read Collection|PollReply[] $pollReplies
  * @property-read int|null $poll_replies_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Poll[] $polls
+ * @property-read Collection|Poll[] $polls
  * @property-read int|null $polls_count
- * @property-read \App\Models\Student $student
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read Student $student
+ * @property-read Collection|Tag[] $tags
  * @property-read int|null $tags_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Passport\Token[] $tokens
+ * @property-read Collection|Token[] $tokens
  * @property-read int|null $tokens_count
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereApiAttrs($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereAvatarUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCardId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereEntAttrs($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereFaceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereGender($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereGroupId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereMobile($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User wherePassword($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRealname($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRememberToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUsername($value)
- * @mixin \Eloquent
+ * @method static Builder|User newModelQuery()
+ * @method static Builder|User newQuery()
+ * @method static Builder|User query()
+ * @method static Builder|User whereApiAttrs($value)
+ * @method static Builder|User whereAvatarUrl($value)
+ * @method static Builder|User whereCardId($value)
+ * @method static Builder|User whereCreatedAt($value)
+ * @method static Builder|User whereEmail($value)
+ * @method static Builder|User whereEnabled($value)
+ * @method static Builder|User whereEntAttrs($value)
+ * @method static Builder|User whereFaceId($value)
+ * @method static Builder|User whereGender($value)
+ * @method static Builder|User whereGroupId($value)
+ * @method static Builder|User whereId($value)
+ * @method static Builder|User whereMobile($value)
+ * @method static Builder|User wherePassword($value)
+ * @method static Builder|User whereRealname($value)
+ * @method static Builder|User whereRememberToken($value)
+ * @method static Builder|User whereUpdatedAt($value)
+ * @method static Builder|User whereUsername($value)
+ * @mixin Eloquent
+ * @property-read Collection|Conference[] $conferences
+ * @property-read int|null $conferences_count
+ * @property-read Collection|Department[] $depts
+ * @property-read int|null $depts_count
+ * @property-read Collection|MessageReply[] $mReplies
+ * @property-read int|null $m_replies_count
+ * @property-read Collection|PollReply[] $pReplies
+ * @property-read int|null $p_replies_count
  */
 class User extends Authenticatable {
     
@@ -151,6 +167,9 @@ class User extends Authenticatable {
     /** @return HasOne */
     function card() { return $this->hasOne('App\Models\Card'); }
     
+    /** @return HasMany */
+    function conferences() { return $this->hasMany('App\Models\Conference'); }
+    
     /** @return HasOne */
     function face() { return $this->hasOne('App\Models\Face'); }
     
@@ -158,7 +177,7 @@ class User extends Authenticatable {
     function orders() { return $this->hasMany('App\Models\Order'); }
     
     /** @return BelongsToMany */
-    function departments() { return $this->belongsToMany('App\Models\Department', 'department_user'); }
+    function depts() { return $this->belongsToMany('App\Models\Department', 'department_user'); }
     
     /** @return HasMany */
     function _tags() { return $this->hasMany('App\Models\Tag'); }
@@ -176,7 +195,10 @@ class User extends Authenticatable {
     function polls() { return $this->hasMany('App\Models\Poll'); }
     
     /** @return HasMany */
-    function pollReplies() { return $this->hasMany('App\Models\PollReply'); }
+    function pReplies() { return $this->hasMany('App\Models\PollReply'); }
+    
+    /** @return HasMany */
+    function mReplies() { return $this->hasMany('App\Models\MessageReply'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
     /**

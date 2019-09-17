@@ -6,7 +6,12 @@ use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\HasMany,
+    Relations\HasManyThrough};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
@@ -35,6 +40,10 @@ use Throwable;
  * @method static Builder|WapSite newQuery()
  * @method static Builder|WapSite query()
  * @mixin Eloquent
+ * @property-read Collection|WsmArticle[] $articles
+ * @property-read int|null $articles_count
+ * @property-read Collection|WapSiteModule[] $modules
+ * @property-read int|null $modules_count
  */
 class WapSite extends Model {
     
@@ -45,18 +54,20 @@ class WapSite extends Model {
         'media_ids', 'enabled',
     ];
     
-    /**
-     * 获取微网站包含的所有网站模块对象
-     *
-     * @return HasMany
-     */
-    function wapSiteModules() { return $this->hasMany('App\Models\WapSiteModule'); }
+    /** @return HasMany */
+    function modules() { return $this->hasMany('App\Models\WapSiteModule'); }
     
-    /**
-     * 返回微网站所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return HasManyThrough */
+    function articles() {
+        
+        return $this->hasManyThrough(
+            'App\Models\WsmArticle', 'App\Models\WapSiteModule',
+            'wap_site_id', 'wsm_id'
+        );
+    
+    }
+    
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\School'); }
     
     /**

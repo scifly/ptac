@@ -34,7 +34,7 @@ use Throwable;
  * @property-read Collection|Department[] $children
  * @property-read Company $company
  * @property-read Corp $corp
- * @property-read DepartmentType $departmentType
+ * @property-read DepartmentType $dType
  * @property-read Grade $grade
  * @property-read Department|null $parent
  * @property-read School $school
@@ -64,88 +64,40 @@ class Department extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'id', 'parent_id', 'department_type_id', 'name',
+        'parent_id', 'department_type_id', 'name',
         'remark', 'order', 'enabled', 'synced',
     ];
     
     /** properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 部门类型
-     *
-     * @return BelongsTo
-     */
-    function departmentType() { return $this->belongsTo('App\Models\DepartmentType'); }
+    /** @return BelongsTo */
+    function dType() { return $this->belongsTo('App\Models\DepartmentType'); }
     
-    /**
-     * 运营者
-     *
-     * @return HasOne
-     */
+    /** @return HasOne */
     function company() { return $this->hasOne('App\Models\Company'); }
     
-    /**
-     * 企业
-     *
-     * @return HasOne
-     */
+    /** @return HasOne */
     function corp() { return $this->hasOne('App\Models\Corp'); }
     
-    /**
-     * 学校
-     *
-     * @return HasOne
-     */
+    /** @return HasOne */
     function school() { return $this->hasOne('App\Models\School'); }
     
-    /**
-     * 年级
-     *
-     * @return HasOne
-     */
+    /** @return HasOne */
     function grade() { return $this->hasOne('App\Models\Grade'); }
     
-    /**
-     * 班级
-     *
-     * @return HasOne
-     */
+    /** @return HasOne */
     function squad() { return $this->hasOne('App\Models\Squad'); }
     
-    /**
-     * 用户
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function users() { return $this->belongsToMany('App\Models\User', 'department_user'); }
     
-    /**
-     * 返回部门所属的标签
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function tags() { return $this->belongsToMany('App\Models\Tag', 'department_tag'); }
     
-    /**
-     * 直接上级部门
-     *
-     * @return BelongsTo
-     */
-    function parent() {
-        
-        return $this->belongsTo('App\Models\Department', 'parent_id');
-        
-    }
+    /** @return BelongsTo */
+    function parent() { return $this->belongsTo('App\Models\Department', 'parent_id'); }
     
-    /**
-     * 直接子部门
-     *
-     * @return HasMany
-     */
-    function children() {
-        
-        return $this->hasMany('App\Models\Department', 'parent_id', 'id');
-        
-    }
+    /** @return HasMany */
+    function children() { return $this->hasMany('App\Models\Department', 'parent_id', 'id'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
     /**
@@ -428,7 +380,7 @@ class Department extends Model {
     function corpId($id) {
         
         $department = $this->find($id);
-        $dtName = $department->departmentType->name;
+        $dtName = $department->dType->name;
         if (in_array($dtName, ['运营', '部门'])) {
             return null;
         } elseif ($dtName == '企业') {
@@ -454,7 +406,7 @@ class Department extends Model {
     function needSync(Department $department = null) {
         
         return !$department ? false : !in_array(
-            $department->departmentType->name, ['根', '运营', '企业']
+            $department->dType->name, ['根', '运营', '企业']
         );
         
     }
@@ -608,7 +560,7 @@ class Department extends Model {
         
         $department = $this->find($id);
         if (!$department) return null;
-        $dtName = $department->departmentType->name;
+        $dtName = $department->dType->name;
         while ($dtName != $type) {
             $department = $department->parent;
             if (!$department) return null;
@@ -720,7 +672,7 @@ class Department extends Model {
             __('messages.forbidden')
         );
         list($type, $parentType) = array_map(
-            function ($id) { return $this->find($id)->departmentType->name; },
+            function ($id) { return $this->find($id)->dType->name; },
             [$id, $parentId]
         );
         switch ($type) {
@@ -767,7 +719,7 @@ class Department extends Model {
                     $moved = $deparment->save();
                     # 更新部门对应企业/学校/年级/班级、菜单等对象
                     if ($moved) {
-                        switch ($deparment->departmentType->name) {
+                        switch ($deparment->dType->name) {
                             case '企业':
                                 $corp = Corp::whereDepartmentId($id)->first();
                                 $company = Company::whereDepartmentId($parentId)->first();
@@ -781,14 +733,14 @@ class Department extends Model {
                             case '年级':
                                 $grade = Grade::whereDepartmentId($id)->first();
                                 $parent = $this->find($parentId);
-                                if ($parent->departmentType->name == '学校') {
+                                if ($parent->dType->name == '学校') {
                                     $grade->update(['school_id' => $parent->school->id]);
                                 }
                                 break;
                             case '班级':
                                 $class = Squad::whereDepartmentId($id)->first();
                                 $parent = $this->find($parentId);
-                                if ($parent->departmentType->name == '年级') {
+                                if ($parent->dType->name == '年级') {
                                     $class->update(['grade_id' => $parent->grade->id]);
                                 }
                                 break;

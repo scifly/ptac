@@ -63,6 +63,7 @@ use Throwable;
  * @method static Builder|Menu newQuery()
  * @method static Builder|Menu query()
  * @mixin Eloquent
+ * @property-read MenuType $mType
  */
 class Menu extends Model {
     
@@ -88,7 +89,7 @@ class Menu extends Model {
     
     /** properties -------------------------------------------------------------------------------------------------- */
     /** @return BelongsTo */
-    function menuType() { return $this->belongsTo('App\Models\MenuType'); }
+    function mType() { return $this->belongsTo('App\Models\MenuType'); }
     
     /** @return BelongsTo */
     function media() { return $this->belongsTo('App\Models\Media'); }

@@ -7,7 +7,8 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Html;
-use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
@@ -15,64 +16,60 @@ use Throwable;
  * App\Models\Conference 会议队列
  *
  * @property int $id
+ * @property int $user_id 发起人用户id
  * @property int $room_id 房间id
- * @property int $event_id 相关日程ID
- * @property string $name 会议名称
- * @property string $remark 会议备注
- * @property string $start 会议开始时间
- * @property string $end 会议结束时间
- * @property int $educator_id 发起人教职员工ID
- * @property string $educator_ids （应到）与会者教职员工ID
+ * @property int $message_id 消息id
  * @property string $url 扫码签到用二维码URL
+ * @property string $name 会议名称
+ * @property string $start 开始时间
+ * @property string $end 结束时间
+ * @property string $remark 备注
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $status 会议状态
+ * @property-read Message $message
  * @property-read Collection|Participant[] $participants
- * @property-read Room $room
- * @property-read Educator $educator
- * @property-read int|null $conference_participants_count
  * @property-read int|null $participants_count
+ * @property-read Room $room
  * @property-read Educator $user
- * @method static Builder|Conference whereUrl($value)
- * @method static Builder|Conference whereRoomId($value)
- * @method static Builder|Conference whereCreatedAt($value)
- * @method static Builder|Conference whereEducatorId($value)
- * @method static Builder|Conference whereEducatorIds($value)
- * @method static Builder|Conference whereEnd($value)
- * @method static Builder|Conference whereEventId($value)
- * @method static Builder|Conference whereId($value)
- * @method static Builder|Conference whereName($value)
- * @method static Builder|Conference whereRemark($value)
- * @method static Builder|Conference whereStart($value)
- * @method static Builder|Conference whereUpdatedAt($value)
- * @method static Builder|Conference whereStatus($value)
  * @method static Builder|Conference newModelQuery()
  * @method static Builder|Conference newQuery()
  * @method static Builder|Conference query()
+ * @method static Builder|Conference whereCreatedAt($value)
+ * @method static Builder|Conference whereEnd($value)
+ * @method static Builder|Conference whereId($value)
+ * @method static Builder|Conference whereMessageId($value)
+ * @method static Builder|Conference whereName($value)
+ * @method static Builder|Conference whereRemark($value)
+ * @method static Builder|Conference whereRoomId($value)
+ * @method static Builder|Conference whereStart($value)
+ * @method static Builder|Conference whereStatus($value)
+ * @method static Builder|Conference whereUpdatedAt($value)
+ * @method static Builder|Conference whereUrl($value)
+ * @method static Builder|Conference whereUserId($value)
  * @mixin Eloquent
  */
 class Conference extends Model {
     
     use ModelTrait;
     
-    protected $table = 'conference_queues';
-    
     protected $fillable = [
-        'name', 'remark', 'start', 'end',
-        'user_id', 'educator_ids', 'attended_educator_ids',
-        'conference_room_id', 'attendance_qrcode_url',
-        'event_id', 'status',
+        'user_id', 'room_id', 'message_id', 'url',
+        'name', 'start', 'end', 'remark', 'status'
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
     /** @return BelongsTo */
+    function user() { return $this->belongsTo('App\Models\Educator'); }
+    
+    /** @return BelongsTo */
     function room() { return $this->belongsTo('App\Models\Room'); }
+    
+    /** @return BelongsTo */
+    function message() { return $this->belongsTo('App\Models\Message'); }
     
     /** @return HasMany */
     function participants() { return $this->hasMany('App\Models\Participant'); }
-    
-    /** @return BelongsTo */
-    function user() { return $this->belongsTo('App\Models\Educator'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
     /** @return array */

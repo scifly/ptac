@@ -63,32 +63,16 @@ class Tab extends Model {
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回指定卡片所属的菜单对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function menus() { return $this->belongsToMany('App\Models\Menu', 'menu_tab'); }
     
-    /**
-     * 返回指定卡片所属的图标对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function icon() { return $this->belongsTo('App\Models\Icon'); }
     
-    /**
-     * 返回指定卡片默认的Action对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function actions() { return $this->hasMany('App\Models\Action'); }
     
-    /**
-     * 返回指定卡片所属的角色对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function groups() { return $this->belongsToMany('App\Models\Group', 'group_tab'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
@@ -345,7 +329,7 @@ class Tab extends Model {
             $tab = Tab::find(Request::route('id'));
             $tabMenus = $tab ? $tab->menus : null;
             $data = [
-                'icons'         => (new Icon)->list(),
+                'icons'         => Icon::pluck('name', 'id'),
                 'actions'       => (new Action)->actions(),
                 'groups'        => collect([0 => '所有'])->union($roles),
                 'menus'         => (new Menu)->leaves(1),

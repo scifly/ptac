@@ -60,6 +60,8 @@ use Throwable;
  * @method static Builder|Student newQuery()
  * @method static Builder|Student query()
  * @mixin Eloquent
+ * @property-read Collection|Evaluate[] $evals
+ * @property-read int|null $evals_count
  */
 class Student extends Model {
     
@@ -83,11 +85,7 @@ class Student extends Model {
     function bed() { return $this->hasOne('App\Models\Bed'); }
     
     /** @return BelongsToMany */
-    function custodians() {
-        
-        return $this->belongsToMany('App\Models\Custodian', 'custodian_student');
-        
-    }
+    function custodians() { return $this->belongsToMany('App\Models\Custodian', 'custodian_student'); }
     
     /** @return BelongsTo */
     function user() { return $this->belongsTo('App\Models\User'); }
@@ -116,6 +114,8 @@ class Student extends Model {
      */
     function school($id) { return $this->find($id)->squad->grade->school; }
     
+    /** @return HasMany */
+    function evals() { return $this->hasMany('App\Models\Evaluate'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
     /**

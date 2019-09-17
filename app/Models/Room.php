@@ -6,6 +6,7 @@ use App\Helpers\ModelTrait;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as ECollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -45,7 +46,7 @@ use Throwable;
  * @method static Builder|Room whereUpdatedAt($value)
  * @method static Builder|Room whereVolume($value)
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|Bed[] $beds
+ * @property-read ECollection|Bed[] $beds
  * @property-read int|null $beds_count
  */
 class Room extends Model {

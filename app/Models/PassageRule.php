@@ -76,25 +76,13 @@ class PassageRule extends Model {
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回通行规则所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\School'); }
     
-    /**
-     * 获取通行规则对应的一卡通对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function cards() { return $this->hasMany('App\Models\Card'); }
     
-    /**
-     * 返回指定通行规则对应的所有门禁对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function turnstiles() {
         
         return $this->belongsToMany(

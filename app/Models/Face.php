@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{HttpStatusCode, ModelTrait};
 use App\Jobs\FaceConfig;
 use Eloquent;
 use Form;
@@ -11,8 +11,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
     Relations\BelongsTo,
-    Relations\BelongsToMany,
-    Relations\HasOne};
+    Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\{Carbon, Facades\Auth, Facades\Request};
 use Throwable;
@@ -30,6 +29,7 @@ use Throwable;
  * @property-read User $user
  * @property-read Media $media
  * @property-read Collection|Camera[] $cameras
+ * @property-read int|null $cameras_count
  * @method static Builder|Face newModelQuery()
  * @method static Builder|Face newQuery()
  * @method static Builder|Face query()
@@ -40,7 +40,6 @@ use Throwable;
  * @method static Builder|Face whereMediaId($value)
  * @method static Builder|Face whereUserId($value)
  * @mixin Eloquent
- * @property-read int|null $cameras_count
  */
 class Face extends Model {
     
@@ -48,29 +47,13 @@ class Face extends Model {
     
     protected $fillable = ['user_id', 'media_id', 'state'];
     
-    /**
-     * 返回指定人脸所属的所有人脸识别设备对象
-     *
-     * @return BelongsToMany
-     */
-    function cameras() {
-        
-        return $this->belongsToMany('App\Models\Camera', 'camera_face');
-        
-    }
+    /** @return BelongsToMany */
+    function cameras() { return $this->belongsToMany('App\Models\Camera', 'camera_face'); }
     
-    /**
-     * 返回人脸所属用户对象
-     *
-     * @return HasOne
-     */
-    function user() { return $this->hasOne('App\Models\User'); }
+    /** @return BelongsTo */
+    function user() { return $this->belongsTo('App\Models\User'); }
     
-    /**
-     * 返回热恋所属的媒体对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function media() { return $this->belongsTo('App\Models\Media'); }
     
     /**

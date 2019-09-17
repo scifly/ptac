@@ -4,10 +4,10 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\{HttpStatusCode, ModelTrait};
 use App\Http\Requests\ConsumptionRequest;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\{DB, Request};
 use ReflectionException;
 use Throwable;
@@ -20,13 +20,16 @@ use Validator;
  * @property int $student_id 学生id
  * @property string|null $location 消费地点
  * @property string|null $machineid 消费机id
- * @property int $ctype 消费类型
+ * @property int $ctype 消费类型，0：充值，1：消费
  * @property float $amount 消费金额
  * @property string $ctime 消费时间
  * @property string $merchant 消费内容
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Student $student
+ * @method static Builder|Consumption newModelQuery()
+ * @method static Builder|Consumption newQuery()
+ * @method static Builder|Consumption query()
  * @method static Builder|Consumption whereAmount($value)
  * @method static Builder|Consumption whereCreatedAt($value)
  * @method static Builder|Consumption whereCtime($value)
@@ -37,32 +40,20 @@ use Validator;
  * @method static Builder|Consumption whereMerchant($value)
  * @method static Builder|Consumption whereStudentId($value)
  * @method static Builder|Consumption whereUpdatedAt($value)
- * @method static Builder|Consumption newModelQuery()
- * @method static Builder|Consumption newQuery()
- * @method static Builder|Consumption query()
  * @mixin Eloquent
  */
 class Consumption extends Model {
     
     use ModelTrait;
     
-    const STAT_RANGE = [
-        'student' => 1,
-        'class'   => 2,
-        'grade'   => 3,
-    ];
+    const STAT_RANGE = ['student' => 1, 'class'   => 2, 'grade'   => 3];
     const EXPORT_TITLES = ['#', '姓名', '性别', '所属班级', '消费类型', '消费金额', '消费时间', '商品'];
-    protected $table = 'consumptions';
     protected $fillable = [
         'student_id', 'location', 'machineid',
         'ctype', 'amount', 'ctime', 'merchant',
     ];
     
-    /**
-     * 返回消费记录所属的学生对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function student() { return $this->belongsTo('App\Models\Student'); }
     
     /**

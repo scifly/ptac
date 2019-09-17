@@ -47,6 +47,7 @@ use Throwable;
  * @method static Builder|Squad newQuery()
  * @method static Builder|Squad query()
  * @mixin Eloquent
+ * @property-read Department $dept
  */
 class Squad extends Model {
     
@@ -60,44 +61,24 @@ class Squad extends Model {
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回对应的部门对象
-     *
-     * @return BelongsTo
-     */
-    function department() { return $this->belongsTo('App\Models\Department'); }
+    /** @return BelongsTo */
+    function dept() { return $this->belongsTo('App\Models\Department'); }
     
-    /**
-     * 返回指定班级所属的年级对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function grade() { return $this->belongsTo('App\Models\Grade'); }
     
-    /**
-     * 获取指定班级包含的所有学生对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function students() { return $this->hasMany('App\Models\Student', 'class_id'); }
     
-    /**
-     * 获取指定班级包含的所有教职员工对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function educators() { return $this->belongsToMany('App\Models\Educator', 'class_educator'); }
     
-    /**
-     * 获取指定班级对应的所有科目对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function subjects() {
         
         return $this->belongsToMany(
             'App\Models\Subject',
-            'educators_classes',
+            'class_educator',
             'class_id',
             'subject_id'
         );

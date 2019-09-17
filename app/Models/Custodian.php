@@ -3,61 +3,49 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\{HttpStatusCode, ModelTrait};
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
- * App\Models\Custodian 监护人
+ * Class Custodian
  *
+ * @package App\Models
  * @property int $id
  * @property int $user_id 监护人用户ID
- * @property int $singular 是否为单角色
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property boolean $enabled
+ * @property int $enabled
  * @property-read Collection|Student[] $students
- * @property-read User $user
  * @property-read int|null $students_count
- * @method static Builder|Custodian whereCreatedAt($value)
- * @method static Builder|Custodian whereId($value)
- * @method static Builder|Custodian whereUpdatedAt($value)
- * @method static Builder|Custodian whereUserId($value)
- * @method static Builder|Custodian whereEnabled($value)
- * @method static Builder|Custodian whereSingular($value)
+ * @property-read User $user
  * @method static Builder|Custodian newModelQuery()
  * @method static Builder|Custodian newQuery()
  * @method static Builder|Custodian query()
+ * @method static Builder|Custodian whereCreatedAt($value)
+ * @method static Builder|Custodian whereEnabled($value)
+ * @method static Builder|Custodian whereId($value)
+ * @method static Builder|Custodian whereUpdatedAt($value)
+ * @method static Builder|Custodian whereUserId($value)
  * @mixin Eloquent
  */
 class Custodian extends Model {
     
     use ModelTrait;
     
-    const EXCEL_TITLES = [
-        '监护人姓名', '性别', '电子邮箱',
-        '手机号码', '创建于', '更新于',
-    ];
+    const EXCEL_TITLES = ['监护人姓名', '性别', '电子邮箱', '手机号码', '创建于', '更新于'];
     
     protected $fillable = ['user_id', 'enabled'];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回对应的用户对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function user() { return $this->belongsTo('App\Models\User'); }
     
-    /**
-     * 返回绑定的学生对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function students() {
         
         return $this->belongsToMany(

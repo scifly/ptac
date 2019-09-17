@@ -32,18 +32,10 @@ class Openid extends Model {
 
     protected $fillable = ['user_id', 'app_id', 'openid'];
     
-    /**
-     * 返回openid所属的公众号app对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function app() { return $this->belongsTo('App\Models\App'); }
     
-    /**
-     * 返回openid对应的用户对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function user() { return $this->belongsTo('App\Models\User'); }
     
 }

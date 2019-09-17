@@ -50,18 +50,10 @@ class Order extends Model {
         'transactionid', 'created_at', 'updated_at',
     ];
     
-    /**
-     * 返回指定订单所属的用户对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function user() { return $this->belongsTo('App\Models\User'); }
     
-    /**
-     * 返回指定订单所属的套餐类型对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function comboType() { return $this->belongsTo('App\Models\ComboType'); }
     
     /**

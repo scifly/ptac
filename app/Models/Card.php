@@ -6,35 +6,32 @@ use App\Helpers\{HttpStatusCode, ModelTrait};
 use Eloquent;
 use Exception;
 use Form;
-use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Arr, Carbon, Facades\DB, Facades\Request};
+use Illuminate\Support\{Arr, Carbon, Collection, Facades\DB, Facades\Request};
 use Throwable;
 
 /**
- * 一卡通
- * 
  * Class Card
  *
- * @package App\Models
  * @property int $id
- * @property string $sn 卡号
  * @property int $user_id 所属用户id
+ * @property string $sn 卡号
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property int $status 状态
- * @property-read User $user
+ * @property int $status 状态: 0 - 待发，1 - 正常，2 - 挂失
  * @property-read Collection|Turnstile[] $turnstiles
  * @property-read int|null $turnstiles_count
+ * @property-read User $user
  * @method static Builder|Card newModelQuery()
  * @method static Builder|Card newQuery()
  * @method static Builder|Card query()
  * @method static Builder|Card whereCreatedAt($value)
  * @method static Builder|Card whereId($value)
+ * @method static Builder|Card whereSn($value)
  * @method static Builder|Card whereStatus($value)
  * @method static Builder|Card whereUpdatedAt($value)
  * @method static Builder|Card whereUserId($value)
- * @method static Builder|Card whereSn($value)
  * @mixin Eloquent
  */
 class Card extends Model {
@@ -43,23 +40,11 @@ class Card extends Model {
     
     protected $fillable = ['user_id', 'sn', 'status'];
     
-    /**
-     * 获取一卡通对应的用户对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function user() { return $this->belongsTo('App\Models\User'); }
     
-    /**
-     * 获取一卡通绑定的所有门禁对象
-     *
-     * @return BelongsToMany
-     */
-    function turnstiles() {
-        
-        return $this->belongsToMany('App\Models\Turnstile', 'card_turnstile');
-        
-    }
+    /** @return BelongsToMany */
+    function turnstiles() { return $this->belongsToMany('App\Models\Turnstile', 'card_turnstile'); }
     
     /**
      * 一卡通列表

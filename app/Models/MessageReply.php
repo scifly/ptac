@@ -35,11 +35,7 @@ class MessageReply extends Model {
     
     protected $fillable = ['msl_id', 'user_id', 'content'];
     
-    /**
-     * 返回所属的用户对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function user() { return $this->belongsTo('App\Models\User', 'user_id', 'id'); }
     
     /**

@@ -2,12 +2,17 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{HttpStatusCode, ModelTrait};
 use App\Jobs\{ExportEducator, ImportEducator};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\BelongsToMany,
+    Relations\HasMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection as SCollection;
@@ -33,8 +38,11 @@ use Throwable;
  * @property-read School $school
  * @property-read Collection|Tag[] $tags
  * @property-read User $user
- * @property-read Collection|ClassEducator[] $educatorClasses
  * @property-read int|null $classes_count
+ * @property-read Collection|Evaluate[] $evals
+ * @property-read int|null $evals_count
+ * @property-read Collection|Participant[] $participants
+ * @property-read int|null $participants_count
  * @method static Builder|Educator whereCreatedAt($value)
  * @method static Builder|Educator whereEnabled($value)
  * @method static Builder|Educator whereId($value)
@@ -61,30 +69,20 @@ class Educator extends Model {
         'user_id', 'school_id', 'sms_balance', 'sms_used', 'enabled',
     ];
     
-    /**
-     * 返回指定教职员工对应的用户对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function user() { return $this->belongsTo('App\Models\User'); }
     
-    /**
-     * 返回指定教职员工所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\School'); }
     
-    /**
-     * 获取指定教职员工所属的所有班级对象
-     *
-     * @return BelongsToMany
-     */
-    function classes() {
-        
-        return $this->belongsToMany('App\Models\Squad', 'class_educator');
-        
-    }
+    /** @return BelongsToMany */
+    function classes() { return $this->belongsToMany('App\Models\Squad', 'class_educator'); }
+    
+    /** @return HasMany */
+    function evals() { return $this->hasMany('App\Models\Evaluate'); }
+    
+    /** @return HasMany */
+    function participants() { return $this->hasMany('App\Models\Participant'); }
     
     /**
      * 教职员工列表

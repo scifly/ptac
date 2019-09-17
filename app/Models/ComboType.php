@@ -3,10 +3,10 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -14,16 +14,18 @@ use Throwable;
  * App\Models\ComboType 套餐类型
  *
  * @property int $id
+ * @property int $school_id 套餐所属学校ID
  * @property string $name 套餐名称
  * @property int $amount 套餐金额
  * @property int $discount 折扣比例(80,90)
- * @property int $school_id 套餐所属学校ID
  * @property int $months 有效月数
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
- * @property-read School $schools
  * @property-read School $school
+ * @method static Builder|ComboType newModelQuery()
+ * @method static Builder|ComboType newQuery()
+ * @method static Builder|ComboType query()
  * @method static Builder|ComboType whereAmount($value)
  * @method static Builder|ComboType whereCreatedAt($value)
  * @method static Builder|ComboType whereDiscount($value)
@@ -33,27 +35,17 @@ use Throwable;
  * @method static Builder|ComboType whereName($value)
  * @method static Builder|ComboType whereSchoolId($value)
  * @method static Builder|ComboType whereUpdatedAt($value)
- * @method static Builder|ComboType newModelQuery()
- * @method static Builder|ComboType newQuery()
- * @method static Builder|ComboType query()
  * @mixin Eloquent
  */
 class ComboType extends Model {
     
     use ModelTrait;
     
-    protected $table = 'combo_types';
-    
     protected $fillable = [
-        'name', 'amount', 'discount',
-        'school_id', 'months', 'enabled',
+        'school_id', 'name', 'amount', 'discount', 'months', 'enabled',
     ];
     
-    /**
-     * 返回套餐类型所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\school'); }
     
     /**
@@ -116,10 +108,23 @@ class ComboType extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Throwable
      */
     function modify(array $data, $id) {
-        
-        return $this->find($id)->update($data);
+    
+        try {
+            DB::transaction(function () use ($data, $id) {
+                throw_if(
+                    !$comboType = $this->find($id),
+                    new Exception(__('messages.not_found'))
+                );
+                $comboType->update($data);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
         
     }
     

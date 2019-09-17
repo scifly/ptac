@@ -44,43 +44,28 @@ use Throwable;
  * @method static Builder|Grade newQuery()
  * @method static Builder|Grade query()
  * @mixin Eloquent
+ * @property-read Department $dept
  */
 class Grade extends Model {
     
     use ModelTrait;
     
     protected $fillable = [
-        'name', 'school_id', 'department_id',
+        'school_id', 'department_id', 'name',
         'educator_ids', 'enabled',
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回对应的部门对象
-     *
-     * @return BelongsTo
-     */
-    function department() { return $this->belongsTo('App\Models\Department'); }
-    
-    /**
-     * 返回指定年级所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\School'); }
     
-    /**
-     * 获取指定年级包含的所有班级对象
-     *
-     * @return HasMany
-     */
+    /** @return BelongsTo */
+    function dept() { return $this->belongsTo('App\Models\Department'); }
+    
+    /** @return HasMany */
     function classes() { return $this->hasMany('App\Models\Squad'); }
     
-    /**
-     * 通过Squad中间对象获取指定年级包含的所有学生对象
-     *
-     * @return HasManyThrough
-     */
+    /** @return HasManyThrough */
     function students() {
         
         return $this->hasManyThrough(
@@ -293,27 +278,6 @@ class Grade extends Model {
             $this->htmlSelect($items, 'class_id'),
             array_key_first($items->toArray()),
         ];
-        
-    }
-    
-    /**
-     * 返回对指定用户(教职员工)可见的所有年级类部门对象
-     *
-     * @param null $userId
-     * @return Department[]|Collection
-     */
-    function departments($userId = null) {
-        
-        $user = User::find($userId ?? Auth::id());
-        // abort_if(
-        //     !$user->educator,
-        //     HttpStatusCode::UNAUTHORIZED,
-        //     __('messages.unauthorized')
-        // );
-        $ids = $this->gradeIds(session('schoolId'), $user->id);
-        $departmentIds = $this->whereIn('id', $ids)->pluck('department_id');
-        
-        return Department::whereIn('id', $departmentIds)->get();
         
     }
     

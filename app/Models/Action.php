@@ -4,12 +4,11 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\{Constant, ModelTrait};
 use App\Models\ActionType as ActionType;
-use Carbon\Carbon;
 use Doctrine\Common\Inflector\Inflector;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
-use Illuminate\Support\{Facades\DB, Facades\Request, Facades\Route, Str};
+use Illuminate\Support\{Carbon, Facades\DB, Facades\Request, Facades\Route, Str};
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -21,9 +20,8 @@ use Throwable;
  * @property int $id
  * @property string $name method/function名称
  * @property string|null $action_type_ids HTTP请求类型IDs
+ * @property int $tab_id 所属控制器id
  * @property string|null $remark 备注
- * @property string $controller 所属controller类名
- * @property string $tab_id 所属控制器id
  * @property string|null $view 对应的blade view名
  * @property string $method
  * @property string|null $js
@@ -31,12 +29,13 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
- * @property-read Tab $tab
  * @property-read Collection|Group[] $groups
  * @property-read int|null $groups_count
+ * @property-read Tab $tab
+ * @method static Builder|Action newModelQuery()
+ * @method static Builder|Action newQuery()
+ * @method static Builder|Action query()
  * @method static Builder|Action whereActionTypeIds($value)
- * @method static Builder|Action whereController($value)
- * @method static Builder|Action whereTabId($value)
  * @method static Builder|Action whereCreatedAt($value)
  * @method static Builder|Action whereEnabled($value)
  * @method static Builder|Action whereId($value)
@@ -45,45 +44,34 @@ use Throwable;
  * @method static Builder|Action whereName($value)
  * @method static Builder|Action whereRemark($value)
  * @method static Builder|Action whereRoute($value)
+ * @method static Builder|Action whereTabId($value)
  * @method static Builder|Action whereUpdatedAt($value)
  * @method static Builder|Action whereView($value)
- * @method static Builder|Action newModelQuery()
- * @method static Builder|Action newQuery()
- * @method static Builder|Action query()
  * @mixin Eloquent
  */
 class Action extends Model {
     
     use ModelTrait;
     
+    public $type = 1;
     const ACTIONS_WITHOUT_VIEW_AND_JS = [
         'destroy', 'store', 'update', 'sync', 'export',
         'move', 'rankTabs', 'sanction', 'import', 'rank',
         'detail', 'studentConsumption', 'sendMsg',
     ];
-    public $type = 1;
     protected $fillable = [
-        'name', 'method', 'remark',
-        'tab_id', 'view', 'route',
-        'js', 'action_type_ids', 'enabled',
+        'name', 'action_type_ids', 'tab_id', 'remark',
+        'view', 'method', 'js', 'route', 'enabled',
     ];
     protected $routes;
     protected $acronyms;
     protected $actionTypes;
     
     /** Properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回当前action包含的卡片
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function tab() { return $this->belongsTo('App\Models\Tab'); }
     
-    /**
-     * 返回当前action所属的角色对象collection
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function groups() { return $this->belongsToMany('App\Models\Group', 'action_group'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
@@ -179,10 +167,23 @@ class Action extends Model {
      * @param array $data
      * @param integer $id
      * @return bool
+     * @throws Throwable
      */
     function modify(array $data, $id) {
         
-        return $this->find($id)->update($data);
+        try {
+            DB::transaction(function () use ($data, $id) {
+                throw_if(
+                    !$action = $this->find($id),
+                    new Exception(__('messages.not_found'))
+                );
+                $action->update($data);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     
@@ -200,7 +201,7 @@ class Action extends Model {
                 array_map(
                     function (array $classes, string $action) use ($id) {
                         $this->purge($classes, 'action_id', $action, $id);
-                    }, [[class_basename($this), 'ActionGroup'], ['Tab']], ['purge', 'reset']
+                    }, [['Action', 'ActionGroup'], ['Tab']], ['purge', 'reset']
                 );
             });
         } catch (Exception $e) {

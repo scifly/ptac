@@ -40,15 +40,9 @@ class MediaType extends Model {
     
     use ModelTrait;
     
-    protected $table = 'media_types';
-    
     protected $fillable = ['name', 'color', 'icon', 'remark', 'enabled'];
     
-    /**
-     * 获取指定媒体类型包含的所有媒体对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function medias() { return $this->hasMany('App\Models\Media'); }
     
     /**

@@ -6,7 +6,7 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
@@ -36,6 +36,8 @@ use Throwable;
  * @method static Builder|Semester newQuery()
  * @method static Builder|Semester query()
  * @mixin Eloquent
+ * @property-read Collection|Evaluate[] $evals
+ * @property-read int|null $evals_count
  */
 class Semester extends Model {
     
@@ -46,12 +48,11 @@ class Semester extends Model {
         'start_date', 'end_date', 'enabled',
     ];
     
-    /**
-     * 返回学期记录所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\School'); }
+    
+    /** @return HasMany */
+    function evals() { return $this->hasMany('App\Models\Evaluate'); }
     
     /**
      * 学期列表

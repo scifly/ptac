@@ -63,39 +63,19 @@ class Module extends Model {
         'enabled',
     ];
     
-    /**
-     * 返回模块所属的控制器对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function tab() { return $this->belongsTo('App\Models\Tab'); }
     
-    /**
-     * 返回模块所属的媒体对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function media() { return $this->belongsTo('App\Models\Media'); }
     
-    /**
-     * 返回指定模块所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\School'); }
     
-    /**
-     * 返回指定模块所属的角色对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function group() { return $this->belongsTo('App\Models\Group'); }
     
-    /**
-     * 返回订阅了指定增值应用模块的所有学生对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function students() { return $this->belongsToMany('App\Models\Student', 'module_student'); }
     
     /**

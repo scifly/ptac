@@ -15,7 +15,6 @@ use Throwable;
 /**
  * Class App - 应用
  *
- * @package App\Models
  * @property int $id
  * @property int $corp_id 所属企业id
  * @property int $category 应用类型：1 - 企业应用；2 - 公众号；3 - （企业）通讯录同步
@@ -32,12 +31,12 @@ use Throwable;
  * @property int $enabled
  * @property-read Corp $corp
  * @property-read Collection|Message[] $messages
- * @property-read Collection|Openid[] $openids
- * @property-read Collection|School[] $schools
- * @property-read Collection|Template[] $templates
  * @property-read int|null $messages_count
+ * @property-read Collection|Openid[] $openids
  * @property-read int|null $openids_count
+ * @property-read Collection|School[] $schools
  * @property-read int|null $schools_count
+ * @property-read Collection|Template[] $templates
  * @property-read int|null $templates_count
  * @method static Builder|App newModelQuery()
  * @method static Builder|App newQuery()
@@ -67,6 +66,7 @@ class App extends Model {
         'appsecret', 'menu', 'properties',
         'description', 'access_token',
         'expire_at', 'enabled',
+        
         'properties->url',
         'properties->token',
         'properties->encoding_aes_key',
@@ -85,39 +85,19 @@ class App extends Model {
         3 => '管理工具',
     ];
     
-    /**
-     * 返回应用所属的企业对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function corp() { return $this->belongsTo('App\Models\Corp'); }
     
-    /**
-     * 返回通过指定应用发送/收到的消息
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function messages() { return $this->hasMany('App\Models\Message'); }
     
-    /**
-     * 返回指定公众号应用对应的所有学校对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function schools() { return $this->hasMany('App\Models\School'); }
     
-    /**
-     * 返回指定公众号所包含的所有openid
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function openids() { return $this->hasMany('App\Models\Openid'); }
     
-    /**
-     * 返回指定公众号所包含的所有模板
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function templates() { return $this->hasMany('App\Models\Template'); }
     
     /**
@@ -221,9 +201,7 @@ class App extends Model {
         
     }
     
-    /**
-     * @return array
-     */
+    /** @return array */
     function compose() {
         
         $corpId = $this->corpId();

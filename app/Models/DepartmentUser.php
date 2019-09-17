@@ -5,7 +5,7 @@ use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
+use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
 use Illuminate\Support\{Arr, Facades\DB};
 use Throwable;
 
@@ -18,6 +18,8 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Department $dept
+ * @property-read User $user
  * @method static Builder|DepartmentUser whereCreatedAt($value)
  * @method static Builder|DepartmentUser whereDepartmentId($value)
  * @method static Builder|DepartmentUser whereEnabled($value)
@@ -32,6 +34,12 @@ use Throwable;
 class DepartmentUser extends Pivot {
     
     use ModelTrait;
+    
+    /** @return BelongsTo */
+    function user() { return $this->belongsTo('App\Models\User'); }
+    
+    /** @return BelongsTo */
+    function dept() { return $this->belongsTo('App\Models\Department'); }
     
     protected $fillable = ['department_id', 'user_id', 'enabled'];
     

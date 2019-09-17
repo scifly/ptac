@@ -30,9 +30,7 @@ use Illuminate\Support\Carbon;
  */
 class RoomFunction extends Model {
 
-    protected $fillable = [
-        'name', 'remark', 'enabeld'
-    ];
+    protected $fillable = ['name', 'remark', 'enabeld'];
     
     /** @return HasMany */
     function roomTypes() { return $this->hasMany('App\Models\RoomType'); }

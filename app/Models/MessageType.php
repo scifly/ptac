@@ -40,22 +40,12 @@ class MessageType extends Model {
     
     use ModelTrait;
     
-    protected $table = 'message_types';
-    
     protected $fillable = ['name', 'user_id', 'remark', 'enabled'];
     
-    /**
-     * 获取指定消息类型包含的所有消息对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function messages() { return $this->hasMany('App\Models\Message'); }
     
-    /**
-     * 返回指定消息类型包含的所有接口消息对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function apiMessages() { return $this->hasMany('App\Models\ApiMessage'); }
     
     /**

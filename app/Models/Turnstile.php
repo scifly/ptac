@@ -45,6 +45,8 @@ use Throwable;
  * @mixin Eloquent
  * @property-read int|null $cards_count
  * @property-read int|null $passage_rules_count
+ * @property-read Collection|PassageRule[] $rules
+ * @property-read int|null $rules_count
  */
 class Turnstile extends Model {
     
@@ -62,19 +64,11 @@ class Turnstile extends Model {
         'deviceid', 'enabled',
     ];
     
-    /**
-     * 返回门禁设备所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\School'); }
     
-    /**
-     * 获取指定门禁包含的所有通行规则对象
-     *
-     * @return BelongsToMany
-     */
-    function passageRules() {
+    /** @return BelongsToMany */
+    function rules() {
         
         return $this->belongsToMany(
             'App\Models\PassageRule',
@@ -85,16 +79,8 @@ class Turnstile extends Model {
         
     }
     
-    /**
-     * 获取门禁绑定的所有一卡通对象
-     *
-     * @return BelongsToMany
-     */
-    function cards() {
-        
-        return $this->belongsToMany('App\Models\Card', 'card_turnstile');
-        
-    }
+    /** @return BelongsToMany */
+    function cards() { return $this->belongsToMany('App\Models\Card', 'card_turnstile'); }
     
     /**
      * 门禁设备列表

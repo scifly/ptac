@@ -48,7 +48,6 @@ class ScoreTotal extends Model {
     
     use ModelTrait;
     
-    protected $table = 'score_totals';
     protected $fillable = [
         'student_id', 'exam_id', 'score',
         'subject_ids', 'na_subject_ids',
@@ -56,18 +55,10 @@ class ScoreTotal extends Model {
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回总分记录所属的学生对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function student() { return $this->belongsTo('App\Models\Student'); }
     
-    /**
-     * 返回总分记录所属的考试对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function exam() { return $this->belongsTo('App\Models\Exam'); }
     
     /**

@@ -3,7 +3,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
+use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
 
 /**
  * App\Models\ModuleStudent 学生应用模块订阅
@@ -24,9 +24,17 @@ use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
  * @method static Builder|ModuleStudent newQuery()
  * @method static Builder|ModuleStudent query()
  * @mixin Eloquent
+ * @property-read Module $module
+ * @property-read Student $student
  */
 class ModuleStudent extends Pivot {
     
     protected $fillable = ['module_id', 'student_id', 'expired_at'];
+    
+    /** @return BelongsTo */
+    function module() { return $this->belongsTo('App\Models\Module'); }
+    
+    /** @return BelongsTo */
+    function student() { return $this->belongsTo('App\Models\Student'); }
     
 }

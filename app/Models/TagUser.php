@@ -6,7 +6,7 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Relations\Pivot};
+use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
 use Illuminate\Support\Facades\DB;
 use Request;
 use Throwable;
@@ -30,12 +30,20 @@ use Throwable;
  * @method static Builder|TagUser newQuery()
  * @method static Builder|TagUser query()
  * @mixin Eloquent
+ * @property-read Tag $tag
+ * @property-read User $user
  */
 class TagUser extends Pivot {
     
     use ModelTrait;
     
     protected $fillable = ['tag_id', 'user_id', 'enabled'];
+    
+    /** @return BelongsTo */
+    function tag() { return $this->belongsTo('App\Models\Tag'); }
+    
+    /** @return BelongsTo */
+    function user() { return $this->belongsTo('App\Models\User'); }
     
     /**
      * 按用户id保存标签用户绑定关系

@@ -3,30 +3,30 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\{Carbon, Collection, Facades\DB};
 use Throwable;
 
 /**
  * Class ApiMessage 接口消息发送记录
  *
- * @package App\Models
  * @property int $id
  * @property int $msl_id 消息发送批次id
  * @property int $message_type_id 消息类型id
+ * @property int $s_user_id 发送者用户id
  * @property string $mobile 手机号码
  * @property string $content 消息内容
  * @property int $read 是否已读
  * @property int $sent 消息是否发送成功
  * @property Carbon|null $created_at 创建于
  * @property Carbon|null $updated_at 更新于
- * @property int $s_user_id 发送者用户id
  * @property-read MessageSendingLog $messageSendingLog
  * @property-read MessageType $messageType
+ * @method static Builder|ApiMessage newModelQuery()
+ * @method static Builder|ApiMessage newQuery()
+ * @method static Builder|ApiMessage query()
  * @method static Builder|ApiMessage whereContent($value)
  * @method static Builder|ApiMessage whereCreatedAt($value)
  * @method static Builder|ApiMessage whereId($value)
@@ -34,12 +34,9 @@ use Throwable;
  * @method static Builder|ApiMessage whereMobile($value)
  * @method static Builder|ApiMessage whereMslId($value)
  * @method static Builder|ApiMessage whereRead($value)
+ * @method static Builder|ApiMessage whereSUserId($value)
  * @method static Builder|ApiMessage whereSent($value)
  * @method static Builder|ApiMessage whereUpdatedAt($value)
- * @method static Builder|ApiMessage whereSUserId($value)
- * @method static Builder|ApiMessage newModelQuery()
- * @method static Builder|ApiMessage newQuery()
- * @method static Builder|ApiMessage query()
  * @mixin Eloquent
  */
 class ApiMessage extends Model {
@@ -49,31 +46,15 @@ class ApiMessage extends Model {
     protected $table = 'api_messages';
     
     protected $fillable = [
-        'mobile', 'content', 'read',
-        'sent', 'message_type_id',
+        'msl_id', 'message_type_id', 's_user_id',
+        'mobile', 'content', 'read', 'sent',
     ];
     
-    /**
-     * 返回所属的消息类型对象
-     *
-     * @return BelongsTo
-     */
-    function messageType() {
-        
-        return $this->belongsTo('App\Models\MessageType');
-        
-    }
+    /** @return BelongsTo */
+    function messageType() { return $this->belongsTo('App\Models\MessageType'); }
     
-    /**
-     * 返回所属的消息发送批次对象
-     *
-     * @return BelongsTo
-     */
-    function messageSendingLog() {
-        
-        return $this->belongsTo('App\Models\MessageSendingLog');
-        
-    }
+    /** @return BelongsTo */
+    function messageSendingLog() { return $this->belongsTo('App\Models\MessageSendingLog'); }
     
     /**
      * api发送的短消息列表

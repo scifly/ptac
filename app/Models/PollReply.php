@@ -2,7 +2,9 @@
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
-use Illuminate\Database\Eloquent\{Model, Relations\BelongsTo};
+use Eloquent;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Support\Carbon;
 use Throwable;
 
 /**
@@ -12,20 +14,21 @@ use Throwable;
  * @property int $user_id 参与者用户id
  * @property int $poll_topic_id 题目id
  * @property string $reply 问题答案
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\PollTopic $pollTopic
- * @property-read \App\Models\User $user
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollReply newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollReply newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollReply query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollReply whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollReply whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollReply wherePollTopicId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollReply whereReply($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollReply whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollReply whereUserId($value)
- * @mixin \Eloquent
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read PollTopic $pollTopic
+ * @property-read User $user
+ * @method static Builder|PollReply newModelQuery()
+ * @method static Builder|PollReply newQuery()
+ * @method static Builder|PollReply query()
+ * @method static Builder|PollReply whereCreatedAt($value)
+ * @method static Builder|PollReply whereId($value)
+ * @method static Builder|PollReply wherePollTopicId($value)
+ * @method static Builder|PollReply whereReply($value)
+ * @method static Builder|PollReply whereUpdatedAt($value)
+ * @method static Builder|PollReply whereUserId($value)
+ * @mixin Eloquent
+ * @property-read PollTopic $topic
  */
 class PollReply extends Model {
     
@@ -37,7 +40,7 @@ class PollReply extends Model {
     function user() { return $this->belongsTo('App\Models\User'); }
     
     /** @return BelongsTo */
-    function pollTopic() { return $this->belongsTo('App\Models\PollTopic'); }
+    function topic() { return $this->belongsTo('App\Models\PollTopic'); }
     
     /**
      * 保存调查问卷答案

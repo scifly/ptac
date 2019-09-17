@@ -40,18 +40,10 @@ class RuleTurnstile extends Pivot {
         'turnstile_id', 'door', 'passage_rule_id', 'enabled',
     ];
     
-    /**
-     * 返回指定绑定关系对应的门禁对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function turnstile() { return $this->belongsTo('App\Models\Turnstile'); }
     
-    /**
-     * 返回指定绑定关系对应的通行规则对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function passageRule() { return $this->belongsTo('App\Models\PassageRule'); }
     
     /**

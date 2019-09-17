@@ -4,10 +4,10 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
+use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Model,
-    Relations\BelongsTo,
-    Relations\HasMany};
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -22,26 +22,28 @@ use Throwable;
  * @property string $name 问卷调查名称
  * @property string $start 开始时间
  * @property string $end 结束时间
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollTopic[] $pollTopics
+ * @property-read Collection|PollTopic[] $pollTopics
  * @property-read int|null $poll_topics_count
- * @property-read \App\Models\School $school
- * @property-read \App\Models\User $user
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Poll newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Poll newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Poll query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Poll whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Poll whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Poll whereEnd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Poll whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Poll whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Poll whereSchoolId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Poll whereStart($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Poll whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Poll whereUserId($value)
- * @mixin \Eloquent
+ * @property-read School $school
+ * @property-read User $user
+ * @method static Builder|Poll newModelQuery()
+ * @method static Builder|Poll newQuery()
+ * @method static Builder|Poll query()
+ * @method static Builder|Poll whereCreatedAt($value)
+ * @method static Builder|Poll whereEnabled($value)
+ * @method static Builder|Poll whereEnd($value)
+ * @method static Builder|Poll whereId($value)
+ * @method static Builder|Poll whereName($value)
+ * @method static Builder|Poll whereSchoolId($value)
+ * @method static Builder|Poll whereStart($value)
+ * @method static Builder|Poll whereUpdatedAt($value)
+ * @method static Builder|Poll whereUserId($value)
+ * @mixin Eloquent
+ * @property-read Collection|PollTopic[] $topics
+ * @property-read int|null $topics_count
  */
 class Poll extends Model {
     
@@ -59,7 +61,7 @@ class Poll extends Model {
     function user() { return $this->belongsTo('App\Models\User'); }
     
     /** @return HasMany */
-    function pollTopics() { return $this->hasMany('App\Models\PollTopic'); }
+    function topics() { return $this->hasMany('App\Models\PollTopic'); }
     
     /**
      * 投票问卷列表

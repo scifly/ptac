@@ -52,28 +52,17 @@ class Exam extends Model {
     
     use ModelTrait;
     
-    protected $table = 'exams';
-    
     protected $fillable = [
-        'name', 'remark', 'exam_type_id',
-        'class_ids', 'subject_ids', 'max_scores',
-        'pass_scores', 'start_date', 'end_date',
-        'enabled',
+        'exam_type_id', 'class_ids', 'subject_ids', 'name',  
+        'max_scores', 'pass_scores', 'start_date', 'end_date',
+        'remark', 'enabled',
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回指定考试所属的考试类型对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function examType() { return $this->belongsTo('App\Models\ExamType'); }
     
-    /**
-     * 返回考试
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function scores() { return $this->hasMany('App\Models\Score'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */

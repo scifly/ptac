@@ -112,7 +112,7 @@ class Icon extends Model {
         
         try {
             DB::transaction(function () use ($id) {
-                $this->purge(['Tab'], 'icon_id', 'reset', $id);
+                $this->purge(['Tab', 'Menu'], 'icon_id', 'reset', $id);
                 $this->purge(['Icon'], 'id', 'purge', $id);
             });
         } catch (Exception $e) {

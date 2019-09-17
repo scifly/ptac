@@ -57,6 +57,8 @@ use Throwable;
  * @method static Builder|Subject newQuery()
  * @method static Builder|Subject query()
  * @mixin Eloquent
+ * @property-read Collection|SubjectModule[] $modules
+ * @property-read int|null $modules_count
  */
 class Subject extends Model {
     
@@ -70,71 +72,40 @@ class Subject extends Model {
         'enabled',
     ];
     
-    /**
-     * 返回指定科目所属的学校对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function school() { return $this->belongsTo('App\Models\School'); }
     
-    /**
-     * 获取指定科目包含的所有科目次分类对象
-     *
-     * @return HasMany
-     */
-    function subjectModules() { return $this->hasMany('App\Models\SubjectModule'); }
+    /** @return HasMany */
+    function modules() { return $this->hasMany('App\Models\SubjectModule'); }
     
-    /**
-     * 获取指定科目包含的所有专业对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function majors() { return $this->belongsToMany('App\Models\Major', 'major_subject'); }
     
-    /**
-     * 获取指定科目包含的所有事件对象
-     *
-     * @return HasMany
-     */
-    function events() { return $this->hasMany('App\Models\Event'); }
-    
-    /**
-     * 获取指定科目对应的所有班级对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function classes() {
         
         return $this->belongsToMany(
             'App\Models\Squad',
-            'educators_classes',
+            'class_educator',
             'subject_id',
             'class_id'
         );
         
     }
     
-    /**
-     * 获取指定科目对应的所有教职员工对象
-     *
-     * @return BelongsToMany
-     */
+    /** @return BelongsToMany */
     function educators() {
         
         return $this->belongsToMany(
             'App\Models\Educator',
-            'educators_classes',
+            'class_educator',
             'subject_id',
             'educator_id'
         );
         
     }
     
-    /**
-     * 获取指定科目对应的所有分数对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function scores() { return $this->hasMany('App\Models\Score'); }
     
     /**

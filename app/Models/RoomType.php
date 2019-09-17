@@ -40,9 +40,7 @@ class RoomType extends Model {
     
     use ModelTrait;
     
-    protected $fillable = [
-        'room_function_id', 'name', 'remark', 'enabled',
-    ];
+    protected $fillable = ['room_function_id', 'name', 'remark', 'enabled'];
     
     /** @return BelongsTo */
     function roomFunction() { return $this->belongsTo('App\Models\RoomFunction'); }

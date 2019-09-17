@@ -67,25 +67,13 @@ class Score extends Model {
     ];
     
     /** properties -------------------------------------------------------------------------------------------------- */
-    /**
-     * 返回分数记录所属的学生对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function student() { return $this->belongsTo('App\Models\Student'); }
     
-    /**
-     * 返回分数记录所属的科目对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function subject() { return $this->belongsTo('App\Models\Subject'); }
     
-    /**
-     * 返回分数记录所述的考试对象
-     *
-     * @return BelongsTo
-     */
+    /** @return BelongsTo */
     function exam() { return $this->belongsTo('App\Models\Exam'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
