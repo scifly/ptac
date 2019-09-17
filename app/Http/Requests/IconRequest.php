@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Requests;
 
+use Html;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -33,6 +34,14 @@ class IconRequest extends FormRequest {
             'remark'       => 'required|string|max:255',
             'enabled'      => 'required|boolean',
         ];
+        
+    }
+    
+    protected function prepareForValidation() {
+        
+        $input = $this->all();
+        $input['remark'] = Html::tag('i', '', ['class' => $input['name']]);
+        $this->replace($input);
         
     }
     

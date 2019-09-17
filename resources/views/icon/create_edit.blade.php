@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($ico['id']))
-                {{ Form::hidden('id', $ico['id'], ['id' => 'id']) }}
+            @if (isset($ico))
+                {!! Form::hidden('id', $ico['id'], ['id' => 'id']) !!}
             @endif
             <div class="form-group">
                 @include('shared.label', ['field' => 'name', 'label' => '名称'])
@@ -18,7 +18,6 @@
                     ]) !!}
                 </div>
             </div>
-            @include('shared.remark')
             @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $ico['enabled'] ?? null

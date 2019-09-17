@@ -6,7 +6,7 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\HasMany};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -58,12 +58,7 @@ class Icon extends Model {
         
         $columns = [
             ['db' => 'Icon.id', 'dt' => 0],
-            [
-                'db'        => 'Icon.name', 'dt' => 1,
-                'formatter' => function ($d) {
-                    return $this->iconHtml($d) . $d;
-                },
-            ],
+            ['db' => 'Icon.name', 'dt' => 1],
             ['db' => 'Icon.remark', 'dt' => 2],
             ['db' => 'Icon.created_at', 'dt' => 3],
             ['db' => 'Icon.updated_at', 'dt' => 4],
