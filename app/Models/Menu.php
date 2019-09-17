@@ -39,7 +39,7 @@ use Throwable;
  * @property-read Collection|Group[] $groups
  * @property-read Icon|null $icon
  * @property-read Media|null $media
- * @property-read MenuType $menuType
+ * @property-read MenuType $mType
  * @property-read Menu|null $parent
  * @property-read School $school
  * @property-read Collection|Tab[] $tabs
