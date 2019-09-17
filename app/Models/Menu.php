@@ -339,7 +339,7 @@ class Menu extends Model {
         $menuId = session('menuId') != '0' ? session('menuId') : $rootMId;
         $smId = $this->menuId($menuId);
         $cmId = $this->menuId($menuId, '企业');
-        $deptId = in_array($role, Constant::SUPER_ROLES) ? $user->departments->first()->id : null;
+        $deptId = in_array($role, Constant::SUPER_ROLES) ? $user->depts->first()->id : null;
         switch ($role) {
             case '运营':
                 return !$subRoot ? $rootMId : ($smId ?? ($cmId ?? $rootMId));

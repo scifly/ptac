@@ -258,7 +258,7 @@ class User extends Authenticatable {
             }, ['运营', '企业', '学校']
         );
         $rootMenu = Menu::find((new Menu)->rootId(true));
-        switch ($rootMenu->menuType->name) {
+        switch ($rootMenu->mType->name) {
             case '根':
                 $gIds = [$rootGId, $corpGId, $schoolGId];
                 $users = null;
@@ -467,7 +467,7 @@ class User extends Authenticatable {
             ];
             if ($method != 'delete') {
                 $departments = in_array($role, ['运营', '企业']) ? [1]
-                    : $user->departments->unique()->pluck('id')->toArray();
+                    : $user->depts->unique()->pluck('id')->toArray();
                 $params = array_merge($params, [
                     'name'         => $user->realname,
                     'english_name' => $attrs['english_name'],
@@ -504,7 +504,7 @@ class User extends Authenticatable {
         
         return $this->role($user->id) == '运营'
             ? Corp::pluck('id')->toArray()
-            : [(new Department)->corpId($user->departments->first()->id)];
+            : [(new Department)->corpId($user->depts->first()->id)];
         
     }
     
@@ -722,7 +722,7 @@ class User extends Authenticatable {
         $role = $this->role($id);
         
         return in_array($role, Constant::NON_EDUCATOR) && $role != '监护人'
-            ? $user->departments->pluck('id')->toArray()
+            ? $user->depts->pluck('id')->toArray()
             : DepartmentUser::where([
                 'user_id' => $user->id,
                 'enabled' => $role == '监护人' ? 0 : 1,
@@ -779,9 +779,9 @@ class User extends Authenticatable {
                 if ($id = Request::route('id')) {
                     $operator = $this->find(Request::route('id'));
                     $role = $operator->role($operator->id);
-                    $departmentId = $operator->departments->first()->id;
+                    $departmentId = $operator->depts->first()->id;
                 }
-                switch ($rootMenu->menuType->name) {
+                switch ($rootMenu->mType->name) {
                     case '根':
                         $groups = Group::whereIn('name', ['运营', '企业', '学校']);
                         if ($id) {

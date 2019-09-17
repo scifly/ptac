@@ -1142,7 +1142,7 @@ class Message extends Model {
             $userIds = $userIds->merge(
                 $tag->users->pluck('id')
             );
-            foreach ($tag->departments as $dept) {
+            foreach ($tag->depts as $dept) {
                 $userIds = $userIds->merge(
                     $dept->users->pluck('id')
                 );
@@ -1236,7 +1236,7 @@ class Message extends Model {
                 $value = $targetId;
                 $dept = Department::find($value);
                 $name = $dept->name;
-                $icon = $dept->departmentType->icon;
+                $icon = $dept->dType->icon;
             }
             $val = join(
                 array_map(

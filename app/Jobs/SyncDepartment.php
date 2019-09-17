@@ -229,7 +229,7 @@ class SyncDepartment implements ShouldQueue {
         $token = $this->token();
         if (!$deptIds) {
             $d = (new Department)->find($this->departmentIds[0]);
-            $parentid = $d->departmentType->name == '学校'
+            $parentid = $d->dType->name == '学校'
                 ? $d->school->corp->departmentid
                 : $d->parent_id;
             $params = array_combine(

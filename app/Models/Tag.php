@@ -234,7 +234,7 @@ class Tag extends Model {
                 ];
             default:
                 $tag = Tag::find(Request::route('id'));
-                $departments = $tag ? $tag->departments : null;
+                $departments = $tag ? $tag->depts : null;
                 $users = $tag ? $tag->users : null;
                 $targetIds = $departments ? $departments->pluck('id') : null;
                 $targetsHtml = $users ? (new Message)->targetsHtml($tag->users, $targetIds) : null;
@@ -261,7 +261,7 @@ class Tag extends Model {
             $deptIds = collect($this->departmentIds());
             $tags->filter(function (Tag $tag) use ($userIds, $deptIds) {
                 return $userIds->has($tag->users->pluck('id')) &&
-                    $deptIds->has($tag->departments->pluck('id'));
+                    $deptIds->has($tag->depts->pluck('id'));
             });
         }
         $list = collect([]);
