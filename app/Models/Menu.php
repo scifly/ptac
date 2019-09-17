@@ -365,10 +365,10 @@ class Menu extends Model {
     function menuId($id, $type = '学校') {
         
         if (!$menu = $this->find($id)) return null;
-        $mtName = $menu->menuType->name;
+        $mtName = $menu->mType->name;
         while ($mtName != $type) {
             if (!($menu = $menu->parent)) return null;
-            $mtName = $menu->menuType->name;
+            $mtName = $menu->mType->name;
         }
         
         return $menu->id;
@@ -622,8 +622,8 @@ class Menu extends Model {
                 __('messages.forbidden')
             );
         }
-        $parentType = $this->find($parentId)->menuType->name;
-        switch ($this->find($id)->menuType->name) {
+        $parentType = $this->find($parentId)->mType->name;
+        switch ($this->find($id)->mType->name) {
             case '运营':
                 return $parentType == '根';
             case '企业':
@@ -658,7 +658,7 @@ class Menu extends Model {
                 $menu->parent_id = $parentId === '#' ? null : intval($parentId);
                 $menu->save();
                 /** 当企业类菜单所属运营类菜单发生变化时，更新企业所属运营者及所属部门 */
-                if ($menu->menuType->name == '企业') {
+                if ($menu->mType->name == '企业') {
                     $corp = Corp::whereMenuId($menu->id)->first();
                     $company = Company::whereMenuId($menu->parent_id)->first();
                     Department::find($corp->department_id)->update(['parent_id' => $company->department_id]);
