@@ -88,7 +88,7 @@ class Menu extends Model {
     
     /** properties -------------------------------------------------------------------------------------------------- */
     /** @return BelongsTo */
-    function mType() { return $this->belongsTo('App\Models\MenuType'); }
+    function mType() { return $this->belongsTo('App\Models\MenuType', 'message_type_id'); }
     
     /** @return BelongsTo */
     function media() { return $this->belongsTo('App\Models\Media'); }

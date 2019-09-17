@@ -70,7 +70,7 @@ class Department extends Model {
     
     /** properties -------------------------------------------------------------------------------------------------- */
     /** @return BelongsTo */
-    function dType() { return $this->belongsTo('App\Models\DepartmentType'); }
+    function dType() { return $this->belongsTo('App\Models\DepartmentType', 'department_type_id'); }
     
     /** @return HasOne */
     function company() { return $this->hasOne('App\Models\Company'); }
