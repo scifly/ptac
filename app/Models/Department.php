@@ -387,7 +387,7 @@ class Department extends Model {
             return Corp::whereDepartmentId($id)->first()->id;
         }
         if (!$parent = $department->parent) return null;
-        while ($parent->departmentType->name != '企业') {
+        while ($parent->dType->name != '企业') {
             $id = $parent->id;
             
             return $this->corpId($id);
@@ -564,7 +564,7 @@ class Department extends Model {
         while ($dtName != $type) {
             $department = $department->parent;
             if (!$department) return null;
-            $dtName = $department->departmentType->name;
+            $dtName = $department->dType->name;
         }
         
         return $department->id;
@@ -600,7 +600,7 @@ class Department extends Model {
         static $ids = [];
         $d = $this->find($id);
         $p = $d->parent;
-        while ($p->departmentType->name != '学校') {
+        while ($p->dType->name != '学校') {
             $ids[] = $p->id;
             
             return $this->parentIds($p->id);
