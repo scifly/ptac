@@ -1,1 +1,0 @@
-page.edit('formProcedureType', 'procedure_types');

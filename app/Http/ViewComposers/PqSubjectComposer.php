@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Models\PollQuestionnaire;
+use App\Models\Poll;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
@@ -20,7 +20,7 @@ class PqSubjectComposer {
         $data = $action == 'index'
             ? ['titles' => ['#', '题目名称', '所属问卷', '题目类型', '创建于', '更新于', '操作']]
             : [
-                'pq'           => PollQuestionnaire::pluck('name', 'id'),
+                'pq'           => Poll::pluck('name', 'id'),
                 'subject_type' => [0 => '单选', 1 => '多选', 2 => '填空'],
             ];
         

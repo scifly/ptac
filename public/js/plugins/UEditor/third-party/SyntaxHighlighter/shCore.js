@@ -2828,7 +2828,7 @@ typeof(exports) != 'undefined' ? exports.SyntaxHighlighter = SyntaxHighlighter :
 						'for function goto if implementation in inherited int64 initialization ' +
 						'integer interface is label library longint longword mod nil not object ' +
 						'of on or packed pansichar pansistring pchar pcurrency pdatetime pextended ' +
-						'pint64 pointer private procedure program property pshortstring pstring ' +
+						'pint64 pointer private flow_type program property pshortstring pstring ' +
 						'pvariant pwidechar pwidestring protected public published raise real real48 ' +
 						'record repeat set shl shortint shortstring shr single smallint string then ' +
 						'threadvar to true try type unit until uses val var varirnt while widechar ' +
@@ -3532,7 +3532,7 @@ typeof(exports) != 'undefined' ? exports.SyntaxHighlighter = SyntaxHighlighter :
 						'int integer intersect into is isolation key last level load local max min ' +
 						'minute modify move name national nchar next no numeric of off on only ' +
 						'open option order out output partial password precision prepare primary ' +
-						'prior privileges procedure public read real references relative repeatable ' +
+						'prior privileges flow_type public read real references relative repeatable ' +
 						'restrict return returns revoke rollback rollup rows rule schema scroll ' +
 						'second section select sequence serializable set size smallint static ' +
 						'statistics table temp temporary then time timestamp to top transaction ' +

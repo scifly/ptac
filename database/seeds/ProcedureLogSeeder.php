@@ -11,7 +11,7 @@ class ProcedureLogSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\ProcedureLog::class, 5)->create()->each(function ($procedureLog) {
+        factory(App\Models\Flow::class, 5)->create()->each(function ($procedureLog) {
             $procedureLog->save();
         });
     }

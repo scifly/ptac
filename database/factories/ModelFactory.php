@@ -121,7 +121,7 @@ $factory->define(App\Models\Tag::class, function (Faker\Generator $faker) {
 });
 
 // $factory->define(App\Models\ActionType::class, ActionTypeSeeder::class);
-$factory->define(App\Models\Procedure::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\FlowType::class, function (Faker\Generator $faker) {
 
     return [
         'procedure_type_id' => 1,
@@ -251,7 +251,7 @@ $factory->define(App\Models\Exam::class, function (Faker\Generator $faker) {
     ];
 });
 
-$factory->define(App\Models\ProcedureLog::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\Flow::class, function (Faker\Generator $faker) {
 
     return [
         'initiator_user_id' => rand(1,5),

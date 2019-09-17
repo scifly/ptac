@@ -2,7 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\Procedure;
+use App\Models\FlowType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
@@ -22,7 +22,7 @@ class ProcedureStepComposer {
         $action = explode('/', Request::path())[1];
         $data = $action == 'index'
             ? ['titles' => ['#', '流程', '审批用户', '相关人员', '步骤', '备注', '创建于', '更新于', '状态 . 操作']]
-            : ['procedures' => Procedure::whereSchoolId($this->schoolId())->pluck('name', 'id')];
+            : ['procedures' => FlowType::whereSchoolId($this->schoolId())->pluck('name', 'id')];
         
         $view->with($data);
         

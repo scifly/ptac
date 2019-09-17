@@ -42,7 +42,7 @@ class Datatable {
             case 'Table':
                 $useTable = 'Tables';
                 break;
-            case 'Procedure':
+            case 'FlowType':
                 $useTable = 'Procedures';
                 break;
             default:

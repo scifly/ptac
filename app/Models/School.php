@@ -52,8 +52,8 @@ use Throwable;
  * @property-read Collection|Group[] $groups
  * @property-read Collection|Major[] $majors
  * @property-read Menu $menu
- * @property-read Collection|PollQuestionnaire[] $pollQuestionnaires
- * @property-read Collection|Procedure[] $procedures
+ * @property-read Collection|Poll[] $pollQuestionnaires
+ * @property-read Collection|FlowType[] $procedures
  * @property-read SchoolType $schoolType
  * @property-read Collection|Semester[] $semesters
  * @property-read Collection|Subject[] $subjects
@@ -108,6 +108,8 @@ use Throwable;
  * @method static Builder|School newQuery()
  * @method static Builder|School query()
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\FlowType[] $flowTypes
+ * @property-read int|null $flow_types_count
  */
 class School extends Model {
     
@@ -150,10 +152,10 @@ class School extends Model {
     function rooms() { return $this->hasManyThrough('App\Models\Room', 'App\Models\Building'); }
     
     /** @return HasMany */
-    function pollQuestionnaires() { return $this->hasMany('App\Models\PollQuestionnaire'); }
+    function pollQuestionnaires() { return $this->hasMany('App\Models\Poll'); }
     
     /** @return HasMany */
-    function procedures() { return $this->hasMany('App\Models\Procedure'); }
+    function flowTypes() { return $this->hasMany('App\Models\FlowType'); }
     
     /** @return HasMany */
     function semesters() { return $this->hasMany('App\Models\Semester'); }
@@ -392,7 +394,7 @@ class School extends Model {
                     'Department', 'Menu', 'Educator',
                     'ConferenceRoom', 'ComboType', 'ExamType',
                     'Grade', 'Group', 'Major', 'Module',
-                    'PollQuestionnaire', 'Procedure', 'Semester',
+                    'Poll', 'FlowType', 'Semester',
                     'Subject', 'Tag', 'WapSite',
                 ];
                 array_map(

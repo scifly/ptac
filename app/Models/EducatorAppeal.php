@@ -22,7 +22,7 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $status 审批状态 0 - 通过 1 - 拒绝 2 - 待审
  * @property-read Educator $educator
- * @property-read ProcedureLog $procedureLog
+ * @property-read Flow $procedureLog
  * @method static Builder|EducatorAppeal whereAppealContent($value)
  * @method static Builder|EducatorAppeal whereApproverEducatorIds($value)
  * @method static Builder|EducatorAppeal whereCreatedAt($value)
@@ -62,7 +62,7 @@ class EducatorAppeal extends Model {
      *
      * @return BelongsTo
      */
-    function procedureLog() { return $this->belongsTo('App\Models\ProcedureLog'); }
+    function procedureLog() { return $this->belongsTo('App\Models\Flow'); }
     
     /**
      * 教职员工申诉记录列表
@@ -75,7 +75,7 @@ class EducatorAppeal extends Model {
             ['db' => 'EducatorAppeal.id', 'dt' => 0],
             ['db' => 'Educator.name as educatorname', 'dt' => 1],
             ['db' => 'EducatorAppeal.appeal_content', 'dt' => 2],
-            ['db' => 'ProcedureLog.id', 'dt' => 3],
+            ['db' => 'Flow.id', 'dt' => 3],
             ['db' => 'EducatorAppeal.created_at', 'dt' => 4],
             ['db' => 'EducatorAppeal.updated_at', 'dt' => 5],
             [

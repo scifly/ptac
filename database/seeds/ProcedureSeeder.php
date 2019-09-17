@@ -10,7 +10,7 @@ class ProcedureSeeder extends Seeder {
      * @return void
      */
     public function run() {
-        factory(App\Models\Procedure::class, 5)->create()->each(function ($procedure) {
+        factory(App\Models\FlowType::class, 5)->create()->each(function ($procedure) {
             $procedure->save();
         });
     }

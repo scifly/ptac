@@ -1,1 +1,0 @@
-page.create('formProcedureType', 'procedure_types');
