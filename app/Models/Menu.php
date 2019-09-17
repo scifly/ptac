@@ -493,7 +493,7 @@ class Menu extends Model {
             $menuTabs = $menu ? $menu->tabs : null;
             $data = [
                 'tabs'         => $tabs->pluck('comment', 'id'),
-                'icons'        => (new Icon)->icons(),
+                'icons'        => Icon::pluck('name', 'id'),
                 'selectedTabs' => $menuTabs ? $menuTabs->pluck('id') : null,
             ];
         }

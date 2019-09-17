@@ -41,45 +41,13 @@ class Icon extends Model {
     
     use ModelTrait;
     
-    protected $fillable = ['name', 'remark', 'icon_type_id', 'enabled'];
+    protected $fillable = ['name', 'remark', 'enabled'];
     
-    /**
-     * 返回指定图标所属的图标类型对象
-     *
-     * @return BelongsTo
-     */
-    function iconType() { return $this->belongsTo('App\Models\IconType'); }
-    
-    /**
-     * 返回Icon包含的菜单对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function menus() { return $this->hasMany('App\Models\Menu'); }
     
-    /**
-     * 返回指定图标包含的所有卡片对象
-     *
-     * @return HasMany
-     */
+    /** @return HasMany */
     function tabs() { return $this->hasMany('App\Models\Tab'); }
-    
-    /**
-     * 返回Icon列表
-     *
-     * @return array
-     */
-    function icons() {
-        
-        $data = $this->whereEnabled(1)->get();
-        $icons = [];
-        foreach ($data as $datum) {
-            $icons[$datum->iconType->name][$datum->id] = $datum->name;
-        }
-        
-        return $icons;
-        
-    }
     
     /**
      * 图标列表
@@ -96,7 +64,7 @@ class Icon extends Model {
                     return $this->iconHtml($d) . $d;
                 },
             ],
-            ['db' => 'IconType.name as icontypename', 'dt' => 2],
+            ['db' => 'Icon.remark', 'dt' => 2],
             ['db' => 'Icon.created_at', 'dt' => 3],
             ['db' => 'Icon.updated_at', 'dt' => 4],
             [
@@ -106,18 +74,8 @@ class Icon extends Model {
                 },
             ],
         ];
-        $joins = [
-            [
-                'table'      => 'icon_types',
-                'alias'      => 'IconType',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'IconType.id = Icon.icon_type_id',
-                ],
-            ],
-        ];
         
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple($this, $columns);
         
     }
     

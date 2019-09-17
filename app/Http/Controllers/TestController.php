@@ -2,11 +2,12 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\{Broadcaster, HttpStatusCode, ModelTrait};
-use App\Models\{Department, Group, Member, Mobile, User};
+use App\Models\{Department, Group, Icon, Member, Mobile, User};
 use Auth;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Html;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -53,35 +54,41 @@ class TestController extends Controller {
         
         try {
             DB::transaction(function () {
-                $apiGId = Group::whereName('api')->first()->id;
-                foreach (Member::all() as $member) {
-                    $default = Mobile::where(['user_id' => $member->id, 'isdefault' => 1])->first();
-                    if ($member->group_id != $apiGId) {
-                        $data = [
-                            'mobile'    => $default ? $default->mobile : null,
-                            'ent_attrs' => json_encode([
-                                'userid'            => $member->userid,
-                                'english_name'      => $member->english_name,
-                                'is_leader_in_dept' => $member->isleader,
-                                'position'          => $member->position,
-                                'telephone'         => $member->telephone,
-                                'order'             => $member->order,
-                                'synced'            => $member->synced,
-                                'subscribed'        => $member->subscribed,
-                            ], true),
-                        ];
-                    } else {
-                        $data = [
-                            'mobile'    => $default ? $default->mobile : null,
-                            'api_attrs' => json_encode([
-                                'secret'    => $member->english_name,
-                                'classname' => $member->position,
-                                'contact'   => $member->telephone,
-                            ], true)
-                        ];
-                    }
-                    User::find($member->id)->update($data);
+                foreach (Icon::all() as $icon) {
+                    $icon->update([
+                        'remark' => Html::tag('i', '', ['class' => $icon->name])
+                    ]);
                 }
+                
+                // $apiGId = Group::whereName('api')->first()->id;
+                // foreach (Member::all() as $member) {
+                //     $default = Mobile::where(['user_id' => $member->id, 'isdefault' => 1])->first();
+                //     if ($member->group_id != $apiGId) {
+                //         $data = [
+                //             'mobile'    => $default ? $default->mobile : null,
+                //             'ent_attrs' => json_encode([
+                //                 'userid'            => $member->userid,
+                //                 'english_name'      => $member->english_name,
+                //                 'is_leader_in_dept' => $member->isleader,
+                //                 'position'          => $member->position,
+                //                 'telephone'         => $member->telephone,
+                //                 'order'             => $member->order,
+                //                 'synced'            => $member->synced,
+                //                 'subscribed'        => $member->subscribed,
+                //             ], true),
+                //         ];
+                //     } else {
+                //         $data = [
+                //             'mobile'    => $default ? $default->mobile : null,
+                //             'api_attrs' => json_encode([
+                //                 'secret'    => $member->english_name,
+                //                 'classname' => $member->position,
+                //                 'contact'   => $member->telephone,
+                //             ], true)
+                //         ];
+                //     }
+                //     User::find($member->id)->update($data);
+                // }
             });
         } catch (Exception $e) {
             throw $e;

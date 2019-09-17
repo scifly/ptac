@@ -20,11 +20,6 @@
                     ]) !!}
                 </div>
             </div>
-            @include('shared.single_select', [
-                'label' => 'icon类型',
-                'id' => 'icon_type_id',
-                'items' => $iconTypes
-            ])
             @include('shared.remark')
             @include('shared.switch', [
                 'id' => 'enabled',

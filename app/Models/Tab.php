@@ -345,7 +345,7 @@ class Tab extends Model {
             $tab = Tab::find(Request::route('id'));
             $tabMenus = $tab ? $tab->menus : null;
             $data = [
-                'icons'         => (new Icon)->icons(),
+                'icons'         => (new Icon)->list(),
                 'actions'       => (new Action)->actions(),
                 'groups'        => collect([0 => '所有'])->union($roles),
                 'menus'         => (new Menu)->leaves(1),

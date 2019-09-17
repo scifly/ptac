@@ -26,18 +26,12 @@
                 </div>
             </div>
             <!-- 图标ID -->
-            <div class="form-group">
-                @include('shared.label', ['field' => 'icon_id', 'label' => '图标'])
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('shared.icon_addon', ['class' => 'fa-fonticons'])
-                        {!! Form::select('icon_id', $icons, null, [
-                            'id' => 'icon_id',
-                            'style' => 'width: 100%;'
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
+            @include('shared.single_select', [
+                'id' => 'icon_id',
+                'label' => '图标',
+                'items' => $icons,
+                'icon' => 'fa fa-fonticons'
+            ])
             <!-- 链接地址 -->
             <div class="form-group">
                 @include('shared.label', ['field' => 'uri', 'label' => '链接地址'])
