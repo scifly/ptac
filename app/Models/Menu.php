@@ -63,7 +63,6 @@ use Throwable;
  * @method static Builder|Menu newQuery()
  * @method static Builder|Menu query()
  * @mixin Eloquent
- * @property-read MenuType $mType
  */
 class Menu extends Model {
     
