@@ -73,7 +73,7 @@ class Corp extends Model {
     ];
     
     /** @return BelongsTo */
-    function department() { return $this->belongsTo('App\Models\Department'); }
+    function dept() { return $this->belongsTo('App\Models\Department', 'department_id'); }
     
     /** @return BelongsTo */
     function menu() { return $this->belongsTo('App\Models\Menu'); }

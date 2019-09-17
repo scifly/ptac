@@ -49,7 +49,7 @@ class PollTopic extends Model {
     ];
     
     /** @return BelongsTo */
-    function poll() { return $this->belongsTo('App\Models\Poll', 'pq_id'); }
+    function poll() { return $this->belongsTo('App\Models\Poll'); }
     
     /** @return HasMany */
     function replies() { return $this->hasMany('App\Models\PollReply'); }

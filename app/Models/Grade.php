@@ -27,7 +27,7 @@ use Throwable;
  * @property int $enabled
  * @property int $department_id 对应的部门ID
  * @property-read Collection|Squad[] $classes
- * @property-read Department $department
+ * @property-read Department $dept
  * @property-read School $school
  * @property-read Collection|Student[] $students
  * @property-read int|null $classes_count
@@ -44,7 +44,6 @@ use Throwable;
  * @method static Builder|Grade newQuery()
  * @method static Builder|Grade query()
  * @mixin Eloquent
- * @property-read Department $dept
  */
 class Grade extends Model {
     
@@ -60,7 +59,7 @@ class Grade extends Model {
     function school() { return $this->belongsTo('App\Models\School'); }
     
     /** @return BelongsTo */
-    function dept() { return $this->belongsTo('App\Models\Department'); }
+    function dept() { return $this->belongsTo('App\Models\Department', 'department_id'); }
     
     /** @return HasMany */
     function classes() { return $this->hasMany('App\Models\Squad'); }
@@ -253,7 +252,7 @@ class Grade extends Model {
             
             return array_merge(
                 array_combine(['educators', 'selectedEducators'], [$educators, $selectedEducators]),
-                (new Tag)->compose('department', $grade ? $grade->department : null)
+                (new Tag)->compose('department', $grade ? $grade->dept : null)
             );
         }
         

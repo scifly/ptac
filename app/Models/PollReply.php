@@ -40,7 +40,7 @@ class PollReply extends Model {
     function user() { return $this->belongsTo('App\Models\User'); }
     
     /** @return BelongsTo */
-    function topic() { return $this->belongsTo('App\Models\PollTopic'); }
+    function topic() { return $this->belongsTo('App\Models\PollTopic', 'poll_topic_id'); }
     
     /**
      * 保存调查问卷答案

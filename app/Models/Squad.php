@@ -27,7 +27,7 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property int $department_id 对应的部门ID
- * @property-read Department $department
+ * @property-read Department $dept
  * @property-read Collection|Educator[] $educators
  * @property-read Grade $grade
  * @property-read Collection|Student[] $students
@@ -47,7 +47,6 @@ use Throwable;
  * @method static Builder|Squad newQuery()
  * @method static Builder|Squad query()
  * @mixin Eloquent
- * @property-read Department $dept
  */
 class Squad extends Model {
     
@@ -62,7 +61,7 @@ class Squad extends Model {
     
     /** Properties -------------------------------------------------------------------------------------------------- */
     /** @return BelongsTo */
-    function dept() { return $this->belongsTo('App\Models\Department'); }
+    function dept() { return $this->belongsTo('App\Models\Department', 'department_id'); }
     
     /** @return BelongsTo */
     function grade() { return $this->belongsTo('App\Models\Grade'); }
@@ -315,7 +314,7 @@ class Squad extends Model {
                     'educators'         => $educators,
                     'selectedEducators' => $selectedEducators,
                 ],
-                (new Tag)->compose('department', $class ? $class->department : null)
+                (new Tag)->compose('department', $class ? $class->dept : null)
             );
         }
         

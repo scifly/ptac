@@ -56,7 +56,7 @@ class Template extends Model {
     ];
     
     /** @return BelongsTo */
-    function corpApp() { return $this->belongsTo('App\Models\App'); }
+    function corpApp() { return $this->belongsTo('App\Models\App', 'app_id'); }
     
     /**
      * 返回模板列表

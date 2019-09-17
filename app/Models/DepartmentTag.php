@@ -41,7 +41,7 @@ class DepartmentTag extends Pivot {
     function tag() { return $this->belongsTo('App\Models\Tag'); }
     
     /** @return BelongsTo */
-    function dept() { return $this->belongsTo('App\Models\Department'); }
+    function dept() { return $this->belongsTo('App\Models\Department', 'department_id'); }
     
     /**
      * 按部门id保存部门标签绑定关系

@@ -60,7 +60,7 @@ class Conference extends Model {
     
     /** Properties -------------------------------------------------------------------------------------------------- */
     /** @return BelongsTo */
-    function user() { return $this->belongsTo('App\Models\Educator'); }
+    function user() { return $this->belongsTo('App\Models\User'); }
     
     /** @return BelongsTo */
     function room() { return $this->belongsTo('App\Models\Room'); }

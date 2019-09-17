@@ -54,7 +54,7 @@ class Media extends Model {
     protected $fillable = ['media_type_id', 'path', 'remark', 'enabled'];
     
     /** @return BelongsTo */
-    function mType() { return $this->belongsTo('App\Models\MediaType'); }
+    function mType() { return $this->belongsTo('App\Models\MediaType', 'media_type_id'); }
     
     /** @return HasMany */
     function wsms() { return $this->hasMany('App\Models\WapSiteModule'); }

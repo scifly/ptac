@@ -39,7 +39,7 @@ class DepartmentUser extends Pivot {
     function user() { return $this->belongsTo('App\Models\User'); }
     
     /** @return BelongsTo */
-    function dept() { return $this->belongsTo('App\Models\Department'); }
+    function dept() { return $this->belongsTo('App\Models\Department', 'department_id'); }
     
     protected $fillable = ['department_id', 'user_id', 'enabled'];
     

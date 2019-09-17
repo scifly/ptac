@@ -51,10 +51,13 @@ class ApiMessage extends Model {
     ];
     
     /** @return BelongsTo */
-    function messageType() { return $this->belongsTo('App\Models\MessageType'); }
+    function mType() { return $this->belongsTo('App\Models\MessageType', 'message_type_id'); }
     
     /** @return BelongsTo */
-    function messageSendingLog() { return $this->belongsTo('App\Models\MessageSendingLog'); }
+    function msgLog() { return $this->belongsTo('App\Models\MessageSendingLog', 'msl_id'); }
+    
+    /** @return BelongsTo */
+    function sender() { return $this->belongsTo('App\Models\User', 's_user_id'); }
     
     /**
      * api发送的短消息列表
