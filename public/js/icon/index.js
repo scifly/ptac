@@ -1,3 +1,3 @@
 page.index('icons', [
-    {className: 'text-center', targets: [3, 4]}
+    {className: 'text-center', targets: [2, 3, 4]}
 ]);
