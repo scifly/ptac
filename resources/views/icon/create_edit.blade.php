@@ -8,9 +8,7 @@
                 {{ Form::hidden('id', $ico['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control text-blue',
