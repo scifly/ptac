@@ -55,7 +55,7 @@ class Conference extends Model {
     
     protected $fillable = [
         'user_id', 'room_id', 'message_id', 'url',
-        'name', 'start', 'end', 'remark', 'status'
+        'name', 'start', 'end', 'remark', 'status',
     ];
     
     /** Properties -------------------------------------------------------------------------------------------------- */
@@ -94,7 +94,7 @@ class Conference extends Model {
                     [$color, $title] = $statuses[$d];
                     $status = Html::tag('i', '', [
                         'class' => 'fa fa-circle text-' . $color,
-                        'title' => $title
+                        'title' => $title,
                     ])->toHtml();
                     
                     return Datatable::status($status, $row);
@@ -119,13 +119,13 @@ class Conference extends Model {
                 ],
             ],
             [
-                'table' => 'buildings',
-                'alias' => 'Building',
-                'type' => 'INNER',
+                'table'      => 'buildings',
+                'alias'      => 'Building',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Building.id = Room.building_id'
-                ]
-            ]
+                    'Building.id = Room.building_id',
+                ],
+            ],
         ];
         $condition = 'Building.school_id = ' . $this->schoolId();
         $user = Auth::user();
@@ -199,10 +199,26 @@ class Conference extends Model {
         
     }
     
+    /**
+     * @param Conference|null $conference
+     * @return Collection
+     */
+    function educatorIds(Conference $conference = null) {
+        
+        if ($conference) {
+            $message = $conference->message;
+            $userIds = $message->targetUserIds($message);
+            
+            return Educator::whereIn('user_id', $userIds)->get()->pluck('id');
+        }
+        
+        return collect([]);
+        
+    }
+    
     /** Helper functions -------------------------------------------------------------------------------------------- */
-    
     function compose() {
-    
+        
         $action = explode('/', Request::path())[1];
         if ($action == 'index') {
             $data = [
@@ -210,30 +226,12 @@ class Conference extends Model {
             ];
         } else {
             $schoolId = $this->schoolId();
-            $user = Auth::user();
-            if (in_array($user->role(), Constant::SUPER_ROLES)) {
-                $educators = Educator::whereSchoolId($schoolId)->with('user')->pluck('user.realname', 'id');
-            } else {
-                $userIds = array_unique(
-                    DepartmentUser::whereIn(
-                        'department_id', $user->departmentIds($user->id)
-                    )->get(['user_id'])->toArray()
-                );
-                $educators = collect([]);
-                foreach ($userIds as $userId) {
-                    $u = User::find($userId);
-                    if ($u->educator) {
-                        $educators[$u->educator->id] = $u->realname;
-                    }
-                }
-            }
             $conference = Conference::find(Request::route('id'));
+            $educators = Educator::whereSchoolId($schoolId)->with('user')->pluck('user.realname', 'id');
             $data = [
-                'rooms'   => (new Room)->rooms('会议'),
+                'rooms'             => (new Room)->rooms('会议'),
                 'educators'         => $educators,
-                'selectedEducators' => collect(
-                    explode(',', $conference ? $conference->educator_ids : null)
-                )
+                'selectedEducators' => $this->educatorIds($conference),
             ];
         }
         

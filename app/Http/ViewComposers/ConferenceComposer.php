@@ -1,22 +1,23 @@
 <?php
 namespace App\Http\ViewComposers;
 
+use App\Models\Conference;
 use Illuminate\Contracts\View\View;
 
 /**
- * Class ProcedureTypeComposer
+ * Class ConferenceComposer
  * @package App\Http\ViewComposers
  */
-class ProcedureTypeComposer {
+class ConferenceComposer {
     
     /**
      * @param View $view
      */
     public function compose(View $view) {
-    
-        $view->with([
-            'titles' => ['#', '名称', '备注', '创建于', '更新于', '状态 . 操作'],
-        ]);
+        
+        $view->with(
+            (new Conference)->compose()
+        );
         
     }
     

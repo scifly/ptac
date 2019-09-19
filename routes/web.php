@@ -128,7 +128,12 @@ $routes = [
         'destroy' => ['{id?}' => 'delete'],
     ],
     'flow'            => $default,
-    'flow_type'       => $default,
+    'flow_type'       => array_merge(
+        $default, [
+            'create' => ['post'],
+            'edit' => ['{id}' => 'post']
+        ]
+    ),
     'grade'           => $default,
     'group'           => [
         'index'   => ['get'],
@@ -139,6 +144,7 @@ $routes = [
         'store'   => ['post'],
     ],
     'icon'            => $default,
+    'indicator'       => $default,
     'init'            => [
         'index' => ['get', 'post'],
     ],

@@ -333,21 +333,21 @@ class SyncController extends Controller {
      */
     private function groupId() {
         
-        $department = new Department;
-        list($cGId, $sGId) = array_map(
+        $dept = new Department;
+        [$cGId, $sGId] = array_map(
             function ($name) {
                 return Group::whereName($name)->first()->id;
             }, ['企业', '学校']
         );
-        $departmentIds = explode(',', $this->event->{'Department'});
-        foreach ($this->schoolDepartmentIds as $schoolDepartmentId) {
-            $schoolDepartmentIds = array_merge(
-                [$schoolDepartmentId],
-                $department->subIds($schoolDepartmentId)
+        $deptIds = explode(',', $this->event->{'Department'});
+        foreach ($this->schoolDepartmentIds as $schoolDeptId) {
+            $schoolDeptIds = array_merge(
+                [$schoolDeptId],
+                $dept->subIds($schoolDeptId)
             );
-            $diffs = array_diff($departmentIds, $schoolDepartmentIds);
+            $diffs = array_diff($deptIds, $schoolDeptIds);
             if (empty($diffs)) {
-                return in_array($schoolDepartmentId, $departmentIds) ? $sGId
+                return in_array($schoolDeptId, $deptIds) ? $sGId
                     : Group::where([
                         'name' => '教职员工', 'school_id' => $this->school()->id,
                     ])->first()->id;
@@ -365,11 +365,11 @@ class SyncController extends Controller {
      */
     private function school() {
         
-        $schoolDepartmentId = (new Department)->departmentId(
+        $deptId = (new Department)->deptId(
             head((array)$this->event->{'Department'})
         );
         
-        return School::whereDepartmentId($schoolDepartmentId)->first();
+        return School::whereDepartmentId($deptId)->first();
         
     }
     

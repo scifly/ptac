@@ -1,6 +1,6 @@
 {!! Form::open([
     'method' => 'post',
-    'id' => 'formProcedure',
+    'id' => 'formFlowType',
     'data-parsley-validate' => 'true'
 ]) !!}
 @include('flow_type.create_edit')

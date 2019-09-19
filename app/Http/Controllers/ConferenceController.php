@@ -91,6 +91,7 @@ class ConferenceController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function update(ConferenceRequest $request, $id) {
         

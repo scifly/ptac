@@ -1,0 +1,1 @@
+page.create('formPrize', 'prizes');

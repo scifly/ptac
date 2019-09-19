@@ -22,8 +22,8 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read Poll $poll
- * @property-read Collection|PollReply[] $pollReplies
- * @property-read int|null $poll_replies_count
+ * @property-read Collection|PollReply[] $replies
+ * @property-read int|null $replies_count
  * @method static Builder|PollTopic newModelQuery()
  * @method static Builder|PollTopic newQuery()
  * @method static Builder|PollTopic query()
@@ -36,8 +36,6 @@ use Throwable;
  * @method static Builder|PollTopic whereTopic($value)
  * @method static Builder|PollTopic whereUpdatedAt($value)
  * @mixin Eloquent
- * @property-read Collection|PollReply[] $replies
- * @property-read int|null $replies_count
  */
 class PollTopic extends Model {
     

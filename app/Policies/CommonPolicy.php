@@ -42,27 +42,21 @@ class CommonPolicy {
             __('messages.not_found')
         );
         $role = $user->role();
-        if ($role == '运营') { return true; }
+        if ($role == '运营') return true;
         $isSuperRole = in_array($role, Constant::SUPER_ROLES);
         $action = explode('/', Request::path())[1];
-        switch ($action) {
-            case 'index':
-            case 'create':
-            case 'store':
-            case 'issue':
-                return $isSuperRole ? true : $this->action($user);
-            case 'show':
-            case 'edit':
-            case 'update':
-            case 'delete':
-                $isModelAllowed = in_array($model->{'school_id'}, $this->schoolIds());
-                if (isset($model->{'user_id'}) && !$isSuperRole) {
-                    $isModelAllowed = $isModelAllowed && ($model->{'user_id'} == Auth::id());
-                }
-                return $isSuperRole ? $isModelAllowed : ($isModelAllowed && $this->action($user));
-            default:
-                return false;
+        if (in_array($action, ['index', 'create', 'store', 'issue'])) {
+            return $isSuperRole ? true : $this->action($user);
+        } elseif (in_array($action, ['show', 'edit', 'update', 'delete'])) {
+            $accessible = in_array($model->{'school_id'}, $this->schoolIds());
+            if (isset($model->{'user_id'}) && !$isSuperRole) {
+                $accessible &= ($model->{'user_id'} == Auth::id());
+            }
+            
+            return $isSuperRole ? $accessible : ($accessible && $this->action($user));
         }
+        
+        return false;
         
     }
     

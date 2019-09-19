@@ -5,9 +5,12 @@ use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Eloquent;
 use Exception;
+use Form;
+use Html;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\{DB, Request};
+use Illuminate\Support\HtmlString;
 use Throwable;
 
 /**
@@ -134,6 +137,65 @@ class FlowType extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * @param array $step
+     * @return string
+     */
+    function step($step = []) {
+        
+        $name = Form::text('steps[][name]', $step['name'] ?? null, [
+            'class' => 'form-control', 'required' => 'true'
+        ]);
+        $ids = Form::select(
+            'steps[][ids]',
+            $step['items'] ?? [],
+            $step['ids'] ?? [],
+            [
+                'multiple' => 'multiple',
+                'class' => 'form-control',
+                'style' => 'width: 100%;',
+                'required' => 'true',
+            ]
+        );
+        $btn = Form::button(
+            Html::tag('i', '', ['class' => 'fa fa-minus text-blue']),
+            ['class' => 'btn btn-box-tool remove-step', 'title' => '移除']
+        );
+        $tds = array_map(
+            function (HtmlString $input, $attr) {
+                return Html::tag(
+                    'td', $input,
+                    empty($attr) ? [] : ['class' => $attr]
+                )->toHtml();
+            }, [$name, $ids, $btn], ['', '', 'text-center']
+        );
+        
+        return Html::tag('tr', join($tds))->toHtml();
+        
+    }
+    
+    /** @return array */
+    function compose() {
+        
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            return ['titles' => ['#', '名称', '备注', '创建于', '更新于', '状态 . 操作']];
+        } else {
+            if ($flowType = $this->find(Request::route('id'))) {
+                $steps = '';
+                foreach (json_decode($flowType->steps, true) as $step) {
+                    $step['items'] = Educator::with('user')
+                        ->whereIn('id', $step['ids'])->get()
+                        ->pluck('user.realname', 'id')->toArray();
+                    $steps .= $this->step($step);
+                }
+            }
+            
+            return ['steps' => $steps ?? $this->step()];
+        }
         
     }
     

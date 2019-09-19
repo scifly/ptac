@@ -1,3 +1,3 @@
-page.index('procedures', [
-    {className: 'text-blue', targets: [1, 2, 4, 5]}
+page.index('flow_types', [
+    {className: 'text-center', targets: [1, 3, 4]}
 ]);

@@ -449,21 +449,21 @@ class User extends Authenticatable {
      * 同步企业微信会员
      *
      * @param array $contacts
-     * @param null $id - 接收广播的用户id
+     * @param null $userId
      * @return bool
      */
-    function sync(array $contacts, $id = null) {
+    function sync(array $contacts, $userId = null) {
         
         foreach ($contacts as $contact) {
-            [$userId, $role, $method] = $contact;
+            [$id, $role, $method] = $contact;
             if ($role == '学生') continue;
-            $user = $this->find($userId);
+            $user = $this->find($id);
             $attrs = json_decode($user->ent_attrs, true);
             $params = [
                 'userid'   => $attrs['userid'],
                 'username' => $user->username,
                 'position' => $attrs['position'] ?? $role,
-                'corpIds'  => $this->corpIds($userId),
+                'corpIds'  => $this->corpIds($id),
             ];
             if ($method != 'delete') {
                 $departments = in_array($role, ['运营', '企业']) ? [1]
@@ -485,7 +485,7 @@ class User extends Authenticatable {
             }
             $members[] = [$params, $method];
         }
-        SyncMember::dispatch($members ?? [], $id ?? Auth::id());
+        SyncMember::dispatch($members ?? [], $userId ?? Auth::id());
         
         return true;
         
@@ -551,8 +551,8 @@ class User extends Authenticatable {
                     # 同步企业微信会员
                     $this->sync(
                         array_map(
-                            function ($userId) {
-                                return [$userId, $this->role($userId), 'update'];
+                            function ($id) {
+                                return [$id, $this->role($id), 'update'];
                             }, $ids
                         )
                     );

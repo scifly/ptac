@@ -37,13 +37,9 @@ class FlowTypeController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->flowType->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->flowType->index())
+            : $this->output();
         
     }
     
@@ -55,7 +51,9 @@ class FlowTypeController extends Controller {
      */
     public function create() {
         
-        return $this->output();
+        return Request::method() == 'POST'
+            ? $this->flowType->step()
+            : $this->output();
         
     }
     
@@ -84,9 +82,11 @@ class FlowTypeController extends Controller {
      */
     public function edit($id) {
         
-        return $this->output([
-            'flowType' => $this->flowType->find($id),
-        ]);
+        return Request::method() == 'POST'
+            ? $this->flowType->step()
+            : $this->output([
+                'flowType' => $this->flowType->find($id),
+            ]);
         
     }
     
@@ -114,7 +114,7 @@ class FlowTypeController extends Controller {
      * @return JsonResponse
      * @throws Throwable
      */
-    public function destroy($id) {
+    public function destroy($id = null) {
         
         return $this->result(
             $this->flowType->remove($id)

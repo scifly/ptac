@@ -1123,31 +1123,7 @@ class Message extends Model {
         $app = $message->app;
         $platform = $app->category;
         $content = json_decode($message->content, true);
-        # 获取发送对象的user_id
-        # 部门、标签类对象都需要转换成用户类对象
-        [$toparty, $touser, $totag] = array_map(
-            function ($field) use ($content) {
-                $to = $content[$field];
-                
-                return empty($to) ? [] : explode('|', $to);
-            }, ['toparty', 'touser', 'totag']
-        );
-        $userIds = collect([])->merge(
-            User::whereIn('ent_attrs->userid', $touser)->pluck('id')->merge(
-                DepartmentUser::whereIn('department_id', $toparty)->pluck('user_id')
-            )
-        );
-        foreach ($totag as $tagId) {
-            $tag = Tag::find($tagId);
-            $userIds = $userIds->merge(
-                $tag->users->pluck('id')
-            );
-            foreach ($tag->depts as $dept) {
-                $userIds = $userIds->merge(
-                    $dept->users->pluck('id')
-                );
-            }
-        }
+        $userIds = $this->targetUserIds($message);
         # 过滤发送对象（用户）
         $senderDeptIds = (new Department)->departmentIds($message->s_user_id);
         $users = User::whereIn('id', $userIds->unique())->get()->filter(
@@ -1205,6 +1181,45 @@ class Message extends Model {
             [$sms, $mobiles],
             [$wx, $targets],
         ];
+        
+    }
+    
+    /**
+     * 返回消息的发送对象用户id
+     *
+     * @param Message $message
+     * @return Collection
+     */
+    function targetUserIds(Message $message) {
+    
+        $content = json_decode($message->content, true);
+        # 获取发送对象的user_id
+        # 部门、标签类对象都需要转换成用户类对象
+        [$toparty, $touser, $totag] = array_map(
+            function ($field) use ($content) {
+                $to = $content[$field];
+            
+                return empty($to) ? [] : explode('|', $to);
+            }, ['toparty', 'touser', 'totag']
+        );
+        $userIds = collect([])->merge(
+            User::whereIn('ent_attrs->userid', $touser)->pluck('id')->merge(
+                DepartmentUser::whereIn('department_id', $toparty)->pluck('user_id')
+            )
+        );
+        foreach ($totag as $tagId) {
+            $tag = Tag::find($tagId);
+            $userIds = $userIds->merge(
+                $tag->users->pluck('id')
+            );
+            foreach ($tag->depts as $dept) {
+                $userIds = $userIds->merge(
+                    $dept->users->pluck('id')
+                );
+            }
+        }
+        
+        return $userIds;
         
     }
     

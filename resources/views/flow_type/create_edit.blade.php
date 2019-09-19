@@ -4,19 +4,12 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($procedure['id']))
-                {{ Form::hidden('id', $procedure['id'], ['id' => 'id']) }}
+            @if (isset($flowType))
+                {!! Form::hidden('id', $flowType['id'], ['id' => 'id']) !!}
             @endif
-            @include('shared.single_select', [
-                'label' => '流程类型',
-                'id' => 'procedure_type_id',
-                'items' => $procedureTypes
-            ])
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-2">
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
+                <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control text-blue',
                         'placeholder' => '(不得超过20个汉字)',
@@ -25,10 +18,29 @@
                     ]) !!}
                 </div>
             </div>
+            <div class="form-group">
+                @include('shared.label', ['field' => 'steps[]', 'label' => '审批步骤'])
+                <div class="col-sm-6">
+                    <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
+                        <thead><tr>
+                            @foreach (['名称', '审批人'] as $title)
+                                <th class="text-center">{!! $title !!}</th>
+                            @endforeach
+                            <th class="text-center">
+                                {!! Form::button(
+                                    Html::tag('i', '', ['class' => 'fa fa-plus text-blue']),
+                                    ['class' => 'btn btn-box-tool add-step', 'title' => '新增']
+                                ) !!}
+                            </th>
+                        </tr></thead>
+                        <tbody>{!! $steps !!}</tbody>
+                    </table>
+                </div>
+            </div>
             @include('shared.remark')
             @include('shared.switch', [
                 'id' => 'enabled',
-                'value' => $procedure['enabled'] ?? null
+                'value' => $flowType['enabled'] ?? null
             ])
         </div>
     </div>

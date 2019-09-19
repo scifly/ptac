@@ -273,11 +273,12 @@ class Educator extends Model {
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
-                list($rUIds, $uUIds) = value(
-                    function () use ($ids) {
+                $user = new User;
+                [$rUIds, $uUIds] = value(
+                    function () use ($ids, $user) {
                         $uIds = $this->whereIn('id', $ids)
                             ->pluck('user_id')->toArray();
-                        $rUIds = User::whereIn('id', $uIds)->get()
+                        $rUIds = $user->whereIn('id', $uIds)->get()
                             ->filter(function (User $user) { return !$user->custodian; })
                             ->pluck('id')->toArray();
                         $uUIds = array_diff($uIds, $rUIds);
@@ -285,7 +286,6 @@ class Educator extends Model {
                         return [$rUIds, $uUIds];
                     }
                 );
-                $user = new User;
                 # 更新同时也是监护人的用户
                 if (!empty($uUIds)) {
                     # 删除部门绑定关系
@@ -294,7 +294,8 @@ class Educator extends Model {
                         ['enabled', '=', 1],
                     ])->delete();
                     Request::replace(['ids' => $uUIds]);
-                    $user->modify(['group_id' => Group::whereName('监护人')->first()->id]);
+                    $cGId = Group::whereName('监护人')->first()->id;
+                    $user->modify(['group_id' => $cGId]);
                 }
                 # 删除用户
                 if (!empty($rUIds)) {
@@ -303,10 +304,7 @@ class Educator extends Model {
                 }
                 # 删除教职员工
                 Request::replace(['ids' => $ids]);
-                $this->purge([
-                    class_basename($this), 'Participant',
-                    'EducatorAppeal', 'ClassEducator', 'Event',
-                ], 'educator_id');
+                $this->purge(['Educator', 'Participant', 'ClassEducator', 'Evaluate'], 'educator_id');
             });
         } catch (Exception $e) {
             throw $e;
@@ -464,12 +462,12 @@ class Educator extends Model {
         
         if (Request::input('range') == 0) {
             $userIds = $this->userIds(Request::input('id'), 'educator');
-            $educatorIds = User::with('educator')->whereIn('id', $userIds)
-                ->get()->pluck('educator.id')->toArray();
+            $ids = User::with('educator')->whereIn('id', $userIds)
+                ->get()->pluck('educator.id');
         } else {
-            $educatorIds = $this->contactIds('educator');
+            $ids = $this->contactIds('educator');
         }
-        $educators = $this->whereIn('id', $educatorIds)
+        $educators = $this->whereIn('id', $ids)
             ->where('school_id', $this->schoolId())->get();
         ExportEducator::dispatch($educators, self::EXCEL_TITLES, Auth::id());
         

@@ -1,12 +1,8 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\PolicyTrait;
-use App\Models\Poll;
-use App\Models\User;
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, PolicyTrait};
+use App\Models\{Poll, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
@@ -23,9 +19,7 @@ class PollPolicy {
      *
      * @return void
      */
-    public function __construct() {
-        //
-    }
+    public function __construct() { }
     
     /**
      * @param User $user

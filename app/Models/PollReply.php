@@ -16,7 +16,7 @@ use Throwable;
  * @property string $reply 问题答案
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read PollTopic $pollTopic
+ * @property-read PollTopic $topic
  * @property-read User $user
  * @method static Builder|PollReply newModelQuery()
  * @method static Builder|PollReply newQuery()
@@ -28,7 +28,6 @@ use Throwable;
  * @method static Builder|PollReply whereUpdatedAt($value)
  * @method static Builder|PollReply whereUserId($value)
  * @mixin Eloquent
- * @property-read PollTopic $topic
  */
 class PollReply extends Model {
     

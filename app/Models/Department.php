@@ -314,18 +314,18 @@ class Department extends Model {
                 ? $this->rootId(true)
                 : $this->topId();
         }
-        $departments = $this->nodes($rootId);
-        $allowedDepartmentIds = $this->departmentIds($user->id);
+        $depts = $this->nodes($rootId);
+        $allowedIds = $this->departmentIds($user->id);
         $nodes = [];
-        for ($i = 0; $i < sizeof($departments); $i++) {
-            $id = $departments[$i]['id'];
-            $parentId = $i == 0 ? '#' : $departments[$i]['parent_id'];
-            $dt = DepartmentType::find($departments[$i]['department_type_id']);
-            $name = $departments[$i]['name'];
-            $enabled = $departments[$i]['enabled'];
+        for ($i = 0; $i < sizeof($depts); $i++) {
+            $id = $depts[$i]['id'];
+            $parentId = $i == 0 ? '#' : $depts[$i]['parent_id'];
+            $dt = DepartmentType::find($depts[$i]['department_type_id']);
+            $name = $depts[$i]['name'];
+            $enabled = $depts[$i]['enabled'];
             $type = $dt->remark;
             if (!in_array($type, ['root', 'company', 'corp'])) {
-                $synced = $departments[$i]['synced'];
+                $synced = $depts[$i]['synced'];
                 $title = $synced ? '已同步' : '未同步';
                 $syncMark = Html::tag('span', '*', [
                     'class' => 'text-' . ($synced ? 'green' : 'red')
@@ -335,7 +335,7 @@ class Department extends Model {
                 'class' => $enabled ? $dt->color : 'text-gray',
                 'title' => $title ?? ''
             ])->toHtml() . ($syncMark ?? '');
-            $selectable = $isSuperRole ? 1 : (in_array($id, $allowedDepartmentIds) ? 1 : 0);
+            $selectable = $isSuperRole ? 1 : (in_array($id, $allowedIds) ? 1 : 0);
             $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
             $nodes[] = [
                 'id'         => $id,
@@ -361,8 +361,8 @@ class Department extends Model {
      */
     function level($id, &$level) {
         
-        if (!($department = $this->find($id))) return null;
-        if ($parent = $department->parent) {
+        if (!($dept = $this->find($id))) return null;
+        if ($parent = $dept->parent) {
             $level += 1;
             $this->level($parent->id, $level);
         }
@@ -379,18 +379,16 @@ class Department extends Model {
      */
     function corpId($id) {
         
-        $department = $this->find($id);
-        $dtName = $department->dType->name;
-        if (in_array($dtName, ['运营', '部门'])) {
+        $dept = $this->find($id);
+        $dType = $dept->dType->name;
+        if (in_array($dType, ['运营', '部门'])) {
             return null;
-        } elseif ($dtName == '企业') {
+        } elseif ($dType == '企业') {
             return Corp::whereDepartmentId($id)->first()->id;
         }
-        if (!$parent = $department->parent) return null;
+        if (!$parent = $dept->parent) return null;
         while ($parent->dType->name != '企业') {
-            $id = $parent->id;
-            
-            return $this->corpId($id);
+            return $this->corpId($parent->id);
         }
         
         return Corp::whereDepartmentId($parent->id)->first()->id;
@@ -400,13 +398,13 @@ class Department extends Model {
     /**
      * 判断指定部门是否需要同步到企业微信
      *
-     * @param Department|null $department
+     * @param Department|null $dept
      * @return bool
      */
-    function needSync(Department $department = null) {
+    function needSync(Department $dept = null) {
         
-        return !$department ? false : !in_array(
-            $department->dType->name, ['根', '运营', '企业']
+        return !$dept ? false : !in_array(
+            $dept->dType->name, ['根', '运营', '企业']
         );
         
     }
@@ -439,12 +437,12 @@ class Department extends Model {
         
         $leaves = [];
         $leafPath = [];
-        $departments = $this->nodes();
-        /** @var Department $department */
-        foreach ($departments as $department) {
-            if (empty($department->children->count())) {
-                $path = self::leafPath($department->id, $leafPath);
-                $leaves[$department->id] = $path;
+        $depts = $this->nodes();
+        /** @var Department $dept */
+        foreach ($depts as $dept) {
+            if (empty($dept->children->count())) {
+                $path = self::leafPath($dept->id, $leafPath);
+                $leaves[$dept->id] = $path;
                 $leafPath = [];
             }
         }
@@ -463,10 +461,10 @@ class Department extends Model {
     function leafPath($id, array &$path) {
         
         $this->truncate();
-        if (!($department = $this->find($id))) return '';
-        $path[] = $department->name;
-        !isset($department->parent_id) ?: $this->leafPath(
-            $department->parent_id, $path
+        if (!($dept = $this->find($id))) return '';
+        $path[] = $dept->name;
+        !isset($dept->parent_id) ?: $this->leafPath(
+            $dept->parent_id, $path
         );
         krsort($path);
         
@@ -556,18 +554,14 @@ class Department extends Model {
      * @param string $type
      * @return int|mixed
      */
-    function departmentId($id, $type = '学校') {
+    function deptId($id, $type = '学校') {
         
-        $department = $this->find($id);
-        if (!$department) return null;
-        $dtName = $department->dType->name;
-        while ($dtName != $type) {
-            $department = $department->parent;
-            if (!$department) return null;
-            $dtName = $department->dType->name;
+        if (!$dept = $this->find($id)) return null;
+        while ($dept->dType->name != $type) {
+            if (!$dept = $dept->parent) return null;
         }
         
-        return $department->id;
+        return $dept->id;
         
     }
     
@@ -578,14 +572,11 @@ class Department extends Model {
      */
     function compose() {
     
-        $action = explode('/', Request::path())[1];
-        if ($action == 'index') {
-            return [];
-        } else {
-            return (new Tag)->compose(
+        return explode('/', Request::path())[1] == 'index'
+            ? []
+            : (new Tag)->compose(
                 'department', $this->find(Request::route('id'))
             );
-        }
         
     }
     
@@ -598,14 +589,14 @@ class Department extends Model {
     private function parentIds($id): array {
         
         static $ids = [];
-        $d = $this->find($id);
-        $p = $d->parent;
-        while ($p->dType->name != '学校') {
-            $ids[] = $p->id;
+        $dept = $this->find($id);
+        $parent = $dept->parent;
+        while ($parent->dType->name != '学校') {
+            $ids[] = $parent->id;
             
-            return $this->parentIds($p->id);
+            return $this->parentIds($parent->id);
         }
-        $ids[] = $p->id;
+        $ids[] = $parent->id;
         
         return $ids;
         
@@ -622,14 +613,14 @@ class Department extends Model {
         if (!isset($rootId)) {
             $nodes = $this->orderBy('order')->get();
         } else {
-            $departmentIds = array_merge(
+            $ids = array_merge(
                 [$rootId],
                 array_intersect(
                     $this->departmentIds(Auth::id()),
                     $this->subIds($rootId)
                 )
             );
-            $nodes = $this->orderBy('order')->whereIn('id', $departmentIds)->get();
+            $nodes = $this->orderBy('order')->whereIn('id', $ids)->get();
         }
         
         return $nodes;

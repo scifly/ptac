@@ -23,6 +23,8 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read School $school
+ * @property-read Collection|Evaluate[] $evals
+ * @property-read int|null $evals_count
  * @method static Builder|Semester whereCreatedAt($value)
  * @method static Builder|Semester whereEnabled($value)
  * @method static Builder|Semester whereEndDate($value)
@@ -36,8 +38,6 @@ use Throwable;
  * @method static Builder|Semester newQuery()
  * @method static Builder|Semester query()
  * @mixin Eloquent
- * @property-read Collection|Evaluate[] $evals
- * @property-read int|null $evals_count
  */
 class Semester extends Model {
     
@@ -101,10 +101,23 @@ class Semester extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Throwable
      */
     function modify(array $data, $id) {
         
-        return $this->find($id)->update($data);
+        try {
+            DB::transaction(function () use ($data, $id) {
+                throw_if(
+                    !$semester = $this->find($id),
+                    new Exception(__('messages.not_found'))
+                );
+                $semester->update($data);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     
@@ -121,7 +134,7 @@ class Semester extends Model {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
                 Request::replace(['ids' => $ids]);
-                $this->purge(['Semester'], 'id');
+                $this->purge(['Semester', 'Evaluate'], 'semester_id');
             });
         } catch (Exception $e) {
             throw $e;

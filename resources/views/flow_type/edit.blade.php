@@ -1,6 +1,6 @@
-{!! Form::model($procedure, [
+{!! Form::model($flowType, [
     'method' => 'put',
-    'id' => 'formProcedure',
+    'id' => 'formFlowType',
     'data-parsley-validate' => 'true'
 ]) !!}
 @include('flow_type.create_edit')
