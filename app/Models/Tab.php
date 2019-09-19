@@ -90,7 +90,7 @@ class Tab extends Model {
                 'formatter' => function ($d, $row) {
                     $icon = $this->find($row['id']);
                     
-                    return $this->iconHtml($icon ? $icon->name : 'fa-calendar-check-o text-gray') . $d;
+                    return $this->iconHtml($icon ? $icon->name : 'fa fa-calendar-check-o text-gray') . $d;
                 },
             ],
             ['db' => 'Tab.comment', 'dt' => 2],
@@ -111,7 +111,7 @@ class Tab extends Model {
             [
                 'db'        => 'Action.name as actionname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return !empty($d) ? $this->iconHtml('fa-gears') . $d : '-';
+                    return !empty($d) ? $this->iconHtml('fa fa-gears') . $d : '-';
                 },
             ],
             ['db' => 'Tab.created_at', 'dt' => 5],
