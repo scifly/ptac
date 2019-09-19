@@ -88,9 +88,10 @@ class Tab extends Model {
             [
                 'db'        => 'Tab.name', 'dt' => 1,
                 'formatter' => function ($d, $row) {
-                    $icon = $this->find($row['id']);
+                    $icon = $this->find($row['id'])->icon;
+                    $class = $icon ? $icon->name : 'fa fa-calendar-check-o text-gray';
                     
-                    return $this->iconHtml($icon ? $icon->name : 'fa fa-calendar-check-o text-gray') . $d;
+                    return $this->iconHtml($class) . $d;
                 },
             ],
             ['db' => 'Tab.comment', 'dt' => 2],
