@@ -24,8 +24,7 @@ class ComboTypeController extends Controller {
     function __construct(ComboType $ct) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->ct = $ct;
-        $this->approve($ct);
+        $this->approve($this->ct = $ct);
         
     }
     

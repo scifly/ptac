@@ -4,9 +4,8 @@ namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
-use App\Models\{App, Corp, Menu, User};
+use App\Models\{App, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class AppPolicy
@@ -37,8 +36,7 @@ class AppPolicy {
         if ($role == '运营') {
             return true;
         } elseif ($role == '企业') {
-            return explode('/', Request::path())[1] != 'index'
-                ? $this->corpId() == $app->corp_id : true;
+            return !$app ? true : $app->corp_id == $this->corpId();
         } else {
             return false;
         }

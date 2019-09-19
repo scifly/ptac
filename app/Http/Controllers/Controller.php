@@ -163,11 +163,10 @@ class Controller extends BaseController {
     protected function approve(Model $model, $action = 'operation') {
         
         $this->middleware(function ($request, $next) use ($model, $action) {
-            $args = [get_class($model)];
             /** @var \Illuminate\Http\Request $request */
-            if ($request->route('id')) {
-                $args = [$model->{'find'}($request->route('id')), true];
-            }
+            $args = $request->route('id')
+                ? [$model->{'find'}($request->route('id')), true]
+                : [get_class($model)];
             $this->authorize($action, $args);
             
             return $next($request);
