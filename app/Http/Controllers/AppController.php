@@ -24,8 +24,7 @@ class AppController extends Controller {
     function __construct(App $app) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->app = $app;
-        $this->approve($app);
+        $this->approve($this->app = $app);
         
     }
     

@@ -164,10 +164,14 @@ class Controller extends BaseController {
         
         $this->middleware(function ($request, $next) use ($model, $action) {
             /** @var \Illuminate\Http\Request $request */
-            $args = $request->route('id')
-                ? [$model->{'find'}($request->route('id')), true]
-                : [get_class($model)];
-            $this->authorize($action, $args);
+            if ($id = $request->route('id')) {
+                abort_if(
+                    !$object = $model->{'find'}($id),
+                    HttpStatusCode::NOT_FOUND,
+                    __('messages.not_found')
+                );
+            }
+            $this->authorize($action, [$object ?? get_class($model)]);
             
             return $next($request);
         });

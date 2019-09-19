@@ -1,8 +1,6 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\HttpStatusCode;
-use App\Models\Action;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -25,17 +23,9 @@ class ActionPolicy {
      * 权限判断
      *
      * @param User $user
-     * @param Action|null $action
-     * @param bool $abort
      * @return bool
      */
-    function operation(User $user, Action $action = null, $abort = false) {
-        
-        abort_if(
-            $abort && !$action,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
+    function operation(User $user) {
         
         return $user->role() == '运营';
         

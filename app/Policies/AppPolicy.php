@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Models\{App, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -22,16 +21,10 @@ class AppPolicy {
      *
      * @param User $user
      * @param App $app
-     * @param bool $abort
      * @return bool
      */
-    function operation(User $user, App $app = null, $abort = false) {
+    function operation(User $user, App $app = null) {
     
-        abort_if(
-            $abort && !$app,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
         $role = $user->role();
         if ($role == '运营') {
             return true;
