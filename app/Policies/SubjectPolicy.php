@@ -6,6 +6,7 @@ use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
 use App\Models\Subject;
 use App\Models\User;
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
@@ -33,6 +34,7 @@ class SubjectPolicy {
      * @param Subject|null $subject
      * @param bool $abort
      * @return bool
+     * @throws Exception
      */
     function operation(User $user, Subject $subject = null, $abort = false) {
         

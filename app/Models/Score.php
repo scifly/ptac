@@ -13,7 +13,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use Illuminate\View\View;
 use PhpOffice\PhpSpreadsheet\Exception as PssException;
-use PhpOffice\PhpSpreadsheet\Writer\Exception as PsswException;
 use ReflectionException;
 use Throwable;
 
@@ -81,6 +80,7 @@ class Score extends Model {
      * 分数记录列表
      *
      * @return array
+     * @throws Exception
      */
     function index() {
         
@@ -418,8 +418,7 @@ class Score extends Model {
      * 导出成绩
      *
      * @return mixed
-     * @throws PssException
-     * @throws PsswException
+     * @throws Exception
      */
     function export() {
         
@@ -555,6 +554,7 @@ class Score extends Model {
      * 返回指定班级、考试的成绩分析数据
      *
      * @return Factory|View|string
+     * @throws Exception
      */
     function analyze() {
         
@@ -641,8 +641,7 @@ class Score extends Model {
      * 返回composer所需的view数据
      *
      * @return array|false
-     * @throws PssException
-     * @throws PsswException
+     * @throws Exception
      */
     function compose() {
     
@@ -765,8 +764,7 @@ class Score extends Model {
      * @param $examId
      * @param $classId
      * @return bool
-     * @throws PssException
-     * @throws PsswException
+     * @throws Exception
      */
     function template($examId, $classId = null) {
         
@@ -799,6 +797,7 @@ class Score extends Model {
      * 返回指定考试/班级对应的班级/学生列表html
      *
      * @return JsonResponse
+     * @throws Exception
      */
     function lists() {
         
@@ -818,6 +817,7 @@ class Score extends Model {
      *
      * @param $examId
      * @return array
+     * @throws Exception
      */
     function ssList($examId) {
         
@@ -1222,6 +1222,7 @@ class Score extends Model {
      *
      * @return mixed
      * @throws ReflectionException
+     * @throws Exception
      */
     private function studentStat() {
         

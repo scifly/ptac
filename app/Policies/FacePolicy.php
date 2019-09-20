@@ -3,6 +3,7 @@ namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{Face, User};
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**
@@ -19,6 +20,7 @@ class FacePolicy {
      * @param User $user
      * @param Face|null $face
      * @return bool
+     * @throws Exception
      */
     function operation(User $user, Face $face = null) {
     

@@ -50,6 +50,7 @@ class Card extends Model {
      * 一卡通列表
      *
      * @return array
+     * @throws Exception
      */
     function index() {
         
@@ -472,6 +473,7 @@ class Card extends Model {
      *
      * @param $type
      * @return array
+     * @throws Exception
      */
     function compose($type) {
         

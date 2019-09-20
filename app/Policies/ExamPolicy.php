@@ -3,6 +3,7 @@ namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{Exam, ExamType, Subject, User};
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**
@@ -19,6 +20,7 @@ class ExamPolicy {
      * @param User $user
      * @param Exam|null $exam
      * @return bool
+     * @throws Exception
      */
     function operation(User $user, Exam $exam = null) {
 
@@ -31,7 +33,8 @@ class ExamPolicy {
             $schoolId = $this->schoolId();
             $perm = Subject::whereSchoolId($schoolId)->pluck('id')->has($subjectIds)
                 && collect($this->classIds())->has($classIds)
-                && ExamType::whereSchoolId($schoolId)->pluck('id')->has($examTypeId);
+                && ExamType::whereSchoolId($schoolId)->pluck('id')->has($examTypeId)
+                && (!$exam ? true : $exam->examType->school_id == $schoolId);
         }
         
         return $this->action($user) && ($perm ?? true);

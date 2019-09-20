@@ -122,6 +122,7 @@ class Student extends Model {
      * 学生列表
      *
      * @return array
+     * @throws Exception
      */
     function index() {
         
@@ -500,6 +501,7 @@ class Student extends Model {
      * 获取指定年级对应的班级列表
      *
      * @return JsonResponse
+     * @throws Exception
      */
     function classList() {
         
@@ -548,6 +550,7 @@ class Student extends Model {
      * 返回create/edit view所需数据
      *
      * @return array
+     * @throws Exception
      */
     function compose() {
         
@@ -708,6 +711,7 @@ class Student extends Model {
      * 返回对当前登录用户可见的年级与班级列表
      *
      * @return array
+     * @throws Exception
      */
     private function gcList() {
         

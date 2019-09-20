@@ -3,6 +3,7 @@ namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{Card, User};
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 /**
  * Class CardPolicy
@@ -16,6 +17,7 @@ class CardPolicy {
      * @param User $user
      * @param Card|null $card
      * @return bool
+     * @throws Exception
      */
     function operation(User $user, Card $card = null) {
         

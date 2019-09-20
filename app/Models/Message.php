@@ -763,6 +763,7 @@ class Message extends Model {
      *
      * @param null $uri
      * @return array
+     * @throws Exception
      */
     function compose($uri = null) {
         
@@ -1117,6 +1118,7 @@ class Message extends Model {
      *
      * @param Message $message
      * @return array
+     * @throws Exception
      */
     function targets(Message $message) {
         
@@ -1229,6 +1231,7 @@ class Message extends Model {
      * @param $users
      * @param $targetIds
      * @return string
+     * @throws Exception
      */
     function targetsHtml($users, &$targetIds) {
         

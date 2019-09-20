@@ -70,6 +70,7 @@ class Exam extends Model {
      * 考试列表
      *
      * @return array
+     * @throws Exception
      */
     function index() {
         
@@ -163,7 +164,9 @@ class Exam extends Model {
         
     }
     
-    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /** Helper functions --------------------------------------------------------------------------------------------
+     * @throws Exception
+     */
     function compose() {
         
         $action = explode('/', Request::path())[1];
@@ -274,6 +277,7 @@ class Exam extends Model {
      * 获取指定教职员工所在班级的所有考试及分数
      *
      * @return array|bool
+     * @throws Exception
      */
     function examsByEducator() {
         

@@ -3,6 +3,7 @@ namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{Score, Subject, User};
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use ReflectionException;
 
@@ -19,6 +20,7 @@ class ScorePolicy {
      * @param Score|null $score
      * @return bool
      * @throws ReflectionException
+     * @throws Exception
      */
     function operation(User $user, Score $score = null) {
 

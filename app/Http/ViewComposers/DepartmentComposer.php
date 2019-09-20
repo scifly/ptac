@@ -2,6 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\Department;
+use Exception;
 use Illuminate\Contracts\View\View;
 
 /**
@@ -12,6 +13,7 @@ class DepartmentComposer {
     
     /**
      * @param View $view
+     * @throws Exception
      */
     public function compose(View $view) {
         

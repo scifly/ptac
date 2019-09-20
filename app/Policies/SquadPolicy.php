@@ -3,6 +3,7 @@ namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{Squad, User};
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 use ReflectionException;
@@ -20,6 +21,8 @@ class SquadPolicy {
      * @param Squad|null $class
      * @return bool
      * @throws ReflectionException
+     * @throws Exception
+     * @throws Exception
      */
     public function operation(User $user, Squad $class = null) {
         

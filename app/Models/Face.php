@@ -5,6 +5,7 @@ use App\Facades\Datatable;
 use App\Helpers\{Constant, ModelTrait};
 use App\Jobs\FaceConfig;
 use Eloquent;
+use Exception;
 use Form;
 use Html;
 use Illuminate\Database\Eloquent\{Builder,
@@ -60,6 +61,7 @@ class Face extends Model {
      * 人脸数据列表
      *
      * @return array
+     * @throws Exception
      */
     function index() {
         

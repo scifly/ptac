@@ -240,6 +240,7 @@ class Subject extends Model {
     
     /**
      * @return array
+     * @throws Exception
      */
     function compose() {
     

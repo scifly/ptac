@@ -80,6 +80,7 @@ class Grade extends Model {
      * 年级列表
      *
      * @return array
+     * @throws Exception
      */
     function index() {
         
@@ -236,6 +237,7 @@ class Grade extends Model {
      * 返回view所需数据
      *
      * @return array
+     * @throws Exception
      */
     function compose() {
         
@@ -263,6 +265,7 @@ class Grade extends Model {
      *
      * @param $id
      * @return array
+     * @throws Exception
      */
     function classList($id) {
         

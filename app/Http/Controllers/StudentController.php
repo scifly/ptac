@@ -150,6 +150,7 @@ class StudentController extends Controller {
      *
      * @return JsonResponse|mixed
      * @throws ReflectionException
+     * @throws Exception
      */
     public function export() {
         

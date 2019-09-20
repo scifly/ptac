@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\User;
+use Exception;
 use Illuminate\Contracts\View\View;
 
 /**
@@ -27,6 +28,7 @@ class OperatorComposer {
     
     /**
      * @param View $view
+     * @throws Exception
      */
     public function compose(View $view) {
     

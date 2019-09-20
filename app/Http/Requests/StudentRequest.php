@@ -3,8 +3,8 @@ namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
 use App\Rules\{Email, Mobile};
+use Exception;
 use Illuminate\Foundation\Http\FormRequest;
-use ReflectionException;
 
 /**
  * Class StudentRequest
@@ -53,7 +53,7 @@ class StudentRequest extends FormRequest {
     }
     
     /**
-     * @throws ReflectionException
+     * @throws Exception
      */
     protected function prepareForValidation() {
         

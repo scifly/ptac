@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Message;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -29,6 +30,7 @@ class MessageCenterComposer {
     
     /**
      * @param View $view
+     * @throws Exception
      */
     public function compose(View $view) {
     

@@ -2,8 +2,8 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\Score;
+use Exception;
 use Illuminate\Contracts\View\View;
-use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
 /**
  * Class ScoreComposer
@@ -14,7 +14,6 @@ class ScoreComposer {
     /**
      * @param View $view
      * @throws Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
     public function compose(View $view) {
     

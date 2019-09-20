@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Wechat;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\Score;
+use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -73,6 +74,7 @@ class ScoreCenterController extends Controller {
      * 成绩分析（教师端）
      *
      * @return string
+     * @throws Exception
      */
     public function analyze() {
         

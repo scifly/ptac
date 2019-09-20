@@ -3,6 +3,7 @@ namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{Department, User};
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**
@@ -19,6 +20,7 @@ class DepartmentPolicy {
      * @param User $user
      * @param Department $dept
      * @return bool
+     * @throws Exception
      */
     function operation(User $user, Department $dept = null) {
         

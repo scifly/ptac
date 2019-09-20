@@ -206,6 +206,7 @@ class Tag extends Model {
      * @param null $action
      * @param Model|null $model
      * @return array
+     * @throws Exception
      */
     function compose($action = null, Model $model = null) {
         
@@ -252,6 +253,7 @@ class Tag extends Model {
      *
      * @param null $schoolId
      * @return SCollection
+     * @throws Exception
      */
     function list($schoolId = null) {
         

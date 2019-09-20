@@ -17,15 +17,19 @@ use App\Models\{Action,
     Tab,
     User};
 use App\Policies\Route;
-use Illuminate\Support\Carbon;
+use Exception;
 use Form;
 use Html;
 use Illuminate\Database\{Eloquent\Collection, Eloquent\Model, Query\Builder};
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\{Auth, DB, Request, Session, Storage};
 use Illuminate\Validation\Rule;
-use PhpOffice\PhpSpreadsheet\{Exception, IOFactory, Spreadsheet, Writer\Exception as WriterException};
+use PhpOffice\PhpSpreadsheet\Exception as PsException;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\Exception as PsrException;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use ReflectionClass;
 use ReflectionException;
 use Throwable;
@@ -84,9 +88,9 @@ trait ModelTrait {
                                 $records = $model->all()->filter(
                                     function (Model $record) use ($values, $field) {
                                         return !empty(
-                                            array_intersect(
-                                                explode(',', $record->{$field}), $values
-                                            )
+                                        array_intersect(
+                                            explode(',', $record->{$field}), $values
+                                        )
                                         );
                                     }
                                 );
@@ -104,7 +108,7 @@ trait ModelTrait {
                     }, $classes, $fields
                 );
             });
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         
@@ -137,22 +141,26 @@ trait ModelTrait {
      */
     function retain(string $class, $value, array $ids, bool $forward = true) {
         
-        DB::transaction(function () use ($class, $value, $ids, $forward) {
-            $model = $this->model($class);
-            $fields = array_merge($model->getFillable(), ['created_at', 'updated_at']);
-            $field = $fields[$forward ? 0 : 1];
-            $model->where($field, $value)->delete();
-            foreach ($ids as $id) {
-                $records[] = array_combine($fields, [
-                    $forward ? $value : $id,
-                    $forward ? $id : $value,
-                    Constant::ENABLED,
-                    now()->toDateTimeString(),
-                    now()->toDateTimeString(),
-                ]);
-            }
-            $model->insert($records ?? []);
-        });
+        try {
+            DB::transaction(function () use ($class, $value, $ids, $forward) {
+                $model = $this->model($class);
+                $fields = array_merge($model->getFillable(), ['created_at', 'updated_at']);
+                $field = $fields[$forward ? 0 : 1];
+                $model->where($field, $value)->delete();
+                foreach ($ids as $id) {
+                    $records[] = array_combine($fields, [
+                        $forward ? $value : $id,
+                        $forward ? $id : $value,
+                        Constant::ENABLED,
+                        now()->toDateTimeString(),
+                        now()->toDateTimeString(),
+                    ]);
+                }
+                $model->insert($records ?? []);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
         return true;
         
@@ -236,9 +244,11 @@ trait ModelTrait {
             case '运营':
             case '企业':
                 $cMId = $menu->menuId($menuId, '企业');
+                
                 return !$cMId ?: (new Corp)->where('menu_id', $cMId)->first()->id;
             case '学校':
                 $sMId = $menu->menuId($menuId);
+                
                 return School::whereMenuId($sMId)->first()->corp_id;
             default:
                 return School::find($user->educator->school_id)->corp_id;
@@ -292,6 +302,7 @@ trait ModelTrait {
      * @param null $schoolId
      * @param null $userId
      * @return array
+     * @throws Exception
      */
     function gradeIds($schoolId = null, $userId = null) {
         
@@ -311,6 +322,7 @@ trait ModelTrait {
      * @param null $schoolId
      * @param null $userId
      * @return array
+     * @throws Exception
      */
     function classIds($schoolId = null, $userId = null) {
         
@@ -330,6 +342,7 @@ trait ModelTrait {
      * @param null $schoolId
      * @param null $userId
      * @return array
+     * @throws Exception
      */
     function examIds($schoolId = null, $userId = null) {
         
@@ -342,7 +355,7 @@ trait ModelTrait {
             $exams = School::find($schoolId)->exams->filter(
                 function (Exam $exam) use ($classIds) {
                     return !empty(
-                        array_intersect($classIds, explode(',', $exam->class_ids))
+                    array_intersect($classIds, explode(',', $exam->class_ids))
                     );
                 }
             );
@@ -410,30 +423,35 @@ trait ModelTrait {
      *
      * @param $userId
      * @return array
+     * @throws Exception
      */
     function departmentIds($userId = null) {
         
-        $userId = $userId ?? Auth::id();
-        $user = User::find($userId);
-        $role = $user->role($userId);
-        $department = new Department;
-        if (in_array($role, Constant::SUPER_ROLES)) {
-            $dept = $this->schoolId()
-                ? School::find($this->schoolId())->department
-                : $user->depts->first();
-            
-            return array_unique(
-                array_merge(
-                    [$dept->id],
-                    $department->subIds($dept->id)
-                )
-            );
-        }
-        foreach ($user->deptIds() as $deptId) {
-            $deptIds[] = $deptId;
-            $deptIds = array_merge(
-                $department->subIds($deptId), $deptIds
-            );
+        try {
+            $userId = $userId ?? Auth::id();
+            $user = User::find($userId);
+            $role = $user->role($userId);
+            $department = new Department;
+            if (in_array($role, Constant::SUPER_ROLES)) {
+                $dept = $this->schoolId()
+                    ? School::find($this->schoolId())->department
+                    : $user->depts->first();
+                
+                return array_unique(
+                    array_merge(
+                        [$dept->id],
+                        $department->subIds($dept->id)
+                    )
+                );
+            }
+            foreach ($user->deptIds() as $deptId) {
+                $deptIds[] = $deptId;
+                $deptIds = array_merge(
+                    $department->subIds($deptId), $deptIds
+                );
+            }
+        } catch (Exception $e) {
+            throw $e;
         }
         
         return array_unique($deptIds ?? []);
@@ -470,8 +488,8 @@ trait ModelTrait {
      *
      * @param bool $removeTitles
      * @return array
-     * @throws Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws PsException
+     * @throws PsrException
      */
     function uploader($removeTitles = true) {
         
@@ -525,41 +543,44 @@ trait ModelTrait {
      * @param bool $download
      * @return bool
      * @throws Exception
-     * @throws WriterException
      */
     function excel(array $records, $fileName = 'export', $sheetTitle = '导出数据', $download = true) {
         
-        $user = Auth::user();
-        $spreadsheet = new Spreadsheet;
-        $spreadsheet->getProperties()->setCreator($user ? $user->realname : 'ptac')
-            ->setLastModifiedBy($user ? $user->realname : 'ptac')
-            ->setTitle(config('app.name'))
-            ->setSubject(config('app.name'))
-            ->setDescription('-')
-            ->setKeywords('导入导出')
-            ->setCategory($fileName);
-        $spreadsheet->setActiveSheetIndex(0)->setTitle($sheetTitle);
-        $spreadsheet->getActiveSheet()->fromArray($records, null, 'A1');
-        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        if ($download) {
-            // Redirect output to a client’s web browser (Xlsx)
-            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            header('Content-Disposition: attachment;filename=' . '"' . $fileName . '.xlsx"');
-            header('Cache-Control: max-age=0');
-            // If you're serving to IE 9, then the following may be needed
-            header('Cache-Control: max-age=1');
-            // If you're serving to IE over SSL, then the following may be needed
-            header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-            header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
-            header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-            header('Pragma: public'); // HTTP/1.0
+        try {
+            $user = Auth::user();
+            $spreadsheet = new Spreadsheet;
+            $spreadsheet->getProperties()->setCreator($user ? $user->realname : 'ptac')
+                ->setLastModifiedBy($user ? $user->realname : 'ptac')
+                ->setTitle(config('app.name'))
+                ->setSubject(config('app.name'))
+                ->setDescription('-')
+                ->setKeywords('导入导出')
+                ->setCategory($fileName);
+            $spreadsheet->setActiveSheetIndex(0)->setTitle($sheetTitle);
+            $spreadsheet->getActiveSheet()->fromArray($records, null, 'A1');
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+            if ($download) {
+                // Redirect output to a client’s web browser (Xlsx)
+                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                header('Content-Disposition: attachment;filename=' . '"' . $fileName . '.xlsx"');
+                header('Cache-Control: max-age=0');
+                // If you're serving to IE 9, then the following may be needed
+                header('Cache-Control: max-age=1');
+                // If you're serving to IE over SSL, then the following may be needed
+                header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+                header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+                header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+                header('Pragma: public'); // HTTP/1.0
+                
+                return $writer->save('php://output');
+            }
+            $dir = public_path() . '/' . $this->filePath();
+            file_exists($dir) ?: mkdir($dir, 0777, true);
             
-            return $writer->save('php://output');
+            return $writer->save($dir . '/' . $fileName . '.xlsx');
+        } catch (Exception $e) {
+            throw $e;
         }
-        $dir = public_path() . '/' . $this->filePath();
-        file_exists($dir) ?: mkdir($dir, 0777, true);
-        
-        return $writer->save($dir . '/' . $fileName . '.xlsx');
         
     }
     
@@ -585,10 +606,10 @@ trait ModelTrait {
     function htmlSelect($items, $id) {
         
         return Form::select($id, $items, null, [
-            'id' => $id,
-            'class' => 'form-control select2',
-            'style' => 'width: 100%;',
-            'disabled' => sizeof($items) <= 1
+            'id'       => $id,
+            'class'    => 'form-control select2',
+            'style'    => 'width: 100%;',
+            'disabled' => sizeof($items) <= 1,
         ])->toHtml();
         
     }
@@ -604,7 +625,7 @@ trait ModelTrait {
         
         return Form::text(null, null, [
             'class' => 'form-control ' . ($timepicker ? 'dtrange' : 'drange'),
-            'title' => '按' . $title . '过滤'
+            'title' => '按' . $title . '过滤',
         ])->toHtml();
         
     }
@@ -614,9 +635,10 @@ trait ModelTrait {
      *
      * @param null $schoolId
      * @return string
+     * @throws Exception
      */
     function visibleUserIds($schoolId = null) {
-    
+        
         $school = School::find($schoolId ?? $this->schoolId());
         $userIds = DepartmentUser::whereIn('department_id', $this->departmentIds())->pluck('user_id');
         if (!in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
@@ -681,15 +703,14 @@ trait ModelTrait {
      * @param FormRequest $request
      * @param null $role
      * @return array
-     * @throws ReflectionException
+     * @throws Exception
      */
     function contactInput(FormRequest $request, $role) {
         
-        $input = $request->all();
-        $userid = uniqid('ptac_');
-        switch ($role) {
-            case 'student':
-            case 'custodian':
+        try {
+            $input = $request->all();
+            $userid = uniqid('ptac_');
+            if (in_array($role, ['student', 'custodian'])) {
                 Request::route('id') ?: $input['user'] += [
                     'username' => $userid,
                     'password' => '12345678',
@@ -720,9 +741,7 @@ trait ModelTrait {
                     $input['relationships'] = $rses ?? [];
                     $input['departmentIds'] = $departmentIds ?? [];
                 }
-                break;
-            case 'educator':
-            case 'operator':
+            } else {
                 $role == 'educator' ?: $input['user'] = $input;
                 $position = Group::find($input['user']['group_id'])->name;
                 if ($role == 'educator') {
@@ -754,17 +773,17 @@ trait ModelTrait {
                         isset($input['id']) ?: $input += ['singular' => 1];
                     }
                 }
-                break;
-            default:
-                break;
-        }
-        if (!Request::route('id')) {
-            $input['user']['ent_attrs'] = json_encode(
-                ['userid' => $userid, 'position' => $position ?? ''],
-                JSON_UNESCAPED_UNICODE
-            );
-        } else {
-            $input['user']['ent_attrs->position'] = $position ?? '';
+            }
+            if (!Request::route('id')) {
+                $input['user']['ent_attrs'] = json_encode(
+                    ['userid' => $userid, 'position' => $position ?? ''],
+                    JSON_UNESCAPED_UNICODE
+                );
+            } else {
+                $input['user']['ent_attrs->position'] = $position ?? '';
+            }
+        } catch (Exception $e) {
+            throw $e;
         }
         
         return $input;
@@ -800,7 +819,7 @@ trait ModelTrait {
      * @return string
      */
     function badge($class, $content = null) {
-    
+        
         return $content ? Html::tag('span', $content, ['class' => $class])->toHtml() : '-';
         
     }
@@ -820,7 +839,7 @@ trait ModelTrait {
         return Html::tag('i', '', [
             'class' => 'fa fa-circle ' . $color,
             'title' => $title,
-            'style' => 'width: 20px; margin: 0 10px;'
+            'style' => 'width: 20px; margin: 0 10px;',
         ])->toHtml();
         
     }
@@ -832,7 +851,7 @@ trait ModelTrait {
     function avatar($d) {
         
         return Html::image(!empty($d) ? $d : '/img/default.png', '', [
-            'class' => 'img-circle', 'style' => 'height:16px;'
+            'class' => 'img-circle', 'style' => 'height:16px;',
         ])->toHtml();
         
     }
@@ -844,7 +863,7 @@ trait ModelTrait {
     function gender($d) {
         
         return Html::tag('i', '', [
-            'class' => 'fa fa-' . ($d ? 'mars' : 'venus')
+            'class' => 'fa fa-' . ($d ? 'mars' : 'venus'),
         ])->toHtml();
         
     }
@@ -861,7 +880,7 @@ trait ModelTrait {
         $class = $dt ? $dt->icon : $d;
         $icon = Html::tag('i', '', [
             'class' => $class . (!empty($color) ? ' ' . $color : ''),
-            'style' => 'width: 20px; margin: 0 5px;'
+            'style' => 'width: 20px; margin: 0 5px;',
         ])->toHtml();
         $text = $dt ? Html::tag('span', $d, ['class' => $color])->toHtml() : '';
         
@@ -876,13 +895,13 @@ trait ModelTrait {
      * @return string
      */
     function anchor($id, $title, $class) {
-    
+        
         return Html::link(
             '#', Html::tag('i', '', ['class' => 'fa ' . $class]),
             ['id' => $id, 'title' => $title, 'style' => 'margin-left: 15px;'],
             null, false
         )->toHtml();
-    
+        
     }
     
 }

@@ -3,6 +3,7 @@ namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{Grade, User};
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 use ReflectionException;
@@ -22,6 +23,8 @@ class GradePolicy {
      * @param Grade|null $grade
      * @return bool
      * @throws ReflectionException
+     * @throws Exception
+     * @throws Exception
      */
     function operation(User $user, Grade $grade = null) {
     

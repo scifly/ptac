@@ -61,7 +61,7 @@ use Throwable;
  * @method static Builder|Corp whereSmsUsed($value)
  * @method static Builder|Corp whereUpdatedAt($value)
  * @mixin Eloquent
- * @property-read \App\Models\Department $dept
+ * @property-read Department $dept
  */
 class Corp extends Model {
     
@@ -251,9 +251,10 @@ class Corp extends Model {
         
     }
     
-    
-    
-    /** @return array */
+    /**
+     * @return array
+     * @throws Exception
+     */
     function compose() {
         
         switch (explode('/', Request::path())[1]) {

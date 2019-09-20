@@ -481,6 +481,7 @@ class Educator extends Model {
      *
      * @param null $id
      * @return array
+     * @throws Exception
      */
     function compose($id = null) {
         

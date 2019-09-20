@@ -62,6 +62,7 @@ class Custodian extends Model {
      * 监护人记录列表
      *
      * @return array
+     * @throws Exception
      */
     function index() {
         
@@ -411,6 +412,7 @@ class Custodian extends Model {
      * 返回指定年级和班级对应的学生列表
      *
      * @return JsonResponse
+     * @throws Exception
      */
     function csList() {
         
@@ -457,6 +459,7 @@ class Custodian extends Model {
      *
      * @param null $id
      * @return array
+     * @throws Exception
      */
     function compose($id = null) {
         
@@ -583,6 +586,7 @@ class Custodian extends Model {
      * 返回对当前登录用户可见的年级与班级列表
      *
      * @return array
+     * @throws Exception
      */
     private function gcList() {
         

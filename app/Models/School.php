@@ -435,6 +435,7 @@ class School extends Model {
      * 返回composer所需view数据
      *
      * @return array
+     * @throws Exception
      */
     function compose() {
         

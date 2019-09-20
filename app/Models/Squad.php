@@ -89,6 +89,7 @@ class Squad extends Model {
      * 班级列表
      *
      * @return array
+     * @throws Exception
      */
     function index() {
         
@@ -253,6 +254,8 @@ class Squad extends Model {
      *
      * @return array
      * @throws ReflectionException
+     * @throws Exception
+     * @throws Exception
      */
     function compose() {
         
@@ -325,6 +328,7 @@ class Squad extends Model {
      *
      * @param $id
      * @return string
+     * @throws Exception
      */
     function studentList($id) {
         
@@ -349,6 +353,7 @@ class Squad extends Model {
      *
      * @param null $userId
      * @return Collection|Department[]
+     * @throws Exception
      */
     function departments($userId = null) {
         

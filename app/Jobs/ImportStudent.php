@@ -88,6 +88,7 @@ class ImportStudent implements ShouldQueue, MassImport {
      *
      * @param array $data
      * @return array
+     * @throws Exception
      */
     function validate(array $data): array {
         

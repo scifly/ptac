@@ -2,6 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Contracts\View\View;
 
 /**
@@ -24,6 +25,7 @@ class PartnerComposer {
     
     /**
      * @param View $view
+     * @throws Exception
      */
     public function compose(View $view) {
         

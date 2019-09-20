@@ -38,9 +38,9 @@ use Throwable;
  * @method static Builder|ApiMessage whereSent($value)
  * @method static Builder|ApiMessage whereUpdatedAt($value)
  * @mixin Eloquent
- * @property-read \App\Models\MessageType $mType
- * @property-read \App\Models\MessageSendingLog $msgLog
- * @property-read \App\Models\User $sender
+ * @property-read MessageType $mType
+ * @property-read MessageSendingLog $msgLog
+ * @property-read User $sender
  */
 class ApiMessage extends Model {
     

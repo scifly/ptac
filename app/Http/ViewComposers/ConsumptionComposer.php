@@ -5,6 +5,7 @@ use App\Helpers\ModelTrait;
 use App\Models\Grade;
 use App\Models\Squad;
 use App\Models\Student;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 use ReflectionException;
@@ -20,6 +21,7 @@ class ConsumptionComposer {
     /**
      * @param View $view
      * @throws ReflectionException
+     * @throws Exception
      */
     public function compose(View $view) {
     

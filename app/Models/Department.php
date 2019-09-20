@@ -304,6 +304,7 @@ class Department extends Model {
      *
      * @param null $rootId
      * @return array
+     * @throws Exception
      */
     function tree($rootId = null) {
         
@@ -432,6 +433,7 @@ class Department extends Model {
      * 返回所有叶节点部门
      *
      * @return array
+     * @throws Exception
      */
     function leaves() {
         
@@ -477,6 +479,7 @@ class Department extends Model {
      *
      * @param bool $contact - 部门树是否包含部门中的联系人
      * @return array|JsonResponse
+     * @throws Exception
      */
     function contacts($contact = true) {
         
@@ -569,6 +572,7 @@ class Department extends Model {
      * 返回View所需数据
      *
      * @return array
+     * @throws Exception
      */
     function compose() {
     
@@ -607,6 +611,7 @@ class Department extends Model {
      *
      * @param null $rootId
      * @return Collection|static[]
+     * @throws Exception
      */
     private function nodes($rootId = null) {
         
@@ -652,6 +657,7 @@ class Department extends Model {
      * @param $id
      * @param $parentId
      * @return bool
+     * @throws Exception
      */
     private function movable($id, $parentId) {
         

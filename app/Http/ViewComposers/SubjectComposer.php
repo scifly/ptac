@@ -2,6 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\Subject;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
@@ -25,6 +26,7 @@ class SubjectComposer {
     
     /**
      * @param View $view
+     * @throws Exception
      */
     public function compose(View $view) {
     

@@ -3,6 +3,7 @@ namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{DepartmentUser, Educator, Group, User};
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
@@ -18,6 +19,7 @@ class EducatorPolicy {
      * @param User $user
      * @param Educator|null $educator
      * @return bool
+     * @throws Exception
      */
     function operation(User $user, Educator $educator = null) {
         

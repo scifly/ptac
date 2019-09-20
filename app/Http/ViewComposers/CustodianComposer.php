@@ -2,6 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\Custodian;
+use Exception;
 use Illuminate\Contracts\View\View;
 
 /**
@@ -25,6 +26,7 @@ class CustodianComposer {
     /**
      * @param View $view
      * @return void
+     * @throws Exception
      */
     public function compose(View $view) {
         

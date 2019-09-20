@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Tag;
+use Exception;
 use Illuminate\Contracts\View\View;
 
 /**
@@ -15,6 +16,7 @@ class TagComposer {
     
     /**
      * @param View $view
+     * @throws Exception
      */
     public function compose(View $view) {
     
