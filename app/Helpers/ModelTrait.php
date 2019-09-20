@@ -262,7 +262,7 @@ trait ModelTrait {
                 $schools = School::all();
                 break;
             case '企业':
-                $corp = Corp::whereDepartmentId($user->departments->first()->id)->first();
+                $corp = Corp::whereDepartmentId($user->depts->first()->id)->first();
                 $schools = $corp->schools;
                 break;
             case '学生':
@@ -420,7 +420,7 @@ trait ModelTrait {
         if (in_array($role, Constant::SUPER_ROLES)) {
             $dept = $this->schoolId()
                 ? School::find($this->schoolId())->department
-                : $user->departments->first();
+                : $user->depts->first();
             
             return array_unique(
                 array_merge(
@@ -457,7 +457,7 @@ trait ModelTrait {
             $className = 'App\\Models\\' . ($role == '企业' ? 'Corp' : 'School');
             $model = (new ReflectionClass($className))->newInstance();
             $menuIds = (new Menu)->subIds(
-                $model::whereDepartmentId($user->departments->first()->id)->first()->menu_id
+                $model::whereDepartmentId($user->depts->first()->id)->first()->menu_id
             );
         }
         
