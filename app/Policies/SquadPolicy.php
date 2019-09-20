@@ -1,12 +1,8 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\PolicyTrait;
-use App\Models\Squad;
-use App\Models\User;
+use App\Helpers\{ModelTrait, PolicyTrait};
+use App\Models\{Squad, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 use ReflectionException;
@@ -20,76 +16,28 @@ class SquadPolicy {
     use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct() {
-        //
-    }
-    
-    /**
-     * @param User $user
-     * @return bool
-     */
-    public function cs(User $user) {
-        
-        if (in_array($user->role(), Constant::SUPER_ROLES)) {
-            return true;
-        }
-        
-        return $this->action($user);
-        
-    }
-    
-    /**
-     * 权限判断
-     *
      * @param User $user
      * @param Squad|null $class
-     * @param bool $abort
      * @return bool
      * @throws ReflectionException
      */
-    public function operation(User $user, Squad $class = null, $abort = false) {
+    public function operation(User $user, Squad $class = null) {
         
-        abort_if(
-            $abort && !$class,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
+        $perm = true;
+        [$gradeId, $educatorIds] = array_map(
+            function ($field) use ($class) {
+                return Request::input($field)
+                    ?? ($class ? explode(',', $class->{$field}) : null);
+            }, ['grade_id', 'educator_ids']
         );
-        $role = $user->role();
-        if ($role == '运营') { return true; }
-        $isClassAllowed = $isGradeAllowed = $isEducatorAllowed = false;
-        $isSuperRole = in_array($role, Constant::SUPER_ROLES);
-        $action = explode('/', Request::path())[1];
-        if (in_array($action, ['store', 'update'])) {
-            $gradeId = Request::input('grade_id');
-            $educatorIds = Request::input('educator_ids') ?? [];
-            $isGradeAllowed = in_array($gradeId, $this->gradeIds());
-            $isEducatorAllowed = empty(array_diff($educatorIds, $this->contactIds('educator')));
+        if (isset($gradeId, $educatorIds)) {
+            $perm = collect($this->gradeIds())->has($gradeId) &&
+                collect($this->contactIds('educator'))->has($educatorIds);
         }
-        if (in_array($action, ['edit', 'update', 'delete'])) {
-            $isClassAllowed = in_array($class->id, $this->classIds());
-        }
-        switch ($action) {
-            case 'index':
-            case 'create':
-                return $isSuperRole ? true : $this->action($user);
-            case 'store':
-                return $isSuperRole
-                    ? ($isGradeAllowed && $isEducatorAllowed)
-                    : ($isGradeAllowed && $isEducatorAllowed && $this->action($user));
-            case 'edit':
-            case 'delete':
-                return $isSuperRole ? $isClassAllowed : ($isClassAllowed && $this->action($user));
-            case 'update':
-                return $isSuperRole
-                    ? ($isClassAllowed && $isGradeAllowed && $isEducatorAllowed)
-                    : ($isClassAllowed && $isGradeAllowed && $isEducatorAllowed && $this->action($user));
-            default:
-                return false;
-        }
+        $deptId = Request::input('department_id');
+        !$deptId ?: $perm &= collect($this->departmentIds())->has($deptId);
+        
+        return $this->action($user) && $perm;
         
     }
     

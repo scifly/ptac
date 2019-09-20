@@ -13,15 +13,6 @@ class ActionPolicy {
     use HandlesAuthorization;
     
     /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct() { }
-    
-    /**
-     * 权限判断
-     *
      * @param User $user
      * @return bool
      */

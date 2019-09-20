@@ -31,7 +31,7 @@ class ScoreRangeRequest extends FormRequest {
                 $this->input('id') . ',id,' .
                 'school_id,' . $this->input('school_id'),
             'school_id'   => 'required|integer',
-            'subject_ids' => 'required|max:11',
+            'subject_ids' => 'required|max:255',
             'start_score' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
             'end_score'   => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/|greater_than:start_score',
             'enabled'     => 'required|boolean',

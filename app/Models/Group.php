@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasMany};
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -282,9 +283,7 @@ class Group extends Model {
     }
     
     /**
-     * 返回指定学校的角色列表
-     *
-     * @return array
+     * @return SCollection
      */
     function list() {
         

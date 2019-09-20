@@ -22,15 +22,6 @@ class ConsumptionPolicy {
     use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct() {
-        //
-    }
-    
-    /**
      * @param User $user
      * @return bool
      */

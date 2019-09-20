@@ -27,26 +27,24 @@ class ConferenceRequest extends FormRequest {
             'name'         => 'required|string|between:4,120|unique:conferences,name,' .
                 $this->input('id') . ',id,' .
                 'room_id,' . $this->input('room_id') . ',' .
-                'educator_id,' . $this->input('educator_id'),
+                'user_id,' . $this->input('user_id') . ',' .
+                'message_id' . $this->input('message_id'),
+            'user_id'      => 'required|integer',
+            'room_id'      => 'required|integer',
+            'message_id'   => 'required|integer',
+            'url'          => 'required|url',
             'start'        => 'required|datetime',
             'end'          => 'required|datetime',
             'remark'       => 'required|string',
-            'educator_id'      => 'required|integer',
-            'educator_ids' => 'required|string',
-            'room_id'      => 'required|integer',
-            'url'          => 'required|url',
+            'status'       => 'required|integer'
         ];
         
     }
     
     protected function prepareForValidation() {
-        
-        $input = $this->all();
-        if (!isset($input['educator_id'])) {
-            $input['educator_id'] = $this->user()->educator->id;
-        }
-        $this->replace($input);
-        
+    
+    
+    
     }
     
 }

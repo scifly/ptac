@@ -1,10 +1,10 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, PolicyTrait};
-use App\Models\{Evaluate, Poll, User};
+use App\Helpers\{ModelTrait, PolicyTrait};
+use App\Models\{Evaluate, Indicator, Semester, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Request;
+use ReflectionException;
 
 /**
  * Class EvaluatePolicy
@@ -15,40 +15,26 @@ class EvaluatePolicy {
     use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct() { }
-    
-    /**
      * @param User $user
-     * @param Evaluate $evaluate
-     * @param bool $abort
+     * @param Evaluate $eval
      * @return bool
+     * @throws ReflectionException
      */
-    public function operation(User $user, Evaluate $evaluate = null, $abort = false) {
-        
-        abort_if(
-            $abort && !$evaluate,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
+    public function operation(User $user, Evaluate $eval = null) {
+    
+        [$studentId, $indicatorId, $semesterId] = array_map(
+            function ($field) use ($eval) {
+                return $this->field($field, $eval);
+            }, ['student_id', 'indicator_id', 'semester_id']
         );
-        $role = $user->role();
-        if ($role == '运营') return true;
-        $isSchoolAllowed = false;
-        $isSuperRole = in_array($role, Constant::SUPER_ROLES);
-        $action = explode('/', Request::path())[1];
-        if (in_array($action, ['show', 'edit', 'update', 'delete'])) {
-            $isSchoolAllowed = in_array($evaluate->indicator->school_id, $this->schoolIds());
-        }
-        if (in_array($action, ['index', 'create', 'store'])) {
-            return $isSuperRole ? true : $this->action($user);
-        } elseif (in_array($action, ['show', 'edit', 'update', 'delete'])) {
-            return $isSuperRole ? $isSchoolAllowed : $this->action($user) && $isSchoolAllowed;
+        if (isset($studentId, $indicatorId, $semesterId)) {
+            $schoolId = $this->schoolId();
+            $perm = collect($this->contactIds('student'))->has($studentId)
+                && Indicator::whereSchoolId($schoolId)->pluck('id')->has($indicatorId)
+                && Semester::whereSchoolId($schoolId)->pluck('id')->has($semesterId);
         }
         
-        return false;
+        return $this->action($user) && ($perm ?? true);
         
     }
     

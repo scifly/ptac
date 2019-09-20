@@ -1,9 +1,7 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\Action;
-use App\Models\ActionGroup;
-use App\Models\User;
+use App\Models\{Action, ActionGroup, User};
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -18,17 +16,26 @@ trait PolicyTrait {
      */
     function action(User $user) {
     
-        $actionId = Action::whereRoute(
-            trim(Request::route()->uri())
-        )->first()->id;
-        $ag = ActionGroup::where([
-            'group_id' => $user->group_id,
-            'action_id' => $actionId
-        ])->first();
+        if (!in_array($user->role(), Constant::SUPER_ROLES)) {
+            $actionId = Action::whereRoute(trim(Request::route()->uri()))->first()->id;
+            $ag = ActionGroup::where(['group_id'  => $user->group_id, 'action_id' => $actionId])->first();
+            $perm = $ag ? true : false;
+        }
         
-        return $ag ? true : false;
+        return $perm ?? true;
         
     }
-
+    
+    /**
+     * @param $field
+     * @param $model
+     * @return array|string|null
+     */
+    function field($field, $model) {
+        
+        return Request::input($field) ?? ($model ? $model->{$field} : null);
+        
+    }
+    
 }
 

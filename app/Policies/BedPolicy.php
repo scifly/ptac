@@ -1,49 +1,42 @@
 <?php
-
 namespace App\Policies;
 
-use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
-use App\Models\{User, Bed};
+use App\Models\{Bed, School, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
+use ReflectionException;
 
 /**
  * Class BedPolicy
  * @package App\Policies
  */
 class BedPolicy {
-
+    
     use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
-     * Determine whether the user can (e)dit/(u)pdate/sync (m)enu of the app
-     *
      * @param User $user
      * @param Bed|null $bed
-     * @param bool $abort
      * @return bool
+     * @throws ReflectionException
      */
-    function operation(User $user, Bed $bed = null, $abort = false) {
+    function operation(User $user, Bed $bed = null) {
 
-        abort_if(
-            $abort && !$bed,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
+        [$roomId, $studentId] = array_map(
+            function ($field) use ($bed) {
+                return $this->field($field, $bed);
+            }, ['room_id', 'student_id']
         );
-        $role = $user->role();
-        if ($role == '运营') {
-            return true;
-        } elseif (in_array($role, ['企业', '学校'])) {
-            return in_array(
-                $bed->room->building->school_id,
-                $this->schoolIds()
-            );
-        } else {
-            return $this->action($user);
+        if (isset($roomId, $studentId)) {
+            $schoolId = $this->schoolId();
+            $perm = School::find($schoolId)->rooms->pluck('id')->has($roomId)
+                && collect($this->contactIds('student'))->has($studentId)
+                && (!$bed ? true : $bed->room->building->school_id == $schoolId);
         }
-    
-    
+        
+        return $this->action($user) && ($perm ?? true);
+        
     }
-
+    
 }

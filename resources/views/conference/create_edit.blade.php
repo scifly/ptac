@@ -50,6 +50,22 @@
             ])
             <!-- 会议内容 -->
             @include('shared.remark')
+            <!-- 与会者 -->
+            <!-- 按标签选择 -->
+            @include('shared.tag.tags', ['label' => '按标签选择与会者'])
+            <!-- 按部门选择 -->
+            <div class="form-group">
+                @include('shared.label', ['field' => 'targets', 'lable' => '按部门选择与会者'])
+                <div class="col-sm-6">
+                    <div id="checked-nodes"></div>
+                    {!! Form::hidden('selected-node-ids', null, ['id' => 'selected-node-ids']) !!}
+                    {!! Form::button('<i class="fa fa-user-plus text-blue">&nbsp;选择</i>', [
+                        'id' => 'choose',
+                        'class' => 'btn btn-box-tool',
+                        'style' => 'margin-top: 3px;'
+                    ]) !!}
+                </div>
+            </div>
         </div>
     </div>
     @include('shared.form_buttons')

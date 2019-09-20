@@ -23,6 +23,7 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $enabled 状态
  * @property-read RoomFunction $roomFunction
+ * @property-read Corp $corp
  * @method static Builder|RoomType newModelQuery()
  * @method static Builder|RoomType newQuery()
  * @method static Builder|RoomType query()
@@ -44,6 +45,9 @@ class RoomType extends Model {
     
     /** @return BelongsTo */
     function roomFunction() { return $this->belongsTo('App\Models\RoomFunction'); }
+    
+    /** @return BelongsTo */
+    function corp() { return $this->belongsTo('App\Models\Corp'); }
     
     /** @return array */
     function index() {

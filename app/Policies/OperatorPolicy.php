@@ -21,17 +21,6 @@ class OperatorPolicy {
     use HandlesAuthorization, ModelTrait;
     
     /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct() {
-        //
-    }
-    
-    /**
-     * 权限判断
-     *
      * @param User $user
      * @param User|null $operator
      * @param bool $abort

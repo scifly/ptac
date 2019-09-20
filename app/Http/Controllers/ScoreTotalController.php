@@ -24,8 +24,7 @@ class ScoreTotalController extends Controller {
     function __construct(ScoreTotal $st) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->st = $st;
-        $this->approve($st);
+        $this->approve($this->st = $st);
         
     }
     

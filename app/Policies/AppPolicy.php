@@ -2,9 +2,10 @@
 
 namespace App\Policies;
 
-use App\Helpers\ModelTrait;
+use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{App, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Class AppPolicy
@@ -12,28 +13,23 @@ use Illuminate\Auth\Access\HandlesAuthorization;
  */
 class AppPolicy {
 
-    use HandlesAuthorization, ModelTrait;
-    
-    protected $menu;
+    use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
-     * Determine whether the user can (e)dit/(u)pdate/sync (m)enu of the app
-     *
      * @param User $user
      * @param App $app
      * @return bool
      */
     function operation(User $user, App $app = null) {
     
-        $role = $user->role();
-        if ($role == '运营') {
-            return true;
-        } elseif ($role == '企业') {
-            return !$app ? true : $app->corp_id == $this->corpId();
-        } else {
-            return false;
+        $corpId = $this->field('corp_id', $app);
+        if (isset($corpId) && $user->role() == '企业' && $app) {
+            $perm = (Request::input('corp_id') ?? $app->corp_id) == $this->corpId();
         }
-
+        
+        
+        return in_array($user->role(), ['运营', '企业']) && ($perm ?? true);
+        
     }
 
 }

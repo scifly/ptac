@@ -24,11 +24,10 @@ class PollReplyPolicy {
     
     /**
      * @param User $user
-     * @param PollReply|null $poll
-     * @param bool $abort
+     * @param PollReply|null $reply
      * @return bool
      */
-    function operation(User $user, PollReply $poll = null, $abort = false) {
+    function operation(User $user, PollReply $reply = null) {
         
         return true;
         

@@ -2,8 +2,7 @@
 
 namespace App\Policies;
 
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
+use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{Room, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -13,35 +12,23 @@ use Illuminate\Auth\Access\HandlesAuthorization;
  */
 class RoomPolicy {
 
-    use HandlesAuthorization, ModelTrait;
+    use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
      * Determine whether the user can (e)dit/(u)pdate/sync (m)enu of the app
      *
      * @param User $user
      * @param Room|null $room
-     * @param bool $abort
      * @return bool
      */
-    function operation(User $user, Room $room = null, $abort = false) {
+    function operation(User $user, Room $room = null) {
 
-        abort_if(
-            $abort && !$room,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
-        $role = $user->role();
-        if ($role == '运营') {
-            return true;
-        } elseif (in_array($role, ['企业', '学校'])) {
-            return in_array(
-                $room->building->school_id,
-                $this->schoolIds()
-            );
-        } else {
-            return false;
+        if ($room) {
+            $perm = $room->building->school_id == $this->schoolId()
+                && $room->roomType->corp_id == $this->corpId();
         }
-    
+        
+        return $this->action($user) && ($perm ?? true);
     
     }
 
