@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
+use App\Helpers\Constant;
 use App\Models\{Action, Menu, MenuTab, Tab};
 use Exception;
 use Illuminate\Contracts\View\Factory;
@@ -102,7 +102,7 @@ class HomeController extends Controller {
             ];
         }
         abort_if(
-            empty($tabArray ?? []), HttpStatusCode::NOT_FOUND,
+            empty($tabArray ?? []), Constant::NOT_FOUND,
             __('messages.menu.misconfigured')
         );
         # 刷新页面时打开当前卡片, 不一定是第一个卡片

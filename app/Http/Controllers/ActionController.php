@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
+use App\Helpers\Constant;
 use App\Http\Requests\ActionRequest;
 use App\Models\Action;
 use Exception;
@@ -46,7 +46,7 @@ class ActionController extends Controller {
                 $this->action->index()
             );
         }
-        abort_if(!$this->action->scan(), HttpStatusCode::NOT_FOUND);
+        abort_if(!$this->action->scan(), Constant::NOT_FOUND);
         
         return $this->output();
         
@@ -73,6 +73,7 @@ class ActionController extends Controller {
      * @param ActionRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(ActionRequest $request, $id) {
         

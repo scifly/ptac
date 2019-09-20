@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use App\Http\Requests\ConsumptionRequest;
 use Eloquent;
 use Exception;
@@ -46,8 +46,8 @@ class Consumption extends Model {
     
     use ModelTrait;
     
-    const STAT_RANGE = ['student' => 1, 'class'   => 2, 'grade'   => 3];
     const EXPORT_TITLES = ['#', '姓名', '性别', '所属班级', '消费类型', '消费金额', '消费时间', '商品'];
+    
     protected $fillable = [
         'student_id', 'location', 'machineid',
         'ctype', 'amount', 'ctime', 'merchant',
@@ -130,10 +130,9 @@ class Consumption extends Model {
                 foreach ($data as &$datum) {
                     $student = Student::whereSn($datum['sn'])->first();
                     $datum['student_id'] = $student ? $student->id : 0;
-                    abort_if(
+                    throw_if(
                         !Validator::make($datum, (new ConsumptionRequest)->rules()),
-                        HttpStatusCode::NOT_ACCEPTABLE,
-                        __('messages.not_acceptable')
+                        new Exception(__('messages.not_acceptable'))
                     );
                     unset($datum['sn']);
                     $consumptions[] = $datum;
@@ -145,7 +144,7 @@ class Consumption extends Model {
         }
         
         return response()->json([
-            'statusCode' => HttpStatusCode::OK,
+            'statusCode' => Constant::OK,
             'message'    => __('messages.ok'),
         ]);
         
@@ -167,20 +166,17 @@ class Consumption extends Model {
     /**
      * 统计
      *
-     * @param array $conditions 统计条件
-     * @param null|integer $detail 统计类型，null - 消费/充值总额统计，0 - 消费明细，1 - 充值明细
      * @return array
      */
-    function stat(array $conditions, $detail = null) {
+    function stat() {
         
-        list($range, $rangeId) = $this->parseConditions($conditions);
+        [$range, $rangeId] = $this->parse();
         $values = ['amount', 'ctype'];
-        $studentIds = $this->getStudentIds($conditions, $rangeId);
-        if (!isset($detail)) {
+        $studentIds = $this->studentIds($rangeId);
+        if (!$detail = Request::query('detail')) {
             $consumption = $charge = 0;
             $amounts = $this->whereIn('student_id', $studentIds)
-                ->whereBetween('ctime', $range)
-                ->get($values)->toArray();
+                ->whereBetween('ctime', $range)->get($values);
             foreach ($amounts as $a) {
                 if ($a['ctype'] == 0) {
                     $consumption += $a['amount'];
@@ -190,15 +186,14 @@ class Consumption extends Model {
             }
             
             return [
-                '&yen; ' . number_format($consumption, 2),
-                '&yen; ' . number_format($charge, 2),
+                'consumption' => '&yen; ' . number_format($consumption, 2),
+                'charge'      => '&yen; ' . number_format($charge, 2),
             ];
         }
         $details = [];
         $consumptions = $this->whereIn('student_id', $studentIds)
             ->whereBetween('ctime', $range)
-            ->where('ctype', $detail)
-            ->get()->toArray();
+            ->where('ctype', $detail)->get();
         foreach ($consumptions as $c) {
             $details[] = [
                 'id'        => $c->id,
@@ -211,78 +206,63 @@ class Consumption extends Model {
             ];
         }
         
-        return $details;
+        return ['details' => $details];
         
     }
     
-    /**
-     * @param array $conditions
-     * @return array
-     */
-    private function parseConditions(array $conditions): array {
+    /** @return array */
+    private function parse(): array {
         
+        $conditions = Request::all();
         $dateRange = explode(' - ', $conditions['date_range']);
         $range = [$dateRange[0] . ' 00:00:00', $dateRange[1] . ' 23:59:59'];
         $rangeId = $conditions['range_id'];
         
         return [$range, $rangeId];
+        
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 获取需要返回消费记录的学生ids
      *
-     * @param array $conditions
      * @param $rangeId
      * @return array
      */
-    private function getStudentIds(array $conditions, $rangeId): array {
+    function studentIds($rangeId) {
         
-        $studentIds = [];
-        switch ($rangeId) {
-            case self::STAT_RANGE['student']:
-                $studentIds = [$conditions['student_id']];
-                break;
-            case self::STAT_RANGE['class']:
-                $classId = $conditions['class_id'];
-                $studentIds = Squad::find($classId)
-                    ->students->pluck('id')->toArray();
-                break;
-            case self::STAT_RANGE['grade']:
-                $gradeId = $conditions['grade_id'];
-                $studentIds = Grade::find($gradeId)
-                    ->students->pluck('id')->toArray();
-                break;
-            default:
-                break;
+        $input = Request::all();
+        if ($rangeId == 1) {
+            $students = Student::whereId($input['student_id'])->get();
+        } elseif ($rangeId == 2) {
+            $students = Squad::find($input['class_id'])->students;
+        } else {
+            $students = Grade::find($input['grade_id'])->students;
         }
         
-        return $studentIds;
+        return $students->pluck('id');
         
     }
     
     /**
      * 批量导出
      *
-     * @param null|integer $detail , null - 导出所有记录, 0 - 导出消费明细, 1 - 导出充值明细
-     * @param array $conditions
      * @return bool
      * @throws Exception
      */
-    function export($detail = null, array $conditions = []) {
+    function export() {
         
-        if (!isset($detail)) {
+        if (!$detail = Request::query('detail')) {
             $consumptions = $this->whereIn(
                 'student_id',
                 $this->contactIds('student')
             )->get();
         } else {
-            list($range, $rangeId) = $this->parseConditions($conditions);
-            $studentIds = $this->getStudentIds($conditions, $rangeId);
+            [$range, $rangeId] = $this->parse();
+            $studentIds = $this->studentIds($rangeId);
             $consumptions = $this->whereIn('student_id', $studentIds)
                 ->whereBetween('ctime', $range)
-                ->where('ctype', $detail)
-                ->get()->toArray();
+                ->where('ctype', $detail)->get();
         }
         $records[] = self::EXPORT_TITLES;
         /** @var Consumption $c */

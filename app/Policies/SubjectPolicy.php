@@ -2,7 +2,6 @@
 namespace App\Policies;
 
 use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
 use App\Models\Subject;
@@ -39,7 +38,7 @@ class SubjectPolicy {
         
         abort_if(
             $abort && !$subject,
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.not_found')
         );
         $role = $user->role();

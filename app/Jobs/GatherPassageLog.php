@@ -1,7 +1,7 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\{Broadcaster, HttpStatusCode, JobTrait};
+use App\Helpers\{Broadcaster, Constant, JobTrait};
 use App\Models\Card;
 use App\Models\PassageLog;
 use App\Models\Turnstile;
@@ -39,7 +39,7 @@ class GatherPassageLog implements ShouldQueue {
         $this->response = [
             'userId'     => $userId,
             'title'      => __('messages.passage_log.title'),
-            'statusCode' => HttpStatusCode::OK,
+            'statusCode' => Constant::OK,
         ];
         
     }

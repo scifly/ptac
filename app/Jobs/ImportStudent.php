@@ -2,7 +2,7 @@
 namespace App\Jobs;
 
 use App\Apis\MassImport;
-use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
+use App\Helpers\{Broadcaster, Constant, JobTrait, ModelTrait};
 use App\Models\{Custodian, CustodianStudent, DepartmentUser, Grade, Group, School, Squad, Student, User};
 use Exception;
 use Illuminate\{Bus\Queueable,
@@ -43,7 +43,7 @@ class ImportStudent implements ShouldQueue, MassImport {
         $this->userId = $userId;
         $this->response = array_combine(Constant::BROADCAST_FIELDS, [
             $this->userId, __('messages.student.title'),
-            HttpStatusCode::OK, __('messages.student.import_completed'),
+            Constant::OK, __('messages.student.import_completed'),
         ]);
         $this->broadcaster = new Broadcaster();
         

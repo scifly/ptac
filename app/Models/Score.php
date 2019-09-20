@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use App\Jobs\{ImportScore, SendMessage};
 use Carbon\Carbon;
 use Eloquent;
@@ -383,7 +383,7 @@ class Score extends Model {
         $exam = Exam::find(Request::input('examId'));
         abort_if(
             !$exam,
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.score.exam_not_found')
         );
         $examSubjectIds = explode(',', $exam->subject_ids);
@@ -491,7 +491,7 @@ class Score extends Model {
         $exam = new Exam();
         abort_if(
             $user->role() == '学生',
-            HttpStatusCode::UNAUTHORIZED,
+            Constant::UNAUTHORIZED,
             __('messages.unauthorized')
         );
         if (Request::method() == 'POST') {
@@ -534,7 +534,7 @@ class Score extends Model {
         $student = Student::find($studentId);
         abort_if(
             !$student || !$exam,
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.not_found')
         );
         
@@ -566,7 +566,7 @@ class Score extends Model {
         $class = Squad::find($classId);
         abort_if(
             !$exam || !$class || !in_array($classId, $allowedClassIds),
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.not_found')
         );
         $data = $this->classStat(true)
@@ -596,7 +596,7 @@ class Score extends Model {
         $user = Auth::user();
         abort_if(
             $user->role() == '学生',
-            HttpStatusCode::UNAUTHORIZED,
+            Constant::UNAUTHORIZED,
             __('messages.unauthorized')
         );
         
@@ -895,7 +895,7 @@ class Score extends Model {
                     $builder = ScoreTotal::where($condition);
                 }
                 abort_if(
-                    !$score, HttpStatusCode::INTERNAL_SERVER_ERROR,
+                    !$score, Constant::INTERNAL_SERVER_ERROR,
                     __('messages.score.not_found')
                 );
                 foreach ($options as $option) {
@@ -960,7 +960,7 @@ class Score extends Model {
         # 获取该学生所属班级的所有学生
         abort_if(
             !($exam = Exam::find($examId)),
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.not_found')
         );
         # 获取该次考试该学生所在的年级id
@@ -1077,7 +1077,7 @@ class Score extends Model {
                 'classId' => $classId,
                 'examId'  => $examId,
             ])
-            : abort(HttpStatusCode::BAD_REQUEST, '请求无效');
+            : abort(Constant::BAD_REQUEST, '请求无效');
         
     }
     
@@ -1231,7 +1231,7 @@ class Score extends Model {
         abort_if(
             !in_array($studentId, $this->contactIds('student')) ||
             !in_array($classId, $this->classIds()) || !$student,
-            HttpStatusCode::UNAUTHORIZED,
+            Constant::UNAUTHORIZED,
             __('messages.score.unauthorized_stat')
         );
         # 指定学生的最近十场考试

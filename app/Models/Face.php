@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use App\Jobs\FaceConfig;
 use Eloquent;
 use Form;
@@ -190,7 +190,7 @@ class Face extends Model {
         $file = Request::file('file');
         abort_if(
             empty($file),
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             __('messages.empty_file')
         );
         $uploadedFile = (new Media)->import(
@@ -198,7 +198,7 @@ class Face extends Model {
         );
         abort_if(
             !$uploadedFile,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            Constant::INTERNAL_SERVER_ERROR,
             __('messages.file_upload_failed')
         );
         
@@ -321,7 +321,7 @@ class Face extends Model {
         
         abort_if(
             $this->whereMediaId($mediaId)->first() ? true : false,
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             __('mediaId:' . $mediaId . ' 已被使用')
         );
         

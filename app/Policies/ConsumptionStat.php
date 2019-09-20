@@ -5,7 +5,7 @@ namespace App\Policies;
  * @package App\Policies
  */
 class ConsumptionStat {
-
+    
     public $rangeId, $studentId, $classId, $gradeId, $dateRange;
     
     /**
@@ -21,6 +21,5 @@ class ConsumptionStat {
         $this->dateRange = $conditions['date_range'];
         
     }
-    
     
 }

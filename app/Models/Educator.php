@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use App\Jobs\{ExportEducator, ImportEducator};
 use Carbon\Carbon;
 use Eloquent;
@@ -332,7 +332,7 @@ class Educator extends Model {
         }
         abort_if(
             isset($duplicates),
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             join('', [
                 '手机号码',
                 join(',', $duplicates ?? []),
@@ -341,7 +341,7 @@ class Educator extends Model {
         );
         abort_if(
             !$group = Group::where(['name' => '教职员工', 'school_id' => $this->schoolId()])->first(),
-            HttpStatusCode::NOT_ACCEPTABLE, __('messages.educator.role_nonexistent')
+            Constant::NOT_ACCEPTABLE, __('messages.educator.role_nonexistent')
         );
         ImportEducator::dispatch(
             $records, $this->schoolId(), $group->id, Auth::id()

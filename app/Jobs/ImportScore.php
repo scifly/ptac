@@ -2,7 +2,7 @@
 namespace App\Jobs;
 
 use App\Apis\MassImport;
-use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
+use App\Helpers\{Broadcaster, Constant, JobTrait, ModelTrait};
 use App\Models\{Score, Student};
 use Exception;
 use Illuminate\{Bus\Queueable,
@@ -42,7 +42,7 @@ class ImportScore implements ShouldQueue, MassImport {
         $this->classId = $classId;
         $this->response = array_combine(Constant::BROADCAST_FIELDS, [
             $userId, __('messages.score.title'),
-            HttpStatusCode::OK, __('messages.score.import_completed'),
+            Constant::OK, __('messages.score.import_completed'),
         ]);
         $this->broadcaster = new Broadcaster();
         

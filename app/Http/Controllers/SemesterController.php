@@ -92,6 +92,7 @@ class SemesterController extends Controller {
      * @param SemesterRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(SemesterRequest $request, $id) {
         

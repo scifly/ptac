@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
+use App\Helpers\Constant;
 use App\Jobs\SendMessageApi;
 use App\Models\{Consumption, Group, Message, User};
 use Exception;
@@ -31,7 +31,7 @@ class ApiController extends Controller {
         $this->consumption = $consumption;
         $this->message = $message;
         $this->reaction = [
-            'statusCode' => HttpStatusCode::OK,
+            'statusCode' => Constant::OK,
             'message' => __('messages.ok')
         ];
         
@@ -58,7 +58,7 @@ class ApiController extends Controller {
             $this->reaction['token'] = $user->createToken('ptac')->accessToken;
         } else {
             $this->reaction['message'] = __('messages.forbidden');
-            $this->reaction['statusCode'] = HttpStatusCode::UNAUTHORIZED;
+            $this->reaction['statusCode'] = Constant::UNAUTHORIZED;
         }
         
         return response()->json(
@@ -96,7 +96,7 @@ class ApiController extends Controller {
         );
         
         return response()->json([
-            'statusCode' => HttpStatusCode::OK,
+            'statusCode' => Constant::OK,
             'message' => '已成功提交消息发送请求'
         ]);
     

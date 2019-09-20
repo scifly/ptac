@@ -1,13 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\{Broadcaster, HttpStatusCode, ModelTrait};
-use App\Models\{Department, Group, Icon, Member, Mobile, User};
+use App\Helpers\{Broadcaster, Constant, ModelTrait};
+use App\Models\{Department, Group, Member, Mobile, User};
 use Auth;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use Html;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -186,7 +185,7 @@ class TestController extends Controller {
         (new Broadcaster)->broadcast([
             'userId'     => Auth::id() ?? 1,
             'title'      => '广播测试',
-            'statusCode' => HttpStatusCode::OK,
+            'statusCode' => Constant::OK,
             'message'    => '工作正常',
         ]);
         

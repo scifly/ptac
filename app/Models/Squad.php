@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -330,7 +330,7 @@ class Squad extends Model {
         
         abort_if(
             isset($id) && (!in_array($id, $this->classIds()) || !$this->find($id)),
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );
         $class = $this->find($id);
@@ -355,7 +355,7 @@ class Squad extends Model {
         $user = User::find($userId ?? Auth::id());
         // abort_if(
         //     !$user->educator,
-        //     HttpStatusCode::UNAUTHORIZED,
+        //     Constant::UNAUTHORIZED,
         //     __('messages.unauthorized')
         // );
         $ids = $this->classIds(session('schoolId'), $user->id);

@@ -1,7 +1,7 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait};
+use App\Helpers\{Broadcaster, Constant, JobTrait};
 use App\Models\{Action, Group, Icon, Menu, MenuTab, MenuType, School, Tab, WapSite};
 use Exception;
 use Illuminate\{Bus\Queueable,
@@ -86,7 +86,7 @@ class CreateSchool implements ShouldQueue {
         $this->response = [
             'userId'     => $this->userId,
             'title'      => '创建学校',
-            'statusCode' => HttpStatusCode::OK,
+            'statusCode' => Constant::OK,
             'message'    => __('messages.school.menu_created'),
         ];
         

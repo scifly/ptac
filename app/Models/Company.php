@@ -45,6 +45,7 @@ use Throwable;
  * @method static Builder|Company whereRemark($value)
  * @method static Builder|Company whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read \App\Models\Department $dept
  */
 class Company extends Model {
     

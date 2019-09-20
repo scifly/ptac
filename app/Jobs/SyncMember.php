@@ -2,7 +2,7 @@
 namespace App\Jobs;
 
 use App\Facades\Wechat;
-use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
+use App\Helpers\{Broadcaster, Constant, JobTrait, ModelTrait};
 use App\Models\Corp;
 use App\Models\User;
 use Exception;
@@ -42,7 +42,7 @@ class SyncMember implements ShouldQueue {
         $this->userId = $userId;
         $this->response = array_combine(Constant::BROADCAST_FIELDS, [
             $userId, '企业微信通讯录同步',
-            HttpStatusCode::OK, __('messages.synced'),
+            Constant::OK, __('messages.synced'),
         ]);
         $this->broadcaster = new Broadcaster();
         
@@ -71,7 +71,7 @@ class SyncMember implements ShouldQueue {
                     }
                 }
                 if (sizeof($results) > 0) {
-                    $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                    $this->response['statusCode'] = Constant::INTERNAL_SERVER_ERROR;
                     $this->response['message'] = __('messages.sync_failed');
                     $this->response['url'] = $this->filePath('failed_syncs') . '.xlsx';
                     $this->excel(

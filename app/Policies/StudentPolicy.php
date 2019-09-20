@@ -2,7 +2,6 @@
 namespace App\Policies;
 
 use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
 use App\Models\Student;
@@ -37,7 +36,7 @@ class StudentPolicy {
         
         abort_if(
             $abort && !$student,
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.not_found')
         );
         $role = $user->role();

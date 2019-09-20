@@ -1,7 +1,7 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\{Broadcaster, HttpStatusCode, JobTrait};
+use App\Helpers\{Broadcaster, Constant, JobTrait};
 use App\Models\Message;
 use Exception;
 use Illuminate\{Bus\Queueable,
@@ -36,7 +36,7 @@ class SendMessage implements ShouldQueue {
         $this->response = [
             'userId'     => $userId,
             'title'      => __('messages.message.title'),
-            'statusCode' => HttpStatusCode::OK,
+            'statusCode' => Constant::OK,
         ];
         
     }

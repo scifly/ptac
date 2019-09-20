@@ -1,7 +1,7 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\HttpStatusCode;
+use App\Helpers\Constant;
 use App\Models\Tab;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -33,7 +33,7 @@ class TabPolicy {
         
         abort_if(
             $abort && !$tab,
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.not_found')
         );
         

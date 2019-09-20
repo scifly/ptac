@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers\Auth;
 
-use App\Helpers\HttpStatusCode;
+use App\Helpers\Constant;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -76,7 +76,7 @@ class LoginController extends Controller {
             # 手机号码登录
             abort_if(
                 !$user = User::whereMobile($input)->first(),
-                HttpStatusCode::NOT_ACCEPTABLE,
+                Constant::NOT_ACCEPTABLE,
                 __('messages.invalid_credentials')
             );
             # 通过默认手机号码查询对应的用户名
@@ -86,13 +86,13 @@ class LoginController extends Controller {
         # 角色为监护人/学生/api的用户不得登录后台
         abort_if(
             in_array($user->role($user->id), ['学生', '监护人', 'api']),
-            HttpStatusCode::NOT_ACCEPTABLE, __('messages.unauthorized')
+            Constant::NOT_ACCEPTABLE, __('messages.unauthorized')
         );
         
         # 登录(用户名或邮箱)
         return Auth::attempt([$field => $input, 'password' => $password], $rememberMe)
             ? response()->json(['url' => $returnUrl ?? '/'])
-            : abort(HttpStatusCode::NOT_ACCEPTABLE, __('messages.invalid_credentials'));
+            : abort(Constant::NOT_ACCEPTABLE, __('messages.invalid_credentials'));
         
     }
     

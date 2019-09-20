@@ -43,7 +43,7 @@ class ConferenceRequest extends FormRequest {
     
     protected function prepareForValidation() {
     
-    
+        // todo: create conference message
     
     }
     

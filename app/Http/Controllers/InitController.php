@@ -24,7 +24,7 @@ class InitController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         // abort_if(
         //     Auth::user()->role() != '运营',
-        //     HttpStatusCode::UNAUTHORIZED,
+        //     Constant::UNAUTHORIZED,
         //     __('messages.unauthorized')
         // );
         $this->config = $config;

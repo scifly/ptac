@@ -1,16 +1,11 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
-use App\Models\Poll;
 use App\Models\PollReply;
-use App\Models\PollTopic;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class PollReplyPolicy

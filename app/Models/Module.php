@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Contracts\View\Factory;
@@ -210,7 +210,7 @@ class Module extends Model {
         $file = Request::file('file');
         abort_if(
             empty($file),
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             __('messages.empty_file')
         );
         $uploadedFile = (new Media())->import(
@@ -218,7 +218,7 @@ class Module extends Model {
         );
         abort_if(
             !$uploadedFile,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            Constant::INTERNAL_SERVER_ERROR,
             __('messages.file_upload_failed')
         );
         

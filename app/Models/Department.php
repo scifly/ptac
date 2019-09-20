@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use App\Jobs\SyncDepartment;
 use Carbon\Carbon;
 use Eloquent;
@@ -136,7 +136,7 @@ class Department extends Model {
                 $parentDepartment = $this->find($parentId);
                 abort_if(
                     !$department || !$parentDepartment,
-                    HttpStatusCode::NOT_FOUND
+                    Constant::NOT_FOUND
                 );
                 if ($department->movable($id, $parentId)) {
                     $moved = $department->move($id, $parentId);
@@ -659,7 +659,7 @@ class Department extends Model {
         # 如果部门(被移动的部门和目标部门）不在当前用户的可见范围内，则抛出401异常
         abort_if(
             sizeof(array_intersect([$id, $parentId], $this->departmentIds(Auth::id()))) < 2,
-            HttpStatusCode::UNAUTHORIZED,
+            Constant::UNAUTHORIZED,
             __('messages.forbidden')
         );
         list($type, $parentType) = array_map(

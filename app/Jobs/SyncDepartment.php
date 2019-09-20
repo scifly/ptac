@@ -2,7 +2,7 @@
 namespace App\Jobs;
 
 use App\Facades\Wechat;
-use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
+use App\Helpers\{Broadcaster, Constant, JobTrait, ModelTrait};
 use App\Models\{Corp, Department, DepartmentUser, User};
 use Exception;
 use Illuminate\{Bus\Queueable,
@@ -44,7 +44,7 @@ class SyncDepartment implements ShouldQueue {
         $this->bc = new Broadcaster;
         $this->response = array_combine(Constant::BROADCAST_FIELDS, [
             $userId, Constant::SYNC_ACTIONS[$action] . '企业微信部门',
-            HttpStatusCode::OK, __('messages.ok'),
+            Constant::OK, __('messages.ok'),
         ]);
         
     }
@@ -250,8 +250,8 @@ class SyncDepartment implements ShouldQueue {
                 ), true
             );
             $this->response['statusCode'] = $result['errcode']
-                ? HttpStatusCode::INTERNAL_SERVER_ERROR
-                : HttpStatusCode::OK;
+                ? Constant::INTERNAL_SERVER_ERROR
+                : Constant::OK;
             $this->response['message'] = Constant::WXERR[$result['errcode']];
             $response = $d->update(['synced' => !$result['errcode'] ? 1 : 0]);
         } else {

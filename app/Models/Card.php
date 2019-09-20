@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use Eloquent;
 use Exception;
 use Form;
@@ -189,7 +189,7 @@ class Card extends Model {
         }
         abort_if(
             !empty($ds ?? []),
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             join('', [
                 (!empty($sns) ? ('卡号: ' . join(',', $ds ?? [])) : ''),
                 '有重复，请检查后重试',
@@ -207,7 +207,7 @@ class Card extends Model {
         
         abort_if(
             $this->whereSn($sn)->first() ? true : false,
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             __('卡号：' . $sn . ' 已被使用')
         );
         

@@ -20,9 +20,7 @@ class MessageRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
-    /**
-     * @return array
-     */
+    /** @return array */
     public function rules() {
         
         $rules = array_combine((new Message)->getFillable(), [

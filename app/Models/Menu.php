@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -150,14 +150,14 @@ class Menu extends Model {
                 # 移动菜单
                 abort_if(
                     !$this->find($id) || !$this->find($parentId),
-                    HttpStatusCode::NOT_FOUND,
+                    Constant::NOT_FOUND,
                     __('messages.not_found')
                 );
                 if ($this->movable($id, $parentId)) {
                     $moved = $this->move($id, $parentId);
                     abort_if(
                         !$moved,
-                        HttpStatusCode::BAD_REQUEST,
+                        Constant::BAD_REQUEST,
                         __('messages.bad_request')
                     );
                 }
@@ -617,7 +617,7 @@ class Menu extends Model {
             $menuIds = $this->menuIds();
             abort_if(
                 !in_array($id, $menuIds) || !in_array($parentId, $menuIds),
-                HttpStatusCode::UNAUTHORIZED,
+                Constant::UNAUTHORIZED,
                 __('messages.forbidden')
             );
         }

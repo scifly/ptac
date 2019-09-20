@@ -475,7 +475,7 @@ trait ModelTrait {
      */
     function uploader($removeTitles = true) {
         
-        $code = HttpStatusCode::INTERNAL_SERVER_ERROR;
+        $code = Constant::INTERNAL_SERVER_ERROR;
         abort_if(
             Request::method() != 'POST', $code,
             __('messages.file_upload_failed')
@@ -507,7 +507,7 @@ trait ModelTrait {
         );
         abort_if(
             !empty(array_diff(self::EXCEL_TITLES, array_values($records[0]))),
-            HttpStatusCode::NOT_ACCEPTABLE, __('messages.invalid_file_format')
+            Constant::NOT_ACCEPTABLE, __('messages.invalid_file_format')
         );
         Storage::disk('uploads')->delete($filename);
         if ($removeTitles) array_shift($records);
@@ -711,7 +711,7 @@ trait ModelTrait {
                         $student = Student::find($studentId);
                         abort_if(
                             !$student || !in_array($studentId, $this->contactIds('student')),
-                            HttpStatusCode::NOT_FOUND,
+                            Constant::NOT_FOUND,
                             __('messages.student.not_found') . ':' . $studentId
                         );
                         $departmentIds[] = $student->squad->department_id;
@@ -738,7 +738,7 @@ trait ModelTrait {
                             $class = Squad::find($classId);
                             abort_if(
                                 !$class || !in_array($class->id, $this->classIds()),
-                                HttpStatusCode::NOT_FOUND,
+                                Constant::NOT_FOUND,
                                 __('messages.class.not_found') . ':' . $classId
                             );
                             $classDeptIds[] = $class->department_id;
@@ -786,7 +786,7 @@ trait ModelTrait {
         ];
         abort_if(
             !$app = App::where($val)->first(),
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.app.not_found')
         );
         

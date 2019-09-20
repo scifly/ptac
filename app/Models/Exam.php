@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -256,7 +256,7 @@ class Exam extends Model {
         
         abort_if(
             !$classId,
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             __('messages.score.zero_classes')
         );
         $exams = $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')->get();

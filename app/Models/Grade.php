@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -268,7 +268,7 @@ class Grade extends Model {
         
         abort_if(
             !in_array($id, $this->gradeIds()) || !$this->find($id),
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );
         $items = $this->find($id)->classes->pluck('name', 'id');

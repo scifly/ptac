@@ -1,23 +1,8 @@
 var $rangeId = $('#range_id'),
     $students = $('#students'),
     $classes = $('#classes'),
-    $grades = $('#grades');
-
-page.initForm(
-    'consumptions',
-    'formConsumption',
-    'consumptions/stat',
-    'POST'
-);
-$rangeId.on('change', function () {
-    var rangeId = parseInt($rangeId.val());
-
-    $students.toggle(rangeId === 1);
-    $classes.toggle(rangeId === 2);
-    $grades.toggle(rangeId === 3);
-});
-page.initDateRangePicker();
-var $stat = $('#stat'),
+    $grades = $('#grades'),
+    $stat = $('#stat'),
     $range = $('#range'),
     $studentId = $('#student_id'),
     $classId = $('#class_id'),
@@ -25,44 +10,9 @@ var $stat = $('#stat'),
     $aConsume = $('#a_consume'),
     $consume = $('#consume'),
     $charge = $('#charge'),
-    $aCharge = $('#a_charge');
-
-$stat.on('click', function () {
-    if ($range.html().indexOf('fa-calendar') !== -1) {
-        page.inform('学生消费记录', '请选择日期范围', page.failure);
-        return false;
-    }
-    $('.overlay').show();
-    $.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: page.siteRoot() + 'consumptions/stat',
-        data: {
-            '_token': page.token(),
-            'range_id': $rangeId.val(),
-            'student_id': $studentId.val() !== null ? $studentId.val() : 0,
-            'class_id': $classId.val() !== null ? $classId.val() : 0,
-            'grade_id': $gradeId.val() !== null ? $gradeId.val() : 0,
-            'date_range': $range.html()
-        },
-        success: function(result) {
-            $('.overlay').hide();
-            $aConsume.html(result['consumption']);
-            $aCharge.html(result['charge']);
-            $consume.toggle(result['consumption'] !== '&yen; 0.00');
-            $charge.toggle(result['charge'] !== '&yen; 0.00');
-            page.inform(result['title'], result['message'], page.success);
-        },
-        error: function(e) {
-            page.errorHandler(e);
-        }
-    });
-
-    return false;
-});
-var $detail = $('#detail').find('tbody');
-var title =
-    '<tr class="text-bold">\n' +
+    $aCharge = $('#a_charge'),
+    $detail = $('#detail').find('tbody'),
+    title = '<tr class="text-bold">\n' +
         '<td>#</td>\n' +
         '<td>学生</td>\n' +
         '<td>金额</td>\n' +
@@ -71,60 +21,105 @@ var title =
         '<td>时间</td>\n' +
         '<td>地点</td>\n' +
     '</tr>';
-$consume.on('click', function () { getDetails(0); return false; });
-$charge.on('click', function () { getDetails(1); return false; });
-var getDetails = function (detail) {
-    $('#detail_id').val(detail);
-    if (detail === 0) {
-        $('.modal-title').addClass('text-red').removeClass('text-green').html('消费明细');
-    } else {
-        $('.modal-title').addClass('text-green').removeClass('text-red').html('充值明细');
+
+page.initForm(
+    'consumptions', 'formConsumption',
+    'consumptions/stat', 'POST'
+);
+page.initDateRangePicker();
+$rangeId.on('change', function () {
+    var rangeId = parseInt($rangeId.val());
+
+    $students.toggle(rangeId === 1);
+    $classes.toggle(rangeId === 2);
+    $grades.toggle(rangeId === 3);
+});
+$stat.on('click', function () {
+    if ($range.html().indexOf('fa-calendar') !== -1) {
+        page.inform('学生消费记录', '请选择日期范围', page.failure);
+        return false;
     }
     $('.overlay').show();
-    $.when($.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: page.siteRoot() + 'consumptions/stat?detail=' + detail,
-        data: {
-            '_token': page.token(),
-            'range_id': $rangeId.val(),
-            'student_id': $studentId.val() !== null ? $studentId.val() : 0,
-            'class_id': $classId.val() !== null ? $classId.val() : 0,
-            'grade_id': $gradeId.val() !== null ? $gradeId.val() : 0,
-            'date_range': $range.html()
-        },
-        success: function (result) {
+    stat('consumptions/stat', function (result) {
+        $('.overlay').hide();
+        $aConsume.html(result['consumption']);
+        $aCharge.html(result['charge']);
+        $consume.toggle(result['consumption'] !== '&yen; 0.00');
+        $charge.toggle(result['charge'] !== '&yen; 0.00');
+        page.inform(result['title'], result['message'], page.success);
+    });
+
+    return false;
+});
+$consume.on('click', function () {
+    details(0);
+    return false;
+});
+$charge.on('click', function () {
+    details(1);
+    return false;
+});
+$('#export').on('click', function () {
+    window.location = page.siteRoot() + 'consumptions/export?' +
+        'range_id=' + $rangeId.val() +
+        '&student_id=' + $studentId.val() +
+        '&class_id=' + $classId.val() +
+        '&grade_id=' + $gradeId.val() +
+        '&date_range=' + encodeURIComponent($range.html()) +
+        '&detail=' + $('#detail_id').val();
+});
+
+var details = function (detail) {
+    var a = 'text-' + (detail === 0 ? 'red' : 'green'),
+        r = 'text-' + (detail === 0 ? 'green' : 'red'),
+        h = (detail === 0 ? '消费' : '充值') + '明细';
+
+    $('#detail_id').val(detail);
+    $('.modal-title').addClass(a).removeClass(r).html(h);
+    $('.overlay').show();
+    $.when(
+        stat('consumptions/stat?detail=' + detail, function (result) {
+            var rows = title, details;
+
             $('.overlay').hide();
-            $detail.html();
-            var rows = title;
-            for (var i = 0; i < result['details'].length; i++) {
-                rows +=
-                    '<tr>' +
-                        '<td>' + result['details']['id'] + '</td>' +
-                        '<td>' + result['details']['name'] + '</td>' +
-                        '<td>' + result['details']['amount'] + '</td>' +
-                        '<td>' + result['details']['type'] + '</td>' +
-                        '<td>' + result['details']['machineid'] + '</td>' +
-                        '<td>' + result['details']['datetime'] + '</td>' +
-                        '<td>' + result['details']['location'] + '</td>' +
-                    '</tr>';
+            for (var i = 0; i < result.length; i++) {
+                details = result[i]['details'];
+                rows += '<tr>' +
+                    '<td>' + details['id'] + '</td>' +
+                    '<td>' + details['name'] + '</td>' +
+                    '<td>' + details['amount'] + '</td>' +
+                    '<td>' + details['type'] + '</td>' +
+                    '<td>' + details['machineid'] + '</td>' +
+                    '<td>' + details['datetime'] + '</td>' +
+                    '<td>' + details['location'] + '</td>' +
+                '</tr>';
             }
             $detail.html(rows);
+        })
+    ).then(
+        function () {
+            $('#detail').modal({backdrop: true});
+        }
+    );
+};
+var stat = function (uri, callback) {
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: page.siteRoot() + uri,
+        data: {
+            _token: page.token(),
+            range_id: $rangeId.val(),
+            student_id: $studentId.val(),
+            class_id: $classId.val(),
+            grade_id: $gradeId.val(),
+            date_range: $range.html()
+        },
+        success: function (result) {
+            callback(result);
         },
         error: function (e) {
             page.errorHandler(e);
         }
-    })).then(function () {
-        $('#detail').modal({backdrop: true});
     });
 };
-var $export = $('#export');
-$export.on('click', function () {
-    window.location = page.siteRoot() + 'consumptions/export?' +
-        'range_id=' + $rangeId.val() +
-        '&student_id=' + $studentId.val() !== null ? $studentId.val() : 0 +
-        '&class_id=' + $classId.val() !== null ? $classId.val() : 0 +
-        '&grade_id=' + $gradeId.val() !== null ? $gradeId.val() : 0 +
-        '&date_range=' + encodeURIComponent($range.html()) +
-        '&detail=' + $('#detail_id').val();
-});

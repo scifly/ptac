@@ -1,14 +1,8 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
-use App\Helpers\PolicyTrait;
-use App\Models\Action;
-use App\Models\ActionGroup;
-use App\Models\Grade;
-use App\Models\Squad;
-use App\Models\User;
+use App\Helpers\{ModelTrait, PolicyTrait};
+use App\Models\{Consumption, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 use ReflectionException;
@@ -24,65 +18,18 @@ class ConsumptionPolicy {
     /**
      * @param User $user
      * @return bool
-     */
-    public function show(User $user) {
-        
-        if (in_array($user->role(), Constant::SUPER_ROLES)) {
-            return true;
-        }
-        $actionId = Action::whereRoute(trim(Request::route()->uri()))->first()->id;
-        $ag = ActionGroup::whereGroupId($user->group_id)->where('action_id', $actionId)->first();
-    
-        return $ag ? true : false;
-        
-    }
-    
-    /**
-     * @param User $user
-     * @param ConsumptionStat $cs
-     * @return bool
      * @throws ReflectionException
      */
-    public function stat(User $user, ConsumptionStat $cs) {
-        
-        switch ($cs->rangeId) {
-            case 1:
-                $studentIds = [$cs->studentId];
-                break;
-            case 2:
-                $studentIds = Squad::find($cs->classId)
-                    ->students->pluck('id')->toArray();
-                break;
-            case 3:
-                $studentIds = Grade::find($cs->gradeId)
-                    ->students->pluck('id')->toArray();
-                break;
-            default:
-                return false;
-            
+    function operation(User $user) {
+
+        if ($rangeId = Request::input('range_id')) {
+            $studentIds = (new Consumption)->studentIds($rangeId);
+            $dRange = explode(' - ', Request::input('date_range'));
+            $perm = collect($this->contactIds('student'))->has($studentIds) && ($dRange[1] >= $dRange[0]);
         }
-        $dateRange = explode(' - ', $cs->dateRange);
         
-        if (in_array($user->role(), Constant::SUPER_ROLES)) {
-            return empty(array_diff($studentIds, $this->contactIds('student')))
-                && ($dateRange[1] >= $dateRange[0]);
-        }
+        return $this->action($user) && ($perm ?? true);
     
-        return empty(array_diff($studentIds, $this->contactIds('student')))
-            && ($dateRange[1] >= $dateRange[0])
-            && $this->action($user);
-        
-    }
-    
-    /**
-     * @param User $user
-     * @return bool
-     */
-    function export(User $user) {
-    
-        return in_array($user->role(), Constant::SUPER_ROLES)
-            ? true : $this->action($user);
-        
     }
     
 }

@@ -32,23 +32,8 @@ class Datatable {
     function simple(Model $model, array $columns, array $joins = null, $condition = null) {
         
         $tableName = $model->getTable();
-        switch ($modelName = class_basename($model)) {
-            case 'Group':
-                $useTable = 'Groups';
-                break;
-            case 'Order':
-                $useTable = 'Orders';
-                break;
-            case 'Table':
-                $useTable = 'Tables';
-                break;
-            case 'FlowType':
-                $useTable = 'Procedures';
-                break;
-            default:
-                $useTable = $modelName;
-                break;
-        }
+        $modelName = class_basename($model);
+        $useTable = $modelName . (in_array($modelName, ['Group', 'Order', 'Table']) ? 's' : '');
         $from = $tableName . ' AS ' . $useTable;
         if (isset($joins)) {
             foreach ($joins as $join) {

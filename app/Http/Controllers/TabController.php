@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
+use App\Helpers\Constant;
 use App\Http\Requests\TabRequest;
 use App\Models\Menu;
 use App\Models\Tab;
@@ -50,7 +50,7 @@ class TabController extends Controller {
         }
         abort_if(
             !$this->tab->scan(),
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             __('messages.bad_request')
         );
         

@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
+use App\Helpers\Constant;
 use App\Models\{Action, Menu, Tab};
 use App\Policies\Route;
 use Auth;
@@ -144,8 +144,8 @@ class Controller extends BaseController {
             : ($failure ?? __('messages.fail'));
         # 获取Http状态码
         $statusCode = $result
-            ? HttpStatusCode::OK
-            : HttpStatusCode::INTERNAL_SERVER_ERROR;
+            ? Constant::OK
+            : Constant::INTERNAL_SERVER_ERROR;
         
         # 输出状态码及消息
         return Request::ajax()
@@ -167,7 +167,7 @@ class Controller extends BaseController {
             if ($id = $request->route('id')) {
                 abort_if(
                     !$object = $model->{'find'}($id),
-                    HttpStatusCode::NOT_FOUND,
+                    Constant::NOT_FOUND,
                     __('messages.not_found')
                 );
             }

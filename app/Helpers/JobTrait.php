@@ -95,7 +95,7 @@ trait JobTrait {
                 ]);
                 $job->{'broadcaster'}->broadcast(
                     array_combine(Constant::BROADCAST_FIELDS, [
-                        $job->{'userId'}, $job->{'response'}['title'], HttpStatusCode::ACCEPTED,
+                        $job->{'userId'}, $job->{'response'}['title'], Constant::ACCEPTED,
                         sprintf($tpl, $nInserts, $nUpdates, $nIllegals),
                     ])
                 );
@@ -148,7 +148,7 @@ trait JobTrait {
      */
     function eHandler($job, Exception $e) {
         
-        $job->{'response'}['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+        $job->{'response'}['statusCode'] = Constant::INTERNAL_SERVER_ERROR;
         $job->{'response'}['message'] = $e->getMessage();
         $job->{'broadcaster'}->broadcast($job->{'response'});
         throw $e;
@@ -195,8 +195,8 @@ trait JobTrait {
             }
         }
         !$failure ?: $code = $failure == $total
-            ? HttpStatusCode::INTERNAL_SERVER_ERROR
-            : HttpStatusCode::ACCEPTED;
+            ? Constant::INTERNAL_SERVER_ERROR
+            : Constant::ACCEPTED;
         $msg = sprintf(
             __('messages.message.sent'),
             $total, $success, $failure,
@@ -204,7 +204,7 @@ trait JobTrait {
             $sms['total'], $sms['success'], $sms['failure']
         );
         
-        return [$code ?? HttpStatusCode::OK, $msg];
+        return [$code ?? Constant::OK, $msg];
         
     }
     

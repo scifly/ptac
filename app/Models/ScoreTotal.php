@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -71,7 +71,7 @@ class ScoreTotal extends Model {
         
         abort_if(
             !$st = $this->find($id),
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.not_found')
         );
         
@@ -221,7 +221,7 @@ class ScoreTotal extends Model {
         
         abort_if(
             !Exam::find($examId),
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.not_found')
         );
         $exam = Exam::find($examId);
@@ -238,7 +238,7 @@ class ScoreTotal extends Model {
             abort_if(
                 !in_array($exam->examType->school_id, $this->schoolIds())
                 || !empty(array_diff($allowedStudentIds, $examStudentIds)),
-                HttpStatusCode::FORBIDDEN,
+                Constant::FORBIDDEN,
                 __('messages.forbidden')
             );
         }

@@ -1,7 +1,7 @@
 <?php
 namespace App\Exceptions;
 
-use App\Helpers\HttpStatusCode;
+use App\Helpers\Constant;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
@@ -67,7 +67,7 @@ class Handler extends ExceptionHandler {
     public function render($request, Exception $exception) {
 
         if ($request->ajax() || $request->wantsJson()) {
-            $status = HttpStatusCode::BAD_REQUEST;
+            $status = Constant::BAD_REQUEST;
             $paths = explode('\\', get_class($exception));
             $response['message'] = $exception->getMessage();
             $response['file'] = $exception->getFile();
@@ -75,15 +75,15 @@ class Handler extends ExceptionHandler {
             $eName = $paths[sizeof($paths) -1];
             switch ($eName) {
                 case 'AuthorizationException':
-                    $status = HttpStatusCode::UNAUTHORIZED;
+                    $status = Constant::UNAUTHORIZED;
                     $response['message'] = __('messages.unauthorized');
                     break;
                 // case 'InvalidPayloadException':
-                //     $status = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                //     $status = Constant::INTERNAL_SERVER_ERROR;
                 //     $response['message'] = json_last_error_msg();
                 //     break;
                 case 'AuthenticationException':
-                    $status = HttpStatusCode::UNAUTHORIZED;
+                    $status = Constant::UNAUTHORIZED;
                     if ($request->method() == 'GET') {
                         if ($request->query('draw')) {
                             $response['returnUrl'] = $request->url() .
@@ -95,15 +95,15 @@ class Handler extends ExceptionHandler {
                     }
                     break;
                 case 'InvalidArgumentException':
-                    $status = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                    $status = Constant::INTERNAL_SERVER_ERROR;
                     $response['message'] = __('messages.invalid_argument');
                     break;
                 case 'TokenMismatchException':
-                    $status = HttpStatusCode::TOKEN_MISMATCH;
+                    $status = Constant::TOKEN_MISMATCH;
                     $response['message'] = __('messages.token_mismatch');
                     break;
                 case 'ErrorException':
-                    $status = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                    $status = Constant::INTERNAL_SERVER_ERROR;
                     break;
                 case 'HttpException':
                     /** @var HttpException $exception */
@@ -111,15 +111,15 @@ class Handler extends ExceptionHandler {
                     break;
                 case 'ValidationException':
                     /** @var ValidationException $exception */
-                    $status = HttpStatusCode::NOT_ACCEPTABLE;
+                    $status = Constant::NOT_ACCEPTABLE;
                     $response['errors'] = $exception->errors();
                     break;
                 case 'NotFoundHttpException':
-                    $status = HttpStatusCode::NOT_FOUND;
+                    $status = Constant::NOT_FOUND;
                     // $response['message'] = __('messages.not_found');
                     break;
                 case 'MethodNotAllowedHttpException':
-                    $status = HttpStatusCode::METHOD_NOT_ALLOWED;
+                    $status = Constant::METHOD_NOT_ALLOWED;
                     $response['message'] = __('messages.method_not_allowed');
                     break;
                 default:

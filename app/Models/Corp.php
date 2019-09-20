@@ -61,6 +61,7 @@ use Throwable;
  * @method static Builder|Corp whereSmsUsed($value)
  * @method static Builder|Corp whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read \App\Models\Department $dept
  */
 class Corp extends Model {
     

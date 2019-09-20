@@ -2,7 +2,6 @@
 namespace App\Http\Middleware;
 
 use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
 use App\Models\{Action, ActionGroup, Department, Group, GroupMenu, Menu, School, Tab, WapSite};
 use Closure;
 use Illuminate\Http\Request;
@@ -53,7 +52,7 @@ class CheckRole {
                 in_array($role, ['企业', '学校'])
                     ? !in_array($menuId, $this->menu->subIds($rootMenuId))
                     : !GroupMenu::where(['menu_id' => $menuId, 'group_id' => $groupId])->first(),
-                HttpStatusCode::FORBIDDEN, __('messages.forbidden')
+                Constant::FORBIDDEN, __('messages.forbidden')
             );
     
             return $next($request);
@@ -88,7 +87,7 @@ class CheckRole {
         }
         abort_if(
             $abort,
-            HttpStatusCode::FORBIDDEN,
+            Constant::FORBIDDEN,
             __('messages.forbidden')
         );
         

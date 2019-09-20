@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\{Datatable, Wechat};
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Sms};
+use App\Helpers\{Constant, ModelTrait, Sms};
 use App\Jobs\SendMessage;
 use Carbon\Carbon;
 use Doctrine\Common\Inflector\Inflector;
@@ -624,7 +624,7 @@ class Message extends Model {
         
         abort_if(
             !($message = $this->find($id)),
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.not_found')
         );
         
@@ -650,7 +650,7 @@ class Message extends Model {
             case 'GET':
                 abort_if(
                     !($msg = $this->find($id)),
-                    HttpStatusCode::NOT_FOUND,
+                    Constant::NOT_FOUND,
                     __('messages.message.not_found')
                 );
                 $response = view('wechat.message_center.show', [
@@ -663,7 +663,7 @@ class Message extends Model {
                     Request::merge(['user_id' => Auth::id()]);
                     abort_if(
                         !((new MessageReply)->store(Request::all())),
-                        HttpStatusCode::BAD_REQUEST,
+                        Constant::BAD_REQUEST,
                         __('messages.fail')
                     );
                 } else {
@@ -679,11 +679,11 @@ class Message extends Model {
             case 'DELETE':
                 abort_if(
                     !($mr = MessageReply::find(Request::input('id'))),
-                    HttpStatusCode::NOT_FOUND, __('messages.not_found')
+                    Constant::NOT_FOUND, __('messages.not_found')
                 );
                 abort_if(
                     !($mr->delete()),
-                    HttpStatusCode::BAD_REQUEST,
+                    Constant::BAD_REQUEST,
                     __('messages.del_fail')
                 );
                 break;
@@ -722,12 +722,12 @@ class Message extends Model {
         # 上传到本地后台
         abort_if(
             empty($file = Request::file('file')),
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             __('messages.empty_file')
         );
         abort_if(
             !($uploadedFile = (new Media)->import($file, __('messages.message.title'))),
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            Constant::INTERNAL_SERVER_ERROR,
             __('messages.file_upload_failed')
         );
         # 上传到企业微信后台
@@ -746,7 +746,7 @@ class Message extends Model {
         );
         abort_if(
             $result['errcode'] ?? 0,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            Constant::INTERNAL_SERVER_ERROR,
             Constant::WXERR[$result['errcode']]
         );
         $uploadedFile['media_id'] = $result['media_id'];
@@ -1599,7 +1599,7 @@ class Message extends Model {
         $end = $params['end'] ? $params['end'] . ' 23:59:59' : null;
         if ($start && $end) {
             abort_if(
-                $start > $end, HttpStatusCode::NOT_ACCEPTABLE,
+                $start > $end, Constant::NOT_ACCEPTABLE,
                 __('messages.incorrect_data_range')
             );
             $builder = $builder->whereBetween('created_at', [$start, $end]);

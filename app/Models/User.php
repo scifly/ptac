@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Sms};
+use App\Helpers\{Constant, ModelTrait, Sms};
 use App\Jobs\SyncMember;
 use Eloquent;
 use Exception;
@@ -536,7 +536,7 @@ class User extends Authenticatable {
                         if ($role && $role == '学校') {
                             abort_if(
                                 $user->educator && $user->educator->school_id != $data['school_id'],
-                                HttpStatusCode::NOT_ACCEPTABLE,
+                                Constant::NOT_ACCEPTABLE,
                                 __('messages.educator.switch_school_not_allowed')
                             );
                             Educator::updateOrCreate(
@@ -593,7 +593,7 @@ class User extends Authenticatable {
         $user = $this->find(Auth::id());
         abort_if(
             !Hash::check(Request::input('old_password'), $user->password),
-            HttpStatusCode::BAD_REQUEST,
+            Constant::BAD_REQUEST,
             __('messages.bad_request')
         );
         
@@ -684,10 +684,10 @@ class User extends Authenticatable {
         $corp = new Corp;
         abort_if(
             !in_array($field, ['group_id', 'corp_id']),
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );
-        $result = ['statusCode' => HttpStatusCode::OK];
+        $result = ['statusCode' => Constant::OK];
         # 获取企业和学校列表
         if ($field == 'group_id') {
             $builder = Auth::user()->role() == '运营'

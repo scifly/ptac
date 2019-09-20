@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
+use App\Helpers\Constant;
 use App\Http\Requests\OrderRequest;
 use App\Models\Order;
 use Exception;
@@ -69,7 +69,7 @@ class OrderController extends Controller {
         
         abort_if(
             !($order = $this->order->find($id)),
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.not_found')
         );
         
@@ -90,7 +90,7 @@ class OrderController extends Controller {
         
         abort_if(
             !($order = $this->order->find($id)),
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.not_found')
         );
         
@@ -111,7 +111,7 @@ class OrderController extends Controller {
         
         abort_if(
             !($order = $this->order->find($id)),
-            HttpStatusCode::NOT_FOUND,
+            Constant::NOT_FOUND,
             __('messages.not_found')
         );
         

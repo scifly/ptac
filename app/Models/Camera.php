@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use Eloquent;
 use Exception;
 use GuzzleHttp\Client;
@@ -203,7 +203,7 @@ class Camera extends Model {
             $body = json_decode($response->getBody(), true);
             $status = $response->getHeader('status');
             throw_if(
-                $status == HttpStatusCode::INTERNAL_SERVER_ERROR,
+                $status == Constant::INTERNAL_SERVER_ERROR,
                 new Exception($body['msg'])
             );
             

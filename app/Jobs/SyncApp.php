@@ -2,7 +2,7 @@
 namespace App\Jobs;
 
 use App\Facades\Wechat;
-use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait};
+use App\Helpers\{Broadcaster, Constant, JobTrait};
 use App\Models\{App, Corp};
 use Exception;
 use Illuminate\{Bus\Queueable,
@@ -41,7 +41,7 @@ class SyncApp implements ShouldQueue {
             'userId'     => $this->userId,
             'title'      => __('messages.app.title'),
             'message'    => __('messages.app.configured'),
-            'statusCode' => HttpStatusCode::OK,
+            'statusCode' => Constant::OK,
         ];
         $this->broadcaster = new Broadcaster();
         

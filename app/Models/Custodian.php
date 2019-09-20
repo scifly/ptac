@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
@@ -418,7 +418,7 @@ class Custodian extends Model {
             !Request::input('field') ||
             !Request::input('id') ||
             !in_array(Request::input('field'), ['grade', 'class']),
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );
         $id = Request::input('id');

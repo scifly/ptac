@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use App\Jobs\{ExportStudent, ImportStudent};
 use Carbon\Carbon;
 use Eloquent;
@@ -347,7 +347,7 @@ class Student extends Model {
         $sns = $ds ?? [];
         abort_if(
             !empty($ds ?? []),
-            HttpStatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             join('', [
                 (!empty($sns) ? ('学号: ' . join(',', $sns)) : ''),
                 '有重复，请检查后重试',
@@ -372,7 +372,7 @@ class Student extends Model {
         $id = Request::input('id');
         abort_if(
             !in_array($range = Request::input('range'), [0, 1, 2]),
-            HttpstatusCode::NOT_ACCEPTABLE,
+            Constant::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );
         $students = collect([]);

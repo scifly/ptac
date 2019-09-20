@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\HttpStatusCode;
+use App\Helpers\Constant;
 use App\Models\Media;
 use App\Models\WapSite;
 use App\Models\WapSiteModule;
@@ -42,12 +42,12 @@ class MobileSiteComposer {
                 # 禁止学生访问微网站
                 abort_if(
                     !$user || $user->role() == '学生',
-                    HttpStatusCode::UNAUTHORIZED,
+                    Constant::UNAUTHORIZED,
                     __('messages.unauthorized')
                 );
                 abort_if(
                     !($wapSite = WapSite::whereSchoolId(session('schoolId'))->first()),
-                    HttpStatusCode::NOT_FOUND,
+                    Constant::NOT_FOUND,
                     __('messages.not_found')
                 );
                 $data = [

@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait};
+use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -183,7 +183,7 @@ class WsmArticle extends Model {
         foreach ($files['images'] as $image) {
             abort_if(
                 empty($image),
-                HttpStatusCode::NOT_ACCEPTABLE,
+                Constant::NOT_ACCEPTABLE,
                 __('messages.empty_file')
             );
             $uploadedFile = $media->import(
@@ -191,7 +191,7 @@ class WsmArticle extends Model {
             );
             abort_if(
                 !$uploadedFile,
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                Constant::INTERNAL_SERVER_ERROR,
                 __('messages.file_upload_failed')
             );
             $uploadedFiles[] = $uploadedFile;

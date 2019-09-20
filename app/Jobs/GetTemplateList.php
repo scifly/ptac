@@ -2,7 +2,7 @@
 namespace App\Jobs;
 
 use App\Facades\Wechat;
-use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
+use App\Helpers\{Broadcaster, Constant, JobTrait, ModelTrait};
 use App\Models\App;
 use App\Models\Template;
 use Exception;
@@ -39,7 +39,7 @@ class GetTemplateList implements ShouldQueue {
         $this->userId = $userId;
         $this->response = array_combine(Constant::BROADCAST_FIELDS, [
             $this->userId, __('messages.template.title'),
-            HttpStatusCode::OK, __('messages.template.completed'),
+            Constant::OK, __('messages.template.completed'),
         ]);
         $this->broadcaster = new Broadcaster;
         
