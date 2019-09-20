@@ -261,7 +261,7 @@ class User extends Authenticatable {
         switch ($rootMenu->mType->name) {
             case '根':
                 $gIds = [$rootGId, $corpGId, $schoolGId];
-                $users = null;
+                $users = collect([]);
                 break;
             case '企业':
                 $gIds = [$corpGId, $schoolGId];
