@@ -16,14 +16,14 @@ use Throwable;
  * Class ScoreController
  * @package App\Http\Controllers
  */
-class ScoreCenterController extends Controller {
+class ScoreController extends Controller {
     
     static $category = 1; # 微信端控制器
     
     protected $score, $exam;
     
     /**
-     * ScoreCenterController constructor.
+     * ScoreController constructor.
      *
      * @param Score $score
      * @param Exam $exam

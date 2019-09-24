@@ -75,13 +75,7 @@ $routes = [
         'stat'   => ['post'],
         'export' => ['get'],
     ],
-    'conference_room' => $default,
     'conference'      => $default,
-    'participant'     => [
-        'index' => ['get'],
-        'store' => ['post'],
-        'show'  => ['{id}' => 'get'],
-    ],
     'corp'            => array_merge(
         $default, ['recharge' => ['{id}' => ['get', 'put']]],
         ),
@@ -183,9 +177,14 @@ $routes = [
         'update'  => ['{id?}' => 'get'],
         'destroy' => ['{id?}' => 'delete'],
     ],
+    'participant'     => [
+        'index' => ['get'],
+        'store' => ['post'],
+        'show'  => ['{id}' => 'get'],
+    ],
     'partner'         => array_merge(
         $default, ['recharge' => ['{id}' => ['get', 'put']]],
-        ),
+    ),
     'passage_log'     => [
         'index'  => ['get'],
         'store'  => ['post'],
@@ -300,9 +299,9 @@ $routes = [
 ];
 routes($routes);
 /** 微信端路由 -------------------------------------------------------------------------------------------------------- */
-Route::get('msg/{code}', 'Wechat\MessageCenterController@detail');
+Route::get('msg/{code}', 'Wechat\MessageController@detail');
 $routes = [
-    'message_center' => [
+    'message' => [
         'index'   => ['get', 'post'],
         'create'  => ['get', 'post'],
         'edit'    => ['{id?}' => ['get', 'post']],
@@ -311,12 +310,12 @@ $routes = [
         'destroy' => ['{id}' => 'delete'],
         'send'    => ['post'],
     ],
-    'mobile_site'    => [
+    'mobile'    => [
         'index'   => ['get'],
         'module'  => ['get'],
         'article' => ['get'],
     ],
-    'score_center'   => [
+    'score'   => [
         'index'   => ['get', 'post'],
         'detail'  => ['get', 'post'],
         'graph'   => ['get', 'post'],

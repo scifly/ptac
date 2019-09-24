@@ -1,7 +1,7 @@
 @extends('layouts.wap')
 @section('title') 微网站 @endsection
 @section('css')
-	<link rel="stylesheet" href="{!! asset('css/wechat/mobile_site/module.css') !!}">
+	<link rel="stylesheet" href="{!! asset('mobile') !!}">
 @endsection
 @section('content')
 	<header class="wechat-header">
@@ -12,7 +12,7 @@
 		<div class="weui-panel weui-panel_access">
 			<div class="weui-panel__bd">
 				@foreach($articles as $article)
-					<a href="{!! url(session('acronym') . '/mobile_sites/article?id=' . $article->id) !!}"
+					<a href="{!! url(session('acronym') . '/mobiles/article?id=' . $article->id) !!}"
 					   class="weui-media-box weui-media-box_appmsg"
 					>
 						<div class="weui-media-box__hd">

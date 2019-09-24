@@ -1,7 +1,7 @@
 @extends('layouts.wap')
 @section('title') 成绩中心 @endsection
 @section('css')
-    <link rel="stylesheet" href="{!! asset('/css/wechat/score_center/student.css') !!}">
+    <link rel="stylesheet" href="{!! asset('score') !!}">
 @endsection
 @section('content')
     {!! Form::hidden('exam_id', $exam->id, ['id' => 'exam_id']) !!}
@@ -71,12 +71,12 @@
             <p>单科</p>
         </a>
         <a class="btnItem"
-           href='{!! url($acronym . "/score_centers/stat?examId=" . $exam->id . "&studentId=" . $studentId) !!}'>
+           href='{!! url($acronym . "/scores/stat?examId=" . $exam->id . "&studentId=" . $studentId) !!}'>
             <i class="icon iconfont icon-renzheng7"></i>
             <p>综合</p>
         </a>
     </div>
 @endsection
 @section('script')
-    <script src="{!! URL::asset('js/wechat/score_center/student.js') !!}"></script>
+    <script src="{!! URL::asset('score') !!}"></script>
 @endsection

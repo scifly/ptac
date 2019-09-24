@@ -19,12 +19,11 @@ class PollRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
-    /**
-     * @return array
-     */
+    /** @return array */
     public function rules() {
+        
         return [
-            'name'      => 'required|string|max:255|unique:poll_questionnaires,name,' .
+            'name'      => 'required|string|max:255|unique:polls,name,' .
                 $this->input('id') . ',id,' .
                 'school_id,' . $this->input('school_id'),
             'school_id' => 'required|integer',
@@ -32,6 +31,7 @@ class PollRequest extends FormRequest {
             'end'       => 'required|date_format:Y-m-d H:i:s',
             'enabled'   => 'required|boolean',
         ];
+        
     }
     
     protected function prepareForValidation() {

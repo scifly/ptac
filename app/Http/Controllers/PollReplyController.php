@@ -1,35 +1,35 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PollRequest;
-use App\Models\Poll;
+use App\Http\Requests\PollTopicRequest;
+use App\Models\PollTopic;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
- * 调查问卷
+ * 问卷题目
  *
- * Class PollController
+ * Class PollTopicController
  * @package App\Http\Controllers
  */
-class PollController extends Controller {
+class PollReplyController extends Controller {
     
-    protected $poll;
+    protected $topic;
     
     /**
-     * PollController constructor.
-     * @param Poll $poll
+     * PollTopicController constructor.
+     * @param PollTopic $topic
      */
-    function __construct(Poll $poll) {
+    function __construct(PollTopic $topic) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->approve($this->poll = $poll);
+        $this->approve($this->topic = $topic);
         
     }
     
     /**
-     * 问卷列表
+     * 题目列表
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -38,7 +38,7 @@ class PollController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->poll->index()
+                $this->topic->index()
             );
         }
         
@@ -47,7 +47,7 @@ class PollController extends Controller {
     }
     
     /**
-     * 创建问卷
+     * 创建题目
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -59,22 +59,23 @@ class PollController extends Controller {
     }
     
     /**
-     * 保存问卷
+     * 保存题目
      *
-     * @param PollRequest $request
+     * @param PollTopicRequest $request
      * @return JsonResponse
      */
-    public function store(PollRequest $request) {
+    public function store(PollTopicRequest $request) {
         
         return $this->result(
-            $this->poll->store($request->all())
+            $this->topic->store(
+                $request->all()
+            )
         );
         
     }
     
     /**
-     * 编辑问卷
-     *
+     * 编辑题目
      * @param $id
      * @return bool|JsonResponse
      * @throws Throwable
@@ -82,29 +83,31 @@ class PollController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'poll' => $this->poll->find($id),
+            'topic' => $this->topic->find($id),
         ]);
         
     }
     
     /**
-     * 更新问卷
+     * 更新题目
      *
-     * @param PollRequest $request
+     * @param PollTopicRequest $request
      * @param $id
      * @return JsonResponse
      * @throws Throwable
      */
-    public function update(PollRequest $request, $id) {
+    public function update(PollTopicRequest $request, $id) {
         
         return $this->result(
-            $this->poll->modify($request->all(), $id)
+            $this->topic->modify(
+                $request->all(), $id
+            )
         );
         
     }
     
     /**
-     * 删除问卷
+     * 删除题目
      *
      * @param $id
      * @return JsonResponse
@@ -113,7 +116,7 @@ class PollController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->poll->remove($id)
+            $this->topic->remove($id)
         );
         
     }

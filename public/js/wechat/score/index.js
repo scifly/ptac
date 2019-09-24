@@ -9,7 +9,7 @@ $targetId.on('change', function () { examList(false); });
 $search.on('input', function () { examList(false) });
 $loadMore.click(function () { start++; examList(true); });
 $(document).on('click', '.exam-link', function () {
-    window.location = 'score_centers/detail?examId=' + $(this).data('value') +
+    window.location = 'scores/detail?examId=' + $(this).data('value') +
         '&targetId=' + $targetId.val() +
         ($(this).data('type') === 'student' ? '&student=1' : '');
 });
@@ -18,7 +18,7 @@ function examList(more) {
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        url: 'score_centers',
+        url: 'scores',
         data: {
             start: start,
             keyword: $search.val(),

@@ -206,7 +206,7 @@ class Message extends Model {
                         $status = Html::tag('i', '', [
                             'title' => $title,
                             'class' => 'fa fa-circle text-' . $color,
-                            'style' => 'width: 20px; margin: 0 10px;'
+                            'style' => 'width: 20px; margin: 0 10px;',
                         ])->toHtml();
                         $status .= $d != 1
                             ? sprintf($html, 'edit_' . $id, '编辑', 'fa-edit')
@@ -574,7 +574,7 @@ class Message extends Model {
     
     /** 微信端 ------------------------------------------------------------------------------------------------------- */
     /**
-     * 微信端消息中心首页
+     * 消息中心
      *
      * @return bool|Factory|View|string
      * @throws Throwable
@@ -584,17 +584,12 @@ class Message extends Model {
         $response = response()->json([
             'message' => __('messages.ok'),
         ]);
-        switch (Request::method()) {
-            case 'GET':
-                $response = ($id = Request::input('id'))
-                    ? ($this->read($id) ? response()->json() : false)
-                    : view('wechat.message_center.index');
-                break;
-            case 'POST':
-                $response = $this->msgList();
-                break;
-            default:
-                break;
+        if (($method = Request::method()) == 'GET') {
+            $response = ($id = Request::input('id'))
+                ? ($this->read($id) ? response()->json() : false)
+                : view('wechat.message.index');
+        } elseif ($method == 'POST') {
+            $response = $this->msgList();
         }
         
         return $response;
@@ -602,7 +597,7 @@ class Message extends Model {
     }
     
     /**
-     * 微信端创建消息
+     * 创建消息
      *
      * @return Factory|JsonResponse|View|string
      * @throws Throwable
@@ -611,11 +606,13 @@ class Message extends Model {
         
         return Request::method() == 'POST'
             ? (Request::has('file') ? $this->import() : $this->search())
-            : view('wechat.message_center.create');
+            : view('wechat.message.create');
         
     }
     
     /**
+     * 编辑消息
+     *
      * @param $id
      * @return Factory|JsonResponse|View|string
      * @throws Throwable
@@ -630,12 +627,12 @@ class Message extends Model {
         
         return Request::method() == 'POST'
             ? Request::has('file') ? $this->import() : $this->search()
-            : view('wechat.message_center.edit', ['message' => $message]);
+            : view('wechat.message.edit', ['message' => $message]);
         
     }
     
     /**
-     * 微信端消息详情
+     * 消息详情
      *
      * @param $id
      * @return Factory|JsonResponse|View|string
@@ -646,49 +643,43 @@ class Message extends Model {
         $response = response()->json([
             'message' => __('messages.ok'),
         ]);
-        switch (Request::method()) {
-            case 'GET':
+        if (($method = Request::method()) == 'GET') {
+            abort_if(
+                !($msg = $this->find($id)),
+                Constant::NOT_FOUND,
+                __('messages.message.not_found')
+            );
+            $response = view('wechat.message.show', [
+                'msg' => $msg,
+            ]);
+        } elseif ($method == 'POST') {
+            if (Request::has('content')) {
+                # 保存消息回复
+                Request::merge(['user_id' => Auth::id()]);
                 abort_if(
-                    !($msg = $this->find($id)),
-                    Constant::NOT_FOUND,
-                    __('messages.message.not_found')
-                );
-                $response = view('wechat.message_center.show', [
-                    'msg' => $msg,
-                ]);
-                break;
-            case 'POST':
-                if (Request::has('content')) {
-                    # 保存消息回复
-                    Request::merge(['user_id' => Auth::id()]);
-                    abort_if(
-                        !((new MessageReply)->store(Request::all())),
-                        Constant::BAD_REQUEST,
-                        __('messages.fail')
-                    );
-                } else {
-                    # 获取指定消息的所有回复
-                    $response = view('wechat.message_center.replies', [
-                        'replies' => $this->replies(
-                            Request::input('id'),
-                            Request::input('msl_id')
-                        ),
-                    ])->render();
-                }
-                break;
-            case 'DELETE':
-                abort_if(
-                    !($mr = MessageReply::find(Request::input('id'))),
-                    Constant::NOT_FOUND, __('messages.not_found')
-                );
-                abort_if(
-                    !($mr->delete()),
+                    !((new MessageReply)->store(Request::all())),
                     Constant::BAD_REQUEST,
-                    __('messages.del_fail')
+                    __('messages.fail')
                 );
-                break;
-            default:
-                break;
+            } else {
+                # 获取指定消息的所有回复
+                $response = view('wechat.message.replies', [
+                    'replies' => $this->replies(
+                        Request::input('id'),
+                        Request::input('msl_id')
+                    ),
+                ])->render();
+            }
+        } elseif ($method == 'DELETE') {
+            abort_if(
+                !($mr = MessageReply::find(Request::input('id'))),
+                Constant::NOT_FOUND, __('messages.not_found')
+            );
+            abort_if(
+                !($mr->delete()),
+                Constant::BAD_REQUEST,
+                __('messages.del_fail')
+            );
         }
         
         return $response;
@@ -703,7 +694,7 @@ class Message extends Model {
      */
     function wDetail($code) {
         
-        return view('wechat.message_center.detail', [
+        return view('wechat.message.detail', [
             'message' => $message = $this->where(['code' => $code])->first(),
             'content' => $this->detail($message->id),
         ]);
@@ -1187,20 +1178,20 @@ class Message extends Model {
     }
     
     /**
-     * 返回消息的发送对象用户id
+     * 返回消息发送对象的用户id
      *
      * @param Message $message
      * @return Collection
      */
     function targetUserIds(Message $message) {
-    
+        
         $content = json_decode($message->content, true);
         # 获取发送对象的user_id
         # 部门、标签类对象都需要转换成用户类对象
         [$toparty, $touser, $totag] = array_map(
             function ($field) use ($content) {
                 $to = $content[$field];
-            
+                
                 return empty($to) ? [] : explode('|', $to);
             }, ['toparty', 'touser', 'totag']
         );
@@ -1415,7 +1406,7 @@ class Message extends Model {
                 }
             );
         
-        return view('wechat.message_center.messages', [
+        return view('wechat.message.messages', [
             'type'     => $type,
             'messages' => $messages,
         ])->render();
@@ -1475,7 +1466,7 @@ class Message extends Model {
                     : explode('|', $targetIds);
         }
         
-        return view('wechat.message_center.targets', [
+        return view('wechat.message.targets', [
             'targets'           => $targets,
             'selectedTargetIds' => $selectedTargetIds ?? null,
             'type'              => $type,
@@ -1525,7 +1516,7 @@ class Message extends Model {
     }
     
     /**
-     * 返回消息列表(微信端)
+     * 返回消息列表
      *
      * @return string
      */

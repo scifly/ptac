@@ -16,9 +16,7 @@ class PollTopicRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
-    /**
-     * @return array
-     */
+    /** @return array */
     public function rules() {
         
         return [
@@ -27,9 +25,20 @@ class PollTopicRequest extends FormRequest {
                 'poll_id,' . $this->input('poll_id'),
             'poll_id'  => 'required|integer',
             'category' => 'required|integer',
-            'content'  => 'required|string',
+            'content'  => 'nullable|string',
             'enabled'  => 'required|boolean',
         ];
+        
+    }
+    
+    protected function prepareForValidation() {
+        
+        $input = $this->all();
+        $input['content'] = json_encode(
+            array_filter($input['option'] ?? []),
+            JSON_UNESCAPED_UNICODE
+        );
+        $this->replace($input);
         
     }
     

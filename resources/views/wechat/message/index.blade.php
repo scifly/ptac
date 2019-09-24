@@ -1,7 +1,7 @@
 @extends('layouts.wap')
 @section('title') 消息中心 @endsection
 @section('css')
-    <link rel="stylesheet" href="{!! asset('/css/wechat/message_center/index.css') !!}">
+    <link rel="stylesheet" href="{!! asset('message') !!}">
 @endsection
 @section('content')
     <!-- 搜索 -->
@@ -24,7 +24,7 @@
             @if ($canSend)
                 <div class="weui-cell__ft">
                     <a class="icon iconfont icon-add c-green"
-                       href="{!! url($acronym . '/message_centers/create') !!}"
+                       href="{!! url($acronym . '/messages/create') !!}"
                     ></a>
                 </div>
             @endif
@@ -120,5 +120,5 @@
     </div>
 @endsection
 @section('script')
-    <script src="{!! asset('/js/wechat/message_center/index.js') !!}"></script>
+    <script src="{!! asset('message') !!}"></script>
 @endsection

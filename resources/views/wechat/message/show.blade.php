@@ -3,7 +3,7 @@
     <title>消息中心</title>
 @endsection
 @section('css')
-    <link rel="stylesheet" href="{!! asset('/css/wechat/message_center/show.css') !!}">
+    <link rel="stylesheet" href="{!! asset('message') !!}">
 @endsection
 @section('content')
     <div id="app">
@@ -96,7 +96,7 @@
                                                 </div>
                                             </div>
                                             <ul class="discuss_list">
-                                                @include('wechat.message_center.replies', [
+                                                @include('wechat.message.replies', [
                                                     'replies' => $replies
                                                 ])
                                             </ul>
@@ -159,6 +159,6 @@
 @endsection
 @section('script')
     @if (isset($replies))
-        <script src="{!! asset('/js/wechat/message_center/show.js') !!}"></script>
+        <script src="{!! asset('message') !!}"></script>
     @endif
 @endsection

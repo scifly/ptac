@@ -230,7 +230,7 @@
                     <div class="weui-cells weui-cells_checkbox" style="padding-bottom: 60px;">
                         <div id="targets-container">
                             <!-- 部门列表 -->
-                            @include('wechat.message_center.targets', [
+                            @include('wechat.message.targets', [
                                 'type' => 'department',
                                 'targets' => $departments,
                                 'selectedTargetIds' => $selectedDepartmentIds ?? null,

@@ -8,9 +8,7 @@
                 {!! Form::hidden('id', $poll['id']) !!}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control text-blue',
@@ -21,21 +19,18 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('start', '开始日期', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'start', 'label' => '开始日期'])
                 <div class="col-sm-6">
                     {!! Form::text('start', null, ['class' => 'form-control datepicker']) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('end', '结束日期', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'end', 'label' => '结束日期'])
                 <div class="col-sm-6">
                     {!! Form::text('end', null, ['class' => 'form-control datepicker']) !!}
                 </div>
             </div>
+            @include('shared.tag.tags')
             @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $poll['enabled'] ?? null

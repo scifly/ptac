@@ -14,17 +14,17 @@ use Throwable;
 /**
  * 消息中心
  *
- * Class MessageCenterController
+ * Class MessageController
  * @package App\Http\Controllers\Wechat
  */
-class MessageCenterController extends Controller {
+class MessageController extends Controller {
     
     static $category = 1; # 微信端控制器
     
     protected $message;
     
     /**
-     * MessageCenterController constructor.
+     * MessageController constructor.
      * @param Message $message
      */
     public function __construct(Message $message) {

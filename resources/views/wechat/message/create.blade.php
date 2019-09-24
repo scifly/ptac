@@ -1,13 +1,13 @@
 @extends('layouts.wap')
 @section('title') 消息中心 @endsection
 @section('css')
-    <link rel="stylesheet" href="{!! asset('/css/wechat/message_center/message.css') !!}">
+    <link rel="stylesheet" href="{!! asset('message') !!}">
 @endsection
 @section('content')
     {!! Form::open(['method' => 'post', 'id' => 'formMessage']) !!}
-    @include('wechat.message_center.create_edit')
+    @include('wechat.message.create_edit')
     {!! Form::close() !!}
 @endsection
 @section('script')
-    <script src="{!! asset('/js/wechat/message_center/create.js') !!}"></script>
+    <script src="{!! asset('message') !!}"></script>
 @endsection

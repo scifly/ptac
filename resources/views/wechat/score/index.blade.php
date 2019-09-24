@@ -1,7 +1,7 @@
 @extends('layouts.wap')
 @section('title') 成绩中心 @endsection
 @section('css')
-    <link rel="stylesheet" href="{!! asset('/css/wechat/score_center/index.css') !!}">
+    <link rel="stylesheet" href="{!! asset('score') !!}">
 @endsection
 @section('content')
     <header class='wechat-header'>
@@ -62,5 +62,5 @@
     </div>
 @endsection
 @section('script')
-    <script src="{!! asset('/js/wechat/score_center/index.js') !!}"></script>
+    <script src="{!! asset('score') !!}"></script>
 @endsection

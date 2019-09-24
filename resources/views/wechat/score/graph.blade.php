@@ -1,6 +1,6 @@
 @extends('layouts.wap')
 @section('css')
-	<link rel="stylesheet" href="{!! asset('css/wechat/score_center/graph.css') !!}">
+	<link rel="stylesheet" href="{!! asset('score') !!}">
 @endsection
 @section('content')
 	<header class="wechat-header">
@@ -38,5 +38,5 @@
 	</div>
 @endsection
 @section('script')
-	<script src="{!! asset('/js/wechat/score_center/graph.js') !!}"></script>
+	<script src="{!! asset('score') !!}"></script>
 @endsection

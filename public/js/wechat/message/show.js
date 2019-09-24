@@ -1,5 +1,5 @@
 //# sourceURL=show.js
 $.getScript(
-    '/js/wechat/message_center/mc.js',
+    '/js/wechat/message/mc.js',
     function () { $.mc().show(); }
 );

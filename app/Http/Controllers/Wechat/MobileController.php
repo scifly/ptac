@@ -10,14 +10,14 @@ use Illuminate\View\View;
 /**
  * 微网站
  *
- * Class MobileSiteController
+ * Class MobileController
  * @package App\Http\Controllers\Wechat
  */
-class MobileSiteController extends Controller {
+class MobileController extends Controller {
     
     static $category = 1; # 微信端控制器
     
-    /** MobileSiteController constructor. */
+    /** MobileController constructor. */
     function __construct() { }
     
     /**
@@ -27,7 +27,7 @@ class MobileSiteController extends Controller {
      */
     public function index() {
         
-        return view('wechat.mobile_site.index');
+        return view('wechat.mobile.index');
         
     }
     
@@ -38,7 +38,7 @@ class MobileSiteController extends Controller {
      */
     public function module() {
         
-        return view('wechat.mobile_site.module');
+        return view('wechat.mobile.module');
         
     }
     
@@ -49,7 +49,7 @@ class MobileSiteController extends Controller {
      */
     public function article() {
         
-        return view('wechat.mobile_site.article');
+        return view('wechat.mobile.article');
         
     }
     

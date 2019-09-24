@@ -1,7 +1,7 @@
 @extends('layouts.wap')
 @section('title') 微网站 @endsection
 @section('css')
-    <link rel="stylesheet" href="{!! asset('/css/wechat/mobile_site/index.css') !!}">
+    <link rel="stylesheet" href="{!! asset('mobile') !!}">
 @endsection
 @section('content')
     <header class="wechat-header">
@@ -27,7 +27,7 @@
     <!--九宫格图标-->
     <div class="weui-grids">
         @foreach ($wapsite->wapSiteModules as $module)
-            <a href="{!! url(session('acronym') . '/mobile_sites/module?id=' . $module->id) !!}"
+            <a href="{!! url(session('acronym') . '/mobiles/module?id=' . $module->id) !!}"
                class="weui-grid js_grid"
             >
                 <div class=" weui-grid__icon">

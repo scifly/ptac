@@ -1,7 +1,7 @@
 @extends('layouts.wap')
 @section('title') 消息中心 @endsection
 @section('css')
-    <link rel="stylesheet" href="{!! asset('/css/wechat/message_center/show.css') !!}">
+    <link rel="stylesheet" href="{!! asset('message') !!}">
 @endsection
 @section('content')
     <div id="app">

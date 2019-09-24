@@ -512,7 +512,7 @@ class Score extends Model {
             $type = 'class';
         }
         
-        return view('wechat.score_center.index', [
+        return view('wechat.score.index', [
             'targets' => $targets,
             'exams'   => $exams,
             'type'    => $type,
@@ -537,7 +537,7 @@ class Score extends Model {
             __('messages.not_found')
         );
         
-        return view('wechat.score_center.stat', [
+        return view('wechat.score.stat', [
             'data'      => $this->wAnalyze([
                 'exam_id'    => $examId,
                 'student_id' => $studentId,
@@ -578,7 +578,7 @@ class Score extends Model {
                 'totalRanges' => [],
             ];
         
-        return view('wechat.score_center.analyze', [
+        return view('wechat.score.analyze', [
             'data'    => $data,
             'examId'  => $examId,
             'classId' => $classId,
@@ -628,7 +628,7 @@ class Score extends Model {
         $subjectIds = explode(',', $exam->subject_ids);
         $subjects = Subject::whereIn('id', $subjectIds)->pluck('name', 'id');
         
-        return view('wechat.score_center.graph', [
+        return view('wechat.score.graph', [
             'subjects' => $subjects,
             'student'  => $student,
             'exam'     => $exam,
@@ -1002,7 +1002,7 @@ class Score extends Model {
         return Request::method() == 'POST'
             ? response()->json(array_merge($detail, ['exam'  => $exam->toArray()]))
             : view(
-                'wechat.score_center.student',
+                'wechat.score.student',
                 array_merge($detail, [
                     'subjects'  => $subjectList,
                     'exam'      => $exam,
@@ -1072,7 +1072,7 @@ class Score extends Model {
         $student = Request::input('student');
         
         return $classId && $examId
-            ? view('wechat.score_center.squad', [
+            ? view('wechat.score.squad', [
                 'data'    => $this->examDetail($examId, $classId, $student),
                 'classId' => $classId,
                 'examId'  => $examId,

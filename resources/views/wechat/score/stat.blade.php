@@ -1,7 +1,7 @@
 @extends('layouts.wap')
 @section('title') 成绩中心 @endsection
 @section('css')
-    <link rel="stylesheet" href="{!! asset('/css/wechat/score_center/stat.css') !!}">
+    <link rel="stylesheet" href="{!! asset('score') !!}">
 @endsection
 @section('content')
     <header class="wechat-header">
@@ -52,7 +52,7 @@
     <div style="height: 70px; width: 100%;"></div>
     <div class="footerTab">
         <a class="btnItem exam-link"
-           href='{!! url($acronym . "/score_centers/detail?examId=". $examId ."&targetId=". $studentId . '&student=1') !!}'>
+           href='{!! url($acronym . "/scores/detail?examId=". $examId ."&targetId=". $studentId . '&student=1') !!}'>
             <i class="icon iconfont icon-document"></i>
             <p>单科</p>
         </a>
@@ -63,5 +63,5 @@
     </div>
 @endsection
 @section('script')
-    <script src="{!! asset('js/wechat/score_center/stat.js') !!}"></script>
+    <script src="{!! asset('score') !!}"></script>
 @endsection

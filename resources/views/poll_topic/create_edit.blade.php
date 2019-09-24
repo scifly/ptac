@@ -25,10 +25,11 @@
             @include('shared.single_select', [
                 'id' => 'category',
                 'label' => '题目类型',
+                'disabled' => isset($topic) ? true : null,
                 'items' => $categories
             ])
             <div class="form-group" id="options" style="display: {!! isset($content) ? 'block' : 'none' !!};">
-                @include('shared.label', ['field' => 'content', 'label' => '选项'])
+                @include('shared.label', ['field' => 'option', 'label' => '选项'])
                 <div class="col-sm-6">{!! $content !!}</div>
             </div>
             @include('shared.remark')

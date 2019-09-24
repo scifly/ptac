@@ -1,7 +1,7 @@
 @extends('layouts.wap')
 @section('title') 微网站 @endsection
 @section('css')
-	<link rel="stylesheet" href="{!! asset('/css/wechat/mobile_site/article.css') !!}">
+	<link rel="stylesheet" href="{!! asset('mobile') !!}">
 @endsection
 @section('content')
 	<!--轮播图-->
