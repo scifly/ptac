@@ -5,9 +5,12 @@ use App\Facades\Datatable;
 use App\Helpers\{Constant, ModelTrait};
 use Eloquent;
 use Exception;
+use Form;
+use Html;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\{Auth, DB};
+use Request;
 use Throwable;
 
 /**
@@ -43,8 +46,9 @@ class PollTopic extends Model {
     
     protected $fillable = [
         'poll_id', 'topic', 'category',
-        'content', 'enabled'
+        'content', 'enabled',
     ];
+    const CATEGORIES = ['填空', '单选', '多选'];
     
     /** @return BelongsTo */
     function poll() { return $this->belongsTo('App\Models\Poll'); }
@@ -61,28 +65,28 @@ class PollTopic extends Model {
         
         $columns = [
             ['db' => 'PollTopic.id', 'dt' => 0],
-            ['db' => 'PollTopic.subject', 'dt' => 1],
-            ['db' => 'Poll.name as pq_name', 'dt' => 2],
+            ['db' => 'PollTopic.topic', 'dt' => 1],
+            ['db' => 'Poll.name', 'dt' => 2],
             [
-                'db' => 'PollTopic.category', 'dt' => 3,
+                'db'        => 'PollTopic.category', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return !$d ? '填空' : ($d == 1 ? '单选' : '多选');
-                }
+                    return self::CATEGORIES[$d];
+                },
             ],
-            ['db' => 'Poll.created_at', 'dt' => 4],
-            ['db' => 'Poll.updated_at', 'dt' => 5],
+            ['db' => 'Poll.created_at', 'dt' => 4, 'dr' => true],
+            ['db' => 'Poll.updated_at', 'dt' => 5, 'dr' => true],
             [
                 'db'        => 'PollTopic.enabled', 'dt' => 6,
-                'formatter' => function ($d) {
-                    return Datatable::status(null, $d, false);
+                'formatter' => function ($d, $row) {
+                    return Datatable::status($d, $row, false);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'pools',
+                'table'      => 'polls',
                 'alias'      => 'Poll',
-                'type'       => 'left',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Poll.id = PollTopic.poll_id',
                 ],
@@ -126,10 +130,23 @@ class PollTopic extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Throwable
      */
     function modify(array $data, $id) {
         
-        return $this->find($id)->update($data);
+        try {
+            DB::transaction(function () use ($data, $id) {
+                throw_if(
+                    !$topic = $this->find($id),
+                    new Exception(__('messages.not_found'))
+                );
+                $topic->update($data);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     
@@ -144,16 +161,97 @@ class PollTopic extends Model {
         
         try {
             DB::transaction(function () use ($id) {
-                $this->purge(
-                    ['PollTopic', 'PollReply'],
-                    'poll_topic_id', 'purge', $id
-                );
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                Request::replace(['ids' => $ids]);
+                $this->purge(['PollTopic', 'PollReply'], 'poll_topic_id');
             });
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
+        
+    }
+    
+    /** @return array */
+    function compose() {
+        
+        $action = explode(',', Request::path())[1];
+        if ($action == 'index') {
+            $nil = collect([null => '全部']);
+            
+            return [
+                'titles' => [
+                    '#', '名称', '所属问卷',
+                    [
+                        'title' => '类型',
+                        'html'  => $this->htmlSelect(
+                            $nil->union(self::CATEGORIES),
+                            'filter_category'
+                        ),
+                    ],
+                    ['title' => '创建于', 'html' => $this->htmlDTRange('创建于')],
+                    ['title' => '更新于', 'html' => $this->htmlDTRange('更新于')],
+                    [
+                        'title' => '状态 . 操作',
+                        'html'  => $this->htmlSelect(
+                            $nil->union(['已启用', '已禁用']), 'filter_enabled'),
+                    ],
+                ],
+            ];
+        } else {
+            $topic = $this->find(Request::route('id'));
+            
+            return [
+                'polls'      => Poll::where(['user_id' => Auth::id()])->pluck('name', 'id'),
+                'categories' => collect(self::CATEGORIES),
+                'content'    => $topic ? $this->options($topic->content) : null,
+            ];
+        }
+        
+    }
+    
+    /**
+     * @param string|null $content
+     * @return string
+     */
+    function options($content = null) {
+        
+        $options = json_decode($content, true) ?? [];
+        $html = '';
+        [$add, $del] = array_map(
+            function ($iClass, $bClass, $title) {
+                return Form::button(
+                    Html::tag('i', '', ['class' => 'fa ' . $iClass . ' text-blue']),
+                    ['class' => 'btn btn-box-tool ' . $bClass . '-option', 'title' => $title]
+                )->toHtml();
+            }, ['fa-plus', 'fa-minus'], ['add', 'remove'], ['新增', '移除']
+        );
+        foreach ($options as $option) {
+            $input = Form::text('option[]', $option, [
+                'class' => 'form-control text-blue',
+            ])->toHtml();
+            $tr = join(
+                array_map(
+                    function ($td) {
+                        return Html::tag('td', $td);
+                    }, [$input, $del]
+                )
+            );
+            $html .= Html::tag('tr', $tr);
+        }
+        
+        return <<<HTML
+            <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
+                <thead>
+                    <tr>
+                        <th class="text-center">选项</th>
+                        <th class="text-center">{$add}</th>
+                    </tr>
+                </thead>
+                <tbody>{$html}</tbody>
+            </table>';
+        HTML;
         
     }
     

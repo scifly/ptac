@@ -142,10 +142,23 @@ class Poll extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Throwable
      */
     function modify(array $data, $id) {
         
-        return $this->find($id)->update($data);
+        try {
+            DB::transaction(function () use ($data, $id) {
+                throw_if(
+                    !$poll = $this->find($id),
+                    new Exception(__('messages.not_found'))
+                );
+                $poll->update($data);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     
@@ -161,13 +174,8 @@ class Poll extends Model {
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $pqsIds = PollTopic::whereIn('pq_id', $ids)
-                    ->pluck('id')->toArray();
-                Request::replace(['ids' => $pqsIds]);
-                (new PollTopic)->remove();
                 Request::replace(['ids' => $ids]);
-                $class = 'Poll';
-                $this->purge([$class, $class . 'Participant', $class . 'Answer'], 'pq_id');
+                $this->purge(['Poll', 'PollTopic'], 'poll_id');
             });
         } catch (Exception $e) {
             throw $e;

@@ -6,6 +6,8 @@
         <div class="form-horizontal">
             @if (isset($school))
                 {!! Form::hidden('id', $school['id'])!!}
+                {!! Form::hidden('department_id', $corp['department_id']) !!}
+                {!! Form::hidden('menu_id', $corp['menu_id']) !!}
             @endif
             {!! Form::hidden('corp_id', $corpId, ['id' => 'corp_id']) !!}
             <div class="form-group">

@@ -2,7 +2,6 @@
 namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
-use App\Models\School;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -32,9 +31,9 @@ class SchoolRequest extends FormRequest {
                 $this->input('id') . ',id',
             'address'        => 'required|string|between:6,255',
             'signature'      => 'required|string|between:2,7',
-            'department_id'  => 'required|integer',
             'corp_id'        => 'required|integer',
-            'menu_id'        => 'required|integer',
+            'department_id'  => 'nullable|integer',
+            'menu_id'        => 'nullable|integer',
             'school_type_id' => 'required|integer',
             'enabled'        => 'required|boolean',
             'app_id'         => 'nullable|integer',
@@ -50,16 +49,6 @@ class SchoolRequest extends FormRequest {
         
         if (!$this->has('ids')) {
             $input = $this->all();
-            if ($this->method() == 'POST') {
-                # 保存 - store
-                $input['department_id'] = $input['department_id'] ?? 0;
-                $input['menu_id'] = $input['menu_id'] ?? 0;
-            } else {
-                # 更新 - update
-                $school = School::find($this->input('id'));
-                $input['department_id'] = $school->department_id;
-                $input['menu_id'] = $school->menu_id;
-            }
             $input['user_ids'] = join(',', $input['user_ids']);
             $this->replace($input);
         }

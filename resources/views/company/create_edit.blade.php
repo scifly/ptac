@@ -6,11 +6,11 @@
         <div class="form-horizontal">
             @if (isset($op))
                 {!! Form::hidden('id', $op['id']) !!}
+                {!! Form::hidden('department_id', $op['department_id']) !!}
+                {!! Form::hidden('menu_id', $op['menu_id']) !!}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-building text-blue'])
@@ -23,12 +23,6 @@
                     </div>
                 </div>
             </div>
-            @if (isset($op['department_id']))
-                {!! Form::hidden('department_id', $op['department_id']) !!}
-            @endif
-            @if (isset($op['menu_id']))
-                {!! Form::hidden('menu_id', $op['menu_id']) !!}
-            @endif
             @include('shared.remark')
             @include('shared.switch', [
                 'id' => 'enabled',

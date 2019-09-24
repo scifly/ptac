@@ -1,1 +1,1 @@
-page.index('poll_questionnaires');
+page.index('polls');

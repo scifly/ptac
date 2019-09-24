@@ -2,13 +2,12 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\{Broadcaster, Constant, ModelTrait};
-use App\Models\{Department, Group, Member, Mobile, User};
+use App\Models\{Department};
 use Auth;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Pusher\Pusher;

@@ -1,4 +1,4 @@
-page.edit('formPq', 'poll_questionnaires');
+page.edit('formPoll', 'polls');
 $(function () {
     $(".datepicker").datetimepicker({
         dateFormat: 'yy-mm-dd',

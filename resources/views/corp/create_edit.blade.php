@@ -6,11 +6,11 @@
         <div class="form-horizontal">
             @if (!empty($corp['id']))
                 {!! Form::hidden('id', $corp['id']) !!}
+                {!! Form::hidden('department_id', $corp['department_id']) !!}
+                {!! Form::hidden('menu_id', $corp['menu_id']) !!}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', [
@@ -26,9 +26,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('acronym', '缩写', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'acronym', 'label' => '缩写'])
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', [
@@ -45,14 +43,11 @@
             </div>
             @include('shared.single_select', [
                 'label' => '所属运营者',
-                'id' => 'company_id',
                 'items' => $companies,
                 'icon' => 'fa fa-building text-blue'
             ])
             <div class="form-group">
-                {!! Form::label('corpid', '企业ID', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'corpid', 'label' => '企业ID'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         <div class="input-group-addon" style="width: 45px;">
@@ -69,9 +64,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('departmentid', '根部门id', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'departmentid', 'label' => '根部门id'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         @include('shared.icon_addon', ['class' => 'fa-sitemap'])
@@ -84,9 +77,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('mchid', '商户号', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'mchid', 'label' => '商户号'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         <div class="input-group-addon" style="width: 45px;">
@@ -101,9 +92,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('apikey', '商户支付密钥', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'apikey', 'label' => '商户支付密钥'])
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         @include('shared.icon_addon', ['class' => 'fa-key'])
@@ -115,12 +104,6 @@
                     </div>
                 </div>
             </div>
-            @if (isset($corp['department_id']))
-                {!! Form::hidden('department_id', $corp['department_id']) !!}
-            @endif
-            @if (isset($corp['menu_id']))
-                {!! Form::hidden('menu_id', $corp['menu_id']) !!}
-            @endif
             @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $corp['enabled'] ?? null

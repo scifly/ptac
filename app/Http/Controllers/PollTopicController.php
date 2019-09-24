@@ -10,22 +10,21 @@ use Throwable;
 /**
  * 问卷题目
  *
- * Class PqSubjectController
+ * Class PollTopicController
  * @package App\Http\Controllers
  */
 class PollTopicController extends Controller {
     
-    protected $pqs;
+    protected $topic;
     
     /**
      * PollTopicController constructor.
-     * @param PollTopic $pqs
+     * @param PollTopic $topic
      */
-    function __construct(PollTopic $pqs) {
+    function __construct(PollTopic $topic) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->pqs = $pqs;
-        $this->approve($pqs);
+        $this->approve($this->topic = $topic);
         
     }
     
@@ -39,7 +38,7 @@ class PollTopicController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->pqs->index()
+                $this->topic->index()
             );
         }
         
@@ -68,7 +67,7 @@ class PollTopicController extends Controller {
     public function store(PollTopicRequest $request) {
         
         return $this->result(
-            $this->pqs->store(
+            $this->topic->store(
                 $request->all()
             )
         );
@@ -84,7 +83,7 @@ class PollTopicController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'pqs' => $this->pqs->find($id),
+            'topic' => $this->topic->find($id),
         ]);
         
     }
@@ -95,11 +94,12 @@ class PollTopicController extends Controller {
      * @param PollTopicRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(PollTopicRequest $request, $id) {
         
         return $this->result(
-            $this->pqs->modify(
+            $this->topic->modify(
                 $request->all(), $id
             )
         );
@@ -116,7 +116,7 @@ class PollTopicController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->pqs->remove($id)
+            $this->topic->remove($id)
         );
         
     }
