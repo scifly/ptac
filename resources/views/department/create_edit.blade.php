@@ -4,10 +4,10 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($department['id']))
-                {{ Form::hidden('id', $department['id']) }}
+            @if (isset($department))
+                {!! Form::hidden('id', $department['id']) !!}
             @endif
-            {!! Form::hidden('parent_id', $parentId ?? null, ['id' => 'parent_id']) !!}
+            {!! Form::hidden('parent_id', $parentId ?? null) !!}
             <div class="form-group">
                 {!! Form::label('name', '名称',[
                     'class' => 'col-sm-3 control-label'

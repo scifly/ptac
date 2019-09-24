@@ -5,10 +5,10 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($menu))
-                {{ Form::hidden('id', $menu['id']) }}
-                {{ Form::hidden('position', $menu['position'], ['id' => 'position']) }}
+                {!! Form::hidden('id', $menu['id']) !!}
+                {!! Form::hidden('position', $menu['position']) !!}
             @endif
-            {{ Form::hidden('parent_id', $parentId ?? null, ['id' => 'parent_id']) }}
+            {{ Form::hidden('parent_id', $parentId ?? null) }}
             <!-- 名称 -->
             <div class="form-group">
                 @include('shared.label', ['field' => 'name', 'label' => '名称'])

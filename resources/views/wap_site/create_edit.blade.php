@@ -4,7 +4,7 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            {{ Form::hidden('id', $ws['id']) }}
+            {!! Form::hidden('id', $ws['id']) !!}
             <div class="form-group">
                 {!! Form::label('site_title', '首页抬头', [
                     'class' => 'col-sm-3 control-label'

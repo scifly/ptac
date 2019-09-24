@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (isset($et) && !empty($et['id']))
-                {{ Form::hidden('id', $et['id']) }}
+            @if (isset($et)))
+                {!! Form::hidden('id', $et['id']) !!}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [

@@ -78,7 +78,7 @@
                 }).on('deselect_node.jstree', function (node, selected) {
                 }).on('loaded.jstree', function () {
                     if ($id.length === 1) {
-                        var menuIds = $('#menu_ids').val().split(',');
+                        var menuIds = $('input[name=menu_ids]').val().split(',');
                         $menuTree.jstree().select_node(menuIds);
                     }
                     $menuTree.jstree('open_all');
@@ -108,9 +108,9 @@
                         $('.actionsgroup').find('.checked').find('.minimal').each(function () {
                             actionIds.push($(this).val());
                         });
-                        $('#menu_ids').val(menuIds.join());
-                        $('#tab_ids').val(tabIds.join());
-                        $('#action_ids').val(actionIds.join());
+                        $('input[name=menu_ids]').val(menuIds.join());
+                        $('input[name=tab_ids]').val(tabIds.join());
+                        $('input[name=action_ids]').val(actionIds.join());
                         $.ajax({
                             type: 'POST',
                             dataType: 'json',

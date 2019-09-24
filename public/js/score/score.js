@@ -50,7 +50,7 @@
                         $typePrev.after(result);
                         page.initSelect2();
                         if (type === 'class') {
-                            score.list('student', $('#class_id').val());
+                            score.list('student', $('input[name=class_id]').val());
                         }
                     },
                     error: function (e) {
@@ -307,7 +307,7 @@
                             _token: page.token(),
                             examId: examId,
                             classId: classId,
-                            subjectIds: subjectIds,
+                            'subjectIds': subjectIds,
                             items: $('#items').val()
                         },
                         success: function (result) {
@@ -317,11 +317,11 @@
                                 var message = result[i];
                                 html +=
                                     '<tr>'+
-                                        '<td><label><input type="checkbox" class="minimal"></label></td>'+
-                                        '<td>' + message['custodian'] + '</td>' +
-                                        '<td>' + message['name'] + '</td>' +
-                                        '<td class="mobile">' + message['mobile'] + '</td>'+
-                                        '<td class="content">' + message['content'] + '</td>'+
+                                    '<td><label><input type="checkbox" class="minimal"></label></td>'+
+                                    '<td>' + message['custodian'] + '</td>' +
+                                    '<td>' + message['name'] + '</td>' +
+                                    '<td class="mobile">' + message['mobile'] + '</td>'+
+                                    '<td class="content">' + message['content'] + '</td>'+
                                     '</tr>';
                             }
                             $('#send-table tbody').html(html);
@@ -530,23 +530,25 @@
                 });
             },
             onClassIdChange: function () {
-                $(document).on('change', '#class_id', function () {
-                    score.list('student', $('#class_id').val());
+                $(document).on('change', 'input[name=class_id]', function () {
+                    score.list('student', $('input[name=class_id]').val());
                 });
             },
             onAnalyzeClick: function () {
                 $('#analyze').off('click').on('click', function () {
                     var statType = parseInt($('.checked').find('.minimal').val()),
+                        examId = $('input[name=exam_id]').val(),
+                        studentId = $('input[name=student_id]').val(),
                         data = {
                             _token: page.token(),
-                            classId: $('#class_id').val()
+                            classId: $('input[name=class_id]').val()
                         };
                     $('.overlay').show();
                     $.ajax({
                         type: 'POST',
                         data: $.extend(
                             data,
-                            statType === 1 ? {examId: $('#exam_id').val()} : {studentId: $('#student_id').val()}
+                            statType === 1 ? {examId: examId} : {studentId: studentId}
                         ),
                         url: '../scores/stat',
                         success: function (result) {
@@ -561,8 +563,8 @@
                 });
             },
             getSsList: function (result) {
-                var $studentId = $('#student_id'),
-                    $subjectId = $('#subject_id'),
+                var $studentId = $('input[name=student_id]'),
+                    $subjectId = $('input[name=subject_id]'),
                     $studentNext = $studentId.next(),
                     $studentPrev = $studentId.prev(),
                     $subjectNext = $subjectId.next(),

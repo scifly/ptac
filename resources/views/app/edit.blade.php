@@ -118,9 +118,7 @@
             ])
             @if ($app['category'] == 1)
                 <div class="form-group">
-                    {!! Form::label('redirect_domain', '企业应用可信域名', [
-                        'class' => 'col-sm-3 control-label'
-                    ]) !!}
+                    @include('shared.label', ['field' => 'redirect_domain', 'label' => '企业应用可信域名'])
                     <div class="col-sm-6">
                         <div class="input-group">
                             @include('shared.icon_addon', ['class' => 'fa-location-arrow text-purple'])
@@ -133,9 +131,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    {!! Form::label('home_url', '主页型应用url', [
-                        'class' => 'col-sm-3 control-label'
-                    ]) !!}
+                    @include('shared.label', ['field' => 'home_url', 'label' => '主页型应用url'])
                     <div class="col-sm-6">
                         <div class="input-group">
                             @include('shared.icon_addon', ['class' => 'fa-link'])

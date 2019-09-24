@@ -1,3 +1,3 @@
-$.getMultiScripts(['js/score/score.js']).done(function () {
-    $.score().create();
-});
+$.getMultiScripts(['js/score/score.js']).done(
+    function () {$.score().create();}
+);

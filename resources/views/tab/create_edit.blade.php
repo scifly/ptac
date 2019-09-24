@@ -4,7 +4,7 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($tab['id']))
+            @if (isset($tab))
                 {!! Form::hidden('id', $tab['id']) !!}
             @endif
             <div class="form-group">

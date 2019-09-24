@@ -4,7 +4,7 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($class['id']))
+            @if (isset($class))
                 {!! Form::hidden('id', $class['id']) !!}
             @endif
             <!-- 名称 -->

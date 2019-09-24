@@ -6,8 +6,8 @@
         <div class="form-horizontal">
             @if (isset($score))
                 {!! Form::hidden('id', $score['id']) !!}
-                {!! Form::hidden('subject', $score['subject_id'], ['id' => 'subject']) !!}
-                {!! Form::hidden('student', $score['student_id'], ['id' => 'student']) !!}
+                {!! Form::hidden('subject', $score['subject_id']) !!}
+                {!! Form::hidden('student', $score['student_id']) !!}
             @endif
             @include('shared.single_select', [
                 'label' => '考试名称',

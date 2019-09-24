@@ -15,17 +15,16 @@ use Throwable;
  */
 class PollController extends Controller {
     
-    protected $pq;
+    protected $poll;
     
     /**
      * PollController constructor.
-     * @param Poll $pq
+     * @param Poll $poll
      */
-    function __construct(Poll $pq) {
+    function __construct(Poll $poll) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->pq = $pq;
-        $this->approve($pq);
+        $this->approve($this->poll = $poll);
         
     }
     
@@ -39,7 +38,7 @@ class PollController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->pq->index()
+                $this->poll->index()
             );
         }
         
@@ -68,7 +67,7 @@ class PollController extends Controller {
     public function store(PollRequest $request) {
         
         return $this->result(
-            $this->pq->store($request->all())
+            $this->poll->store($request->all())
         );
         
     }
@@ -82,7 +81,7 @@ class PollController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'pq' => Poll::find($id),
+            'poll' => $this->poll->find($id),
         ]);
         
     }
@@ -97,7 +96,7 @@ class PollController extends Controller {
     public function update(PollRequest $request, $id) {
         
         return $this->result(
-            $this->pq->modify($request->all(), $id)
+            $this->poll->modify($request->all(), $id)
         );
         
     }
@@ -112,7 +111,7 @@ class PollController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->pq->remove($id)
+            $this->poll->remove($id)
         );
         
     }

@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (isset($article) && !empty($article['id']))
-                {{ Form::hidden('id', $article['id']) }}
+            @if (isset($article))
+                {!! Form::hidden('id', $article['id']) !!}
             @endif
             @include('shared.single_select', [
                 'label' => '所属网站模块',
@@ -47,7 +47,7 @@
                     <div class="preview_content">
                         <script id="container" name="content" type="text/plain" >
                             @if (isset($article))
-                                {!! $article['content'] !!}
+                                {{ $article['content'] }}
                             @endif
                         </script>
                     </div>

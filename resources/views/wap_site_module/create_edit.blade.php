@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($wsm['id']))
-                {{ Form::hidden('id', $wsm['id']) }}
+            @if (isset($wsm))
+                {!! Form::hidden('id', $wsm['id']) !!}
             @endif
             @include('shared.single_select', [
                 'label' => '所属网站',
@@ -31,18 +31,15 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="preview">
-                        {!! Form::hidden('media_id', isset($media) ? $media->id : null, [
-                            'id' => 'media_id'
-                        ]) !!}
+                        {!! Form::hidden('media_id', isset($media) ? $media->id : null) !!}
                         @if (isset($media))
-                            <img src="../../{{ $media->path }}" id="{{ $media->id }}" alt="">
+                            <img src="../../{!! $media->path !!}" id="{!! $media->id !!}" alt="">
                         @endif
                     </div>
                     <label for="file-image" class="custom-file-upload text-blue">
                         <i class="fa fa-cloud-upload"></i> 上传图片
                     </label>
                     {!! Form::file('file-image', [
-                        'id' => 'file-image',
                         'accept' => 'image/*',
                         'class' => 'file-upload',
                     ]) !!}

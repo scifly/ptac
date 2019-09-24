@@ -15,12 +15,12 @@
                 <div class="tab-pane active" id="tab01">
                     <div class="form-horizontal">
                         <!-- 角色ID -->
-                        @if (!empty($group['id']))
+                        @if (isset($group))
                             {!! Form::hidden('id', $group['id']) !!}
                         @endif
-                        {!! Form::hidden($id = 'menu_ids', join(',', $selectedMenuIds ?? []), ['id' => $id]) !!}
-                        {!! Form::hidden($id = 'tab_ids', join(',', $selectedTabIds ?? []), ['id' => $id]) !!}
-                        {!! Form::hidden($id = 'action_ids', join(',', $selectedActionIds ?? []), ['id' => $id]) !!}
+                        {!! Form::hidden('menu_ids', join(',', $selectedMenuIds ?? [])) !!}
+                        {!! Form::hidden('tab_ids', join(',', $selectedTabIds ?? [])) !!}
+                        {!! Form::hidden('action_ids', join(',', $selectedActionIds ?? [])) !!}
                         <!-- 角色名称 -->
                         <div class="form-group">
                             @include('shared.label', ['field' => 'name', 'label' => '名称'])

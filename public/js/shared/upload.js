@@ -2,13 +2,9 @@
 (function ($) {
     $.upload = function (options) {
         var upload = {
-            options: $.extend({
-                file: '#file-image',
-                mediaId: '#media_id',
-                preview: '.preview'
-            }, options),
+            options: $.extend({}, options),
             upload: function (action, table, title) {
-                $(upload.options.file).on('change', function () {
+                $('input[name=file-image]').on('change', function () {
                     var file = $(this)[0].files[0],
                         id = action === 'edit' ? '/' + $('#id').val() : '',
                         data = new FormData();
@@ -24,13 +20,13 @@
                         contentType: false,
                         processData: false,
                         success: function (result) {
-                            var $preview = $(upload.options.preview),
+                            var $preview = $('.preview'),
                                 imgAttrs = {
                                     'src': '../../' + result['path'],
                                     'title': '文件名：' + result['filename']
                                 };
 
-                            $(upload.options.mediaId).val(result['id']);
+                            $('input[name=media_id]').val(result['id']);
                             $preview.find('img').remove();
                             $preview.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
                             $('.overlay').hide();

@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-        @if (!empty($module['id']))
-            {{ Form::hidden('id', $module['id']) }}
+        @if (isset($module))
+            {!! Form::hidden('id', $module['id']) !!}
         @endif
         <!-- 名称 -->
             <div class="form-group">

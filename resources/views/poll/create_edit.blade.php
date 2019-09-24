@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (isset($pq) && !empty($pq['id']))
-                {{ Form::hidden('id', $pq['id']) }}
+            @if (isset($poll))
+                {!! Form::hidden('id', $poll['id']) !!}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -38,7 +38,7 @@
             </div>
             @include('shared.switch', [
                 'id' => 'enabled',
-                'value' => $pq['enabled'] ?? null
+                'value' => $poll['enabled'] ?? null
             ])
         </div>
     </div>

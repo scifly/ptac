@@ -8,7 +8,7 @@
             'selectedTitle' => '已选择的对象'
         ])
         <div class="form-horizontal main-form">
-            @if (!empty($pr['id']))
+            @if (isset($pr))
                 {!! Form::hidden('id', $pr['id']) !!}
             @endif
             <!-- 规则名称 -->

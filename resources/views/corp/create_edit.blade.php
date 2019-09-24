@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($corp['id']))
-                {{ Form::hidden('id', $corp['id']) }}
+                {!! Form::hidden('id', $corp['id']) !!}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [

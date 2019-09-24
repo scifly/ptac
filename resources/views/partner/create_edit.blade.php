@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             <!-- 合作伙伴id -->
-            @if (!empty($partner['id']))
+            @if (isset($partner))
                 {!! Form::hidden('id', $partner['id']) !!}
             @endif
             <!-- 全称 -->

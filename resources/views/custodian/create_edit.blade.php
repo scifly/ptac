@@ -5,9 +5,9 @@
     <div class="box-body">
         <div class="form-horizontal">
             <!-- 监护人ID -->
-            @if (!empty($custodian['id']))
+            @if (isset($custodian))
                 {!! Form::hidden('id', $custodian['id']) !!}
-                {!! Form::hidden('user_id', $custodian['user_id'], ['id' => 'user_id']) !!}
+                {!! Form::hidden('user_id', $custodian['user_id']) !!}
                 @include('shared.avatar', ['user' => $custodian->user])
             @endif
             <!-- 姓名 -->

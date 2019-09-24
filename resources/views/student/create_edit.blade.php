@@ -5,12 +5,9 @@
     <div class="box-body">
         <div class="form-horizontal">
             <!-- 学生ID -->
-            @if (isset($student['id']))
-                <!-- 学生ID -->
+            @if (isset($student))
                 {!! Form::hidden('id', $student['id']) !!}
-                <!-- 学生UserID -->
-                {!! Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) !!}
-                <!-- 学生头像 -->
+                {!! Form::hidden('user_id', $student['user_id']) !!}
                 @include('shared.avatar', ['user' => $student->user, 'student' => true])
             @endif
             <!-- 真实姓名 -->
