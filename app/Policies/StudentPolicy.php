@@ -1,13 +1,12 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
 use App\Models\Student;
 use App\Models\User;
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class StudentPolicy
@@ -29,40 +28,21 @@ class StudentPolicy {
      *
      * @param User $user
      * @param Student $student
-     * @param bool $abort
      * @return bool
+     * @throws Exception
      */
-    public function operation(User $user, Student $student = null, $abort = false) {
+    public function operation(User $user, Student $student = null) {
         
-        abort_if(
-            $abort && !$student,
-            Constant::NOT_FOUND,
-            __('messages.not_found')
+        $perm = true;
+        [$userId, $classId] = array_map(
+            function ($field) use ($student) {
+                return $this->field($field, $student);
+            }, ['user_id', 'class_id']
         );
-        $role = $user->role();
-        if ($role == '运营') { return true; }
-        $isSuperRole = in_array($role, Constant::SUPER_ROLES);
-        $action = explode('/', Request::path())[1];
-        switch ($action) {
-            case 'index':
-            case 'create':
-            case 'store':
-            case 'import':
-            case 'export':
-            case 'issue':
-            case 'grant':
-                return $isSuperRole ? true : $this->action($user);
-            case 'show':
-            case 'edit':
-            case 'update':
-            case 'delete':
-                $schoolId = $student->squad->grade->school_id;
-                return $isSuperRole
-                    ? (in_array($schoolId, $this->schoolIds()))
-                    : (in_array($schoolId, $this->schoolIds()) && $this->action($user));
-            default:
-                return false;
-        }
+        !$userId ?: $perm &= collect(explode(',', $this->visibleUserIds()))->has($userId);
+        !$classId ?: $perm &= collect($this->classIds())->has($classId);
+        
+        return $this->action($user) && $perm;
         
     }
     

@@ -6,7 +6,7 @@
         <div class="form-horizontal">
             <!-- 合作伙伴id -->
             @if (!empty($partner['id']))
-                {!! Form::hidden('id', $partner['id'], ['id' => 'id']) !!}
+                {!! Form::hidden('id', $partner['id']) !!}
             @endif
             <!-- 全称 -->
             <div class="form-group">

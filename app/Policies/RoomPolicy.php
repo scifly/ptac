@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
-use App\Models\{Room, User};
+use App\Models\{Building, Room, RoomType, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**
@@ -23,9 +23,14 @@ class RoomPolicy {
      */
     function operation(User $user, Room $room = null) {
 
-        if ($room) {
-            $perm = $room->building->school_id == $this->schoolId()
-                && $room->roomType->corp_id == $this->corpId();
+        [$buildingId, $roomTypeId] = array_map(
+            function ($field) use ($room) {
+                return $this->field($field, $room);
+            }, ['building_id', 'room_type_id']
+        );
+        if (isset($buildingId, $roomTypeId)) {
+            $perm = Building::find($buildingId)->school_id == $this->schoolId()
+                && RoomType::find($roomTypeId)->corp_id == $this->corpId();
         }
         
         return $this->action($user) && ($perm ?? true);

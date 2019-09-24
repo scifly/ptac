@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Pusher\Pusher;
 use Pusher\PusherException;
@@ -51,41 +52,42 @@ class TestController extends Controller {
      */
     public function index() {
         
-        try {
-            DB::transaction(function () {
-                $apiGId = Group::whereName('api')->first()->id;
-                foreach (Member::all() as $member) {
-                    $default = Mobile::where(['user_id' => $member->id, 'isdefault' => 1])->first();
-                    if ($member->group_id != $apiGId) {
-                        $data = [
-                            'mobile'    => $default ? $default->mobile : null,
-                            'ent_attrs' => json_encode([
-                                'userid'            => $member->userid,
-                                'english_name'      => $member->english_name,
-                                'is_leader_in_dept' => $member->isleader,
-                                'position'          => $member->position,
-                                'telephone'         => $member->telephone,
-                                'order'             => $member->order,
-                                'synced'            => $member->synced,
-                                'subscribed'        => $member->subscribed,
-                            ], true),
-                        ];
-                    } else {
-                        $data = [
-                            'mobile'    => $default ? $default->mobile : null,
-                            'api_attrs' => json_encode([
-                                'secret'    => $member->english_name,
-                                'classname' => $member->position,
-                                'contact'   => $member->telephone,
-                            ], true)
-                        ];
-                    }
-                    User::find($member->id)->update($data);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        return view('user.test');
+        // try {
+        //     DB::transaction(function () {
+        //         $apiGId = Group::whereName('api')->first()->id;
+        //         foreach (Member::all() as $member) {
+        //             $default = Mobile::where(['user_id' => $member->id, 'isdefault' => 1])->first();
+        //             if ($member->group_id != $apiGId) {
+        //                 $data = [
+        //                     'mobile'    => $default ? $default->mobile : null,
+        //                     'ent_attrs' => json_encode([
+        //                         'userid'            => $member->userid,
+        //                         'english_name'      => $member->english_name,
+        //                         'is_leader_in_dept' => $member->isleader,
+        //                         'position'          => $member->position,
+        //                         'telephone'         => $member->telephone,
+        //                         'order'             => $member->order,
+        //                         'synced'            => $member->synced,
+        //                         'subscribed'        => $member->subscribed,
+        //                     ], true),
+        //                 ];
+        //             } else {
+        //                 $data = [
+        //                     'mobile'    => $default ? $default->mobile : null,
+        //                     'api_attrs' => json_encode([
+        //                         'secret'    => $member->english_name,
+        //                         'classname' => $member->position,
+        //                         'contact'   => $member->telephone,
+        //                     ], true)
+        //                 ];
+        //             }
+        //             User::find($member->id)->update($data);
+        //         }
+        //     });
+        // } catch (Exception $e) {
+        //     throw $e;
+        // }
         
     }
     

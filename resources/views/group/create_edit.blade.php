@@ -16,7 +16,7 @@
                     <div class="form-horizontal">
                         <!-- 角色ID -->
                         @if (!empty($group['id']))
-                            {!! Form::hidden('id', $group['id'], ['id' => 'id']) !!}
+                            {!! Form::hidden('id', $group['id']) !!}
                         @endif
                         {!! Form::hidden($id = 'menu_ids', join(',', $selectedMenuIds ?? []), ['id' => $id]) !!}
                         {!! Form::hidden($id = 'tab_ids', join(',', $selectedTabIds ?? []), ['id' => $id]) !!}

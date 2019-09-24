@@ -9,9 +9,9 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            {!! Form::hidden('id', $app['id'], ['id' => 'id']) !!}
-            {!! Form::hidden('corp_id', $corpId, ['id' => 'corp_id']) !!}
-            {!! Form::hidden('category', $app['category'], ['id' => 'category']) !!}
+            {!! Form::hidden('id', $app['id']) !!}
+            {!! Form::hidden('corp_id', $corpId) !!}
+            {!! Form::hidden('category', $app['category']) !!}
             <div class="form-group">
                 @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">

@@ -7,7 +7,7 @@
             <!-- 学生ID -->
             @if (isset($student['id']))
                 <!-- 学生ID -->
-                {!! Form::hidden('id', $student['id'], ['id' => 'id']) !!}
+                {!! Form::hidden('id', $student['id']) !!}
                 <!-- 学生UserID -->
                 {!! Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) !!}
                 <!-- 学生头像 -->

@@ -1,8 +1,6 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\Constant;
-use App\Models\Tab;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -15,27 +13,10 @@ class TabPolicy {
     use HandlesAuthorization;
     
     /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct() {
-        //
-    }
-    
-    /**
      * @param User $user
-     * @param Tab|null $tab
-     * @param bool $abort
      * @return bool
      */
-    public function operation(User $user, Tab $tab = null, $abort = false) {
-        
-        abort_if(
-            $abort && !$tab,
-            Constant::NOT_FOUND,
-            __('messages.not_found')
-        );
+    public function operation(User $user) {
         
         return $user->role() == '运营';
         

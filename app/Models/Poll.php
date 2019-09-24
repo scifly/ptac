@@ -2,15 +2,12 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
+use App\Helpers\{Constant, ModelTrait};
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
 /**
@@ -19,6 +16,7 @@ use Throwable;
  * @property int $id
  * @property int $school_id 所属学校ID
  * @property int $user_id 发起者用户ID
+ * @property int $message_id 消息ID
  * @property string $name 问卷调查名称
  * @property string $start 开始时间
  * @property string $end 结束时间
@@ -29,6 +27,7 @@ use Throwable;
  * @property-read int|null $poll_topics_count
  * @property-read School $school
  * @property-read User $user
+ * @property-read Message $message
  * @method static Builder|Poll newModelQuery()
  * @method static Builder|Poll newQuery()
  * @method static Builder|Poll query()
@@ -36,6 +35,7 @@ use Throwable;
  * @method static Builder|Poll whereEnabled($value)
  * @method static Builder|Poll whereEnd($value)
  * @method static Builder|Poll whereId($value)
+ * @method static Builder|Poll whereMessageId($value)
  * @method static Builder|Poll whereName($value)
  * @method static Builder|Poll whereSchoolId($value)
  * @method static Builder|Poll whereStart($value)
@@ -50,8 +50,8 @@ class Poll extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'school_id', 'user_id', 'name',
-        'start', 'end', 'enabled',
+        'school_id', 'user_id', 'message_id',
+        'name', 'start', 'end', 'enabled',
     ];
     
     /** @return BelongsTo */
@@ -59,6 +59,9 @@ class Poll extends Model {
     
     /** @return BelongsTo */
     function user() { return $this->belongsTo('App\Models\User'); }
+    
+    /** @return BelongsTo */
+    function message() { return $this->belongsTo('App\Models\Message'); }
     
     /** @return HasMany */
     function topics() { return $this->hasMany('App\Models\PollTopic'); }

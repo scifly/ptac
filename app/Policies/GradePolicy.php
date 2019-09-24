@@ -17,24 +17,28 @@ class GradePolicy {
     use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
-     * 权限判断
-     *
      * @param User $user
      * @param Grade|null $grade
      * @return bool
      * @throws ReflectionException
      * @throws Exception
-     * @throws Exception
      */
-    function operation(User $user, Grade $grade = null) {
+    public function operation(User $user, Grade $grade = null) {
     
-        if ($grade) {
-            $perm = collect($this->departmentIds())->has(Request::input('department_id'))
-                && collect($this->contactIds('educator'))->has(array_values(Request::input('educator_ids')))
-                && collect($this->gradeIds())->has($grade->id);
+        $perm = !$grade ? true : collect($this->gradeIds())->has($grade->id);
+        [$schoolId, $educatorIds, $deptId] = array_map(
+            function ($field) use ($grade) {
+                return Request::input($field)
+                    ?? ($grade ? explode(',', $grade->{$field}) : null);
+            }, ['school_id', 'educator_ids', 'department_id']
+        );
+        if (isset($schoolId, $educatorIds)) {
+            $perm &= collect($this->schoolIds())->has($schoolId) &&
+                collect($this->contactIds('educator'))->has(array_values($educatorIds));
         }
+        empty($deptId) ?: $perm &= collect($this->departmentIds())->has($deptId);
         
-        return $this->action($user) && ($perm ?? true);
+        return $this->action($user) && $perm;
     
     }
     

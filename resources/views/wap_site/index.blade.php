@@ -1,5 +1,5 @@
 <div class="box box-default box-solid">
-    {{ Form::hidden('id', $ws['id'], ['id' => 'id']) }}
+    {{ Form::hidden('id', $ws['id']) }}
     <div class="box-header with-border">
         @include('shared.form_header', ['disabled' => true])
     </div>

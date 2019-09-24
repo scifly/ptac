@@ -2,8 +2,9 @@
 namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
-use App\Models\{Evaluate, Indicator, Semester, User};
+use App\Models\{Educator, Evaluate, Indicator, Semester, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Auth;
 use ReflectionException;
 
 /**
@@ -21,20 +22,22 @@ class EvaluatePolicy {
      * @throws ReflectionException
      */
     public function operation(User $user, Evaluate $eval = null) {
-    
-        [$studentId, $indicatorId, $semesterId] = array_map(
+
+        [$studentId, $indicatorId, $semesterId, $eduatorId] = array_map(
             function ($field) use ($eval) {
                 return $this->field($field, $eval);
-            }, ['student_id', 'indicator_id', 'semester_id']
+            }, ['student_id', 'indicator_id', 'semester_id', 'educator_id']
         );
-        if (isset($studentId, $indicatorId, $semesterId)) {
-            $schoolId = $this->schoolId();
-            $perm = collect($this->contactIds('student'))->has($studentId)
+        $schoolId = $this->schoolId();
+        $perm = Auth::user()->educator->school_id == $schoolId;;
+        if (isset($studentId, $indicatorId, $semesterId, $eduatorId)) {
+            $perm &= collect($this->contactIds('student'))->has($studentId)
                 && Indicator::whereSchoolId($schoolId)->pluck('id')->has($indicatorId)
-                && Semester::whereSchoolId($schoolId)->pluck('id')->has($semesterId);
+                && Semester::whereSchoolId($schoolId)->pluck('id')->has($semesterId)
+                && Educator::find($eduatorId)->user_id == Auth::id();
         }
         
-        return $this->action($user) && ($perm ?? true);
+        return $this->action($user) && $perm;
         
     }
     

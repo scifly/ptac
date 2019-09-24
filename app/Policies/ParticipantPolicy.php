@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{Participant, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
-use ReflectionException;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Class ParticipantPolicy
@@ -17,18 +17,14 @@ class ParticipantPolicy {
     
     /**
      * @param User $user
-     * @param Participant|null $participant
      * @return bool
-     * @throws ReflectionException
      */
-    function operation(User $user, Participant $participant = null) {
-    
-        if ($participant) {
-            $perm = collect($this->contactIds('educator'))->has($participant->educator_id)
-                && $participant->conference->room->building->school_id == $this->schoolId();
-        }
+    function operation(User $user) {
         
-        return $this->action($user) && ($perm ?? true);
+        if (!$user->educator) return false;
+        $educatorIds = Participant::whereConferenceId(Request::input('conference_id'))->pluck('educator_id');
+        
+        return $this->action($user) && $educatorIds->has($user->educator->id);
         
     }
     

@@ -12,7 +12,7 @@
                 <div class="content homework overflow-homework">
                     <div class="homework-wrap">
                         <div class="artic-head">
-                            {!! Form::hidden('id', $msg->{'id'}, ['id' => 'id']) !!}
+                            {!! Form::hidden('id', $msg->{'id'}) !!}
                             <span class="artic-title word-warp">{!! $msg->{'title'} !!}</span>
                             <span class="artic-time">时间：{!! $detail['updated_at'] !!}</span>
                         </div>

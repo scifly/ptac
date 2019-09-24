@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($prize))
-                {!! Form::hidden('id', $prize['id'], ['id' => 'id']) !!}
+                {!! Form::hidden('id', $prize['id']) !!}
             @endif
             <div class="form-group">
                 @include('shared.label', ['field' => 'name', 'label' => '名称'])

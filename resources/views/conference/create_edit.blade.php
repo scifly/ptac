@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($conference))
-                {!! Form::hidden('id', $conference['id'], ['id' => 'id']) !!}
+                {!! Form::hidden('id', $conference['id']) !!}
             @endif
             <!-- 会议名称 -->
             <div class="form-group">

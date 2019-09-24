@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($wsm['id']))
-                {{ Form::hidden('id', $wsm['id'], ['id' => 'id']) }}
+                {{ Form::hidden('id', $wsm['id']) }}
             @endif
             @include('shared.single_select', [
                 'label' => '所属网站',

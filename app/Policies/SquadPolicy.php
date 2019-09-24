@@ -22,23 +22,21 @@ class SquadPolicy {
      * @return bool
      * @throws ReflectionException
      * @throws Exception
-     * @throws Exception
      */
     public function operation(User $user, Squad $class = null) {
         
-        $perm = true;
-        [$gradeId, $educatorIds] = array_map(
+        $perm = !$class ? true : collect($this->classIds())->has($class->id);
+        [$gradeId, $educatorIds, $deptId] = array_map(
             function ($field) use ($class) {
                 return Request::input($field)
                     ?? ($class ? explode(',', $class->{$field}) : null);
-            }, ['grade_id', 'educator_ids']
+            }, ['grade_id', 'educator_ids', 'department_id']
         );
         if (isset($gradeId, $educatorIds)) {
-            $perm = collect($this->gradeIds())->has($gradeId) &&
+            $perm &= collect($this->gradeIds())->has($gradeId) &&
                 collect($this->contactIds('educator'))->has($educatorIds);
         }
-        $deptId = Request::input('department_id');
-        !$deptId ?: $perm &= collect($this->departmentIds())->has($deptId);
+        empty($deptId) ?: $perm &= collect($this->departmentIds())->has($deptId);
         
         return $this->action($user) && $perm;
         

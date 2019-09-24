@@ -1,6 +1,6 @@
 <div class="msg-send-wrap">
     @if (isset($message))
-        {!! Form::hidden('id', $message->id, ['id' => 'id']) !!}
+        {!! Form::hidden('id', $message->id) !!}
     @endif
     <div class="weui-cells__title">请选择</div>
     <div class="weui-cells weui-cells_form">

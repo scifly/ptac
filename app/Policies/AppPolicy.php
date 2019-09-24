@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{App, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class AppPolicy
@@ -23,8 +22,8 @@ class AppPolicy {
     function operation(User $user, App $app = null) {
     
         $corpId = $this->field('corp_id', $app);
-        if (isset($corpId) && $user->role() == '企业' && $app) {
-            $perm = (Request::input('corp_id') ?? $app->corp_id) == $this->corpId();
+        if (isset($corpId) && $user->role() == '企业') {
+            $perm = $corpId == $this->corpId();
         }
         
         

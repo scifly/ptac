@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($evaluate))
-                {!! Form::hidden('id', $evaluate['id'], ['id' => 'id']) !!}
+                {!! Form::hidden('id', $evaluate['id']) !!}
             @endif
             <!-- 考核对象 -->
             @include('shared.single_select', [

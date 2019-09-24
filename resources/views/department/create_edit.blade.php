@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($department['id']))
-                {{ Form::hidden('id', $department['id'], ['id' => 'id']) }}
+                {{ Form::hidden('id', $department['id']) }}
             @endif
             {!! Form::hidden('parent_id', $parentId ?? null, ['id' => 'parent_id']) !!}
             <div class="form-group">

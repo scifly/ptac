@@ -6,7 +6,7 @@
         <div class="form-horizontal">
             <!-- 用户id -->
             @if (!empty($operator['id']))
-                {!! Form::hidden('id', $operator['id'], ['id' => 'id']) !!}
+                {!! Form::hidden('id', $operator['id']) !!}
                 @include('shared.avatar', ['user' => $operator])
             @endif
             <!-- 用户名 -->

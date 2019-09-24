@@ -27,7 +27,7 @@
                             'id' => $formId,
                             'data-parsley-validate' => 'true'
                         ]) !!}
-                        {!! Form::hidden('id', $model['id'], ['id' => 'id']) !!}
+                        {!! Form::hidden('id', $model['id']) !!}
                         <div class="form-group">
                             {!! Form::label('sms_balance', '余额', [
                                 'class' => 'col-sm-3 control-label'

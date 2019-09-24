@@ -11,7 +11,7 @@
         'id' => 'formMessage',
         'data-parsley-validate' => 'true'
     ]) !!}
-    {!! Form::hidden('id', null, ['id' => 'id']) !!}
+    {!! Form::hidden('id', null) !!}
     <!-- 发送对象 -->
     <div class="form-group">
         {!! Form::label('targets', '发送对象', [

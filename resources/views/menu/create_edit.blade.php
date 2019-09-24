@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($menu))
-                {{ Form::hidden('id', $menu['id'], ['id' => 'id']) }}
+                {{ Form::hidden('id', $menu['id']) }}
                 {{ Form::hidden('position', $menu['position'], ['id' => 'position']) }}
             @endif
             {{ Form::hidden('parent_id', $parentId ?? null, ['id' => 'parent_id']) }}

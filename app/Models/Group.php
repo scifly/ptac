@@ -282,9 +282,7 @@ class Group extends Model {
         
     }
     
-    /**
-     * @return SCollection
-     */
+    /** @return SCollection */
     function list() {
         
         return $this->where([

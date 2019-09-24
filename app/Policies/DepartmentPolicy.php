@@ -2,7 +2,7 @@
 namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
-use App\Models\{Department, User};
+use App\Models\{Department, DepartmentType, User};
 use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -15,8 +15,6 @@ class DepartmentPolicy {
     use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
-     * 权限判断
-     *
      * @param User $user
      * @param Department $dept
      * @return bool
@@ -24,9 +22,17 @@ class DepartmentPolicy {
      */
     function operation(User $user, Department $dept = null) {
         
-        $perm = !$dept ? true : in_array($dept->id, $this->departmentIds());
+        [$parentId, $dTypeId] = array_map(
+            function ($field) use ($dept) {
+                return $this->field($field, $dept);
+            }, ['parent_id', 'department_type_id']
+        );
+        if (isset($parentId, $dTypeId)) {
+            $perm = collect($this->departmentIds())->has($dept ? [$dept->id, $parentId] : $parentId)
+                && DepartmentType::find($dTypeId)->name == '其他';
+        }
         
-        return $this->action($user) && $perm;
+        return $this->action($user) && ($perm ?? true);
     
     }
     

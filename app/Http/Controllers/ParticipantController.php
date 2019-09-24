@@ -15,17 +15,16 @@ use Throwable;
  */
 class ParticipantController extends Controller {
     
-    protected $cp;
+    protected $participant;
     
     /**
      * ParticipantController constructor.
-     * @param Participant $cp
+     * @param Participant $participant
      */
-    function __construct(Participant $cp) {
+    function __construct(Participant $participant) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->cp = $cp;
-        $this->approve($cp);
+        $this->approve($this->participant = $participant);
         
     }
     
@@ -38,7 +37,7 @@ class ParticipantController extends Controller {
     public function index() {
         
         return Request::get('draw')
-            ? response()->json($this->cp->index())
+            ? response()->json($this->participant->index())
             : $this->output();
         
     }
@@ -52,7 +51,7 @@ class ParticipantController extends Controller {
     public function store(ParticipantRequest $request) {
         
         return $this->result(
-            $this->cp->store(
+            $this->participant->store(
                 $request->all()
             )
         );
@@ -69,7 +68,7 @@ class ParticipantController extends Controller {
     public function show($id) {
         
         return $this->output([
-            'cp' => $this->cp->find($id),
+            'participant' => $this->participant->find($id),
         ]);
         
     }

@@ -24,9 +24,11 @@ class FacePolicy {
      */
     function operation(User $user, Face $face = null) {
     
-        $perm = !$face ? true : in_array($face->user_id, explode(',', $this->visibleUserIds()));
+        if ($userId = $this->field('user_id', $face)) {
+            $perm = collect(explode(',', $this->visibleUserIds()))->has($userId);
+        }
     
-        return $this->action($user) && $perm;
+        return $this->action($user) && ($perm ?? true);
         
     }
     

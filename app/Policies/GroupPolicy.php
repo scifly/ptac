@@ -20,14 +20,14 @@ class GroupPolicy {
      * @return bool
      */
     function operation(User $user, Group $group = null) {
-        
-        if ($group) {
+    
+        [$menuIds, $tabIds, $actionIds] = array_map(
+            function ($key) { return explode(',', Request::input($key)); },
+            ['menu_ids', 'tab_ids', 'action_ids']
+        );
+        if (isset($menuIds, $tabIds, $actionIds)) {
             $schoolId = Request::input('school_id');
             $sGId = Group::whereName('学校')->first()->id;
-            [$menuIds, $tabIds, $actionIds] = array_map(
-                function ($key) { return explode(',', Request::input($key)); },
-                ['menu_ids', 'tab_ids', 'action_ids']
-            );
             $aGroupIds = Group::whereSchoolId($schoolId)->pluck('id');
             $aMenuIds = collect((new Menu)->subIds(School::find($schoolId)->menu_id));
             $aTabIds = Tab::whereIn('group_id', [0, $sGId])->pluck('id');

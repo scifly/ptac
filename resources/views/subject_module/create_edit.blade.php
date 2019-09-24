@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($sm['id']))
-                {!! Form::hidden('id', $sm['id'], ['id' => 'id']) !!}
+                {!! Form::hidden('id', $sm['id']) !!}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [

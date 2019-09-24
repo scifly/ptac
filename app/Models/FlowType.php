@@ -9,7 +9,7 @@ use Form;
 use Html;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\{DB, Request};
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Illuminate\Support\HtmlString;
 use Throwable;
 

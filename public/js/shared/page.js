@@ -563,13 +563,13 @@ var page = {
         page.initForm(table, formId, table + '/store', 'POST', options);
     },
     edit: function (formId, table, options) {
-        var $id = $('#id');
-        var id = $id.length > 0 ? $id.val() : '';
+        var $id = $('input[name=id]'),
+            id = $id.length > 0 ? $id.val() : '';
+
         page.initForm(table, formId, table + '/update/' + id, 'PUT', options);
     },
     show: function (table) {
-        var id = $('#id').val(),
-            url = 'edit/' + id,
+        var url = 'edit/' + $('input[name=id]').val(),
             $activeTabPane = $('#tab_' + page.getActiveTabId());
 
         page.initBackBtn(table);

@@ -4,7 +4,6 @@ namespace App\Policies;
 use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{ScoreRange, Subject, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Request;
 
 /**
  * Class ScoreRangePolicy
@@ -23,15 +22,18 @@ class ScoreRangePolicy {
      */
     function operation(User $user, ScoreRange $sr = null) {
         
-        $schoolId = $this->schoolId();
-        $perm = true;
-        !$sr ?: $perm &= $sr->school_id == $schoolId;
-        !Request::has('subject_ids')
-            ?: $perm &= Subject::whereSchoolId($schoolId)->pluck('id')->has(
-            explode(',', Request::input('subject_ids'))
+        [$schoolId, $subjectIds] = array_map(
+            function ($field) use ($sr) {
+                return $this->field($field, $sr);
+            }, ['school_id', 'subject_ids']
         );
+        if (isset($schoolId, $subjectIds)) {
+            $perm = $schoolId == $this->schoolId()
+                && Subject::whereSchoolId($this->schoolId())->pluck('id')
+                    ->has(explode(',', $subjectIds));
+        }
         
-        return $this->action($user) && $perm;
+        return $this->action($user) && ($perm ?? true);
         
     }
     

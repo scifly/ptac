@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>美视通讯录同步</title>
+    <title>test</title>
     <meta name="csrf-token" content="{{ csrf_token() }}" id="csrf_token">
 </head>
 <body>

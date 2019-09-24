@@ -166,7 +166,7 @@ class Datatable {
         
         $user = Auth::user();
         $id = is_array($row) ? $row['id'] : $row;
-        list($showUri, $editUri, $delUri) = array_map(
+        [$uriShow, $uriEdit, $uriDel] = array_map(
             function ($name, $title, $class) use ($id) {
                 return $this->anchor($name . $id, $title, $class);
             },
@@ -176,9 +176,9 @@ class Datatable {
         
         return
             (isset($status) ? $this->state($status) : '') .
-            ($show ? ($user->can('act', $this->uris()['show']) ? $showUri : '') : '') .
-            ($edit ? ($user->can('act', $this->uris()['edit']) ? $editUri : '') : '') .
-            ($del ? ($user->can('act', $this->uris()['destroy']) ? $delUri : '') : '');
+            ($show ? ($user->can('act', $this->uris()['show']) ? $uriShow : '') : '') .
+            ($edit ? ($user->can('act', $this->uris()['edit']) ? $uriEdit : '') : '') .
+            ($del ? ($user->can('act', $this->uris()['destroy']) ? $uriDel : '') : '');
         
     }
     

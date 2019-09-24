@@ -2,7 +2,7 @@
 namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
-use App\Models\{DepartmentUser, Educator, Group, User};
+use App\Models\{DepartmentUser, Educator, Group, Tag, User};
 use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
@@ -23,20 +23,27 @@ class EducatorPolicy {
      */
     function operation(User $user, Educator $educator = null) {
         
-        $deptIds = Request::input('selectedDepartments');
-        if (!$deptIds && $educator) {
-            $deptIds = (new DepartmentUser)->where(
-                ['enabled' => 1, 'user_id' => $educator->user_id]
-            )->pluck('department_id');
-        }
-        $groupId = Request::input('user')['group_id']
-            ?? ($educator ? $educator->user->group_id : null);
-        if (isset($deptIds, $groupId)) {
-            $perm = collect($this->departmentIds())->has($deptIds)
-                && (new Group)->list()->keys()->has($groupId);
+        $perm = true;
+        if (!$ids = Request::input('ids')) {
+            $deptIds = Request::input('selectedDepartments');
+            if (!$deptIds && $educator) {
+                $deptIds = (new DepartmentUser)->where(
+                    ['enabled' => 1, 'user_id' => $educator->user_id]
+                )->pluck('department_id');
+            }
+            $groupId = Request::input('user')['group_id'] ?? ($educator ? $educator->user->group_id : null);
+            if (isset($deptIds, $groupId)) {
+                $perm &= collect($this->departmentIds())->has($deptIds)
+                    && (new Group)->list()->keys()->has($groupId);
+            }
+            if ($tagIds = Request::input('tag_ids')) {
+                $perm &= Tag::whereSchoolId($this->schoolId())->pluck('id')->has($tagIds);
+            }
+        } else {
+            $perm &= collect($this->contactIds('educator'))->has(array_values($ids));
         }
         
-        return $this->action($user) && ($perm ?? true);
+        return $this->action($user) && $perm;
         
     }
     

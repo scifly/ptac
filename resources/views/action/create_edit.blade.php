@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($action['id']))
-                {{ Form::hidden('id', $action['id'], ['id' => 'id']) }}
+            @if (isset($action)))
+                {!! Form::hidden('id', $action['id']) !!}
             @endif
             <div class="form-group">
                 @include('shared.label', ['field' => 'name', 'label' => 'Action名称'])

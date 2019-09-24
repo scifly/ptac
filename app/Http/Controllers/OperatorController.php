@@ -25,8 +25,7 @@ class OperatorController extends Controller {
     function __construct(User $user) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->user = $user;
-        Request::has('ids') ?: $this->approve($user);
+        $this->approve($this->user = $user);
         
     }
     

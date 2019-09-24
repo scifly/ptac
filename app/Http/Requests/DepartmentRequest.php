@@ -29,9 +29,9 @@ class DepartmentRequest extends FormRequest {
             'name'               => 'required|string|between:2,255|unique:departments,name,' .
                 $this->input('id') . ',id,' .
                 'parent_id,' . $this->input('parent_id'),
-            'remark'             => 'nullable|string|between:2,255',
             'parent_id'          => 'nullable|integer',
             'department_type_id' => 'required|integer',
+            'remark'             => 'nullable|string|between:2,255',
             'order'              => 'nullable|integer',
             'tag_ids'            => 'nullable|array',
             'enabled'            => 'required|boolean',

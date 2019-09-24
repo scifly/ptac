@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($comboType['id']))
-                {{ Form::hidden('id', $comboType['id'], ['id' => 'id']) }}
+                {{ Form::hidden('id', $comboType['id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [

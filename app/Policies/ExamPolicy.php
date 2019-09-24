@@ -34,7 +34,7 @@ class ExamPolicy {
             $perm = Subject::whereSchoolId($schoolId)->pluck('id')->has($subjectIds)
                 && collect($this->classIds())->has($classIds)
                 && ExamType::whereSchoolId($schoolId)->pluck('id')->has($examTypeId)
-                && (!$exam ? true : $exam->examType->school_id == $schoolId);
+                && (!$exam ? true : collect($this->examIds())->has($exam->id));
         }
         
         return $this->action($user) && ($perm ?? true);

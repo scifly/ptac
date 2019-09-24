@@ -40,6 +40,7 @@ class ComposerServiceProvider extends ServiceProvider {
             'exam_type'       => ['index'],
             'face'            => ['index', 'create'],
             'flow_type'       => ['index', 'create_edit'],
+            'flow'            => ['index', 'create', 'edit'],
             'grade'           => ['index', 'create_edit'],
             'group'           => ['index', 'create_edit', 'create', 'edit'],
             'icon'            => ['index', 'create_edit'],

@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($turnstile['id']))
-                {{ Form::hidden('id', $turnstile['id'], ['id' => 'id']) }}
+                {{ Form::hidden('id', $turnstile['id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('location', '安装地点', [

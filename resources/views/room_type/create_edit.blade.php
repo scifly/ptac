@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
         @if (isset($rt))
-            {!! Form::hidden('id', $rt['id'], ['id' => 'id']) !!}
+            {!! Form::hidden('id', $rt['id']) !!}
         @endif
         <!-- 名称 -->
         <div class="form-group">

@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($score))
-                {!! Form::hidden('id', $score['id'], ['id' => 'id']) !!}
+                {!! Form::hidden('id', $score['id']) !!}
                 {!! Form::hidden('subject', $score['subject_id'], ['id' => 'subject']) !!}
                 {!! Form::hidden('student', $score['student_id'], ['id' => 'student']) !!}
             @endif

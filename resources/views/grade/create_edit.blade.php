@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($grade))
-                {!! Form::hidden('id', $grade['id'], ['id' => 'id']) !!}
+                {!! Form::hidden('id', $grade['id']) !!}
                 {!! Form::hidden('department_id', $grade['department_id']) !!}
             @endif
             <!-- 名称 -->

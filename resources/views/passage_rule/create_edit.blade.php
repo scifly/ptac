@@ -9,7 +9,7 @@
         ])
         <div class="form-horizontal main-form">
             @if (!empty($pr['id']))
-                {!! Form::hidden('id', $pr['id'], ['id' => 'id']) !!}
+                {!! Form::hidden('id', $pr['id']) !!}
             @endif
             <!-- 规则名称 -->
             <div class="form-group">

@@ -1,13 +1,9 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
-use App\Models\Corp;
-use App\Models\DepartmentUser;
-use App\Models\Group;
-use App\Models\School;
-use App\Models\User;
+use App\Helpers\{Constant, ModelTrait};
+use App\Models\{Group, User};
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
@@ -22,71 +18,34 @@ class OperatorPolicy {
     /**
      * @param User $user
      * @param User|null $operator
-     * @param bool $abort
      * @return bool
+     * @throws Exception
      */
-    function operation(User $user, User $operator = null, $abort = false) {
-        
-        abort_if(
-            $abort && !$operator,
-            Constant::NOT_FOUND,
-            __('messages.not_found')
-        );
+    function operation(User $user, User $operator = null) {
+    
+        $perm = true;
         $role = $user->role();
-        if ($role == '运营') { return true; }
-        $action = explode('/', Request::path())[1];
-        $isSuperRole = in_array($role, Constant::SUPER_ROLES);
-        $isOperatorAllowed = $isGroupAllowed = $isCorpAllowed = $isSchoolAllowed = true;
-    
-        # 对当前用户可见的超级用户ids
-        $departmentIds = School::whereIn('id', $this->schoolIds())->pluck('department_id');
-        $userIds = DepartmentUser::whereIn('department_id', $departmentIds)->pluck('user_id');
-        $allowedOperatorIds = array_merge([$user->id], $userIds->toArray());
-    
-        # 批量操作
-        if ($operatorIds = Request::input('ids')) {
-            $isOperatorAllowed = empty(array_diff($operatorIds, $allowedOperatorIds));
-        } else {
-            if (in_array($action, ['store', 'update'])) {
-                [$cGId, $sGId] = array_map(
-                    function ($name) {
-                        return Group::whereName($name)->first()->id;
-                    }, ['企业', '学校']
-                );
-                $groupId = Request::input('group_id');
-                $corpId = Request::input('corp_id');
-                $schoolId = Request::input('school_id');
-                $isGroupAllowed = $role == '企业'
-                    ? in_array($groupId, [$cGId, $sGId])
-                    : $groupId == $sGId;
-                if ($corpId) {
-                    $deptId = $user->departments->first()->id;
-                    $corp = $role == '企业'
-                        ? Corp::whereDepartmentId($deptId)->first()
-                        : School::whereDepartmentId($deptId)->first()->corp;
-                    $isCorpAllowed = $corpId == $corp->id;
-                }
-                !$schoolId ?: $isSchoolAllowed = in_array($schoolId, $this->schoolIds());
+        if (!$ids = Request::input('ids')) {
+            if (!$groupId = Request::input('user')['group_id']) {
+                $groupId = $operator ? $operator->group_id : null;
             }
-            !in_array($action, ['edit', 'update', 'delete']) ?:
-                $isOperatorAllowed = in_array($operator->id, $allowedOperatorIds);
+            if ($groupId) {
+                if ($role == '运营') {
+                    $roles = Constant::SUPER_ROLES;
+                } elseif ($role == '企业') {
+                    $roles = ['企业', '学校'];
+                } else {
+                    $roles = ['学校'];
+                }
+                $perm &= in_array(Group::find($groupId)->name, $roles);
+            }
+            $schoolId = Request::input('school_id');
+            !$schoolId ?: $perm &= in_array($schoolId, $this->schoolIds());
+        } else {
+            $perm &= collect(explode(',', $this->visibleUserIds()))->has($ids);
         }
-        switch ($action) {
-            case 'index':
-            case 'create':
-                return $isSuperRole;
-            case 'edit':
-            case 'delete':
-                return $isSuperRole && $isOperatorAllowed;
-            case 'store':
-                return $isSuperRole && $isGroupAllowed && $isCorpAllowed && $isSchoolAllowed;
-            case 'update':
-                return Request::has('ids')
-                    ? $isSuperRole && $isOperatorAllowed
-                    : $isSuperRole && $isGroupAllowed && $isCorpAllowed && $isSchoolAllowed;
-            default:
-                return false;
-        }
+        
+        return in_array($role, Constant::SUPER_ROLES) && $perm;
         
     }
     
