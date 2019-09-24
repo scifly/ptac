@@ -52,7 +52,7 @@ class TestController extends Controller {
      */
     public function index() {
         
-        return view('user.test');
+        return Request::method() == 'POST' ? Request::input('message') : view('user.test');
         // try {
         //     DB::transaction(function () {
         //         $apiGId = Group::whereName('api')->first()->id;
