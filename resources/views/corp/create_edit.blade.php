@@ -43,6 +43,7 @@
             </div>
             @include('shared.single_select', [
                 'label' => '所属运营者',
+                'id' => 'company_id',
                 'items' => $companies,
                 'icon' => 'fa fa-building text-blue'
             ])
