@@ -186,7 +186,7 @@ class FlowType extends Model {
         } else {
             if ($flowType = $this->find(Request::route('id'))) {
                 $steps = '';
-                foreach (json_decode($flowType->steps, true) as $step) {
+                foreach (json_decode($flowType->steps, true) ?? [] as $step) {
                     $step['items'] = Educator::with('user')
                         ->whereIn('id', $step['ids'])->get()
                         ->pluck('user.realname', 'id')->toArray();
