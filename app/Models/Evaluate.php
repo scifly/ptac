@@ -93,6 +93,22 @@ class Evaluate extends Model {
         ];
         $joins = [
             [
+                'table' => 'students',
+                'alias' => 'Student',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Student.id = Evaluate.student_id'
+                ]
+            ],
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Student.user_id'
+                ]
+            ],
+            [
                 'table' => 'indicators',
                 'alias' => 'Indicator',
                 'type' => 'INNER',
