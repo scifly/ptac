@@ -3,7 +3,7 @@
     <div class="col-sm-6">
         {!! Form::label(
             'attachment',
-            Html::tag('i', ' 上传图片', ['class' => 'fa fa-cloud-upload']),
+            Html::tag('i', ' 上传附件', ['class' => 'fa fa-cloud-upload']),
             ['class' => 'custom-file-upload text-blue'],
             false
         ) !!}

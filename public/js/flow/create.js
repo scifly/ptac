@@ -1,4 +1,6 @@
+page.loadCss('css/upload.css');
 page.create('formFlow', 'flows');
+
 $(function () {
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
