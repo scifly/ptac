@@ -1,4 +1,4 @@
-page.create('formProcedureLogCreate');
+page.create('formFlow', 'flows');
 $(function () {
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
