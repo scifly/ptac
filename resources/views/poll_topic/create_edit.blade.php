@@ -34,7 +34,7 @@
                     <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead>
                         <tr>
-                            <th class="text-center">选项</th>
+                            <th class="text-center" style="vertical-align: middle;">选项</th>
                             <th class="text-center">
                                 {!! Form::button(
                                     Html::tag('i', '', ['class' => 'fa fa-plus text-blue']),
