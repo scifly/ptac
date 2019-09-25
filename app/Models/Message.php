@@ -305,18 +305,15 @@ class Message extends Model {
                 ],
             ],
         ];
-        switch ($sender) {
-            case 'corp':
-                $builder = Corp::find($senderid)->educators;
-                break;
-            case 'school':
-                $builder = School::find($senderid)->educators;
-                break;
-            default:
-                $builder = Educator::whereIn('id', [$senderid])->get();
-                break;
+        
+        if ($sender == 'corp') {
+            $builder = Corp::find($senderid)->educators;
+        } elseif ($sender == 'school') {
+            $builder = School::find($senderid)->educators;
+        } else {
+            $builder = Educator::whereIn('id', [$senderid])->get();
         }
-        $userIds = join(',', $builder->pluck('user_id')->toArray());
+        $userIds = $builder->pluck('user_id')->join(',');
         !empty($userIds) ?: $userIds = 0;
         $condition = 'MediaType.name = \'sms\' AND s_user_id IN (' . $userIds . ')';
         
@@ -482,16 +479,16 @@ class Message extends Model {
                 $msgBody = '<a href="' . $content->{'path'} . '">下载语音</a>';
                 break;
             case 'video':
-                $msgBody = view('message.detail_video', ['message' => $content])->render();
+                $msgBody = view('message.detail_video', ['message' =>  $content])->render();
                 break;
             case 'file':
                 $msgBody = '<a href="' . $content->{'path'} . '">下载文件</a>';
                 break;
             case 'textcard':
-                $msgBody = view('message.detail_textcard', ['message' => $content])->render();
+                $msgBody = view('message.detail_textcard', ['message' =>  $content])->render();
                 break;
             case 'mpnews':
-                $msgBody = view('message.detail_mpnews', ['message' => $content])->render();
+                $msgBody = view('message.detail_mpnews', ['message' =>  $content])->render();
                 break;
             default:    # sms
                 $msgBody = $content;
@@ -584,10 +581,11 @@ class Message extends Model {
         $response = response()->json([
             'message' => __('messages.ok'),
         ]);
-        if (($method = Request::method()) == 'GET') {
+        $method = Request::method();
+        if ($method == 'GET') {
             $response = ($id = Request::input('id'))
                 ? ($this->read($id) ? response()->json() : false)
-                : view('wechat.message.index');
+                : view('wechat.info.index');
         } elseif ($method == 'POST') {
             $response = $this->msgList();
         }
@@ -606,7 +604,7 @@ class Message extends Model {
         
         return Request::method() == 'POST'
             ? (Request::has('file') ? $this->import() : $this->search())
-            : view('wechat.message.create');
+            : view('wechat.info.create');
         
     }
     
@@ -627,7 +625,7 @@ class Message extends Model {
         
         return Request::method() == 'POST'
             ? Request::has('file') ? $this->import() : $this->search()
-            : view('wechat.message.edit', ['message' => $message]);
+            : view('wechat.info.edit', ['message' =>  $message]);
         
     }
     
@@ -640,46 +638,48 @@ class Message extends Model {
      */
     function wShow($id) {
         
-        $response = response()->json([
-            'message' => __('messages.ok'),
-        ]);
-        if (($method = Request::method()) == 'GET') {
-            abort_if(
-                !($msg = $this->find($id)),
-                Constant::NOT_FOUND,
-                __('messages.message.not_found')
-            );
-            $response = view('wechat.message.show', [
-                'msg' => $msg,
+        try {
+            $mr = new MessageReply;
+            $response = response()->json([
+                'message' =>  __('messages.ok'),
             ]);
-        } elseif ($method == 'POST') {
-            if (Request::has('content')) {
-                # 保存消息回复
-                Request::merge(['user_id' => Auth::id()]);
-                abort_if(
-                    !((new MessageReply)->store(Request::all())),
-                    Constant::BAD_REQUEST,
-                    __('messages.fail')
+            if (($method = Request::method()) == 'GET') {
+                throw_if(
+                    !$msg = $this->find($id),
+                    new Exception(__('messages.message.not_found'))
                 );
-            } else {
-                # 获取指定消息的所有回复
-                $response = view('wechat.message.replies', [
-                    'replies' => $this->replies(
-                        Request::input('id'),
-                        Request::input('msl_id')
-                    ),
-                ])->render();
+                $response = view('wechat.info.show', [
+                    'msg' => $msg,
+                ]);
+            } elseif ($method == 'POST') {
+                if (Request::has('content')) {
+                    # 保存消息回复
+                    Request::merge(['user_id' => Auth::id()]);
+                    throw_if(
+                        !($mr->store(Request::all())),
+                        new Exception(__('messages.fail'))
+                    );
+                } else {
+                    # 获取指定消息的所有回复
+                    $response = view('wechat.info.replies', [
+                        'replies' => $this->replies(
+                            Request::input('id'),
+                            Request::input('msl_id')
+                        ),
+                    ])->render();
+                }
+            } elseif ($method == 'DELETE') {
+                throw_if(
+                    !$reply = $mr->find(Request::input('id')),
+                    new Exception(__('messages.not_found'))
+                );
+                throw_if(
+                    !($reply->delete()),
+                    new Exception(__('messages.del_fail'))
+                );
             }
-        } elseif ($method == 'DELETE') {
-            abort_if(
-                !($mr = MessageReply::find(Request::input('id'))),
-                Constant::NOT_FOUND, __('messages.not_found')
-            );
-            abort_if(
-                !($mr->delete()),
-                Constant::BAD_REQUEST,
-                __('messages.del_fail')
-            );
+        } catch (Exception $e) {
+            throw $e;
         }
         
         return $response;
@@ -694,8 +694,8 @@ class Message extends Model {
      */
     function wDetail($code) {
         
-        return view('wechat.message.detail', [
-            'message' => $message = $this->where(['code' => $code])->first(),
+        return view('wechat.info.detail', [
+            'mesasge' => $message = $this->where(['code' => $code])->first(),
             'content' => $this->detail($message->id),
         ]);
         
@@ -744,8 +744,8 @@ class Message extends Model {
         }
         
         return response()->json([
-            'message' => __('messages.message.uploaded'),
-            'data'    => $uploadedFile,
+            'message' =>  __('messages.message.uploaded'),
+            'data' => $uploadedFile,
         ]);
         
     }
@@ -770,7 +770,6 @@ class Message extends Model {
                 ];
                 $school = School::find($this->schoolId());
                 $app = $school->app ?? $this->corpApp($school->corp_id);
-                
                 $data = [
                     'titles'       => array_merge($titles, [
                         '接收人数',
@@ -805,7 +804,6 @@ class Message extends Model {
                 $role = Auth::user()->role();
                 $part = session('part');
                 if (isset($part) && $part == 'custodian') $role = '监护人';
-                
                 $data = array_combine(
                     ['messageTypes', 'mediaTypes', 'acronym', 'canSend'],
                     [
@@ -819,7 +817,6 @@ class Message extends Model {
                 $detail = $this->detail($id = Request::route('id'));
                 $type = $detail['type'];
                 $content = json_decode($detail[$type], true);
-                
                 $data = [
                     'detail'  => $detail,
                     'content' => $content[$type],
@@ -917,7 +914,6 @@ class Message extends Model {
                 }
                 # 对当前用户可见的所有部门id
                 $departmentIds = $this->departmentIds($user->id);
-                
                 $data = [
                     'departments'           => Department::whereIn('id', $departmentIds)->get(),
                     'messageTypes'          => MessageType::pluck('name', 'id'),
@@ -959,7 +955,7 @@ class Message extends Model {
                 break;
         }
         !$acronym ?: $data = array_merge($data, [
-            'userid' => json_decode(Auth::user()->ent_attrs, true)['userid']
+            'userid' => json_decode(Auth::user()->ent_attrs, true)['userid'],
         ]);
         
         return $data;
@@ -1418,7 +1414,7 @@ class Message extends Model {
                 }
             );
         
-        return view('wechat.message.messages', [
+        return view('wechat.info.messages', [
             'type'     => $type,
             'messages' => $messages,
         ])->render();
@@ -1435,7 +1431,6 @@ class Message extends Model {
         
         # 搜索发送对象
         $user = Auth::user();
-        $targets = collect([]);
         $type = 'user';
         if ($departmentId = Request::input('departmentId')) {
             # 返回指定部门下的所有学生及教职员工
@@ -1444,29 +1439,25 @@ class Message extends Model {
             );
         } else {
             $keyword = Request::input('keyword');
-            switch ($target = Request::input('target')) {
-                case 'list':        # 返回所有可见部门
-                case 'department':  # 搜索部门
-                    $targets = Department::whereIn('id', $this->departmentIds($user->id))
-                        ->get()->reject(
-                            function (Department $department) use ($target, $keyword) {
-                                return $target == 'department'
-                                    ? mb_strpos($department->name, $keyword) === false ? true : false
-                                    : false;
-                            }
-                        );
-                    $type = 'department';
-                    break;
-                case 'user':        # 搜索用户（学生、教职员工）
-                    $userIds = Department::find(Request::input('deptId'))->users
-                        ->pluck('id')->toArray();
-                    $targets = User::where('realname', 'like', '%' . $keyword . '%')
-                        ->whereIn('id', $userIds)->get()->filter(
-                            function (User $user) { return $user->role() != '监护人'; }
-                        );
-                    break;
-                default:
-                    break;
+            $target = Request::input('target');
+            if (in_array($target, ['list', 'department'])) {
+                # 返回所有可见部门
+                # 搜索部门
+                $targets = Department::whereIn('id', $this->departmentIds($user->id))
+                    ->get()->reject(
+                        function (Department $department) use ($target, $keyword) {
+                            return $target == 'department'
+                                ? mb_strpos($department->name, $keyword) === false ? true : false
+                                : false;
+                        }
+                    );
+                $type = 'department';
+            } else {    # 搜索用户（学生、教职员工）
+                $userIds = Department::find(Request::input('deptId'))->users->pluck('id');
+                $targets = User::where('realname', 'like', '%' . $keyword . '%')
+                    ->whereIn('id', $userIds)->get()->filter(
+                        function (User $user) { return $user->role() != '监护人'; }
+                    );
             }
         }
         # 已选定的发送对象（用户、部门）id
@@ -1478,7 +1469,7 @@ class Message extends Model {
                     : explode('|', $targetIds);
         }
         
-        return view('wechat.message.targets', [
+        return view('wechat.info.targets', [
             'targets'           => $targets,
             'selectedTargetIds' => $selectedTargetIds ?? null,
             'type'              => $type,

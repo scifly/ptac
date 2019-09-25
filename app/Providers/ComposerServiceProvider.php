@@ -79,9 +79,9 @@ class ComposerServiceProvider extends ServiceProvider {
             'wsm_article'     => ['index', 'create_edit'],
         ];
         $wComposers = [
-            'mobile'  => ['index', 'module', 'article'],
-            'score'   => ['analyze', 'squad', 'stat', 'student'],
-            'message' => ['index', 'create_edit', 'show'],
+            'mobile' => ['index', 'module', 'article'],
+            'mark'   => ['analyze', 'squad', 'stat', 'student'],
+            'info'   => ['index', 'create_edit', 'show'],
         ];
         array_map(
             function ($type, $composers) {

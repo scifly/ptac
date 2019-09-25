@@ -265,7 +265,7 @@ $routes = [
         'edit'    => ['get'],
         'update'  => ['put'],
         'reset'   => ['get', 'post'],
-        'message' => ['get'],
+        'info' => ['get'],
     ],
     'wap_site'        => [
         'index'  => ['get'],
@@ -299,9 +299,9 @@ $routes = [
 ];
 routes($routes);
 /** 微信端路由 -------------------------------------------------------------------------------------------------------- */
-Route::get('msg/{code}', 'Wechat\MessageController@detail');
+Route::get('msg/{code}', 'Wechat\InfoController@detail');
 $routes = [
-    'message' => [
+    'info' => [
         'index'   => ['get', 'post'],
         'create'  => ['get', 'post'],
         'edit'    => ['{id?}' => ['get', 'post']],
@@ -315,7 +315,7 @@ $routes = [
         'module'  => ['get'],
         'article' => ['get'],
     ],
-    'score'   => [
+    'mark'   => [
         'index'   => ['get', 'post'],
         'detail'  => ['get', 'post'],
         'graph'   => ['get', 'post'],

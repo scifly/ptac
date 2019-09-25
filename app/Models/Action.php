@@ -597,25 +597,16 @@ class Action extends Model {
         ) {
             return null;
         }
-        switch ($action) {
-            case 'index':
-            case 'create':
-            case 'edit':
-            case 'show':
-            case 'recharge':
-                $prefix = Str::singular($this->tableName($controller));
-                $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
-                $viewPath = $prefix . '.' . $action;
-                break;
-            case 'menuTabs':
-                $viewPath = 'menu.menu_tabs';
-                break;
-            case 'relationship':
-                $viewPath = 'custodian.relationship';
-                break;
-            default:
-                $viewPath = Inflector::singularize(self::tableName($controller)) . '.' . $action;
-                break;
+        if (in_array($action, ['index', 'create', 'edit', 'show', 'recharge'])) {
+            $prefix = Str::singular($this->tableName($controller));
+            $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
+            $viewPath = $prefix . '.' . $action;
+        } elseif ($action == 'menuTabs') {
+            $viewPath = 'menu.menu_tabs';
+        } elseif ($action == 'relationship') {
+            $viewPath = 'custodian.relationship';
+        } else {
+            $viewPath = Inflector::singularize(self::tableName($controller)) . '.' . $action;
         }
         $category = Tab::whereName($controller)->first()->category;
         

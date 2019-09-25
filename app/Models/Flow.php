@@ -36,6 +36,7 @@ use Throwable;
  * @method static Builder|Flow whereUpdatedAt($value)
  * @method static Builder|Flow whereUserId($value)
  * @mixin Eloquent
+ * @method static Builder|Flow whereMediaId($value)
  */
 class Flow extends Model {
     
