@@ -125,7 +125,7 @@ $routes = [
     'flow_type'       => array_merge(
         $default, [
             'create' => ['post'],
-            'edit' => ['{id}' => 'post']
+            'edit'   => ['{id}' => 'post'],
         ]
     ),
     'grade'           => $default,
@@ -184,7 +184,7 @@ $routes = [
     ],
     'partner'         => array_merge(
         $default, ['recharge' => ['{id}' => ['get', 'put']]],
-    ),
+        ),
     'passage_log'     => [
         'index'  => ['get'],
         'store'  => ['post'],
@@ -194,6 +194,8 @@ $routes = [
         $default,
         ['issue' => ['post']]
     ),
+    'poll'            => $default,
+    'poll_topic'      => $default,
     'prize'           => $default,
     'room'            => $default,
     'room_type'       => $default,
@@ -262,10 +264,10 @@ $routes = [
         'store' => ['post'],
     ],
     'user'            => [
-        'edit'    => ['get'],
-        'update'  => ['put'],
-        'reset'   => ['get', 'post'],
-        'info' => ['get'],
+        'edit'   => ['get'],
+        'update' => ['put'],
+        'reset'  => ['get', 'post'],
+        'info'   => ['get'],
     ],
     'wap_site'        => [
         'index'  => ['get'],
@@ -301,7 +303,7 @@ routes($routes);
 /** 微信端路由 -------------------------------------------------------------------------------------------------------- */
 Route::get('msg/{code}', 'Wechat\InfoController@detail');
 $routes = [
-    'info' => [
+    'info'      => [
         'index'   => ['get', 'post'],
         'create'  => ['get', 'post'],
         'edit'    => ['{id?}' => ['get', 'post']],
@@ -315,14 +317,14 @@ $routes = [
         'module'  => ['get'],
         'article' => ['get'],
     ],
-    'mark'   => [
+    'mark'      => [
         'index'   => ['get', 'post'],
         'detail'  => ['get', 'post'],
         'graph'   => ['get', 'post'],
         'analyze' => ['get'],
         'stat'    => ['get'],
     ],
-    'home_work'      => [
+    'home_work' => [
         'index' => ['get'],
     ],
 ];
