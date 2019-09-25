@@ -18,7 +18,7 @@
                         data: { _token: page.token() },
                         success: function (result) {
                             $('tbody').append(result);
-                            $('select[name=steps[][ids]]').select2();
+                            $('input[name=steps[][ids]]').select2();
                             $('.overlay').hide();
                         },
                         error: function (e) {
