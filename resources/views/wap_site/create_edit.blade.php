@@ -19,10 +19,7 @@
                 </div>
             </div>
             @include('shared.wapsite.preview')
-            @include('shared.switch', [
-
-                'value' => $ws['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $ws['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

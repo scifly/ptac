@@ -56,10 +56,7 @@
                 </div>
             </div>
             @include('shared.remark')
-            @include('shared.switch', [
-
-                'value' => $exam['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $exam['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

@@ -39,10 +39,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('shared.switch', [
-
-                'value' => $sm['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $sm['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

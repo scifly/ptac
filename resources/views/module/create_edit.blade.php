@@ -111,10 +111,7 @@
                 'value' => $modules['isfree'] ?? null,
                 'options' => ['基本', '增值']
             ])
-            @include('shared.switch', [
-
-                'value' => $module['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $module['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

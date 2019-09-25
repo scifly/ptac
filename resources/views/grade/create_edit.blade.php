@@ -32,10 +32,7 @@
             ])
             <!-- 所属标签 -->
             @include('shared.tag.tags')
-            @include('shared.switch', [
-
-                'value' => $grade['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $grade['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

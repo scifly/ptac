@@ -30,10 +30,7 @@
         ])
         <!-- 备注 -->
         @include('shared.remark')
-        @include('shared.switch', [
-
-            'value' => $rt['enabled'] ?? null
-        ])
+        @include('shared.switch', ['value' => $rt['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

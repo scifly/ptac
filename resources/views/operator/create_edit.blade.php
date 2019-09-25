@@ -175,10 +175,7 @@
             </div>
             @include('shared.card')
             <!-- 状态 -->
-            @include('shared.switch', [
-
-                'value' => $operator['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $operator['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

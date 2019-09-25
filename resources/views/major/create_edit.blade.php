@@ -29,10 +29,7 @@
                 'icon' => 'fa fa-book'
             ])
             @include('shared.remark')
-            @include('shared.switch', [
-
-                'value' => $major['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $major['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

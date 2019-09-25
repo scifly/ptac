@@ -112,6 +112,7 @@ $routes = [
         'grant'    => ['get', 'post'],
         'face'     => ['get', 'post'],
     ],
+    'evaluate'        => $default,
     'event'           => $default,
     'exam'            => $default,
     'exam_type'       => $default,

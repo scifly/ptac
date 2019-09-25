@@ -46,10 +46,7 @@
                         <!-- 角色备注 -->
                         @include('shared.remark')
                         <!-- 状态 -->
-                        @include('shared.switch', [
-
-                            'value' => $group['enabled'] ?? null
-                        ])
+                        @include('shared.switch', ['value' => $group['enabled'] ?? null])
                     </div>
                 </div>
                 <!-- 角色菜单权限 -->

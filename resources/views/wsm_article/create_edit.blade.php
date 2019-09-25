@@ -53,10 +53,7 @@
                     </div>
                 </div>
             </div>
-            @include('shared.switch', [
-
-                'value' => $article['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $article['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

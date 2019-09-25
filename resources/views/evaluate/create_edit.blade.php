@@ -39,10 +39,7 @@
             </div>
             <!-- 说明 -->
             @include('shared.remark')
-            @include('shared.switch', [
-
-                'value' => $evaluate['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $evaluate['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

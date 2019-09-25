@@ -38,10 +38,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('shared.switch', [
-
-                'value' => $score['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $score['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

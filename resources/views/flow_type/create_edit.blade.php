@@ -40,9 +40,7 @@
                 </div>
             </div>
             @include('shared.remark')
-            @include('shared.switch', [
-                'value' => $flowType['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $flowType['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

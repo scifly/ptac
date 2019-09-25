@@ -136,10 +136,7 @@
                 </div>
             </div>
             <!-- 状态 -->
-            @include('shared.switch', [
-
-                'value' => $partner['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $partner['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

@@ -73,10 +73,7 @@
                 'items' => $apis,
                 'selectedItems' => $selectedApis,
             ])
-            @include('shared.switch', [
-
-                'value' => $school['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $school['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

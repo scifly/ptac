@@ -21,10 +21,7 @@
                 </div>
             </div>
             @include('shared.remark')
-            @include('shared.switch', [
-
-                'value' => $st['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $st['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

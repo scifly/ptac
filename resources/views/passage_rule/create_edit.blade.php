@@ -141,10 +141,7 @@
                 </div>
             </div>
             <!-- 状态 -->
-            @include('shared.switch', [
-
-                'value' => $pr['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $pr['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

@@ -48,10 +48,7 @@
                 'selectedItems' => $selectedMenus
             ])
             @include('shared.remark')
-            @include('shared.switch', [
-
-                'value' => $tab['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $tab['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

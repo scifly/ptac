@@ -38,8 +38,7 @@
                                 @endif
                                 @if ($owner && !$completed)
                                     @include('shared.switch', [
-
-                                        'options' => ['激活', '撤销']
+                                        'options' => ['激活', '撤销'],
                                     ])
                                 @else
                                     {!! Form::hidden('enabled', $flow->enabled) !!}

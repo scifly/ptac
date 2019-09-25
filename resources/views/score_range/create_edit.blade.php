@@ -53,10 +53,7 @@
                 'items' => $subjects,
                 'selectedItems' => $selectedSubjects
             ])
-            @include('shared.switch', [
-
-                'value' => $sr['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $sr['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

@@ -23,10 +23,7 @@
                 'options' => ['加分项', '减分项']
             ])
             @include('shared.remark')
-            @include('shared.switch', [
-
-                'value' => $indicator['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $indicator['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

@@ -27,10 +27,7 @@
                 </div>
             </div>
             @include('shared.remark')
-            @include('shared.switch', [
-
-                'value' => $prize['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $prize['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

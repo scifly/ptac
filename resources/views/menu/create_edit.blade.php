@@ -58,10 +58,7 @@
             <!-- 备注 -->
             @include('shared.remark')
             <!-- 状态 -->
-            @include('shared.switch', [
-
-                'value' => $menu['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $menu['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

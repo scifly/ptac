@@ -73,10 +73,7 @@
                 'options' => ['是', '否'],
                 'value' => $_subject['isaux'] ?? null
             ])
-            @include('shared.switch', [
-
-                'value' => $_subject['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $_subject['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

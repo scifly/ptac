@@ -35,6 +35,7 @@ class ComposerServiceProvider extends ServiceProvider {
             'custodian'       => ['index', 'create', 'edit', 'issue', 'grant', 'face'],
             'department'      => ['create_edit'],
             'educator'        => ['index', 'create', 'edit', 'issue', 'grant', 'face', 'recharge'],
+            'evaluate'        => ['index', 'create_edit'],
             'event'           => ['index', 'show'],
             'exam'            => ['index', 'create_edit', 'show'],
             'exam_type'       => ['index'],

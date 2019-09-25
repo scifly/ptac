@@ -47,10 +47,7 @@
                     </table>
                 </div>
             </div>
-            @include('shared.switch', [
-
-                'value' => $topic['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $topic['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

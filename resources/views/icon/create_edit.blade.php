@@ -18,10 +18,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('shared.switch', [
-
-                'value' => $ico['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $ico['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')
