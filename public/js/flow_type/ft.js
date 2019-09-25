@@ -4,6 +4,8 @@
         var ft = {
             options: $.extend({}, options),
             init: function (action) {
+                $(document).off('click', '.add-step');
+                $(document).off('click', '.remove-step');
                 ft.add(action);
                 ft.remove();
             },

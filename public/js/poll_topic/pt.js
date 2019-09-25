@@ -14,6 +14,8 @@
                 '</td>' +
             '</tr>',
             init: function () {
+                $(document).off('click', '.add-option');
+                $(document).off('click', '.remove-option');
                 $(function () {
                     $(".datepicker").datetimepicker({
                         dateFormat: 'yy-mm-dd',
