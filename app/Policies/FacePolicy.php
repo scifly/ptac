@@ -25,7 +25,7 @@ class FacePolicy {
     function operation(User $user, Face $face = null) {
     
         if ($userId = $this->field('user_id', $face)) {
-            $perm = collect(explode(',', $this->visibleUserIds()))->has($userId);
+            $perm = collect(explode(',', $this->visibleUserIds()))->flip()->has($userId);
         }
     
         return $this->action($user) && ($perm ?? true);

@@ -42,7 +42,7 @@ class OperatorPolicy {
             $schoolId = Request::input('school_id');
             !$schoolId ?: $perm &= in_array($schoolId, $this->schoolIds());
         } else {
-            $perm &= collect(explode(',', $this->visibleUserIds()))->has($ids);
+            $perm &= collect(explode(',', $this->visibleUserIds()))->flip()->has($ids);
         }
         
         return in_array($role, Constant::SUPER_ROLES) && $perm;

@@ -22,7 +22,7 @@ class CardPolicy {
     function operation(User $user, Card $card = null) {
         
         if ($userId = $this->field('user_id', $card)) {
-            $perm = collect(explode(',', $this->visibleUserIds()))->has($userId);
+            $perm = collect(explode(',', $this->visibleUserIds()))->flip()->has($userId);
         }
         
         return $this->action($user) && ($perm ?? true);

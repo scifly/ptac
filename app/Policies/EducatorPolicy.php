@@ -33,14 +33,14 @@ class EducatorPolicy {
             }
             $groupId = Request::input('user')['group_id'] ?? ($educator ? $educator->user->group_id : null);
             if (isset($deptIds, $groupId)) {
-                $perm &= collect($this->departmentIds())->has($deptIds)
-                    && (new Group)->list()->keys()->has($groupId);
+                $perm &= collect($this->departmentIds())->flip()->has($deptIds)
+                    && (new Group)->list()->keys()->flip()->has($groupId);
             }
             if ($tagIds = Request::input('tag_ids')) {
-                $perm &= Tag::whereSchoolId($this->schoolId())->pluck('id')->has($tagIds);
+                $perm &= Tag::whereSchoolId($this->schoolId())->pluck('id')->flip()->has($tagIds);
             }
         } else {
-            $perm &= collect($this->contactIds('educator'))->has(array_values($ids));
+            $perm &= collect($this->contactIds('educator'))->flip()->has(array_values($ids));
         }
         
         return $this->action($user) && $perm;

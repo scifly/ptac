@@ -30,8 +30,8 @@ class BedPolicy {
         );
         if (isset($roomId, $studentId)) {
             $schoolId = $this->schoolId();
-            $perm = School::find($schoolId)->rooms->pluck('id')->has($roomId)
-                && collect($this->contactIds('student'))->has($studentId);
+            $perm = School::find($schoolId)->rooms->pluck('id')->flip()->flip()->has($roomId)
+                && collect($this->contactIds('student'))->flip()->has($studentId);
         }
         
         return $this->action($user) && ($perm ?? true);

@@ -25,7 +25,7 @@ class GradePolicy {
      */
     public function operation(User $user, Grade $grade = null) {
     
-        $perm = !$grade ? true : collect($this->gradeIds())->has($grade->id);
+        $perm = !$grade ? true : collect($this->gradeIds())->flip()->has($grade->id);
         [$schoolId, $educatorIds, $deptId] = array_map(
             function ($field) use ($grade) {
                 return Request::input($field)
@@ -33,10 +33,10 @@ class GradePolicy {
             }, ['school_id', 'educator_ids', 'department_id']
         );
         if (isset($schoolId, $educatorIds)) {
-            $perm &= collect($this->schoolIds())->has($schoolId) &&
-                collect($this->contactIds('educator'))->has(array_values($educatorIds));
+            $perm &= collect($this->schoolIds())->flip()->has($schoolId) &&
+                collect($this->contactIds('educator'))->flip()->has(array_values($educatorIds));
         }
-        empty($deptId) ?: $perm &= collect($this->departmentIds())->has($deptId);
+        empty($deptId) ?: $perm &= collect($this->departmentIds())->flip()->has($deptId);
         
         return $this->action($user) && $perm;
     

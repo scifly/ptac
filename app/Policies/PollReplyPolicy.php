@@ -28,7 +28,7 @@ class PollReplyPolicy {
         if (isset($userId, $topicId)) {
             $poll = PollTopic::find($topicId)->poll;
             $perm = $poll->school_id == $this->schoolId()
-                && (new Message)->targetUserIds($poll->message)->has($userId);
+                && (new Message)->targetUserIds($poll->message)->flip()->has($userId);
         }
         
         return $this->action($user) && ($perm ?? true);

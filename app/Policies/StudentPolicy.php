@@ -39,8 +39,8 @@ class StudentPolicy {
                 return $this->field($field, $student);
             }, ['user_id', 'class_id']
         );
-        !$userId ?: $perm &= collect(explode(',', $this->visibleUserIds()))->has($userId);
-        !$classId ?: $perm &= collect($this->classIds())->has($classId);
+        !$userId ?: $perm &= collect(explode(',', $this->visibleUserIds()))->flip()->has($userId);
+        !$classId ?: $perm &= collect($this->classIds())->flip()->has($classId);
         
         return $this->action($user) && $perm;
         

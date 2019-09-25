@@ -32,7 +32,7 @@ class FlowPolicy {
         if (isset($flowTypeId, $userId, $step, $status)) {
             $flowType = FlowType::find($flowTypeId);
             $steps = json_decode($flowType, true);
-            $perm &= collect(explode(',', $this->visibleUserIds()))->has($userId)
+            $perm &= collect(explode(',', $this->visibleUserIds()))->flip()->has($userId)
                 && $flowType->school_id == $this->schoolId()
                 && ($user->id == $userId ? $step == 0 : in_array($user->id, $steps[$step]['userIds']));
         }

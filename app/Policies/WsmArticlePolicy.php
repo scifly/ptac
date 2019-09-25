@@ -23,7 +23,7 @@ class WsmArticlePolicy {
     function operation(User $user, WsmArticle $wsma = null) {
     
         if ($wsmId = $this->field('wsm_id', $wsma)) {
-            $perm = collect($this->schoolIds())->has(
+            $perm = collect($this->schoolIds())->flip()->has(
                 WapSiteModule::find($wsmId)->wapsite->school_id
             );
         }

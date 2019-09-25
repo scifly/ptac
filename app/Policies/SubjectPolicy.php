@@ -32,7 +32,7 @@ class SubjectPolicy {
         );
         if (isset($schoolId, $gradeIds)) {
             $perm = $schoolId == $this->schoolId()
-                && Grade::whereSchoolId($this->schoolId())->pluck('id')->has(
+                && Grade::whereSchoolId($this->schoolId())->pluck('id')->flip()->has(
                     explode(',', $gradeIds)
                 );
         }

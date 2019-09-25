@@ -31,9 +31,9 @@ class EvaluatePolicy {
         $schoolId = $this->schoolId();
         $perm = Auth::user()->educator->school_id == $schoolId;;
         if (isset($studentId, $indicatorId, $semesterId, $eduatorId)) {
-            $perm &= collect($this->contactIds('student'))->has($studentId)
-                && Indicator::whereSchoolId($schoolId)->pluck('id')->has($indicatorId)
-                && Semester::whereSchoolId($schoolId)->pluck('id')->has($semesterId)
+            $perm &= collect($this->contactIds('student'))->flip()->has($studentId)
+                && Indicator::whereSchoolId($schoolId)->pluck('id')->flip()->has($indicatorId)
+                && Semester::whereSchoolId($schoolId)->pluck('id')->flip()->has($semesterId)
                 && Educator::find($eduatorId)->user_id == Auth::id();
         }
         

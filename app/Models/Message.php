@@ -1079,7 +1079,7 @@ class Message extends Model {
                     $fUsers = $result['invaliduser'] ?? null;
                     $fDepts = $result['invalidparty'] ?? null;
                     $data['sent'] = $content['msgtype'] != 'sms'
-                        ? !$this->failedUserIds($fUsers, $fDepts)->has($user->id)
+                        ? !$this->failedUserIds($fUsers, $fDepts)->flip()->has($user->id)
                         : $result > 0;
                     $received += $data['sent'] ? 1 : 0;
                     $this->create($data);

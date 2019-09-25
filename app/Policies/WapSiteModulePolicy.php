@@ -23,7 +23,7 @@ class WapSiteModulePolicy {
     function operation(User $user, WapSiteModule $wsm = null) {
         
         if ($wsId = $this->field('wap_site_id', $wsm)) {
-            $perm = collect($this->schoolIds())->has(WapSite::find($wsId)->school_id);
+            $perm = collect($this->schoolIds())->flip()->has(WapSite::find($wsId)->school_id);
         }
         
         return in_array($user->role(), Constant::SUPER_ROLES) && ($perm ?? true);

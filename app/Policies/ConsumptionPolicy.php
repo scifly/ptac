@@ -25,7 +25,7 @@ class ConsumptionPolicy {
         if ($rangeId = Request::input('range_id')) {
             $ids = (new Consumption)->studentIds($rangeId);
             $dRange = explode(' - ', Request::input('date_range'));
-            $perm = collect($this->contactIds('student'))->has($ids) && ($dRange[1] >= $dRange[0]);
+            $perm = collect($this->contactIds('student'))->flip()->has($ids) && ($dRange[1] >= $dRange[0]);
         }
         
         return $this->action($user) && ($perm ?? true);

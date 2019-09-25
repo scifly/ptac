@@ -30,9 +30,9 @@ class CustodianPolicy {
             !$groupId ?: $perm &= $groupId == Group::whereName('监护人')->first()->id;
             $studentIds = Request::input('student_ids')
                 ?? ($custodian ? $custodian->students->pluck('id') : null);
-            !$studentIds ?: $perm &= collect($this->contactIds('student'))->has($studentIds);
+            !$studentIds ?: $perm &= collect($this->contactIds('student'))->flip()->has($studentIds);
         } else {
-            $perm &= collect($this->contactIds('custodian'))->has(array_values($ids));
+            $perm &= collect($this->contactIds('custodian'))->flip()->has(array_values($ids));
         }
         
         return $this->action($user) && $perm;

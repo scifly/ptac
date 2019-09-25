@@ -31,12 +31,12 @@ class SchoolPolicy {
             }, ['school_type_id', 'corp_id', 'menu_id', 'department_id', 'app_id']
         );
         if (isset($schoolTypeId, $corpId)) {
-            $perm &= SchoolType::pluck('id')->has($schoolTypeId)
-                && collect($user->corpIds())->has($corpId);
+            $perm &= SchoolType::pluck('id')->flip()->has($schoolTypeId)
+                && collect($user->corpIds())->flip()->has($corpId);
         }
-        empty($menuId) ?: $perm &= collect($this->menuIds())->has($menuId);
-        empty($deptId) ?: $perm &= collect($this->departmentIds())->has($deptId);
-        empty($appId) ?: $perm &= collect($user->corpIds())->has(App::find($appId)->corp_id);
+        empty($menuId) ?: $perm &= collect($this->menuIds())->flip()->has($menuId);
+        empty($deptId) ?: $perm &= collect($this->departmentIds())->flip()->has($deptId);
+        empty($appId) ?: $perm &= collect($user->corpIds())->flip()->has(App::find($appId)->corp_id);
         
         return in_array($user->role(), Constant::SUPER_ROLES) && $perm;
         

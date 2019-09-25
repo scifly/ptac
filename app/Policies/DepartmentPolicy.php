@@ -28,7 +28,7 @@ class DepartmentPolicy {
             }, ['parent_id', 'department_type_id']
         );
         if (isset($parentId, $dTypeId)) {
-            $perm = collect($this->departmentIds())->has($dept ? [$dept->id, $parentId] : $parentId)
+            $perm = collect($this->departmentIds())->flip()->has($dept ? [$dept->id, $parentId] : $parentId)
                 && DepartmentType::find($dTypeId)->name == '其他';
         }
         

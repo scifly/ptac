@@ -25,7 +25,7 @@ class SquadPolicy {
      */
     public function operation(User $user, Squad $class = null) {
         
-        $perm = !$class ? true : collect($this->classIds())->has($class->id);
+        $perm = !$class ? true : collect($this->classIds())->flip()->has($class->id);
         [$gradeId, $educatorIds, $deptId] = array_map(
             function ($field) use ($class) {
                 return Request::input($field)
@@ -33,10 +33,10 @@ class SquadPolicy {
             }, ['grade_id', 'educator_ids', 'department_id']
         );
         if (isset($gradeId, $educatorIds)) {
-            $perm &= collect($this->gradeIds())->has($gradeId) &&
-                collect($this->contactIds('educator'))->has($educatorIds);
+            $perm &= collect($this->gradeIds())->flip()->has($gradeId) &&
+                collect($this->contactIds('educator'))->flip()->has($educatorIds);
         }
-        empty($deptId) ?: $perm &= collect($this->departmentIds())->has($deptId);
+        empty($deptId) ?: $perm &= collect($this->departmentIds())->flip()->has($deptId);
         
         return $this->action($user) && $perm;
         

@@ -31,10 +31,10 @@ class ExamPolicy {
         );
         if (isset($subjectIds, $classIds, $examTypeId)) {
             $schoolId = $this->schoolId();
-            $perm = Subject::whereSchoolId($schoolId)->pluck('id')->has($subjectIds)
-                && collect($this->classIds())->has($classIds)
-                && ExamType::whereSchoolId($schoolId)->pluck('id')->has($examTypeId)
-                && (!$exam ? true : collect($this->examIds())->has($exam->id));
+            $perm = Subject::whereSchoolId($schoolId)->pluck('id')->flip()->has($subjectIds)
+                && collect($this->classIds())->flip()->has($classIds)
+                && ExamType::whereSchoolId($schoolId)->pluck('id')->flip()->has($examTypeId)
+                && (!$exam ? true : collect($this->examIds())->flip()->has($exam->id));
         }
         
         return $this->action($user) && ($perm ?? true);
