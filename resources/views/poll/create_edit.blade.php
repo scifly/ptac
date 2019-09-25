@@ -30,7 +30,6 @@
                     {!! Form::text('end', null, ['class' => 'form-control datepicker']) !!}
                 </div>
             </div>
-            @include('shared.tag.tags')
             @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $poll['enabled'] ?? null
