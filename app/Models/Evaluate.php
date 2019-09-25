@@ -222,7 +222,7 @@ class Evaluate extends Model {
             ];
         } else {
             $students = Student::with('user')->whereIn('id', $this->contactIds('student'))
-                ->pluck('user.realname', 'id');
+                ->get()->pluck('user.realname', 'id');
             $schoolId = $this->schoolId();
             $indicators = Indicator::whereSchoolId($schoolId)->pluck('name', 'id');
             $semesters = Semester::whereSchoolId($schoolId)->pluck('name', 'id');
