@@ -122,12 +122,14 @@ $routes = [
         'destroy' => ['{id?}' => 'delete'],
     ],
     'flow'            => $default,
-    'flow_type'       => array_merge(
-        $default, [
-            'create' => ['post'],
-            'edit'   => ['{id}' => 'post'],
-        ]
-    ),
+    'flow_type'       => [
+        'index'   => ['get'],
+        'create'  => ['get', 'post'],
+        'store'   => ['post'],
+        'edit'    => ['{id?}' => ['get', 'post']],
+        'update'  => ['{id?}' => 'put'],
+        'destroy' => ['{id?}' => 'delete'],
+    ],
     'grade'           => $default,
     'group'           => [
         'index'   => ['get'],
