@@ -4,7 +4,8 @@
         {!! Form::label(
             'attachment',
             Html::tag('i', ' 上传图片', ['class' => 'fa fa-cloud-upload']),
-            ['class' => 'custom-file-upload text-blue']
+            ['class' => 'custom-file-upload text-blue'],
+            false
         ) !!}
         {!! Form::file('attachment', [
             'multiple', 'id' => 'attachment',
