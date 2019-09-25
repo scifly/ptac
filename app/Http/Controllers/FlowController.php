@@ -108,7 +108,7 @@ class FlowController extends Controller {
      * @return bool
      * @throws Throwable
      */
-    function remove($id = null) {
+    function destroy($id = null) {
         
         return $this->flow->remove($id);
         
