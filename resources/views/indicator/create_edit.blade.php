@@ -24,7 +24,7 @@
             ])
             @include('shared.remark')
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $indicator['enabled'] ?? null
             ])
         </div>

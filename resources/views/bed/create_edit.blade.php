@@ -42,7 +42,7 @@
             <!-- 备注 -->
             @include('shared.remark')
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $bed['enabled'] ?? null
             ])
         </div>

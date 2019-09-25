@@ -31,7 +31,7 @@
         <!-- 备注 -->
         @include('shared.remark')
         @include('shared.switch', [
-            'id' => 'enabled',
+
             'value' => $rt['enabled'] ?? null
         ])
         </div>

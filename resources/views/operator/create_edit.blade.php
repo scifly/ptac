@@ -176,7 +176,7 @@
             @include('shared.card')
             <!-- 状态 -->
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $operator['enabled'] ?? null
             ])
         </div>

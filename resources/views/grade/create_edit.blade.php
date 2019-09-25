@@ -33,7 +33,7 @@
             <!-- 所属标签 -->
             @include('shared.tag.tags')
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $grade['enabled'] ?? null
             ])
         </div>

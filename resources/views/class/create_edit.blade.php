@@ -42,7 +42,7 @@
                 {!! Form::hidden('department_id', $class['department_id']) !!}
             @endif
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $class['enabled'] ?? null
             ])
         </div>

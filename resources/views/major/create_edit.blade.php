@@ -30,7 +30,7 @@
             ])
             @include('shared.remark')
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $major['enabled'] ?? null
             ])
         </div>

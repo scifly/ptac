@@ -59,7 +59,7 @@
             @include('shared.remark')
             <!-- 状态 -->
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $menu['enabled'] ?? null
             ])
         </div>

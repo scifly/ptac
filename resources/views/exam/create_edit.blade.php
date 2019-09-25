@@ -57,7 +57,7 @@
             </div>
             @include('shared.remark')
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $exam['enabled'] ?? null
             ])
         </div>

@@ -39,7 +39,7 @@
             </div>
             @include('shared.remark')
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $tag['enabled'] ?? null
             ])
         </div>

@@ -112,7 +112,7 @@
                 'options' => ['基本', '增值']
             ])
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $module['enabled'] ?? null
             ])
         </div>

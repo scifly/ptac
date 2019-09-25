@@ -40,7 +40,7 @@
             <!-- 说明 -->
             @include('shared.remark')
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $evaluate['enabled'] ?? null
             ])
         </div>

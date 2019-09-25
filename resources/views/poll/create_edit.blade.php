@@ -31,7 +31,7 @@
                 </div>
             </div>
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $poll['enabled'] ?? null
             ])
         </div>

@@ -43,7 +43,7 @@
             </div>
             @include('shared.remark')
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $semester['enabled'] ?? null
             ])
         </div>

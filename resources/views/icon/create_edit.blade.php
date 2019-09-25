@@ -19,7 +19,7 @@
                 </div>
             </div>
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $ico['enabled'] ?? null
             ])
         </div>

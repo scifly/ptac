@@ -54,7 +54,7 @@
                 </div>
             </div>
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $article['enabled'] ?? null
             ])
         </div>

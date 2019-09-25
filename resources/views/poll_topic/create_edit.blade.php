@@ -48,7 +48,7 @@
                 </div>
             </div>
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $topic['enabled'] ?? null
             ])
         </div>

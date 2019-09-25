@@ -39,7 +39,7 @@
                 </div>
             </div>
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $score['enabled'] ?? null
             ])
         </div>

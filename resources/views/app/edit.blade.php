@@ -156,7 +156,7 @@
                     'options' => ['是', '否']
                 ])
                 @include('shared.switch', [
-                    'id' => 'enabled',
+
                     'value' => $app['enabled'] ?? null
                 ])
             @endif

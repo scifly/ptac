@@ -25,7 +25,7 @@
             </div>
             @include('shared.remark')
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $op['enabled'] ?? null
             ])
         </div>

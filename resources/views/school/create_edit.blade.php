@@ -74,7 +74,7 @@
                 'selectedItems' => $selectedApis,
             ])
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $school['enabled'] ?? null
             ])
         </div>

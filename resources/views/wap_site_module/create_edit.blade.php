@@ -46,7 +46,7 @@
                 </div>
             </div>
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $wsm['enabled'] ?? null
             ])
         </div>

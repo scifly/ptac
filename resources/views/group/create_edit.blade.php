@@ -47,7 +47,7 @@
                         @include('shared.remark')
                         <!-- 状态 -->
                         @include('shared.switch', [
-                            'id' => 'enabled',
+
                             'value' => $group['enabled'] ?? null
                         ])
                     </div>

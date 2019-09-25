@@ -28,7 +28,7 @@
             </div>
             @include('shared.remark')
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $prize['enabled'] ?? null
             ])
         </div>

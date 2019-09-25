@@ -41,7 +41,6 @@
             </div>
             @include('shared.remark')
             @include('shared.switch', [
-                'id' => 'enabled',
                 'value' => $flowType['enabled'] ?? null
             ])
         </div>

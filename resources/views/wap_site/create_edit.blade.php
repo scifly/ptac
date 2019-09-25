@@ -20,7 +20,7 @@
             </div>
             @include('shared.wapsite.preview')
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $ws['enabled'] ?? null
             ])
         </div>

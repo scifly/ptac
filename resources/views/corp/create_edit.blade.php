@@ -106,7 +106,7 @@
                 </div>
             </div>
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $corp['enabled'] ?? null
             ])
         </div>

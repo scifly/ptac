@@ -74,7 +74,7 @@
                 'value' => $_subject['isaux'] ?? null
             ])
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $_subject['enabled'] ?? null
             ])
         </div>

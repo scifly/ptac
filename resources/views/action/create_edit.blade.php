@@ -73,10 +73,7 @@
                 'selectedItems' => $selectedActionTypes
             ])
             @include('shared.remark')
-            @include('shared.switch', [
-                'id' => 'enabled',
-                'value' => $action['enabled'] ?? null
-            ])
+            @include('shared.switch', ['value' => $action['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

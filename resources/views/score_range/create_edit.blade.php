@@ -54,7 +54,7 @@
                 'selectedItems' => $selectedSubjects
             ])
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $sr['enabled'] ?? null
             ])
         </div>

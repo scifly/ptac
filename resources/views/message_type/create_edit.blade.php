@@ -22,7 +22,7 @@
             </div>
             @include('shared.remark')
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $mt['enabled'] ?? null
             ])
         </div>

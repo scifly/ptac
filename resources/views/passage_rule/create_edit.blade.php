@@ -142,7 +142,7 @@
             </div>
             <!-- 状态 -->
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $pr['enabled'] ?? null
             ])
         </div>

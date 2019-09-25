@@ -38,7 +38,7 @@
                                 @endif
                                 @if ($owner && !$completed)
                                     @include('shared.switch', [
-                                        'id' => 'enabled',
+
                                         'options' => ['激活', '撤销']
                                     ])
                                 @else

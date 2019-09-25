@@ -49,7 +49,7 @@
             ])
             @include('shared.remark')
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $tab['enabled'] ?? null
             ])
         </div>

@@ -40,7 +40,7 @@
                 </div>
             </div>
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $sm['enabled'] ?? null
             ])
         </div>

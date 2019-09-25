@@ -64,7 +64,7 @@
                 </div>
             </div>
             @include('shared.switch', [
-                'id' => 'enabled',
+
                 'value' => $comboType['enabled'] ?? null
             ])
         </div>
