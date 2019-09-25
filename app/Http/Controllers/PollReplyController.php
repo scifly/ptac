@@ -1,30 +1,30 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PollTopicRequest;
-use App\Models\PollTopic;
+use App\Http\Requests\PollReplyRequest;
+use App\Models\PollReply;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
- * 问卷题目
+ * 问卷调查结果
  *
- * Class PollTopicController
+ * Class PollReplyController
  * @package App\Http\Controllers
  */
 class PollReplyController extends Controller {
     
-    protected $topic;
+    protected $reply;
     
     /**
-     * PollTopicController constructor.
-     * @param PollTopic $topic
+     * PollReplyController constructor.
+     * @param PollReply $reply
      */
-    function __construct(PollTopic $topic) {
+    function __construct(PollReply $reply) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->approve($this->topic = $topic);
+        $this->approve($this->reply = $reply);
         
     }
     
@@ -38,7 +38,7 @@ class PollReplyController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->topic->index()
+                $this->reply->index()
             );
         }
         
@@ -61,13 +61,13 @@ class PollReplyController extends Controller {
     /**
      * 保存题目
      *
-     * @param PollTopicRequest $request
+     * @param PollReplyRequest $request
      * @return JsonResponse
      */
-    public function store(PollTopicRequest $request) {
+    public function store(PollReplyRequest $request) {
         
         return $this->result(
-            $this->topic->store(
+            $this->reply->store(
                 $request->all()
             )
         );
@@ -83,7 +83,7 @@ class PollReplyController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'topic' => $this->topic->find($id),
+            'topic' => $this->reply->find($id),
         ]);
         
     }
@@ -91,15 +91,14 @@ class PollReplyController extends Controller {
     /**
      * 更新题目
      *
-     * @param PollTopicRequest $request
+     * @param PollReplyRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws Throwable
      */
-    public function update(PollTopicRequest $request, $id) {
+    public function update(PollReplyRequest $request, $id) {
         
         return $this->result(
-            $this->topic->modify(
+            $this->reply->modify(
                 $request->all(), $id
             )
         );
@@ -116,7 +115,7 @@ class PollReplyController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->topic->remove($id)
+            $this->reply->remove($id)
         );
         
     }

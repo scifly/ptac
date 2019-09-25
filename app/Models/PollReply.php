@@ -41,6 +41,13 @@ class PollReply extends Model {
     /** @return BelongsTo */
     function topic() { return $this->belongsTo('App\Models\PollTopic', 'poll_topic_id'); }
     
+    /** @return array */
+    function index() {
+        
+        return [];
+        
+    }
+    
     /**
      * 保存调查问卷答案
      *
