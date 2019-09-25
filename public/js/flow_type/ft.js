@@ -8,9 +8,9 @@
                 ft.remove();
             },
             add: function (action) {
-                $('.overlay').show();
                 $(document).on('click', '.add-step', function () {
                     var uri = action === 'edit' ? 'edit/' + $('#id').val() : 'create';
+                    $('.overlay').show();
                     $.ajax({
                         type: 'POST',
                         dataType: 'html',
@@ -27,7 +27,7 @@
                     });
                 });
             },
-            remove: function() {
+        remove: function() {
                 $(document).on('click', '.remove-step', function () {
                     $(this).closest('tr').remove();
                 });
