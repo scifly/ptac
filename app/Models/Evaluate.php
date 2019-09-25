@@ -191,14 +191,8 @@ class Evaluate extends Model {
             return [
                 'titles' => [
                     '#', '学生', '考核项', '学期', '考核人', '+/-分数',
-                    [
-                        'title' => '创建于',
-                        'html' => $this->htmlDTRange('创建于')
-                    ],
-                    [
-                        'title' => '更新于',
-                        'html' => $this->htmlDTRange('更新于')
-                    ],
+                    ['title' => '创建于', 'html' => $this->htmlDTRange('创建于')],
+                    ['title' => '更新于', 'html' => $this->htmlDTRange('更新于')],
                     [
                         'title' => '状态 . 操作',
                         'html' => $this->htmlSelect(
