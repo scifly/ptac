@@ -167,7 +167,7 @@ class FlowType extends Model {
         $tds = array_map(
             function (HtmlString $input, $attr) {
                 return Html::tag(
-                    'td', $input,
+                    'td', $input->toHtml(),
                     empty($attr) ? [] : ['class' => $attr]
                 )->toHtml();
             }, [$name, $ids, $btn], ['', '', 'text-center']

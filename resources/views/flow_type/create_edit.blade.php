@@ -28,7 +28,7 @@
                             @endforeach
                             <th class="text-center">
                                 {!! Form::button(
-                                    Html::tag('i', '', ['class' => 'fa fa-plus text-blue'])->toHtml(),
+                                    Html::tag('i', '', ['class' => 'fa fa-plus text-blue']),
                                     ['class' => 'btn btn-box-tool add-step', 'title' => '新增']
                                 ) !!}
                             </th>
