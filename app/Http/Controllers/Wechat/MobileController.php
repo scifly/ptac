@@ -32,7 +32,7 @@ class MobileController extends Controller {
     }
     
     /**
-     * 微网站栏目首页
+     * 微网站栏目
      *
      * @return Factory|View
      */
@@ -43,7 +43,7 @@ class MobileController extends Controller {
     }
     
     /**
-     * 微网站文章详情
+     * 微网站文章
      *
      * @return Factory|View
      */

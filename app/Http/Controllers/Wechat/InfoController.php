@@ -58,7 +58,7 @@ class InfoController extends Controller {
     }
     
     /**
-     * 保存消息（草稿）
+     * 保存消息
      *
      * @param MessageRequest $request
      * @return JsonResponse
@@ -75,7 +75,7 @@ class InfoController extends Controller {
     }
     
     /**
-     * 保存并发送消息
+     * 发送消息
      *
      * @param MessageRequest $request
      * @return bool|JsonResponse|RedirectResponse|Redirector
@@ -92,7 +92,7 @@ class InfoController extends Controller {
     }
     
     /**
-     * 消息编辑页面
+     * 编辑消息
      *
      * @param $id
      * @return JsonResponse|View|string
@@ -105,7 +105,7 @@ class InfoController extends Controller {
     }
     
     /**
-     * 更新消息草稿
+     * 更新消息
      *
      * @param MessageRequest $request
      * @param null $id
@@ -123,7 +123,7 @@ class InfoController extends Controller {
     }
     
     /**
-     * 消息详情页面展示
+     * 消息详情
      *
      * @param $id
      * @return Factory|View
@@ -136,7 +136,7 @@ class InfoController extends Controller {
     }
     
     /**
-     * 未关注用户查看消息的链接
+     * 查看消息
      *
      * @param $code
      * @return Factory|View
@@ -148,7 +148,7 @@ class InfoController extends Controller {
     }
     
     /**
-     * 删除指定消息
+     * 删除消息
      *
      * @param $id
      * @return bool|JsonResponse|null

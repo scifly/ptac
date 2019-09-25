@@ -59,7 +59,7 @@ class MarkController extends Controller {
     }
     
     /**
-     * 图表成绩详情
+     * 成绩图表
      *
      * @return bool|JsonResponse
      */
@@ -70,7 +70,7 @@ class MarkController extends Controller {
     }
     
     /**
-     * 成绩分析（教师端）
+     * 成绩分析
      *
      * @return string
      * @throws Throwable
@@ -82,7 +82,7 @@ class MarkController extends Controller {
     }
     
     /**
-     * 综合成绩分析
+     * 成绩统计
      *
      * @return Factory|View|string
      * @throws Throwable
