@@ -176,7 +176,7 @@ class PollTopic extends Model {
     /** @return array */
     function compose() {
         
-        $action = explode(',', Request::path())[1];
+        $action = explode('/', Request::path())[1];
         if ($action == 'index') {
             $nil = collect([null => '全部']);
             
