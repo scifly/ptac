@@ -24,8 +24,7 @@ class EvaluateController extends Controller {
     function __construct(Evaluate $eval) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->eval = $eval;
-        $this->approve($eval);
+        $this->approve($this->eval = $eval);
         
     }
     
