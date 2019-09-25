@@ -255,12 +255,12 @@ class Flow extends Model {
                 ];
             case 'create':
                 return [
-                    'flowTypes' => FlowType::whereSchoolId($this->schoolId())->pluck('id'),
+                    'flowTypes' => FlowType::whereSchoolId($this->schoolId())->pluck('name', 'id'),
                 ];
             default: # edit:
                 $states = ['待审批', '同意', '拒绝'];
                 $flow = $this->find(Request::route('id'));
-                $logs = json_decode($flow->logs, true);
+                $logs = json_decode($flow->logs, true) ?? [];
                 $steps = [];
                 $flowType = $flow->flowType->name;
                 $timeIcon = Html::tag('i', '', ['class' => 'fa fa-clock-o'])->toHtml();
