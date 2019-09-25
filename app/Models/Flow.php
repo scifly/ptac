@@ -196,7 +196,7 @@ class Flow extends Model {
         $flowIds = collect([]);
         foreach ($this->all() as $flow) {
             if (!$flow->enabled) continue;
-            foreach (json_decode($flow->logs, true) as $log) {
+            foreach (json_decode($flow->logs, true) ?? [] as $log) {
                 if (in_array($userId, $log['userIds']) && isset($log['status']) && !$log['status']) {
                     $flowIds->push($flow->id);
                 }
