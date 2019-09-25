@@ -34,10 +34,8 @@ class PollTopicRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        $input['content'] = json_encode(
-            array_filter($input['option'] ?? []),
-            JSON_UNESCAPED_UNICODE
-        );
+        $option = $input['category'] ? $input['option'] : [];
+        $input['content'] = json_encode(array_filter($option), JSON_UNESCAPED_UNICODE);
         $this->replace($input);
         
     }

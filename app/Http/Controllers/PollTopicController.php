@@ -76,6 +76,7 @@ class PollTopicController extends Controller {
     
     /**
      * 编辑题目
+     *
      * @param $id
      * @return bool|JsonResponse
      * @throws Throwable
