@@ -29,7 +29,7 @@
                 'items' => $categories
             ])
             <div class="form-group" id="options" style="display: {!! isset($options) ? 'block' : 'none' !!};">
-                @include('shared.label', ['field' => 'option', 'label' => '选项'])
+                @include('shared.label', ['field' => 'option', 'label' => '题目选项'])
                 <div class="col-sm-6">
                     <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead>
@@ -47,7 +47,6 @@
                     </table>
                 </div>
             </div>
-            @include('shared.remark')
             @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $topic['enabled'] ?? null
