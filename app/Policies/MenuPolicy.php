@@ -28,7 +28,7 @@ class MenuPolicy {
             }, ['parent_id', 'menu_type_id']
         );
         if (isset($parentId, $mTypeId)) {
-            $perm = collect($this->menuIds())->flip()->flip()->has($menu ? [$menu->id, $parentId] : $parentId)
+            $perm = collect($this->menuIds())->flip()->has($menu ? [$menu->id, $parentId] : $parentId)
                 && MenuType::find($mTypeId)->name == '其他';
         }
     
