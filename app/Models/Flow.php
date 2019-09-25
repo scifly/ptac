@@ -215,7 +215,7 @@ class Flow extends Model {
      */
     function step($data) {
         
-        $logs = json_decode($data, true);
+        $logs = json_decode($data, true) ?? [];
         for ($i = 0; $i < sizeof($logs); $i++) {
             $status = $logs[$i]['status'];
             if (isset($status)) {
