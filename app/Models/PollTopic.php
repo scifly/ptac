@@ -73,8 +73,8 @@ class PollTopic extends Model {
                     return self::CATEGORIES[$d];
                 },
             ],
-            ['db' => 'Poll.created_at', 'dt' => 4, 'dr' => true],
-            ['db' => 'Poll.updated_at', 'dt' => 5, 'dr' => true],
+            ['db' => 'PollTopic.created_at', 'dt' => 4, 'dr' => true],
+            ['db' => 'PollTopic.updated_at', 'dt' => 5, 'dr' => true],
             [
                 'db'        => 'PollTopic.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
@@ -198,6 +198,8 @@ class PollTopic extends Model {
                             $nil->union(['已启用', '已禁用']), 'filter_enabled'),
                     ],
                 ],
+                'batch'  => true,
+                'filter' => true,
             ];
         } else {
             $topic = $this->find(Request::route('id'));
