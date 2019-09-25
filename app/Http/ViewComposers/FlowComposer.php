@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Models\FlowType;
+use App\Models\Flow;
 use Illuminate\Contracts\View\View;
 
 /**
@@ -16,7 +16,7 @@ class FlowComposer {
     public function compose(View $view) {
     
         $view->with(
-            (new FlowType)->compose()
+            (new Flow)->compose()
         );
         
     }
