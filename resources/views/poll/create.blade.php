@@ -1,6 +1,6 @@
 {!! Form::open([
     'method' => 'post',
-    'id' => 'formPq',
+    'id' => 'formPoll',
     'data-parsley-validate' => 'true'
 ]) !!}
 @include('poll.create_edit')

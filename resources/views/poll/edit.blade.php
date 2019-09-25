@@ -1,6 +1,6 @@
-{!! Form::model($pq, [
+{!! Form::model($poll, [
     'method' => 'put',
-    'id' => 'formPq',
+    'id' => 'formPoll',
     'data-parsley-validate' => 'true'
 ]) !!}
 @include('poll.create_edit')
