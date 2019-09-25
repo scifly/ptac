@@ -14,15 +14,7 @@
                 'id' => 'flow_type_id',
                 'items' => $flowTypes
             ])
-            <div class="form-group">
-                @include('shared.label', ['field' => 'remark', 'label' => '留言'])
-                <div class="col-sm-6">
-                    {!! Form::text('留言', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '（选填）',
-                    ]) !!}
-                </div>
-            </div>
+            @include('shared.remark')
             @include('flow.attachment')
             @include('shared.form_buttons')
         </div>
