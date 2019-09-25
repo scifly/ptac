@@ -9,7 +9,7 @@
             },
             add: function (action) {
                 $(document).on('click', '.add-step', function () {
-                    var uri = action === 'edit' ? 'edit/' + $('#id').val() : 'create';
+                    var uri = action === 'edit' ? 'edit/' + $('input[name=id]').val() : 'create';
                     $('.overlay').show();
                     $.ajax({
                         type: 'POST',
