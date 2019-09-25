@@ -23,7 +23,6 @@ class EvaluatePolicy {
      */
     public function operation(User $user, Evaluate $eval = null) {
 
-        return true;
         if (!$user->educator) return false;
         [$studentId, $indicatorId, $semesterId, $eduatorId] = array_map(
             function ($field) use ($eval) {

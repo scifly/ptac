@@ -2,7 +2,8 @@
 namespace App\Policies;
 
 use App\Helpers\{Constant, ModelTrait, PolicyTrait};
-use App\Models\{Conference, Message, Room, School, User};
+use App\Models\{Conference, Message, Room, User};
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +19,7 @@ class ConferencePolicy {
      * @param User $user
      * @param Conference $conference
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     function operation(User $user, Conference $conference = null) {
         
