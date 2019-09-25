@@ -16,6 +16,7 @@
             ])
             @include('shared.remark')
             @include('flow.attachment')
+            @include('shared.switch')
             @include('shared.form_buttons')
         </div>
         {!! Form::close() !!}
