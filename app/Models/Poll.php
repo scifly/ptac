@@ -76,19 +76,13 @@ class Poll extends Model {
         $columns = [
             ['db' => 'Poll.id', 'dt' => 0],
             ['db' => 'Poll.name', 'dt' => 1],
+            ['db' => 'User.realname', 'dt' => 2],
+            ['db' => 'Poll.start', 'dt' => 3],
+            ['db' => 'Poll.end', 'dt' => 4],
+            ['db' => 'Poll.created_at', 'dt' => 5, 'dr' => true],
+            ['db' => 'Poll.updated_at', 'dt' => 6, 'dr' => true],
             [
-                'db'        => 'School.name as sname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return $this->iconHtml($d, 'school');
-                },
-            ],
-            ['db' => 'User.realname', 'dt' => 3],
-            ['db' => 'Poll.start', 'dt' => 4],
-            ['db' => 'Poll.end', 'dt' => 5],
-            ['db' => 'Poll.created_at', 'dt' => 6],
-            ['db' => 'Poll.updated_at', 'dt' => 7],
-            [
-                'db'        => 'Poll.enabled', 'dt' => 8,
+                'db'        => 'Poll.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 },
