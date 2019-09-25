@@ -74,7 +74,7 @@ class Evaluate extends Model {
             ['db' => 'Semester.name as sname', 'dt' => 3],
             ['db' => 'Evaluate.amount', 'dt' => 4],
             [
-                'db'        => 'Evaluate.eduator_id', 'dt' => 5,
+                'db'        => 'Evaluate.educator_id', 'dt' => 5,
                 'formatter' => function ($d) {
                     if (!$d) return '[同事检举]';
                     $user = Educator::find($d)->user;
