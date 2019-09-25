@@ -2,9 +2,7 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Http\Controllers\Controller;
-use App\Models\Exam;
-use App\Models\Score;
-use Exception;
+use App\Models\{Exam, Score};
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -52,6 +50,7 @@ class ScoreController extends Controller {
      * 考试详情
      *
      * @return array|Factory|JsonResponse|View|null|string|
+     * @throws Throwable
      */
     public function detail() {
         
@@ -74,7 +73,7 @@ class ScoreController extends Controller {
      * 成绩分析（教师端）
      *
      * @return string
-     * @throws Exception
+     * @throws Throwable
      */
     public function analyze() {
         
@@ -86,6 +85,7 @@ class ScoreController extends Controller {
      * 综合成绩分析
      *
      * @return Factory|View|string
+     * @throws Throwable
      */
     public function stat() {
         

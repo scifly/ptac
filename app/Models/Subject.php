@@ -243,20 +243,28 @@ class Subject extends Model {
      * @throws Exception
      */
     function compose() {
-    
-        $subject = Subject::find(Request::route('id'));
-        $majors = $subject ? $subject->majors : null;
-        $selectedMajors = $majors ? $majors->pluck('name', 'id') : null;
-        $gradeIds = $subject ? $subject->grade_ids : null;
-        $selectedGrades = !$gradeIds ? []
-            : Grade::whereIn('id', explode(',', $gradeIds))->pluck('id');
         
-        return [
-            Grade::whereIn('id', $this->gradeIds())->pluck('name', 'id'),
-            Major::whereSchoolId($this->schoolId())->pluck('name', 'id'),
-            $selectedMajors,
-            $selectedGrades,
-        ];
+        if (explode('/', Request::path())[1] == 'index') {
+            $data = [
+                'titles' => ['#', '名称', '副科', '满分', '及格线', '创建于', '更新于', '状态 . 操作'],
+            ];
+        } else {
+            $subject = Subject::find(Request::route('id'));
+            $majors = $subject ? $subject->majors : null;
+            $gradeIds = $subject ? $subject->grade_ids : null;
+            
+            $data = array_combine(
+                ['grades', 'majors', 'selectedGrades', 'selectedMajors'],
+                [
+                    Grade::whereIn('id', $this->gradeIds())->pluck('name', 'id'),
+                    Major::whereSchoolId($this->schoolId())->pluck('name', 'id'),
+                    $majors ? $majors->pluck('name', 'id') : null,
+                    !$gradeIds ? [] : Grade::whereIn('id', explode(',', $gradeIds))->pluck('id'),
+                ]
+            );
+        }
+        
+        return $data;
         
     }
     

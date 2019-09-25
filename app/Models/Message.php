@@ -710,37 +710,38 @@ class Message extends Model {
      */
     function import() {
         
-        # 上传到本地后台
-        abort_if(
-            empty($file = Request::file('file')),
-            Constant::NOT_ACCEPTABLE,
-            __('messages.empty_file')
-        );
-        abort_if(
-            !($uploadedFile = (new Media)->import($file, __('messages.message.title'))),
-            Constant::INTERNAL_SERVER_ERROR,
-            __('messages.file_upload_failed')
-        );
-        # 上传到企业微信后台
-        [$base, $appid, $appsecret] = $this->params();
-        $type = Request::input('type');
-        $type != 'audio' ?: $type = 'voice';
-        $result = json_decode(
-            Wechat::invoke(
-                $base, 'media', 'upload',
-                [Wechat::token('ent', $appid, $appsecret), $type], [
-                'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
-                'filename'      => $uploadedFile['filename'],
-                'content-type'  => Constant::CONTENT_TYPE[$type],
-                'filelength'    => $file->getSize(),
-            ]), true
-        );
-        abort_if(
-            $result['errcode'] ?? 0,
-            Constant::INTERNAL_SERVER_ERROR,
-            Constant::WXERR[$result['errcode']]
-        );
-        $uploadedFile['media_id'] = $result['media_id'];
+        try {
+            # 上传到本地后台
+            throw_if(
+                empty($file = Request::file('file')),
+                new Exception(__('messages.empty_file'))
+            );
+            throw_if(
+                !($uploadedFile = (new Media)->import($file, __('messages.message.title'))),
+                new Exception(__('messages.file_upload_failed'))
+            );
+            # 上传到企业微信后台
+            [$base, $appid, $appsecret] = $this->params();
+            $type = Request::input('type');
+            $type != 'audio' ?: $type = 'voice';
+            $result = json_decode(
+                Wechat::invoke(
+                    $base, 'media', 'upload',
+                    [Wechat::token('ent', $appid, $appsecret), $type], [
+                    'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
+                    'filename'      => $uploadedFile['filename'],
+                    'content-type'  => Constant::CONTENT_TYPE[$type],
+                    'filelength'    => $file->getSize(),
+                ]), true
+            );
+            throw_if(
+                $result['errcode'] ?? 0,
+                new Exception(Constant::WXERR[$result['errcode']])
+            );
+            $uploadedFile['media_id'] = $result['media_id'];
+        } catch (Exception $e) {
+            throw $e;
+        }
         
         return response()->json([
             'message' => __('messages.message.uploaded'),
@@ -758,6 +759,7 @@ class Message extends Model {
      */
     function compose($uri = null) {
         
+        $acronym = session('acronym');
         switch ($uri ?? Request::route()->uri) {
             case 'messages/index':
                 [$nil, $htmlMediaType, $htmlMessageType] = $this->filters();
@@ -769,7 +771,7 @@ class Message extends Model {
                 $school = School::find($this->schoolId());
                 $app = $school->app ?? $this->corpApp($school->corp_id);
                 
-                return [
+                $data = [
                     'titles'       => array_merge($titles, [
                         '接收人数',
                         ['title' => '发送于', 'html' => $this->htmlDTRange('发送于')],
@@ -797,13 +799,14 @@ class Message extends Model {
                     'batch'        => true,
                     'filter'       => true,
                 ];
-            case 'message_centers/index':
+                break;
+            case $acronym . '/messages/index':
                 $nil = collect([0 => '全部']);
                 $role = Auth::user()->role();
                 $part = session('part');
                 if (isset($part) && $part == 'custodian') $role = '监护人';
                 
-                return array_combine(
+                $data = array_combine(
                     ['messageTypes', 'mediaTypes', 'acronym', 'canSend'],
                     [
                         $nil->union(MessageType::pluck('name', 'id')),
@@ -811,18 +814,20 @@ class Message extends Model {
                         School::find(session('schoolId'))->corp->acronym,
                         !in_array($role, ['监护人', '学生']),
                     ]);
-            case 'message_centers/show/{id}':
+                break;
+            case $acronym . '/messages/show/{id}':
                 $detail = $this->detail($id = Request::route('id'));
                 $type = $detail['type'];
                 $content = json_decode($detail[$type], true);
                 
-                return [
+                $data = [
                     'detail'  => $detail,
                     'content' => $content[$type],
                     'replies' => $this->replies($id, $this->find($id)->msl_id),
                 ];
-            case 'message_centers/create':
-            case 'message_centers/edit/{id?}':
+                break;
+            case $acronym . '/messages/create':
+            case $acronym . '/messages/edit/{id?}':
                 $user = Auth::user();
                 $chosenTargetsHtml = '';
                 $detail = $selectedDepartmentIds = $selectedUserIds = null;
@@ -913,7 +918,7 @@ class Message extends Model {
                 # 对当前用户可见的所有部门id
                 $departmentIds = $this->departmentIds($user->id);
                 
-                return [
+                $data = [
                     'departments'           => Department::whereIn('id', $departmentIds)->get(),
                     'messageTypes'          => MessageType::pluck('name', 'id'),
                     'msgTypes'              => [
@@ -941,8 +946,9 @@ class Message extends Model {
                     'mpnewsList'            => $mpnewsList,
                     'timing'                => $timing,
                 ];
+                break;
             default:    // 短信充值 & 查询
-                return [
+                $data = [
                     'filter' => true,
                     'titles' => [
                         '#', '发送者',
@@ -950,7 +956,13 @@ class Message extends Model {
                         '内容',
                     ],
                 ];
+                break;
         }
+        !$acronym ?: $data = array_merge($data, [
+            'userid' => json_decode(Auth::user()->ent_attrs, true)['userid']
+        ]);
+        
+        return $data;
         
     }
     

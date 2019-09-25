@@ -11,18 +11,6 @@ use Illuminate\Contracts\View\View;
  */
 class UserComposer {
     
-    protected $user;
-    
-    /**
-     * UserComposer constructor.
-     * @param User $user
-     */
-    function __construct(User $user) {
-        
-        $this->user = $user;
-        
-    }
-    
     /**
      * @param View $view
      * @throws Exception
@@ -30,7 +18,7 @@ class UserComposer {
     public function compose(View $view) {
         
         $view->with(
-            $this->user->compose()
+            (new User)->compose()
         );
         
     }

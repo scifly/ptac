@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\Module;
 use Illuminate\Contracts\View\View;
 
@@ -11,27 +10,11 @@ use Illuminate\Contracts\View\View;
  */
 class ModuleComposer {
     
-    use ModelTrait;
-    
-    protected $module;
-    
-    /**
-     * ModuleComposer constructor.
-     * @param Module $module
-     */
-    function __construct(Module $module) {
-        
-        $this->module = $module;
-        
-    }
-    
-    /**
-     * @param View $view
-     */
+    /** @param View $view */
     public function compose(View $view) {
         
         $view->with(
-            $this->module->compose()
+            (new Module)->compose()
         );
         
     }

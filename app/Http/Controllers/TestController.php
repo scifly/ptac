@@ -51,7 +51,10 @@ class TestController extends Controller {
      */
     public function index() {
         
-        echo Request::route()->uri;
+        if (Request::method() == 'POST') {
+            dd(Request::all());
+        }
+        return view('user.test');
         // try {
         //     DB::transaction(function () {
         //         $apiGId = Group::whereName('api')->first()->id;

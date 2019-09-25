@@ -205,7 +205,7 @@ class PollTopic extends Model {
             return [
                 'polls'      => Poll::where(['user_id' => Auth::id()])->pluck('name', 'id'),
                 'categories' => collect(self::CATEGORIES),
-                'content'    => $topic ? $this->options($topic->content) : null,
+                'options'    => $topic ? $this->options($topic->content) : null,
             ];
         }
         
@@ -219,13 +219,9 @@ class PollTopic extends Model {
         
         $options = json_decode($content, true) ?? [];
         $html = '';
-        [$add, $del] = array_map(
-            function ($iClass, $bClass, $title) {
-                return Form::button(
-                    Html::tag('i', '', ['class' => 'fa ' . $iClass . ' text-blue']),
-                    ['class' => 'btn btn-box-tool ' . $bClass . '-option', 'title' => $title]
-                )->toHtml();
-            }, ['fa-plus', 'fa-minus'], ['add', 'remove'], ['新增', '移除']
+        $del = Form::button(
+            Html::tag('i', '', ['class' => 'fa fa-minus text-blue']),
+            ['class' => 'btn btn-box-tool remove-option', 'title' => '移除']
         );
         foreach ($options as $option) {
             $input = Form::text('option[]', $option, [
@@ -241,17 +237,7 @@ class PollTopic extends Model {
             $html .= Html::tag('tr', $tr);
         }
         
-        return <<<HTML
-            <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
-                <thead>
-                    <tr>
-                        <th class="text-center">选项</th>
-                        <th class="text-center">{$add}</th>
-                    </tr>
-                </thead>
-                <tbody>{$html}</tbody>
-            </table>';
-        HTML;
+        return $html;
         
     }
     

@@ -14,18 +14,6 @@ class OperatorComposer {
     
     use ModelTrait;
     
-    protected $user;
-    
-    /**
-     * OperatorComposer constructor.
-     * @param User $user
-     */
-    function __construct(User $user) {
-        
-        $this->user = $user;
-        
-    }
-    
     /**
      * @param View $view
      * @throws Exception
@@ -33,7 +21,7 @@ class OperatorComposer {
     public function compose(View $view) {
     
         $view->with(
-            $this->user->compose()
+            (new User)->compose()
         );
         
     }

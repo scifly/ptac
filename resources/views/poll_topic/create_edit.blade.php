@@ -28,9 +28,24 @@
                 'disabled' => isset($topic) ? true : null,
                 'items' => $categories
             ])
-            <div class="form-group" id="options" style="display: {!! isset($content) ? 'block' : 'none' !!};">
+            <div class="form-group" id="options" style="display: {!! isset($options) ? 'block' : 'none' !!};">
                 @include('shared.label', ['field' => 'option', 'label' => '选项'])
-                <div class="col-sm-6">{!! $content !!}</div>
+                <div class="col-sm-6">
+                    <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
+                        <thead>
+                        <tr>
+                            <th class="text-center">选项</th>
+                            <th class="text-center">
+                                {!! Form::button(
+                                    Html::tag('i', '', ['class' => 'fa fa-plus text-blue']),
+                                    ['class' => 'btn btn-box-tool add-option', 'title' => '新增']
+                                ) !!}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>{!! $options !!}</tbody>
+                    </table>
+                </div>
             </div>
             @include('shared.remark')
             @include('shared.switch', [

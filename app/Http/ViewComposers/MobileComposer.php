@@ -2,25 +2,21 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\Constant;
-use App\Models\Media;
-use App\Models\WapSite;
-use App\Models\WapSiteModule;
-use App\Models\WsmArticle;
-use Illuminate\Contracts\Container\BindingResolutionException;
+use App\Models\{Media, WapSite, WapSiteModule, WsmArticle};
+use Exception;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\{Auth, Request};
 
 /**
- * Class MobileSiteComposer
+ * Class MobileComposer
  * @package App\Http\ViewComposers
  */
-class MobileSiteComposer {
+class MobileComposer {
     
     protected $media;
     
     /**
-     * MobileSiteComposer constructor.
+     * MobileComposer constructor.
      * @param Media $media
      */
     function __construct(Media $media) {
@@ -31,14 +27,14 @@ class MobileSiteComposer {
     
     /**
      * @param View $view
-     * @throws BindingResolutionException
+     * @throws Exception
      */
     public function compose(View $view) {
         
-        $user = Auth::user();
-        $action = explode('/', Request::path())[2];
-        switch ($action) {
-            case 'index':
+        try {
+            $user = Auth::user();
+            $action = explode('/', Request::path())[2];
+            if ($action == 'index') {
                 # 禁止学生访问微网站
                 abort_if(
                     !$user || $user->role() == '学生',
@@ -54,20 +50,16 @@ class MobileSiteComposer {
                     'wapsite' => $wapSite,
                     'medias'  => Media::whereIn('id', explode(',', $wapSite->media_ids))->get(),
                 ];
-                break;
-            case 'module':
+            } elseif ($action == 'module') {
                 $id = Request::input('id');
-                $articles = WsmArticle::whereWsmId($id)
-                    ->where('enabled', 1)
-                    ->orderByDesc("created_at")
-                    ->get();
+                $articles = WsmArticle::where(['wsm_id' => $id, 'enabled' => 1])
+                    ->orderByDesc("created_at")->get();
                 $data = [
                     'articles' => $articles,
                     'module'   => (new WapSiteModule)->find($id),
                     'ws'       => true,
                 ];
-                break;
-            default:
+            } else {
                 $id = Request::input('id');
                 $article = (new WsmArticle)->find($id);
                 $data = [
@@ -76,11 +68,13 @@ class MobileSiteComposer {
                         'id', explode(',', $article->media_ids)
                     ),
                 ];
-                break;
+            }
+            $data = array_merge($data, [
+                'userid' => json_decode($user->ent_attrs, true)['userid']
+            ]);
+        } catch (Exception $e) {
+            throw $e;
         }
-        $data = array_merge($data, [
-            'userid' => json_decode($user->ent_attrs, true)['userid']
-        ]);
         
         $view->with($data);
         

@@ -16,21 +16,7 @@ class WsmArticleComposer {
     
     use ModelTrait;
     
-    protected $media;
-    
-    /**
-     * WsmArticleComposer constructor.
-     * @param Media $media
-     */
-    function __construct(Media $media) {
-        
-        $this->media = $media;
-        
-    }
-    
-    /**
-     * @param View $view
-     */
+    /** @param View $view */
     public function compose(View $view) {
     
         $action = explode('/', Request::path())[1];
@@ -40,7 +26,7 @@ class WsmArticleComposer {
             ];
         } else {
             if (Request::route('id')) {
-                $medias = $this->media->whereIn(
+                $medias = Media::whereIn(
                     'id', explode(',', WsmArticle::find(Request::route('id'))->media_ids)
                 )->get();
             }

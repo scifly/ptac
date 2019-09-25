@@ -12,18 +12,6 @@ use Illuminate\Support\Facades\Request;
  */
 class WapSiteComposer {
     
-    protected $media;
-    
-    /**
-     * WapSiteComposer constructor.
-     * @param Media $media
-     */
-    function __construct(Media $media) {
-        
-        $this->media = $media;
-        
-    }
-    
     /**
      * @param View $view
      */
@@ -31,7 +19,7 @@ class WapSiteComposer {
         
         if (Request::route('id')) {
             $ws = WapSite::find(Request::route('id'));
-            $medias = $this->media->whereIn('id', explode(',', $ws->media_ids))->get();
+            $medias = Media::whereIn('id', explode(',', $ws->media_ids))->get();
         }
         
         $view->with(['medias' => $medias ?? null]);

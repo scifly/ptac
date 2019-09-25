@@ -16,6 +16,9 @@
     'id' => 'testform',
     'enctype' => 'multipart/form-data'
 ]) !!}
+{!! Form::text('option[]', null, ['class' => 'test']) !!}
+{!! Form::text('option[]', null, ['class' => 'test']) !!}
+{!! Form::text('option[]', null, ['class' => 'test']) !!}
 {!! Form::textarea('message', null) !!}
 {!! Form::file('abc', ['id' => 'abc']) !!}
 {!! Form::file('def', ['id' => 'def']) !!}
