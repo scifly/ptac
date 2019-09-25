@@ -24,7 +24,9 @@
                     <table class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead><tr>
                             @foreach (['名称', '审批人'] as $title)
-                                <th class="text-center">{!! $title !!}</th>
+                                <th class="text-center" style="vertical-align: middle;">
+                                    {!! $title !!}
+                                </th>
                             @endforeach
                             <th class="text-center">
                                 {!! Form::button(
