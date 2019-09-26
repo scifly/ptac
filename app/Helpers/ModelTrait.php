@@ -200,9 +200,9 @@ trait ModelTrait {
      */
     function schoolId() {
         
-        $schoolMenuId = (new Menu)->menuId(session('menuId'));
+        $menuId = (new Menu)->menuId(session('menuId'));
         
-        return $schoolMenuId ? School::whereMenuId($schoolMenuId)->first()->id : null;
+        return $menuId ? School::whereMenuId($menuId)->first()->id : null;
         
     }
     
@@ -216,19 +216,18 @@ trait ModelTrait {
         if (!$menuId = Session::exists('menuId')) return null;
         $user = Auth::user();
         $menu = new Menu;
-        switch ($user->role()) {
-            case '运营':
-            case '企业':
-                $cMId = $menu->menuId($menuId, '企业');
-                
-                return !$cMId ?: (new Corp)->where('menu_id', $cMId)->first()->id;
-            case '学校':
-                $sMId = $menu->menuId($menuId);
-                
-                return School::whereMenuId($sMId)->first()->corp_id;
-            default:
-                return School::find($user->educator->school_id)->corp_id;
+        $role = $user->role();
+        if (in_array($role, ['运营', '企业'])) {
+            $mId = $menu->menuId($menuId, '企业');
+            $corpId = !$mId ?: Corp::whereMenuId($mId)->first()->id;
+        } elseif ($role == '学校') {
+            $mId = $menu->menuId($menuId);
+            $corpId = School::whereMenuId($mId)->first()->corp_id;
+        } else {
+            $corpId = $user->educator->school->corp_id;
         }
+
+        return $corpId;
         
     }
     
