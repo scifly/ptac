@@ -26,7 +26,6 @@ class AppPolicy {
             $perm = $corpId == $this->corpId();
         }
         
-        
         return in_array($user->role(), ['运营', '企业']) && ($perm ?? true);
         
     }

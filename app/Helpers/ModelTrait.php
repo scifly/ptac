@@ -194,30 +194,6 @@ trait ModelTrait {
     }
     
     /**
-     * 获取当前控制器包含的方法所对应的路由对象数组
-     *
-     * @return array
-     */
-    function uris() {
-        
-        if (!Request::route()) return null;
-        $controller = class_basename(Request::route()->controller);
-        $routes = [];
-        if ($tab = Tab::whereName($controller)->first()) {
-            $routes = Action::where([
-                ['tab_id', '=', $tab->id],
-                ['route', '<>', null],
-            ])->pluck('route', 'method')->toArray();
-        }
-        foreach ($routes as $key => $value) {
-            $uris[$key] = new Route($value);
-        }
-        
-        return $uris ?? [];
-        
-    }
-    
-    /**
      * 根据当前菜单Id返回学校Id
      *
      * @return int|mixed
@@ -832,6 +808,7 @@ trait ModelTrait {
      */
     function state($status, $enabled = '已启用', $disabled = '未启用') {
         
+        if (!isset($status)) return '';
         if (!is_numeric($status)) return $status;
         $color = 'text-' . ($status ? 'green' : 'gray');
         $title = $status ? $enabled : $disabled;

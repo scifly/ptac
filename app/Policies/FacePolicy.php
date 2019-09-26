@@ -15,8 +15,6 @@ class FacePolicy {
     use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
-     * 权限判断
-     *
      * @param User $user
      * @param Face|null $face
      * @return bool

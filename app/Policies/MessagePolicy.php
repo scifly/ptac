@@ -1,6 +1,8 @@
 <?php
 namespace App\Policies;
 
+use App\Models\Message;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**
@@ -12,11 +14,11 @@ class MessagePolicy {
     use HandlesAuthorization;
     
     /**
-     * Create a new policy instance.
-     *
-     * @return void
+     * @param User $user
+     * @param Message|null $message
      */
-    public function __construct() {
-        //
+    function operation(User $user, Message $message = null) {
+    
     }
+    
 }

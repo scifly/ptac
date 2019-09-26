@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\{Broadcaster, Constant, ModelTrait};
-use App\Models\{Department};
+use App\Models\{Action, Department};
 use Auth;
 use Exception;
 use GuzzleHttp\Client;
@@ -51,10 +51,14 @@ class TestController extends Controller {
      */
     public function index() {
         
-        if (Request::method() == 'POST') {
-            dd(Request::all());
+        foreach (Action::all() as $action) {
+            
+            if (!$action->tab) {
+                echo join(', ', $action->toArray()) . '<br />';
+            }
+            
         }
-        return view('user.test');
+        exit;
         // try {
         //     DB::transaction(function () {
         //         $apiGId = Group::whereName('api')->first()->id;

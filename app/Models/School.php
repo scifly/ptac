@@ -264,14 +264,14 @@ class School extends Model {
             [
                 'db'        => 'School.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    $rechargeLink = $this->anchor(
+                    $link = $this->anchor(
                         'recharge_' . $row['id'],
                         '短信充值 & 查询',
                         'fa-money'
                     );
                     
                     return Datatable::status($d, $row, false) .
-                        (Auth::user()->can('act', self::uris()['recharge']) ? $rechargeLink : '');
+                        (Auth::user()->can('act', (new Action)->uris()['recharge']) ? $link : '');
                 },
             ],
         ];
@@ -462,7 +462,7 @@ class School extends Model {
                         'schoolTypes'  => SchoolType::whereEnabled(1)->pluck('name', 'id'),
                         'apps'         => collect([null => '[所属公众号]'])->union($apps),
                         'corpId'       => $this->corpId(),
-                        'uris'         => $this->uris(),
+                        'uris'         => (new Action)->uris(),
                         'apis'         => $apis,
                         'selectedApis' => $selectedApis,
                         'disabled'     => null,   # disabled - 是否显示'返回列表'和'取消'按钮

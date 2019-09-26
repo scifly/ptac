@@ -14,8 +14,6 @@ class WsmArticlePolicy {
     use HandlesAuthorization, PolicyTrait, ModelTrait;
     
     /**
-     * 权限判断
-     *
      * @param User $user
      * @param WsmArticle|null $wsma
      * @return bool

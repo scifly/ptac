@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Constant;
 use App\Models\{Action, Menu, Tab};
-use App\Policies\Route;
 use Auth;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -48,7 +47,7 @@ class Controller extends BaseController {
                 !$view = $action->view,
                 new Exception(__('messages.action.misconfigured'))
             );
-            $params['uris'] = $this->uris($ctlr->id);
+            $params['uris'] = $action->uris($ctlr->id);
             $params['breadcrumb'] = $action->name;
             $params['user'] = Auth::user();
             
@@ -124,12 +123,12 @@ class Controller extends BaseController {
     /**
      * 返回操作结果提示信息
      *
-     * @param mixed $result
-     * @param String $success
-     * @param String $failure
+     * @param boolean $result
+     * @param string|null $success
+     * @param string|null $failure
      * @return JsonResponse|string
      */
-    protected function result($result, String $success = null, String $failure = null) {
+    protected function result($result, $success = null, $failure = null) {
         
         # 获取功能名称
         $paths = explode('\\', get_called_class());
@@ -149,7 +148,10 @@ class Controller extends BaseController {
         
         # 输出状态码及消息
         return Request::ajax()
-            ? response()->json(['title' => $action ? $action->name : '', 'message' => $message], $statusCode)
+            ? response()->json([
+                'title' => $action ? $action->name : '',
+                'message' => $message
+            ], $statusCode)
             : $statusCode . ' : ' . $message;
         
     }
@@ -175,27 +177,6 @@ class Controller extends BaseController {
             
             return $next($request);
         });
-        
-    }
-    
-    /**
-     * 返回指定控制器对应的所有路由
-     *
-     * @param integer $tabId - 控制器id
-     * @return array
-     */
-    private function uris($tabId) {
-        
-        $routes = Action::whereTabId($tabId)
-            ->where('route', '<>', null)
-            ->pluck('route', 'method')
-            ->toArray();
-        $uris = [];
-        foreach ($routes as $key => $value) {
-            $uris[$key] = new Route($value);
-        }
-        
-        return $uris;
         
     }
     

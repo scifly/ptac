@@ -120,7 +120,7 @@ class Educator extends Model {
                     );
                     
                     return Datatable::status($d, $row, false) .
-                        (Auth::user()->can('act', self::uris()['recharge']) ? $rechargeLink : '');
+                        (Auth::user()->can('act', (new Action)->uris()['recharge']) ? $rechargeLink : '');
                 },
             ],
         ];

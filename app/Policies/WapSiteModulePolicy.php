@@ -14,8 +14,6 @@ class WapSiteModulePolicy {
     use HandlesAuthorization, PolicyTrait, ModelTrait;
     
     /**
-     * 权限判断
-     *
      * @param User $user
      * @param WapSiteModule $wsm
      * @return bool

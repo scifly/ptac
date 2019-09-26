@@ -141,22 +141,22 @@ var page = {
     },
     errorHandler: function (e) {
         var obj = JSON.parse(e.responseText),
-            message = '', status = e.status; // obj['statusCode'];
+            status = e.status,
+            title = [obj['exception'], status].join(' : '),
+            message = obj['message'] + '\n' + [obj['file'], obj['line']].join(' : ');
 
         $('.overlay').hide();
         if (status === 406 && typeof obj['errors'] !== 'undefined') {
-            var errors = obj['errors'];
-            $.each(errors, function () {
-                page.inform(obj['exception'], this, page.failure);
+            $.each(obj['errors'], function () {
+                page.inform(title, this, page.failure);
             });
         } else if (status === 498) {
             window.location.reload();
-        } else if (status === 401) {
-            page.inform(obj['exception'] + ' : ' + status, message, page.failure);
-            window.location = page.siteRoot() + 'login?returnUrl=' + page.getMenuUrl()
         } else {
-            message = obj['message'] + '\n' + obj['file'] + ' : ' + obj['line'];
-            page.inform(obj['exception'] + ' : ' + status, message, page.failure);
+            page.inform(title, message, page.failure);
+            if (status === 401) {
+                window.location = page.siteRoot() + 'login?returnUrl=' + page.getMenuUrl()
+            }
         }
     },
     getWrapperContent: function (menuId, menuUrl, tabId, tabUrl) {
@@ -169,11 +169,10 @@ var page = {
             url: menuUrl,
             data: {menuId: menuId},
             success: function (result) {
-                var dIcon = result['department']['icon'] ? result['department']['icon'] : 'fa fa-send-o',
-                    dName = result['department']['name'] ? result['department']['name'] : '运营';
+                var d = result['department'] || '';
 
-                $('.d_icon').removeClass().addClass('fa ' + dIcon + ' d_icon');
-                $('.d_name').html(dName);
+                $('.d_icon').removeClass().addClass('fa ' + (d['icon'] || 'fa fa-send-o') + ' d_icon');
+                $('.d_name').html(d['name'] || '运营');
                 // $wrapper.html(result.html);
                 $wrapper.html(result.html);
                 $('#head-breadcrumb').html(result['title']);
@@ -255,7 +254,7 @@ var page = {
             data = {tabId: tabId, menuId: menuId};
 
         if (typeof ids !== 'undefined') {
-            data = $.extend(data, { ids: ids });
+            data = $.extend(data, {ids: ids});
         }
         $('a[href="#tab_' + tabId + '"]').attr('data-uri', url);
         $tabPane.html(page.ajaxLoader);
@@ -527,12 +526,16 @@ var page = {
             actions,
             function (action) {
                 $('#batch-' + action).off().on(
-                    'click', function () { batch(action); }
+                    'click', function () {
+                        batch(action);
+                    }
                 );
             }
         );
         $.getMultiScripts([plugins.datatable.js]).done(
-            function () { showTable(); }
+            function () {
+                showTable();
+            }
         );
     },
     index: function (table, options) {
@@ -577,7 +580,7 @@ var page = {
             page.getTabContent($activeTabPane, table + '/' + url);
         });
     },
-    remove: function(table, options) {
+    remove: function (table, options) {
         var id, reloadDt = function () {
             $('#data-table').dataTable().fnDestroy();
             page.initDatatable(table, options);
@@ -675,7 +678,9 @@ var page = {
         $form.parsley().on('form:validated', function () {
             var reset = function () {
                 if (requestType === 'POST') {
-                    $('input[type="text"], textarea').each(function () { $(this).val(''); });
+                    $('input[type="text"], textarea').each(function () {
+                        $(this).val('');
+                    });
                 }
             };
             if ($('.parsley-error').length === 0) {
@@ -699,9 +704,9 @@ var page = {
         return data;
     },
     initBackBtn: function (table) {
-        $('#cancel, #record-list').off().on('click', function () {
-            page.backToList(table);
-        })
+        $('#cancel, #record-list').off().on(
+            'click', function () { page.backToList(table); }
+        );
     },
     initForm: function (table, formId, url, requestType, options) {
         this.unbindEvents();
@@ -797,11 +802,14 @@ var page = {
             channel = pusher.subscribe('channel.' + $('#userId').val());
 
         channel.bind('broadcast', function (response) {
-            var image = page.success;
-            switch (response['statusCode']) {
-                case 200: break;
-                case 202: image = page.info; break;
-                default: image = page.failure; break;
+            var status = response['statusCode'], image;
+
+            if (status === 200) {
+                image = page.success;
+            } else if (status === 202) {
+                image = page.info;
+            } else {
+                image = page.failure;
             }
             page.inform(response['title'], response['message'], image);
             if (typeof response['url'] !== 'undefined') {
@@ -819,13 +827,15 @@ var page = {
     // }
 };
 $.getMultiScripts = function (arr) {
-    var path = page.siteRoot();
-    var _arr = $.map(arr, function (scr) {
-        return $.getScript((path || "") + scr);
-    });
-    _arr.push($.Deferred(function (deferred) {
-        $(deferred.resolve);
-    }));
+    var path = page.siteRoot(),
+        _arr = $.map(arr, function (scr) {
+            return $.getScript((path || "") + scr);
+        });
+    _arr.push($.Deferred(
+        function (deferred) {
+            $(deferred.resolve);
+        })
+    );
     return $.when.apply($, _arr);
 };
 $(function () {

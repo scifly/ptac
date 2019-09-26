@@ -15,8 +15,6 @@ class ExamPolicy {
     use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
-     * 权限判断
-     *
      * @param User $user
      * @param Exam|null $exam
      * @return bool
@@ -32,8 +30,8 @@ class ExamPolicy {
         if (isset($subjectIds, $classIds, $examTypeId)) {
             $schoolId = $this->schoolId();
             $perm = Subject::whereSchoolId($schoolId)->pluck('id')->flip()->has($subjectIds)
-                && collect($this->classIds())->flip()->has($classIds)
                 && ExamType::whereSchoolId($schoolId)->pluck('id')->flip()->has($examTypeId)
+                && collect($this->classIds())->flip()->has($classIds)
                 && (!$exam ? true : collect($this->examIds())->flip()->has($exam->id));
         }
         

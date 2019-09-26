@@ -12,12 +12,13 @@ trait PolicyTrait {
     
     /**
      * @param User $user
+     * @param null $uri
      * @return bool
      */
-    function action(User $user) {
+    function action(User $user, $uri = null) {
     
         if (!in_array($user->role(), Constant::SUPER_ROLES)) {
-            $actionId = Action::whereRoute(trim(Request::route()->uri()))->first()->id;
+            $actionId = Action::whereRoute(trim($uri ?? Request::route()->uri()))->first()->id;
             $ag = ActionGroup::where(['group_id'  => $user->group_id, 'action_id' => $actionId])->first();
             $perm = $ag ? true : false;
         }

@@ -80,18 +80,20 @@ class Flow extends Model {
                 'formatter' => function ($d, $row) {
                     $owner = $row['user_id'] == Auth::id();
                     $id = $row['id'];
-                    $user = Auth::user();
                     [$uriEdit, $uriDel] = array_map(
                         function ($name, $title, $class) use ($id) {
                             return $this->anchor($name . $id, $title, $class);
-                        },
-                        ['edit_', ''], [$owner ? '编辑' : '审批', '删除'],
+                        }, ['edit_', ''], [$owner ? '编辑' : '审批', '删除'],
                         ['fa-pencil', 'fa-remove text-red']
                     );
+                    $uris = (new Action)->uris();
+                    [$edit, $del] = array_map(
+                        function ($action, $html) use ($uris) {
+                            return Auth::user()->can('act', $uris[$action]) ? $html : '';
+                        }, ['create', 'destroy'], [$uriEdit, $uriDel]
+                    );
                     
-                    return $this->state($d) .
-                        ($user->can('act', $this->uris()['edit']) ? $uriEdit : '') .
-                        ($owner ? ($user->can('act', $this->uris()['destroy']) ? $uriDel : '') : '');
+                    return $this->state($d) . $edit . ($owner ? $del : '');
                 },
             ],
             ['db' => 'Flow.user_id', 'dt' => 7],

@@ -14,8 +14,6 @@ class ScoreRangePolicy {
     use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
-     * 权限判断
-     *
      * @param User $user
      * @param ScoreRange|null $sr
      * @return bool

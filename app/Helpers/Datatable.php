@@ -1,6 +1,7 @@
 <?php
 namespace App\Helpers;
 
+use App\Models\Action;
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\{Auth, DB, Request};
@@ -72,6 +73,7 @@ class Datatable {
         // Total data set length
         $resTotalLength = DB::select("SELECT COUNT(*) AS t FROM " . $tableName)[0]->t;
         $recordsTotal = $resTotalLength;
+        
         // Output
         return [
             "draw"            => intval(Request::get('draw')),
@@ -98,9 +100,9 @@ class Datatable {
      *   particular records (for example, restricting by a login id).
      *
      * @param Model $model
-     * @param  array $columns Column information array
-     * @param  string $whereResult WHERE condition to apply to the result set
-     * @param  string $whereAll WHERE condition to apply to all queries
+     * @param array $columns Column information array
+     * @param string $whereResult WHERE condition to apply to the result set
+     * @param string $whereAll WHERE condition to apply to all queries
      * @return array Server-side processing response array
      * @internal param Request $request Data sent to server by DataTables
      * @internal param array|PDO $conn PDO connection resource or connection parameters array
@@ -144,6 +146,7 @@ class Datatable {
         $recordsTotal = $resTotalLength[0]->cnt;
         
         /* Output */
+        
         return [
             "draw"            => intval(Request::get('draw')),
             "recordsTotal"    => intval($recordsTotal),
@@ -164,29 +167,30 @@ class Datatable {
      */
     function status($status, $row, $show = true, $edit = true, $del = true) {
         
-        $user = Auth::user();
         $id = is_array($row) ? $row['id'] : $row;
         [$uriShow, $uriEdit, $uriDel] = array_map(
             function ($name, $title, $class) use ($id) {
                 return $this->anchor($name . $id, $title, $class);
-            },
-            ['show_', 'edit_', ''], ['详情', '编辑', '删除'],
+            }, ['show_', 'edit_', ''], ['详情', '编辑', '删除'],
             ['fa-bars', 'fa-pencil', 'fa-remove text-red']
         );
+        $uris = (new Action)->uris();
         
-        return
-            (isset($status) ? $this->state($status) : '') .
-            ($show ? ($user->can('act', $this->uris()['show']) ? $uriShow : '') : '') .
-            ($edit ? ($user->can('act', $this->uris()['edit']) ? $uriEdit : '') : '') .
-            ($del ? ($user->can('act', $this->uris()['destroy']) ? $uriDel : '') : '');
+        return $this->state($status) . join(
+                array_map(
+                    function ($action, $method, $html) use ($uris) {
+                        return $action ? (Auth::user()->can('act', $uris[$method]) ? $html : '') : '';
+                    }, [$show, $edit, $del], ['show', 'edit', 'destroy'], [$uriShow, $uriEdit, $uriDel]
+                )
+            );
         
     }
     
     /**
      * Create the data output array for the DataTables rows
      *
-     * @param  array $columns Column information array
-     * @param  array $data Data from the SQL get
+     * @param array $columns Column information array
+     * @param array $data Data from the SQL get
      * @return array Formatted data in a row based format
      */
     function data_output(array $columns, array $data) {
@@ -222,8 +226,8 @@ class Datatable {
     /**
      * Return a string from an array or a string
      *
-     * @param  array|string $a Array to join
-     * @param  string $join Glue for the concatenation
+     * @param array|string $a Array to join
+     * @param string $join Glue for the concatenation
      * @return string Joined string
      */
     function _flatten($a, $join = ' AND ') {
@@ -248,6 +252,7 @@ class Datatable {
     private function validateDate($date, $format = 'Y-m-d H:i:s') {
         
         $d = DateTime::createFromFormat($format, $date);
+        
         return $d && $d->format($format) == $date;
         
     }

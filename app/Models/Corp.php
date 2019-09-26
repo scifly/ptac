@@ -126,9 +126,9 @@ class Corp extends Model {
                         '短信充值 & 查询',
                         'fa-money'
                     );
-                    
+
                     return Datatable::status($d, $row, false) .
-                        (Auth::user()->can('act', self::uris()['recharge']) ? $rechargeLink : '');
+                        (Auth::user()->can('act', (new Action)->uris()['recharge']) ? $rechargeLink : '');
                 },
             ],
         ];

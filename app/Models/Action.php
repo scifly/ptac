@@ -351,6 +351,28 @@ class Action extends Model {
     }
     
     /**
+     * 获取指定控制器包含的方法所对应的路由对象数组
+     *
+     * @param null $tabId
+     * @return array|null
+     */
+    function uris($tabId = null) {
+        
+        if (!$tabId) {
+            $controller = class_basename(Request::route()->controller);
+            $tabId = Tab::whereName($controller)->first()->id;
+        }
+        $routes = Action::whereTabId($tabId)
+            ->where('route', '<>', null)
+            ->pluck('route', 'method');
+        foreach ($routes as $method => $route) {
+            $uris[$method] = new \App\Policies\Route($route);
+        }
+    
+        return $uris ?? [];
+    }
+    
+    /**
      * 获取网站根所处的路径
      *
      * @return bool|string
@@ -367,7 +389,7 @@ class Action extends Model {
      * @return array
      */
     function compose() {
-    
+        
         $actionTypes = ActionType::pluck('name', 'id');
         if (explode('/', Request::path())[1] == 'index') {
             $nil = collect([null => '全部']);
@@ -377,22 +399,22 @@ class Action extends Model {
                     'View路径', 'js路径',
                     [
                         'title' => '请求类型',
-                        'html' => $this->htmlSelect(
+                        'html'  => $this->htmlSelect(
                             $nil->union($actionTypes), 'filter_action_type'
-                        )
+                        ),
                     ],
                     [
                         'title' => '功能类型',
-                        'html' => $this->htmlSelect(
+                        'html'  => $this->htmlSelect(
                             $nil->union(['后台', '前端', '其他']), 'filter_category'
-                        )
+                        ),
                     ],
                     [
                         'title' => '状态 . 操作',
-                        'html' => $this->htmlSelect(
+                        'html'  => $this->htmlSelect(
                             $nil->union(['已禁用', '已启用']), 'filter_enabled'
-                        )
-                    ]
+                        ),
+                    ],
                 ],
                 'filter' => true,
             ];
@@ -405,7 +427,7 @@ class Action extends Model {
                 'selectedActionTypes' => $selectedActionTypes,
             ];
         }
-    
+        
         return $data;
         
     }

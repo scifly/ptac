@@ -1,10 +1,8 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\ModelTrait;
-use App\Helpers\PolicyTrait;
-use App\Models\Student;
-use App\Models\User;
+use App\Helpers\{ModelTrait, PolicyTrait};
+use App\Models\{Student, User};
 use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -17,15 +15,6 @@ class StudentPolicy {
     use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct() { }
-    
-    /**
-     * 权限判断
-     *
      * @param User $user
      * @param Student $student
      * @return bool

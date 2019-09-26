@@ -125,7 +125,7 @@ class Handler extends ExceptionHandler {
                 default:
                     break;
             }
-            #如果是调试环境env('APP_DEBUG')，如果非调试环境
+            # 如果是调试环境env('APP_DEBUG')，如果非调试环境
             $response['statusCode'] = $status;
             $response['exception'] = $eName;
             return response()->json($response, $status);
