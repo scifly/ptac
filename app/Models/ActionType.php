@@ -47,7 +47,7 @@ class ActionType extends Model {
         try {
             DB::transaction(function () use ($id) {
                 $this->purge(['ActionType'], 'action_type_id', 'purge', $id);
-                $this->purge(['Action'], ['action_type_ids'], 'clear', $id);
+                $this->purge(['Action'], 'action_type_ids', 'clear', $id);
             });
         } catch (Exception $e) {
             throw $e;

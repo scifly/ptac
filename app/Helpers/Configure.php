@@ -16,13 +16,15 @@ class Configure {
 
     use ModelTrait;
     
-    const TPL = '<tr>
+    const TPL = <<<HTML
+        <tr>
             <td>%s</td>
             <td class="text-center">%s</td>
             <td>%s</td>
             <td class="text-center">%s</td>
             <td class="text-right">%s</td>
-        </tr>';
+        </tr>
+    HTML;
     
     function __construct() { }
     
@@ -84,7 +86,7 @@ class Configure {
                 $data = Constant::SYSTEM_PARAMS[$key]['data'];
                 foreach ($data as $datum) {
                     $records[] = array_combine(
-                        ['name', 'remark', 'created_at', 'updated_at', 'enabled'],
+                        ['name', 'color', 'icon', 'remark', 'created_at', 'updated_at', 'enabled'],
                         array_merge($datum, [
                             now()->toDateTimeString(),
                             now()->toDateTimeString(),

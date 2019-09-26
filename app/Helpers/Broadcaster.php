@@ -17,13 +17,13 @@ class Broadcaster {
      */
     function __construct() {
         
-        $configPath = 'broadcasting.connections.pusher.';
+        $path = 'broadcasting.connections.pusher.';
         $this->pusher = new Pusher(
-            config($configPath . 'key'),
-            config($configPath . 'secret'),
-            config($configPath . 'app_id'),
+            config($path . 'key'),
+            config($path . 'secret'),
+            config($path . 'app_id'),
             [
-                'cluster' => config($configPath . 'options.cluster'),
+                'cluster' => config($path . 'options.cluster'),
                 'encrypted' => true
             ]
         );

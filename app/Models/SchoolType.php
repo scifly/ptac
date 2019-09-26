@@ -15,22 +15,26 @@ use Throwable;
  *
  * @property int $id
  * @property string $name 学校类型名称
+ * @property string $color
+ * @property string $icon
  * @property string $remark 学校类型备注
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read Collection|School[] $schools
+ * @property-read int|null $schools_count
  * @method static Builder|SchoolType whereCreatedAt($value)
  * @method static Builder|SchoolType whereEnabled($value)
  * @method static Builder|SchoolType whereId($value)
  * @method static Builder|SchoolType whereName($value)
+ * @method static Builder|SchoolType whereColor($value)
+ * @method static Builder|SchoolType whereIcon($value)
  * @method static Builder|SchoolType whereRemark($value)
  * @method static Builder|SchoolType whereUpdatedAt($value)
  * @method static Builder|SchoolType newModelQuery()
  * @method static Builder|SchoolType newQuery()
  * @method static Builder|SchoolType query()
  * @mixin Eloquent
- * @property-read int|null $schools_count
  */
 class SchoolType extends Model {
     

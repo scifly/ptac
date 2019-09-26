@@ -1,11 +1,12 @@
 <?php
 namespace App\Http\Middleware;
 
-use App\Helpers\Constant;
-use App\Models\{Action, ActionGroup, Department, Group, GroupMenu, Menu, School, Tab, WapSite};
+use App\Models\{Action, ActionGroup, Group, GroupMenu, Menu, Tab};
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 /**
  * Class CheckRole
@@ -13,16 +14,14 @@ use Illuminate\Support\Facades\Auth;
  */
 class CheckRole {
     
-    protected $department, $menu;
+    protected $menu;
     
     /**
      * CheckRole constructor.
-     * @param Department $department
      * @param Menu $menu
      */
-    function __construct(Department $department, Menu $menu) {
+    function __construct(Menu $menu) {
         
-        $this->department = $department;
         $this->menu = $menu;
         
     }
@@ -30,69 +29,49 @@ class CheckRole {
     /**
      * Handle an incoming request.
      *
-     * @param  Request $request
+     * @param Request $request
      * @param Closure $next
      * @return mixed
+     * @throws Throwable
      */
     public function handle($request, Closure $next) {
         
-        $route = trim($request->route()->uri());
-        $user = Auth::user();
-        $groupId = $user->group_id;
-        $role = $user->role();
-        $menuId = session('menuId');
-    
-        # 超级用户直接访问所有功能, 如果访问的是首页，则直接通过并进入下个请求
-        if ($role == '运营' || in_array($route, ['/', 'home'])) return $next($request);
-    
-        # 菜单权限
-        $rootMenuId = $this->menu->rootId();
-        if ($request->is('pages/*')) {
-            abort_if(
-                in_array($role, ['企业', '学校'])
-                    ? !in_array($menuId, $this->menu->subIds($rootMenuId))
-                    : !GroupMenu::where(['menu_id' => $menuId, 'group_id' => $groupId])->first(),
-                Constant::FORBIDDEN, __('messages.forbidden')
-            );
-    
-            return $next($request);
-        }
-        
-        # 功能权限
-        [$cGIds, $sGIds] = array_map(
-            function ($names) {
-                $builder = Group::whereIn('name', $names);
-                return array_merge([0], $builder->pluck('id')->toArray());
-            }, ['企业', '学校'], ['学校']
-        );
-        $groupIds = $role == '企业' ? $cGIds : $sGIds;
-        $action = Action::whereRoute($route)->first();
-        $abort = in_array($role, ['企业', '学校'])
-            ? !Tab::whereIn('group_id', $groupIds)->where('name', $action->tab->name)->first()
-            : !ActionGroup::where(['action_id' => $action->id, 'group_id' => $groupId])->first();
-
-        # 校级管理员可访问的企业类功能
-        if ($role == '学校') {
-            $schoolId = School::whereMenuId($rootMenuId)->first()->id;
-            if ($wapSite = WapSite::whereSchoolId($schoolId)->first()) {
-                $actions = array_map(
-                    function ($route) use ($wapSite) {
-                        return sprintf($route, $wapSite->id);
-                    }, Constant::ALLOWED_WAPSITE_ACTIONS
+        try {
+            $route = trim($request->route()->uri());
+            $user = Auth::user();
+            $role = $user->role();
+            $hypos = ['企业', '学校'];
+            $abort = in_array($role, $hypos);
+            $where = ['group_id' => $user->group_id];
+            if ($role == '运营' || in_array($route, ['/', 'home'])) {
+                $abort = false;
+            } elseif ($request->is('pages/*')) {
+                # 菜单权限
+                $menuId = session('menuId');
+                $abort = $abort
+                    ? !in_array($menuId, $this->menu->subIds($this->menu->rootId()))
+                    : !GroupMenu::where(array_merge(['menu_id' => $menuId], $where))->first();
+            } else {
+                # 功能权限
+                [$cGIds, $sGIds] = array_map(
+                    function ($roles) {
+                        $builder = Group::whereIn('name', $roles);
+                        return collect([0])->merge($builder->pluck('id'));
+                    }, $hypos, ['学校']
                 );
+                $groupIds = $role == '企业' ? $cGIds : $sGIds;
+                $action = Action::whereRoute($route)->first();
+                $abort = $abort
+                    ? !Tab::whereIn('group_id', $groupIds)->where('name', $action->tab->name)->first()
+                    : !ActionGroup::where(array_merge(['action_id' => $action->id], $where))->first();
             }
-            if (in_array($request->path(), $actions ?? [])) {
-                return $next($request);
-            }
+            throw_if($abort, new Exception(__('messages.forbidden')));
+        } catch (Exception $e) {
+            throw $e;
         }
-        abort_if(
-            $abort,
-            Constant::FORBIDDEN,
-            __('messages.forbidden')
-        );
         
         return $next($request);
-        
+    
     }
     
 }

@@ -186,9 +186,7 @@ class HomeWorkController extends Controller {
     
         try {
             $corp = Corp::find(session('corpId'));
-            $app = App::whereCorpId($corp->id)->where(
-                'name', Constant::APPS[explode('/', Request::path())[1]]
-            )->first();
+            $app = App::where(['corp_id' => $corp->id, 'name' => '智校+'])->first();
             $result = json_decode(
                 Wechat::invoke(
                     'ent', 'user', 'convert_to_openid',

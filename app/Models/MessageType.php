@@ -15,6 +15,8 @@ use Throwable;
  *
  * @property int $id
  * @property string $name 消息类型名称
+ * @property string $color
+ * @property string $icon
  * @property string $user_id 合作伙伴用户id
  * @property string $remark 消息类型备注
  * @property Carbon|null $created_at
@@ -26,6 +28,8 @@ use Throwable;
  * @method static Builder|MessageType whereEnabled($value)
  * @method static Builder|MessageType whereId($value)
  * @method static Builder|MessageType whereName($value)
+ * @method static Builder|MessageType whereColor($value)
+ * @method static Builder|MessageType whereIcon($value)
  * @method static Builder|MessageType whereUserId($value)
  * @method static Builder|MessageType whereRemark($value)
  * @method static Builder|MessageType whereUpdatedAt($value)

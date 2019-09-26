@@ -23,6 +23,8 @@ use Throwable;
  *
  * @property int $id
  * @property string $name 角色名称
+ * @property string $color
+ * @property string $icon
  * @property int|null $school_id
  * @property string $remark 角色备注
  * @property Carbon|null $created_at
@@ -41,6 +43,8 @@ use Throwable;
  * @method static Builder|Group whereEnabled($value)
  * @method static Builder|Group whereId($value)
  * @method static Builder|Group whereName($value)
+ * @method static Builder|Group whereColor($value)
+ * @method static Builder|Group whereIcon($value)
  * @method static Builder|Group whereRemark($value)
  * @method static Builder|Group whereSchoolId($value)
  * @method static Builder|Group whereUpdatedAt($value)

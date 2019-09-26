@@ -11,99 +11,82 @@ class Constant {
             'id'   => 'ActionType',
             'name' => '请求类型',
             'data' => [
-                ['GET', ''],
-                ['POST', ''],
-                ['PUT', ''],
-                ['DELETE', ''],
-                ['HEAD', ''],
-                ['OPTIONS', ''],
-                ['TRACE', ''],
-                ['CONNECT', ''],
-                ['PATCH', ''],
+                ['GET', null, null, ''],
+                ['POST', null, null, ''],
+                ['PUT', null, null, ''],
+                ['DELETE', null, null, ''],
+                ['HEAD', null, null, ''],
+                ['OPTIONS', null, null, ''],
+                ['TRACE', null, null, ''],
+                ['CONNECT', null, null, ''],
+                ['PATCH', null, null, ''],
             ],
-        ],
-        [
-            'id'   => 'AlertType',
-            'name' => '提醒类型',
-            'data' => [],
-        ],
-        [
-            'id'   => 'AttachmentType',
-            'name' => '附件类型',
-            'data' => [],
         ],
         [
             'id'   => 'DepartmentType',
             'name' => '部门类型',
             'data' => [
-                ['根', 'root'],
-                ['运营', 'company'],
-                ['企业', 'corp'],
-                ['学校', 'school'],
-                ['年级', 'grade'],
-                ['班级', 'squad'],
-                ['其他', 'other'],
+                ['根', 'text-gray', 'fa fa-sitemap', 'root'],
+                ['运营', 'text-blue', 'fa fa-building', 'company'],
+                ['企业', 'text-green', 'fa fa-weixin', 'corp'],
+                ['学校', 'text-purple', 'fa fa-university', 'school'],
+                ['年级', 'text-black', 'fa fa-object-group', 'grade'],
+                ['班级', 'text-black', 'fa fa-users', 'squad'],
+                ['其他', 'text-black', 'fa fa-folder', 'other'],
             ],
         ],
         [
             'id'   => 'Group',
             'name' => '角色',
             'data' => [
-                ['运营', 'company'],
-                ['企业', 'corp'],
-                ['学校', 'school'],
-                ['监护人', 'custodian'],
-                ['学生', 'student'],
-            ],
-        ],
-        [
-            'id'   => 'IconType',
-            'name' => '图标类型',
-            'data' => [
-                ['常用', ''],
+                ['运营', null, null, 'company'],
+                ['企业', null, null, 'corp'],
+                ['学校', null, null, 'school'],
+                ['监护人', null, null, 'custodian'],
+                ['学生', 'text-black', 'fa fa-child', 'student'],
             ],
         ],
         [
             'id'   => 'MediaType',
             'name' => '媒体类型',
             'data' => [
-                ['text', '文本'],
-                ['image', '图片'],
-                ['video', '视频'],
-                ['file', '文件'],
-                ['voice', '语音'],
-                ['textcard', '卡片'],
-                ['mpnews', '图文'],
-                ['sms', '短信'],
+                ['text', null, 'fa fa-file-text-o', '文本'],
+                ['image', null, 'fa fa-file-image-o', '图片'],
+                ['video', null, 'fa fa-file-movie-o', '视频'],
+                ['file', null, 'fa fa-file-o', '文件'],
+                ['voice', null, 'fa fa-file-sound-o', '语音'],
+                ['textcard', null, 'fa fa-folder-o', '卡片'],
+                ['mpnews', null, 'fa fa-th-list', '图文'],
+                ['sms', null, 'fa fa-file-text', '短信'],
             ],
         ],
         [
             'id'   => 'MenuType',
             'name' => '菜单类型',
             'data' => [
-                ['根', 'root'],
-                ['运营', 'company'],
-                ['企业', 'corp'],
-                ['学校', 'school'],
-                ['其他', 'other'],
+                ['根', null, 'fa fa-sitemap', 'root'],
+                ['运营', null, 'fa fa-building', 'company'],
+                ['企业', null, 'fa fa-weixin', 'corp'],
+                ['学校', null, 'fa fa-university', 'school'],
+                ['其他', null, 'fa fa-foler', 'other'],
             ],
         ],
         [
             'id'   => 'MessageType',
             'name' => '消息类型',
             'data' => [
-                ['成绩消息', ''],
-                ['考勤消息', ''],
-                ['作业消息', ''],
+                ['成绩消息', null, null, ''],
+                ['考勤消息', null, null, ''],
+                ['作业消息', null, null, ''],
             ],
         ],
         [
             'id'   => 'SchoolType',
             'name' => '学校类型',
             'data' => [
-                ['小学', ''],
-                ['初中', ''],
-                ['高中', ''],
+                ['小学', null, null, ''],
+                ['初中', null, null, ''],
+                ['高中', null, null, ''],
             ],
         ],
     ];
@@ -112,24 +95,10 @@ class Constant {
     const ENABLED = 1;
     # 广播消息属性列表
     const BROADCAST_FIELDS = ['userId', 'title', 'statusCode', 'message'];
-    
     const SUPER_ROLES = ['运营', '企业', '学校'];
     const NON_EDUCATOR = ['运营', '企业', '监护人', '学生', 'api'];
-    const BATCH_OPERATIONS = ['enable', 'disable', 'delete'];
-    # 校级管理员可访问的企业类功能
-    const ALLOWED_WAPSITE_ACTIONS = [
-        'wap_sites/edit/%s',
-        'wap_sites/update/%s',
-    ];
-    const WEEK_DAYS = [
-        '星期日', '星期一', '星期二', '星期三',
-        '星期四', '星期五', '星期六',
-    ];
-    const SYNC_ACTIONS = [
-        'create' => '创建',
-        'update' => '更新',
-        'delete' => '删除',
-    ];
+    const WEEK_DAYS = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+    const SYNC_ACTIONS = ['create' => '创建', 'update' => '更新', 'delete' => '删除'];
     # 控制器相对路径
     const CONTROLLER_DIR = 'app/Http/Controllers';
     # 无需扫描的控制器
@@ -141,26 +110,8 @@ class Constant {
         'TestController',
         'WechatController',
     ];
-    const CONTENT_TYPE = [
-        'image' => 'image/*',
-        'audio' => 'audio/*',
-        'voice' => 'audio/*',
-        'video' => 'video/*',
-        'file'  => '*',
-    ];
-    const APPS = [
-        'attendances'     => '考勤中心',
-        'message_centers' => '消息中心',
-        'score_centers'   => '成绩中心',
-        'mobile_sites'    => '微网站',
-        'home_works'      => '应用测试',
-    ];
-    const SMS_CHARGE_TARGET = [
-        'corp'     => 1,
-        'school'   => 2,
-        'educator' => 3,
-    ];
     
+    /** http statuses */
     # Informational 1xx
     const CONTINUE = 100;
     const SWITCHING_PROTOCOLS = 101;
@@ -207,7 +158,7 @@ class Constant {
     const SERVICE_UNAVAILABLE = 503;
     const GATEWAY_TIMEOUT = 504;
     const HTTP_VERSION_NOT_SUPPORTED = 505;
-
+    
     # 微信错误代码 & 消息
     const WXERR = [
         -1      => '系统繁忙',
@@ -567,7 +518,7 @@ class Constant {
     
     # field names
     const USER_FIELDS = [
-        'username', 'group_id', 'password', 'realname', 'gender', 'mobile', 'enabled', 'ent_attrs'
+        'username', 'group_id', 'password', 'realname', 'gender', 'mobile', 'enabled', 'ent_attrs',
     ];
     const MEMBER_FIELDS = [
         'userid', 'username', 'position', 'name', 'english_name',

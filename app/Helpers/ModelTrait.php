@@ -1,8 +1,7 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\{Action,
-    App,
+use App\Models\{App,
     Corp,
     Department,
     DepartmentType,
@@ -14,9 +13,7 @@ use App\Models\{Action,
     School,
     Squad,
     Student,
-    Tab,
     User};
-use App\Policies\Route;
 use Exception;
 use Form;
 use Html;
@@ -77,33 +74,26 @@ trait ModelTrait {
                 array_map(
                     function ($class, $field) use ($action, $values) {
                         $model = $this->model($class);
-                        switch ($action) {
-                            case 'purge':
-                            case 'reset':
-                                /** @var Builder $builder */
-                                $builder = $model->whereIn($field, $values);
-                                $action == 'purge' ? $builder->delete() : $builder->update([$field => '0']);
-                                break;
-                            case 'clear':
-                                $records = $model->all()->filter(
-                                    function (Model $record) use ($values, $field) {
-                                        return !empty(
-                                        array_intersect(
-                                            explode(',', $record->{$field}), $values
-                                        )
-                                        );
-                                    }
-                                );
-                                /** @var Model $record */
-                                foreach ($records as $record) {
-                                    $val = join(',', array_diff(
+                        if (in_array($action, ['purge', 'reset'])) {
+                            /** @var Builder $builder */
+                            $builder = $model->whereIn($field, $values);
+                            $action == 'purge' ? $builder->delete() : $builder->update([$field => 0]);
+                        } elseif ($action == 'clear') {
+                            $records = $model->all()->filter(
+                                function (Model $record) use ($values, $field) {
+                                    $vals = array_intersect(
                                         explode(',', $record->{$field}), $values
-                                    ));
-                                    $record->update([$field => $val]);
+                                    );
+                                    return !empty($vals);
                                 }
-                                break;
-                            default:
-                                break;
+                            );
+                            /** @var Model $record */
+                            foreach ($records as $record) {
+                                $val = join(',', array_diff(
+                                    explode(',', $record->{$field}), $values
+                                ));
+                                $record->update([$field => $val]);
+                            }
                         }
                     }, $classes, $fields
                 );
@@ -226,7 +216,7 @@ trait ModelTrait {
         } else {
             $corpId = $user->educator->school->corp_id;
         }
-
+        
         return $corpId;
         
     }
@@ -664,7 +654,7 @@ trait ModelTrait {
             $rules = [
                 'ids'    => 'required|array',
                 'action' => [
-                    'required', Rule::in(Constant::BATCH_OPERATIONS),
+                    'required', Rule::in(['enable', 'disable', 'delete']),
                 ],
                 'field'  => 'required|string',
             ];

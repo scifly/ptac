@@ -79,6 +79,7 @@ class Action extends Model {
      * 功能列表
      *
      * @return array
+     * @throws Throwable
      */
     function index() {
         
@@ -156,6 +157,7 @@ class Action extends Model {
                 ],
             ],
         ];
+        $this->clean();
         
         return Datatable::simple($this, $columns, $joins);
         
@@ -755,6 +757,28 @@ class Action extends Model {
         $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
         
         return 'js/' . $prefix . '/' . $action . '.js';
+        
+    }
+    
+    /**
+     * 移除不存在的action对象
+     *
+     * @throws Throwable
+     */
+    private function clean() {
+    
+        try {
+            DB::transaction(function () {
+                foreach (Action::all() as $action) {
+                    $action->tab ?: $ids[] = $action->id;
+                }
+                $this->whereIn('id', $ids ?? [])->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     

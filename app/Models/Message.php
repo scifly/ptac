@@ -75,6 +75,13 @@ class Message extends Model {
     
     use ModelTrait;
     
+    const CONTENT_TYPE = [
+        'image' => 'image/*',
+        'audio' => 'audio/*',
+        'voice' => 'audio/*',
+        'video' => 'video/*',
+        'file'  => '*',
+    ];
     const TPL = '<div class="weui-media-box weui-media-box_text">
         <a id="%s" href="#" class="weui-cell_access" data-type="%s">
             <p class="truncate" style="font-weight: %s;">%s</p>
@@ -730,7 +737,7 @@ class Message extends Model {
                     [Wechat::token('ent', $appid, $appsecret), $type], [
                     'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
                     'filename'      => $uploadedFile['filename'],
-                    'content-type'  => Constant::CONTENT_TYPE[$type],
+                    'content-type'  => self::CONTENT_TYPE[$type],
                     'filelength'    => $file->getSize(),
                 ]), true
             );

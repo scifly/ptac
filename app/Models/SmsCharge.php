@@ -1,16 +1,12 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\Constant;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\{Auth, DB};
 use Throwable;
 
 /**
@@ -24,6 +20,7 @@ use Throwable;
  * @property int $amount 充值条数
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read User $user
  * @method static Builder|SmsCharge newModelQuery()
  * @method static Builder|SmsCharge newQuery()
  * @method static Builder|SmsCharge query()
@@ -35,13 +32,14 @@ use Throwable;
  * @method static Builder|SmsCharge whereUpdatedAt($value)
  * @method static Builder|SmsCharge whereUserId($value)
  * @mixin Eloquent
- * @property-read User $user
  */
 class SmsCharge extends Model {
     
     protected $table = 'sms_charges';
     
     protected $fillable = ['user_id', 'target', 'targetid', 'amount'];
+    
+    const TARGETS = ['corp' => 1, 'school' => 2, 'educator' => 3];
     
     /** @return BelongsTo */
     function user() { return $this->belongsTo('App\Models\User'); }
@@ -59,8 +57,8 @@ class SmsCharge extends Model {
         return $this->create(
             array_combine($this->fillable, [
                 Auth::id(),
-                Constant::SMS_CHARGE_TARGET[$target],
-                $targetid, $amount
+                self::TARGETS[$target],
+                $targetid, $amount,
             ])
         ) ? true : false;
         
@@ -101,5 +99,5 @@ class SmsCharge extends Model {
         ]);
         
     }
-
+    
 }
