@@ -8,6 +8,7 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Pusher\Pusher;
@@ -51,14 +52,20 @@ class TestController extends Controller {
      */
     public function index() {
         
-        foreach (Action::all() as $action) {
-            
-            if (!$action->tab) {
-                echo join(', ', $action->toArray()) . '<br />';
-            }
-            
+        try {
+            DB::transaction(function () {
+                $ids = [];
+                foreach (Action::all() as $action) {
+                    if (!$action->tab) {
+                        $ids[] = $action->id;
+                    }
+                }
+                Action::whereIn('id', $ids)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-        exit;
+        return;
         // try {
         //     DB::transaction(function () {
         //         $apiGId = Group::whereName('api')->first()->id;
