@@ -182,7 +182,11 @@ class Grade extends Model {
      * @throws Throwable
      */
     function modify(array $data, $id = null) {
-        
+
+        // $this->revise($this, $data, $id, function(Model $model) use ($data, $id) {
+        //     (new Department)->alter($model->{'find'}($id));
+        //
+        // });
         try {
             DB::transaction(function () use ($data, $id) {
                 if (!$id) {

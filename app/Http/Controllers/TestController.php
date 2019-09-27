@@ -63,7 +63,8 @@ class TestController extends Controller {
      */
     public function index() {
         
-        $this->test(5, function ($param) { echo $param * 10; });
+        $cd = 7;
+        $this->test(5, function ($param) use ($cd)  { echo $param * 10 * $cd; });
         // try {
         //     DB::transaction(function () {
         //         $apiGId = Group::whereName('api')->first()->id;
