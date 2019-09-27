@@ -6,8 +6,7 @@ use App\Helpers\ModelTrait;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\{Carbon, Facades\DB};
 use Throwable;
 
 /**
@@ -112,19 +111,7 @@ class ComboType extends Model {
      */
     function modify(array $data, $id) {
     
-        try {
-            DB::transaction(function () use ($data, $id) {
-                throw_if(
-                    !$comboType = $this->find($id),
-                    new Exception(__('messages.not_found'))
-                );
-                $comboType->update($data);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-    
-        return true;
+        return $this->revise($this, $data, $id);
         
     }
     

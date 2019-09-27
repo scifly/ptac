@@ -108,12 +108,11 @@ class FlowType extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Throwable
      */
     function modify(array $data, $id = null) {
-        
-        return $id
-            ? $this->find($id)->update($data)
-            : $this->batch($this);
+    
+        return $this->revise($this, $data, $id);
         
     }
     

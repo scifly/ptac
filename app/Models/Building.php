@@ -113,19 +113,7 @@ class Building extends Model {
      */
     function modify(array $data, $id) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                throw_if(
-                    !$building = $this->find($id),
-                    new Exception(__('messages.not_found'))
-                );
-                $building->update($data);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->revise($this, $data, $id);
         
     }
     

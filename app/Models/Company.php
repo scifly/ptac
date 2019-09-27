@@ -138,7 +138,10 @@ class Company extends Model {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                $company = $this->find($id);
+                throw_if(
+                    !$company = $this->find($id),
+                    new Exception(__('messages.not_found'))
+                );
                 $company->update($data);
                 (new Department)->alter($company);
                 (new Menu)->alter($company);

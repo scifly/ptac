@@ -186,7 +186,10 @@ class Corp extends Model {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                $corp = $this->find($id);
+                throw_if(
+                    !$corp = $this->find($id),
+                    new Exception(__('messages.not_found'))
+                );
                 $corp->update($data);
                 (new Department)->alter($corp, 'company');
                 (new Menu)->alter($corp, 'company');

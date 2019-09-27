@@ -57,9 +57,8 @@ class MediaType extends Model {
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $mediaIds = Media::whereIn('media_type_id', $ids)
-                    ->pluck('id')->toArray();
-                Request::replace(['ids' => $mediaIds]);
+                $mediaIds = Media::whereIn('media_type_id', $ids)->pluck('id');
+                Request::replace(['ids' => $mediaIds->toArray()]);
                 (new Media)->remove();
                 Request::replace(['ids' => $ids]);
                 $this->purge(['MediaType'], 'id');

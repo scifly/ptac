@@ -47,25 +47,23 @@ class TestController extends Controller {
     }
     
     /**
+     * @param $id
+     * @param $callback
+     */
+    private function test($id, $callback) {
+        
+        $a = $id * 4;
+        $callback($a);
+        
+    }
+    
+    /**
      * @throws Exception
      * @throws Throwable
      */
     public function index() {
         
-        try {
-            DB::transaction(function () {
-                $ids = [];
-                foreach (Action::all() as $action) {
-                    if (!$action->tab) {
-                        $ids[] = $action->id;
-                    }
-                }
-                Action::whereIn('id', $ids)->delete();
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        return;
+        $this->test(5, function ($param) { echo $param * 10; });
         // try {
         //     DB::transaction(function () {
         //         $apiGId = Group::whereName('api')->first()->id;

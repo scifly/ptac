@@ -173,19 +173,7 @@ class Action extends Model {
      */
     function modify(array $data, $id) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                throw_if(
-                    !$action = $this->find($id),
-                    new Exception(__('messages.not_found'))
-                );
-                $action->update($data);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->revise($this, $data, $id);
         
     }
     

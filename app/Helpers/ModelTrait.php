@@ -52,6 +52,35 @@ trait ModelTrait {
     }
     
     /**
+     * @param Model $model
+     * @param array $data
+     * @param $id
+     * @return bool
+     * @throws Throwable
+     */
+    function revise(Model $model, array $data, $id) {
+    
+        try {
+            DB::transaction(function () use ($model, $data, $id) {
+                if (!$id) {
+                    $this->batch($model);
+                } else {
+                    throw_if(
+                        !$record = $model->{'find'}($id),
+                        new Exception(__('messages.not_found'))
+                    );
+                    $record->{'update'}($data);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
+        
+    }
+    
+    /**
      * 删除指定对象对应的记录
      *
      * @param array $classes

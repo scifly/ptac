@@ -179,7 +179,11 @@ class Group extends Model {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                $this->find($id)->update($data);
+                throw_if(
+                    !$group = $this->find($id),
+                    new Exception(__('messages.not_found'))
+                );
+                $group->update($data);
                 $this->bindings($id, $data);
             });
         } catch (Exception $e) {
