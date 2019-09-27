@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 use App\Helpers\{ModelTrait};
 use App\Models\{App, MediaType, Message, School, User};
 use Illuminate\Foundation\Http\FormRequest;
+use Throwable;
 
 /**
  * Class MessageRequest
@@ -47,6 +48,9 @@ class MessageRequest extends FormRequest {
         
     }
     
+    /**
+     * @throws Throwable
+     */
     protected function prepareForValidation() {
         
         if (!($this->method() == 'update' && !$this->route('id'))) {

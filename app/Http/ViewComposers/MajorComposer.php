@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\Major;
 use Illuminate\Contracts\View\View;
 
@@ -11,13 +10,9 @@ use Illuminate\Contracts\View\View;
  */
 class MajorComposer {
     
-    use ModelTrait;
-    
-    /**
-     * @param View $view
-     */
+    /** @param View $view */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new Major)->compose()
         );

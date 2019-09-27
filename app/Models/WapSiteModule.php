@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, ModelTrait};
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
@@ -109,10 +109,13 @@ class WapSiteModule extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Throwable
      */
     function modify(array $data, $id) {
         
-        return $this->find($id)->update($data);
+        return $this->revise(
+            $this, $data, $id, null
+        );
         
     }
     
@@ -132,30 +135,40 @@ class WapSiteModule extends Model {
         
     }
     
+    /** @return array */
+    function compose() {
+    
+        if (explode('/', Request::path())[1] == 'index') {
+            $data = [
+                'titles' => ['#', '栏目名称', '所属网站', '创建于', '更新于', '状态 . 操作'],
+            ];
+        } else {
+            $module = WapSiteModule::find(Request::route('id'));
+            $data = [
+                'wapSites' => WapSite::whereSchoolId($this->schoolId())->pluck('site_title', 'id'),
+                'media'    => $module ? $module->media : null
+            ];
+        }
+        
+        return $data;
+        
+    }
+    
     /** 微信端 ------------------------------------------------------------------------------------------------------- */
     /**
      * 上传微网站栏目图片
      *
      * @return JsonResponse
+     * @throws Throwable
      */
     function import() {
         
-        $file = Request::file('file');
-        abort_if(
-            empty($file),
-            Constant::NOT_ACCEPTABLE,
-            __('messages.empty_file')
-        );
-        $uploadedFile = (new Media())->import(
-            $file, __('messages.wap_site_module.title')
-        );
-        abort_if(
-            !$uploadedFile,
-            Constant::INTERNAL_SERVER_ERROR,
-            __('messages.file_upload_failed')
+        $upload = (new Media)->upload(
+            Request::file('file'),
+            __('messages.wap_site_module.title')
         );
         
-        return response()->json($uploadedFile);
+        return response()->json($upload);
         
     }
     

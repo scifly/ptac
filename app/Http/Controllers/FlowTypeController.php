@@ -96,6 +96,7 @@ class FlowTypeController extends Controller {
      * @param FlowTypeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(FlowTypeRequest $request, $id) {
         

@@ -2,8 +2,8 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\Message;
-use Exception;
 use Illuminate\Contracts\View\View;
+use Throwable;
 
 /**
  * Class MessageComposer
@@ -13,14 +13,14 @@ class MessageComposer {
     
     /**
      * @param View $view
-     * @throws Exception
+     * @throws Throwable
      */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new Message)->compose()
         );
-    
+        
     }
     
 }

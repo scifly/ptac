@@ -16,7 +16,7 @@ class SquadComposer {
      * @throws ReflectionException
      */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new Squad)->compose()
         );

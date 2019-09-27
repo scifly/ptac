@@ -174,4 +174,54 @@ class PassageLog extends Model {
         
     }
     
+    /** @return array */
+    function compose() {
+    
+        $roles = Group::whereIn('name', ['监护人', '学生'])->get()->merge(
+            Group::where('school_id', $this->schoolId())->get()
+        )->pluck('name', 'id');
+        $nil = collect([null => '全部']);
+        
+        return [
+            'buttons' => [
+                'store'  => [
+                    'id'    => 'store',
+                    'label' => '采集数据',
+                    'icon'  => 'fa fa-refresh',
+                ],
+                'export' => [
+                    'id'    => 'batch-export',
+                    'label' => '批量导出',
+                    'icon'  => 'fa fa-download',
+                ],
+            ],
+            'titles'  => [
+                '#', '持卡人',
+                [
+                    'title' => '角色',
+                    'html'  => $this->htmlSelect($nil->union($roles), 'filter_role'),
+                ],
+                [
+                    'title' => '记录类型',
+                    'html' => $this->htmlSelect(
+                        $nil->union(['无记录', '刷卡记录', '门磁', '报警记录']),
+                        'filter_category'
+                    )
+                ],
+                [
+                    'title' => '方向',
+                    'html'  => $this->htmlSelect($nil->union(['出', '进']), 'filter_direction'),
+                ],
+                '地点',
+                ['title' => '通行时间', 'html'  => $this->htmlDTRange('通行时间')],
+                '故障原因',
+                [
+                    'title' => '状态',
+                    'html'  => $this->htmlSelect($nil->union(['异常', '正常']), 'filter_status'),
+                ],
+            ],
+        ];
+        
+    }
+    
 }

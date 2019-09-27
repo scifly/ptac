@@ -169,8 +169,7 @@ class EducatorController extends Controller {
      * 导入教职员工
      *
      * @return JsonResponse|null
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws Throwable
      */
     public function import() {
     

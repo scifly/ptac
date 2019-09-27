@@ -5,10 +5,7 @@ use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\{
-    Builder, Collection, Model, Relations\BelongsTo,
-    Relations\HasMany
-};
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\{DB, Request, Storage};
 use Throwable;
@@ -83,12 +80,13 @@ class Media extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Throwable
      */
     function modify(array $data, $id = null) {
         
-        return $id
-            ? $this->find($id)->update($data)
-            : $this->batch($this);
+        return $this->revise(
+            $this, $data, $id, null
+        );
         
     }
     
@@ -124,10 +122,13 @@ class Media extends Model {
      * @param UploadedFile $file
      * @param string $remark
      * @return array|bool
+     * @throws Throwable
      */
-    function import($file, $remark = '') {
+    function upload($file, $remark = '') {
         
-        if ($file->isValid()) {
+        try {
+            $ex = new Exception(__('messages.file_upload_failed'));
+            throw_if(empty($file) || !$file->isValid(), $ex);
             $filename = uniqid() . '-' . $file->getClientOriginalName();
             $ext = $file->getClientOriginalExtension();
             $realPath = $file->getRealPath();
@@ -136,25 +137,24 @@ class Media extends Model {
                 date('Y/m/d/', time()) . $filename,
                 file_get_contents($realPath)
             );
-            if ($stored) {
-                $filePath = $this->filePath($filename);
-                $media = $this->create([
-                    'path'          => $filePath,
-                    'remark'        => $remark,
-                    'media_type_id' => $type,
-                    'enabled'       => Constant::ENABLED,
-                ]);
-                
-                return [
-                    'id'       => $media->id,
-                    'path'     => $filePath,
-                    'type'     => $ext,
-                    'filename' => $filename,
-                ];
-            }
+            throw_if(!$stored, $ex);
+            $filePath = $this->filePath($filename);
+            $media = $this->create([
+                'path'          => $filePath,
+                'remark'        => $remark,
+                'media_type_id' => $type,
+                'enabled'       => Constant::ENABLED,
+            ]);
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return null;
+        return [
+            'id'       => $media->id,
+            'path'     => $filePath,
+            'type'     => $ext,
+            'filename' => $filename,
+        ];
         
     }
     

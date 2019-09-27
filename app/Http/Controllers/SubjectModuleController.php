@@ -92,6 +92,7 @@ class SubjectModuleController extends Controller {
      * @param SubjectModuleRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(SubjectModuleRequest $request, $id) {
         

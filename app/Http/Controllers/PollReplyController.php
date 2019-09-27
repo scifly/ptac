@@ -94,6 +94,7 @@ class PollReplyController extends Controller {
      * @param PollReplyRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(PollReplyRequest $request, $id) {
         

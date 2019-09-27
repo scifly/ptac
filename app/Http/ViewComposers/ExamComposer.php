@@ -16,7 +16,7 @@ class ExamComposer {
      * @throws Exception
      */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new Exam)->compose()
         );

@@ -41,9 +41,7 @@ class InitController extends Controller {
         return Request::method() == 'POST'
             ? (Request::input('action') == 'list'
                 ? $this->config->html()
-                : $this->result(
-                    $this->config->init()
-                )
+                : $this->result($this->config->init())
             )
             : $this->output();
         

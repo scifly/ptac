@@ -21,11 +21,17 @@ class CardPolicy {
      */
     function operation(User $user, Card $card = null) {
         
-        if ($userId = $this->field('user_id', $card)) {
-            $perm = collect(explode(',', $this->visibleUserIds()))->flip()->has($userId);
-        }
+        $userIds = collect(explode(',', $this->visibleUserIds()))->flip();
+        $perm = true;
+        [$userId, $ids] = array_map(
+            function ($field) use ($card) {
+                return $this->field($field, $card);
+            }, ['user_id', 'ids']
+        );
+        !$userId ?: $perm &= $userIds->has($userId);
+        !$ids ?: $perm &= $userIds->has($ids);
         
-        return $this->action($user) && ($perm ?? true);
+        return $this->action($user) && $perm;
         
     }
     

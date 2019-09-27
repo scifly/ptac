@@ -1,11 +1,11 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\Constant;
 use App\Models\{Media, WapSite, WapSiteModule, WsmArticle};
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\{Auth, Request};
+use Throwable;
 
 /**
  * Class MobileComposer
@@ -27,7 +27,7 @@ class MobileComposer {
     
     /**
      * @param View $view
-     * @throws Exception
+     * @throws Throwable
      */
     public function compose(View $view) {
         
@@ -36,15 +36,13 @@ class MobileComposer {
             $action = explode('/', Request::path())[2];
             if ($action == 'index') {
                 # 禁止学生访问微网站
-                abort_if(
+                throw_if(
                     !$user || $user->role() == '学生',
-                    Constant::UNAUTHORIZED,
-                    __('messages.unauthorized')
+                    new Exception(__('messages.unauthorized'))
                 );
-                abort_if(
+                throw_if(
                     !($wapSite = WapSite::whereSchoolId(session('schoolId'))->first()),
-                    Constant::NOT_FOUND,
-                    __('messages.not_found')
+                    new Exception(__('messages.not_found'))
                 );
                 $data = [
                     'wapsite' => $wapSite,
@@ -70,12 +68,11 @@ class MobileComposer {
                 ];
             }
             $data = array_merge($data, [
-                'userid' => json_decode($user->ent_attrs, true)['userid']
+                'userid' => json_decode($user->ent_attrs, true)['userid'],
             ]);
         } catch (Exception $e) {
             throw $e;
         }
-        
         $view->with($data);
         
     }

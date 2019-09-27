@@ -163,19 +163,14 @@ class PassageRule extends Model {
      */
     function modify(array $data, $id) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                $this->find($id)->update($data);
+        return $this->revise(
+            $this, $data, $id,
+            function (PassageRule $pr) use ($data) {
                 (new RuleTurnstile)->store(
-                    $id, $doorIds = $data['door_ids'] ?? []
+                    $pr->id, $doorIds = $data['door_ids'] ?? []
                 );
-                // $this->issue($this->deviceids($doorIds));
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+            }
+        );
         
     }
     

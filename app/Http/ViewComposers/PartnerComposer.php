@@ -2,8 +2,8 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\User;
-use Exception;
 use Illuminate\Contracts\View\View;
+use Throwable;
 
 /**
  * Class OperatorIndexComposer
@@ -11,26 +11,14 @@ use Illuminate\Contracts\View\View;
  */
 class PartnerComposer {
     
-    protected $partner;
-    
-    /**
-     * PartnerComposer constructor.
-     * @param User $partner
-     */
-    function __construct(User $partner) {
-        
-        $this->partner = $partner;
-        
-    }
-    
     /**
      * @param View $view
-     * @throws Exception
+     * @throws Throwable
      */
     public function compose(View $view) {
         
         $view->with(
-            $this->partner->compose()
+            (new User)->compose()
         );
         
     }

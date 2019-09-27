@@ -111,7 +111,9 @@ class ComboType extends Model {
      */
     function modify(array $data, $id) {
     
-        return $this->revise($this, $data, $id);
+        return $this->revise(
+            $this, $data, $id, null
+        );
         
     }
     

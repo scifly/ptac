@@ -92,6 +92,7 @@ class IconController extends Controller {
      * @param IconRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(IconRequest $request, $id) {
         

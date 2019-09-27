@@ -25,8 +25,7 @@ class CardController extends Controller {
     function __construct(Card $card) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->card = $card;
-        $this->approve(new User);
+        $this->approve($this->card = $card);
         
     }
     

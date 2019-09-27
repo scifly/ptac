@@ -140,19 +140,9 @@ class Poll extends Model {
      */
     function modify(array $data, $id) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                throw_if(
-                    !$poll = $this->find($id),
-                    new Exception(__('messages.not_found'))
-                );
-                $poll->update($data);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->revise(
+            $this, $data, $id, null
+        );
         
     }
     
@@ -176,6 +166,27 @@ class Poll extends Model {
         }
         
         return true;
+        
+    }
+    
+    /** @return array */
+    function compose() {
+        
+        return [
+            'titles' => [
+                '#', '名称', '发布者', '开始时间', '结束时间',
+                ['title' => '创建于', 'html' => $this->htmlDTRange('创建于')],
+                ['title' => '更新于', 'html' => $this->htmlDTRange('更新于')],
+                [
+                    'title' => '状态 . 操作',
+                    'html' => $this->htmlDTRange(
+                        collect([null => '全部'])->union(['待发布', '已发布'])
+                    )
+                ]
+            ],
+            'batch' => true,
+            'filter' => true,
+        ];
         
     }
     

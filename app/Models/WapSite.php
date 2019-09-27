@@ -142,30 +142,18 @@ class WapSite extends Model {
      * 上传微网站首页轮播图
      *
      * @return JsonResponse
+     * @throws Throwable
      */
     function import() {
         
-        $files = Request::allFiles();
-        $media = new Media();
-        $uploadedFiles = [];
-        foreach ($files['images'] as $image) {
-            abort_if(
-                empty($image),
-                Constant::NOT_ACCEPTABLE,
-                __('messages.empty_file')
-            );
-            $uploadedFile = $media->import(
+        $media = new Media;
+        foreach (Request::allFiles()['images'] as $image) {
+            $uploads[] = $media->upload(
                 $image, __('messages.wap_site.title')
             );
-            abort_if(
-                !$uploadedFile,
-                Constant::INTERNAL_SERVER_ERROR,
-                __('messages.file_upload_failed')
-            );
-            $uploadedFiles[] = $uploadedFile;
         }
         
-        return response()->json($uploadedFiles);
+        return response()->json($uploads ?? []);
         
     }
     
@@ -175,10 +163,13 @@ class WapSite extends Model {
      * @param array $data
      * @param $id
      * @return bool|mixed
+     * @throws Throwable
      */
     function modify(array $data, $id) {
         
-        return $this->find($id)->update($data);
+        return $this->revise(
+            $this, $data, $id, null
+        );
         
     }
     
@@ -206,6 +197,17 @@ class WapSite extends Model {
         }
         
         return true;
+        
+    }
+    
+    /** @return array */
+    function compose() {
+    
+        $ws = WapSite::find(Request::route('id'));
+        $mediaIds = explode(',', $ws ? $ws->media_ids : null);
+        $medias = Media::whereIn('id', $mediaIds)->get();
+    
+        return ['medias' => $medias];
         
     }
     

@@ -23,9 +23,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\{Auth, DB, Request, Session, Storage};
 use Illuminate\Validation\Rule;
-use PhpOffice\PhpSpreadsheet\Exception as PsException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Reader\Exception as PsrException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use ReflectionClass;
 use ReflectionException;
@@ -55,13 +53,14 @@ trait ModelTrait {
      * @param Model $model
      * @param array $data
      * @param $id
+     * @param $next
      * @return bool
      * @throws Throwable
      */
-    function revise(Model $model, array $data, $id) {
-    
+    function revise(Model $model, array $data, $id, $next) {
+        
         try {
-            DB::transaction(function () use ($model, $data, $id) {
+            DB::transaction(function () use ($model, $data, $id, $next) {
                 if (!$id) {
                     $this->batch($model);
                 } else {
@@ -70,12 +69,13 @@ trait ModelTrait {
                         new Exception(__('messages.not_found'))
                     );
                     $record->{'update'}($data);
+                    !$next ?: $next($record);
                 }
             });
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
@@ -113,6 +113,7 @@ trait ModelTrait {
                                     $vals = array_intersect(
                                         explode(',', $record->{$field}), $values
                                     );
+                                    
                                     return !empty($vals);
                                 }
                             );
@@ -138,11 +139,13 @@ trait ModelTrait {
     /**
      * 返回指定名称对应的Model对象
      *
-     * @param $class
+     * @param $name
      * @return object
      * @throws ReflectionException
      */
-    function model($class) {
+    function model($name) {
+        
+        $class = ucfirst($name);
         
         return (new ReflectionClass("App\Models\\$class"))->newInstance();
         
@@ -261,26 +264,22 @@ trait ModelTrait {
         
         $user = User::find($userId ?? Auth::id());
         $schools = new Collection;
-        switch ($user->role($user->id)) {
-            case '运营':
-                $schools = School::all();
-                break;
-            case '企业':
-                $corp = Corp::whereDepartmentId($user->depts->first()->id)->first();
-                $schools = $corp->schools;
-                break;
-            case '学生':
-                $schools->push($user->student->squad->grade->school);
-                break;
-            default:
-                if ($user->custodian) {
-                    foreach ($user->custodian->students as $student) {
-                        $schoolIds[] = $student->squad->grade->school_id;
-                    }
+        $role = $user->role($user->id);
+        if ($role == '运营') {
+            $schools = School::all();
+        } elseif ($role == '企业') {
+            $corp = Corp::whereDepartmentId($user->depts->first()->id)->first();
+            $schools = $corp->schools;
+        } elseif ($role == '学生') {
+            $schools->push($user->student->squad->grade->school);
+        } else {
+            if ($user->custodian) {
+                foreach ($user->custodian->students as $student) {
+                    $schoolIds[] = $student->squad->grade->school_id;
                 }
-                !$user->educator ?: $schoolIds[] = $user->educator->school_id;
-                $schools = School::whereIn('id', array_unique($schoolIds ?? []))->get();
-                break;
+            }
+            !$user->educator ?: $schoolIds[] = $user->educator->school_id;
+            $schools = School::whereIn('id', array_unique($schoolIds ?? []))->get();
         }
         
         return $schools->when(
@@ -426,29 +425,28 @@ trait ModelTrait {
             $user = User::find($userId);
             $role = $user->role($userId);
             $department = new Department;
+            $deptIds = [];
             if (in_array($role, Constant::SUPER_ROLES)) {
                 $dept = $this->schoolId()
                     ? School::find($this->schoolId())->department
                     : $user->depts->first();
-                
-                return array_unique(
-                    array_merge(
-                        [$dept->id],
-                        $department->subIds($dept->id)
-                    )
-                );
-            }
-            foreach ($user->deptIds() as $deptId) {
-                $deptIds[] = $deptId;
                 $deptIds = array_merge(
-                    $department->subIds($deptId), $deptIds
+                    [$dept->id],
+                    $department->subIds($dept->id)
                 );
+            } else {
+                foreach ($user->deptIds() as $deptId) {
+                    $deptIds[] = $deptId;
+                    $deptIds = array_merge(
+                        $department->subIds($deptId), $deptIds
+                    );
+                }
             }
         } catch (Exception $e) {
             throw $e;
         }
         
-        return array_unique($deptIds ?? []);
+        return array_unique($deptIds);
         
     }
     
@@ -466,8 +464,7 @@ trait ModelTrait {
         if ($role == '运营') {
             $menuIds = Menu::all()->pluck('id')->toArray();
         } elseif (in_array($role, ['企业', '学校'])) {
-            $className = 'App\\Models\\' . ($role == '企业' ? 'Corp' : 'School');
-            $model = (new ReflectionClass($className))->newInstance();
+            $model = $this->model($role == '企业' ? 'Corp' : 'School');
             $menuIds = (new Menu)->subIds(
                 $model::whereDepartmentId($user->depts->first()->id)->first()->menu_id
             );
@@ -482,47 +479,39 @@ trait ModelTrait {
      *
      * @param bool $removeTitles
      * @return array
-     * @throws PsException
-     * @throws PsrException
+     * @throws Throwable
      */
-    function uploader($removeTitles = true) {
+    function records($removeTitles = true) {
         
-        $code = Constant::INTERNAL_SERVER_ERROR;
-        abort_if(
-            Request::method() != 'POST', $code,
-            __('messages.file_upload_failed')
+        $ex = array_map(
+            function ($msg) { return new Exception(__('messages.' . $msg)); },
+            ['file_upload_failed', 'empty_file', 'invalid_file_format']
         );
-        $file = Request::file('file');
-        abort_if(
-            empty($file) || !$file->isValid(), $code,
-            __('messages.empty_file')
-        );
-        $ext = $file->getClientOriginalExtension();
-        $realPath = $file->getRealPath();
-        $filename = date('His') . uniqid() . '.' . $ext;
-        $stored = Storage::disk('uploads')->put(
-            date('Y/m/d/', time()) . $filename,
-            file_get_contents($realPath)
-        );
-        abort_if(
-            !$stored, $code,
-            __('messages.file_upload_failed')
-        );
-        $spreadsheet = IOFactory::load(
-            $this->filePath($filename)
-        );
-        $records = $spreadsheet->getActiveSheet()->toArray(
-            null, true, true, true
-        );
-        $records = array_filter(
-            array_values($records), 'join'
-        );
-        abort_if(
-            !empty(array_diff(self::EXCEL_TITLES, array_values($records[0]))),
-            Constant::NOT_ACCEPTABLE, __('messages.invalid_file_format')
-        );
-        Storage::disk('uploads')->delete($filename);
-        if ($removeTitles) array_shift($records);
+        try {
+            throw_if(Request::method() != 'POST', $ex[0]);
+            $file = Request::file('file');
+            throw_if(empty($file) || !$file->isValid(), $ex[1]);
+            $ext = $file->getClientOriginalExtension();
+            $realPath = $file->getRealPath();
+            $filename = date('His') . uniqid() . '.' . $ext;
+            $stored = Storage::disk('uploads')->put(
+                date('Y/m/d/', time()) . $filename,
+                file_get_contents($realPath)
+            );
+            throw_if(!$stored, $ex[0]);
+            $spreadsheet = IOFactory::load($this->filePath($filename));
+            $records = $spreadsheet->getActiveSheet()->toArray(
+                null, true, true, true
+            );
+            $records = array_filter(
+                array_values($records), 'join'
+            );
+            throw_if(!empty(array_diff(self::EXCEL_TITLES, array_values($records[0]))), $ex[2]);
+            Storage::disk('uploads')->delete($filename);
+            !$removeTitles ?: array_shift($records);
+        } catch (Exception $e) {
+            throw $e;
+        }
         
         return $records;
         
@@ -565,16 +554,17 @@ trait ModelTrait {
                 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
                 header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
                 header('Pragma: public'); // HTTP/1.0
-                
-                return $writer->save('php://output');
+                $cmd = $writer->save('php://output');
+            } else {
+                $dir = public_path() . '/' . $this->filePath();
+                file_exists($dir) ?: mkdir($dir, 0777, true);
+                $cmd = $writer->save($dir . '/' . $fileName . '.xlsx');
             }
-            $dir = public_path() . '/' . $this->filePath();
-            file_exists($dir) ?: mkdir($dir, 0777, true);
-            
-            return $writer->save($dir . '/' . $fileName . '.xlsx');
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return $cmd;
         
     }
     
@@ -698,6 +688,7 @@ trait ModelTrait {
      * @param null $role
      * @return array
      * @throws Exception
+     * @throws Throwable
      */
     function contactInput(FormRequest $request, $role) {
         
@@ -724,10 +715,9 @@ trait ModelTrait {
                 if (!empty($input['student_ids'])) {
                     foreach ($input['student_ids'] as $key => $studentId) {
                         $student = Student::find($studentId);
-                        abort_if(
+                        throw_if(
                             !$student || !in_array($studentId, $this->contactIds('student')),
-                            Constant::NOT_FOUND,
-                            __('messages.student.not_found') . ':' . $studentId
+                            new Exception(__('messages.student.not_found') . ':' . $studentId)
                         );
                         $departmentIds[] = $student->squad->department_id;
                         $rses[$studentId] = $input['relationships'][$key];
@@ -749,10 +739,9 @@ trait ModelTrait {
                         foreach ($input['cs']['class_ids'] as $classId) {
                             if (!$classId) continue;
                             $class = Squad::find($classId);
-                            abort_if(
+                            throw_if(
                                 !$class || !in_array($class->id, $this->classIds()),
-                                Constant::NOT_FOUND,
-                                __('messages.class.not_found') . ':' . $classId
+                                new Exception(__('messages.class.not_found') . ':' . $classId)
                             );
                             $classDeptIds[] = $class->department_id;
                         }
@@ -790,18 +779,22 @@ trait ModelTrait {
      * @param $corpId
      * @param null $name
      * @return App|Model|object|null
+     * @throws Throwable
      */
     function corpApp($corpId, $name = null) {
         
-        $val = [
-            'corp_id' => $corpId,
-            'name'    => $name ?? config('app.name'),
-        ];
-        abort_if(
-            !$app = App::where($val)->first(),
-            Constant::NOT_FOUND,
-            __('messages.app.not_found')
-        );
+        try {
+            $val = [
+                'corp_id' => $corpId,
+                'name'    => $name ?? config('app.name'),
+            ];
+            throw_if(
+                !$app = App::where($val)->first(),
+                new Exception(__('messages.app.not_found'))
+            );
+        } catch (Exception $e) {
+            throw $e;
+        }
         
         return $app;
         

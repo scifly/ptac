@@ -2,8 +2,8 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\School;
-use Exception;
 use Illuminate\Contracts\View\View;
+use Throwable;
 
 /**
  * Class SchoolComposer
@@ -13,10 +13,10 @@ class SchoolComposer {
     
     /**
      * @param View $view
-     * @throws Exception
+     * @throws Throwable
      */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new School)->compose()
         );

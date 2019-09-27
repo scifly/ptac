@@ -9,9 +9,7 @@ use Illuminate\Contracts\View\View;
  */
 class MessageTypeComposer {
     
-    /**
-     * @param View $view
-     */
+    /** @param View $view */
     public function compose(View $view) {
         
         $view->with([

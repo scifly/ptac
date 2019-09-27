@@ -731,10 +731,8 @@ class User extends Authenticatable {
     }
     
     /**
-     * 返回create/edit view所需数据
-     *
      * @return array
-     * @throws Exception
+     * @throws Throwable
      */
     function compose() {
     

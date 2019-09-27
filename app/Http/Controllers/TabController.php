@@ -18,21 +18,17 @@ use Throwable;
  */
 class TabController extends Controller {
     
-    protected $tab, $menu;
+    protected $tab;
     
     /**
      * TabController constructor.
      * @param Tab $tab
-     * @param Menu $menu
      */
-    function __construct(Tab $tab, Menu $menu) {
+    function __construct(Tab $tab) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->tab = $tab;
-        $this->menu = $menu;
-        if (!Request::has('ids')) {
-            $this->approve($tab);
-        }
+        Request::has('ids') ?: $this->approve($tab);
         
     }
     
@@ -46,15 +42,13 @@ class TabController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->tab->index());
+            $response = response()->json($this->tab->index());
+        } else {
+            $this->tab->scan();
+            $response = $this->output();
         }
-        abort_if(
-            !$this->tab->scan(),
-            Constant::NOT_ACCEPTABLE,
-            __('messages.bad_request')
-        );
         
-        return $this->output();
+        return $response;
         
     }
     

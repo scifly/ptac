@@ -312,7 +312,6 @@ class Message extends Model {
                 ],
             ],
         ];
-        
         if ($sender == 'corp') {
             $builder = Corp::find($senderid)->educators;
         } elseif ($sender == 'school') {
@@ -486,16 +485,16 @@ class Message extends Model {
                 $msgBody = '<a href="' . $content->{'path'} . '">下载语音</a>';
                 break;
             case 'video':
-                $msgBody = view('message.detail_video', ['message' =>  $content])->render();
+                $msgBody = view('message.detail_video', ['message' => $content])->render();
                 break;
             case 'file':
                 $msgBody = '<a href="' . $content->{'path'} . '">下载文件</a>';
                 break;
             case 'textcard':
-                $msgBody = view('message.detail_textcard', ['message' =>  $content])->render();
+                $msgBody = view('message.detail_textcard', ['message' => $content])->render();
                 break;
             case 'mpnews':
-                $msgBody = view('message.detail_mpnews', ['message' =>  $content])->render();
+                $msgBody = view('message.detail_mpnews', ['message' => $content])->render();
                 break;
             default:    # sms
                 $msgBody = $content;
@@ -632,7 +631,7 @@ class Message extends Model {
         
         return Request::method() == 'POST'
             ? Request::has('file') ? $this->import() : $this->search()
-            : view('wechat.info.edit', ['message' =>  $message]);
+            : view('wechat.info.edit', ['message' => $message]);
         
     }
     
@@ -648,7 +647,7 @@ class Message extends Model {
         try {
             $mr = new MessageReply;
             $response = response()->json([
-                'message' =>  __('messages.ok'),
+                'message' => __('messages.ok'),
             ]);
             if (($method = Request::method()) == 'GET') {
                 throw_if(
@@ -719,13 +718,9 @@ class Message extends Model {
         
         try {
             # 上传到本地后台
-            throw_if(
-                empty($file = Request::file('file')),
-                new Exception(__('messages.empty_file'))
-            );
-            throw_if(
-                !($uploadedFile = (new Media)->import($file, __('messages.message.title'))),
-                new Exception(__('messages.file_upload_failed'))
+            $upload = (new Media)->upload(
+                $file = Request::file('file'),
+                __('messages.message.title')
             );
             # 上传到企业微信后台
             [$base, $appid, $appsecret] = $this->params();
@@ -735,8 +730,8 @@ class Message extends Model {
                 Wechat::invoke(
                     $base, 'media', 'upload',
                     [Wechat::token('ent', $appid, $appsecret), $type], [
-                    'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
-                    'filename'      => $uploadedFile['filename'],
+                    'file-contents' => curl_file_create(public_path($upload['path'])),
+                    'filename'      => $upload['filename'],
                     'content-type'  => self::CONTENT_TYPE[$type],
                     'filelength'    => $file->getSize(),
                 ]), true
@@ -745,14 +740,14 @@ class Message extends Model {
                 $result['errcode'] ?? 0,
                 new Exception(Constant::WXERR[$result['errcode']])
             );
-            $uploadedFile['media_id'] = $result['media_id'];
+            $upload['media_id'] = $result['media_id'];
         } catch (Exception $e) {
             throw $e;
         }
         
         return response()->json([
-            'message' =>  __('messages.message.uploaded'),
-            'data' => $uploadedFile,
+            'message' => __('messages.message.uploaded'),
+            'data'    => $upload,
         ]);
         
     }
@@ -762,7 +757,7 @@ class Message extends Model {
      *
      * @param null $uri
      * @return array
-     * @throws Exception
+     * @throws Throwable
      */
     function compose($uri = null) {
         

@@ -4,8 +4,8 @@ namespace App\Http\Requests;
 use App\Helpers\{Constant, ModelTrait};
 use App\Models\Group;
 use App\Rules\{Email, Mobile};
-use Exception;
 use Illuminate\Foundation\Http\FormRequest;
+use Throwable;
 
 /**
  * Class OperatorRequest
@@ -69,7 +69,7 @@ class OperatorRequest extends FormRequest {
     }
     
     /**
-     * @throws Exception
+     * @throws Throwable
      */
     protected function prepareForValidation() {
         

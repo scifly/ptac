@@ -14,7 +14,7 @@ class PollTopicComposer {
      * @param View $view
      */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new PollTopic)->compose()
         );

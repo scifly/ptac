@@ -53,7 +53,9 @@ class OrderController extends Controller {
     public function store(OrderRequest $request) {
         
         return $this->result(
-            $this->order->create($request->all())
+            $this->order->store(
+                $request->all()
+            )
         );
         
     }

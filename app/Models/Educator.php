@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, ModelTrait};
+use App\Helpers\{ModelTrait};
 use App\Jobs\{ExportEducator, ImportEducator};
 use Carbon\Carbon;
 use Eloquent;
@@ -17,8 +17,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\{Auth, DB, Request};
-use PhpOffice\PhpSpreadsheet\Exception as PssException;
-use PhpOffice\PhpSpreadsheet\Reader\Exception as PssrException;
 use ReflectionException;
 use Throwable;
 
@@ -203,45 +201,82 @@ class Educator extends Model {
      */
     function modify(array $data, $id = null) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                if (!$id) {
-                    $this->batch($this);
-                } else {
-                    ($educator = $this->find($id))->update($data);
-                    # 用户
-                    ($user = $educator->user)->update($data['user']);
-                    # 一卡通
-                    (new Card)->store($user);
-                    # 绑定关系
-                    $this->bindings($educator, $data);
-                    # 如果同时也是监护人
-                    $custodian = $user->custodian;
-                    if (!$data['singular'] && !$custodian) {
-                        Custodian::create(
-                            array_combine(
-                                ['user_id', 'enabled'],
-                                [$educator->user_id, $educator->enabled]
-                            )
-                        );
-                    } elseif ($data['singular'] && $custodian) {
-                        $custodian->remove($custodian->id);
-                    }
+        $this->revise(
+            $this, $data, $id,
+            function (Educator $educator) use ($data, $id) {
+                # 用户
+                ($user = $educator->user)->update($data['user']);
+                # 一卡通
+                (new Card)->store($user);
+                # 绑定关系
+                $educator->bindings($educator, $data);
+                # 如果同时也是监护人
+                $custodian = $user->custodian;
+                if (!$data['singular'] && !$custodian) {
+                    Custodian::create(
+                        array_combine(
+                            ['user_id', 'enabled'],
+                            [$educator->user_id, $educator->enabled]
+                        )
+                    );
+                } elseif ($data['singular'] && $custodian) {
+                    $custodian->remove($custodian->id);
                 }
-                # 同步企业微信
-                (new User)->sync(
-                    array_map(
-                        function ($userId) { return [$userId, '', 'update']; },
-                        $this->whereIn('id', $ids)->pluck('user_id')->toArray()
-                    )
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+            }
+        );
+        # 同步企业微信
+        $ids = $id ? [$id] : array_values(Request::input('ids'));
         
-        return true;
+        return (new User)->sync(
+            array_map(
+                function ($userId) { return [$userId, '', 'update']; },
+                $this->whereIn('id', $ids)->pluck('user_id')->toArray()
+            )
+        );
+        
+        // try {
+        //     DB::transaction(function () use ($data, $id) {
+        //         if (!$id) {
+        //             $this->batch($this);
+        //         } else {
+        //             throw_if(
+        //                 !$educator = $this->find($id),
+        //                 new Exception(__('messages.not_found'))
+        //             );
+        //             $educator->update($data);
+        //             # 用户
+        //             ($user = $educator->user)->update($data['user']);
+        //             # 一卡通
+        //             (new Card)->store($user);
+        //             # 绑定关系
+        //             $educator->bindings($educator, $data);
+        //             # 如果同时也是监护人
+        //             $custodian = $user->custodian;
+        //             if (!$data['singular'] && !$custodian) {
+        //                 Custodian::create(
+        //                     array_combine(
+        //                         ['user_id', 'enabled'],
+        //                         [$educator->user_id, $educator->enabled]
+        //                     )
+        //                 );
+        //             } elseif ($data['singular'] && $custodian) {
+        //                 $custodian->remove($custodian->id);
+        //             }
+        //         }
+        //         # 同步企业微信
+        //         $ids = $id ? [$id] : array_values(Request::input('ids'));
+        //         (new User)->sync(
+        //             array_map(
+        //                 function ($userId) { return [$userId, '', 'update']; },
+        //                 $this->whereIn('id', $ids)->pluck('user_id')->toArray()
+        //             )
+        //         );
+        //     });
+        // } catch (Exception $e) {
+        //     throw $e;
+        // }
+        //
+        // return true;
         
     }
     
@@ -318,34 +353,38 @@ class Educator extends Model {
      * 导入教职员工
      *
      * @return bool
-     * @throws PssException
-     * @throws PssrException
+     * @throws Throwable
      */
     function import() {
         
-        $records = $this->uploader();
-        $mobiles = array_count_values(
-            array_map('strval', Arr::pluck($records, 'G'))
-        );
-        foreach ($mobiles as $mobile => $count) {
-            $count <= 1 ?: $duplicates[] = $mobile;
+        try {
+            $records = $this->records();
+            $mobiles = array_count_values(
+                array_map('strval', Arr::pluck($records, 'G'))
+            );
+            foreach ($mobiles as $mobile => $count) {
+                $count <= 1 ?: $duplicates[] = $mobile;
+            }
+            throw_if(
+                isset($duplicates),
+                new Exception(
+                    join('', [
+                        '手机号码',
+                        join(',', $duplicates ?? []),
+                        '有重复，请检查后重试。',
+                    ])
+                )
+            );
+            throw_if(
+                !$group = Group::where(['name' => '教职员工', 'school_id' => $this->schoolId()])->first(),
+                new Exception(__('messages.educator.role_nonexistent'))
+            );
+            ImportEducator::dispatch(
+                $records, $this->schoolId(), $group->id, Auth::id()
+            );
+        } catch (Exception $e) {
+            throw $e;
         }
-        abort_if(
-            isset($duplicates),
-            Constant::NOT_ACCEPTABLE,
-            join('', [
-                '手机号码',
-                join(',', $duplicates ?? []),
-                '有重复，请检查后重试。',
-            ])
-        );
-        abort_if(
-            !$group = Group::where(['name' => '教职员工', 'school_id' => $this->schoolId()])->first(),
-            Constant::NOT_ACCEPTABLE, __('messages.educator.role_nonexistent')
-        );
-        ImportEducator::dispatch(
-            $records, $this->schoolId(), $group->id, Auth::id()
-        );
         
         return true;
         
@@ -437,7 +476,7 @@ class Educator extends Model {
                 $list .= sprintf(
                     $tpl,
                     $user->id, $user->realname, $user->username,
-                    $face->uploader($user), $face->selector($cameras, $user),
+                    $face->records($user), $face->selector($cameras, $user),
                     $face->state(
                         $user->face ? $user->face->state : 1,
                         $user->id
@@ -477,11 +516,9 @@ class Educator extends Model {
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
-     * 返回composer所需的view数据
-     *
      * @param null $id
      * @return array
-     * @throws Exception
+     * @throws Throwable
      */
     function compose($id = null) {
         

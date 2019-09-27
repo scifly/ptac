@@ -9,13 +9,11 @@ use Illuminate\Contracts\View\View;
  */
 class IndicatorComposer {
     
-    /**
-     * @param View $view
-     */
+    /** @param View $view */
     public function compose(View $view) {
-    
+        
         $view->with([
-            'titles' => ['#', '名称', '加/减分', '备注', '创建于', '更新于', '状态 . 操作']
+            'titles' => ['#', '名称', '加/减分', '备注', '创建于', '更新于', '状态 . 操作'],
         ]);
         
     }

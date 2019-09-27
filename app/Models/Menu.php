@@ -223,19 +223,17 @@ class Menu extends Model {
      */
     function modify(array $data, $id) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                $menu = $this->find($id);
-                # 更新指定Menu记录
-                $menu->update($data);
+        return $this->revise(
+            $this, $data, $id,
+            function (Menu $menu) use ($data, $id) {
                 # 更新与指定Menu记录绑定的卡片记录
-                $menuTab = new MenuTab();
-                $menuTab::whereMenuId($id)->delete();
+                $mt = new MenuTab();
+                $mt->whereMenuId($id)->delete();
                 $tabIds = $data['tab_ids'] ?? [];
                 $uri = $data['uri'] ?? '';
                 if (empty($uri)) {
                     if (!empty($tabIds)) {
-                        $menu->children->count() ?: $menuTab->store($id, $tabIds);
+                        $menu->children->count() ?: $mt->store($id, $tabIds);
                     } else {
                         $enabledSubMenus = $menu->children->filter(
                             function (Menu $menu) { return $menu->enabled; }
@@ -243,12 +241,35 @@ class Menu extends Model {
                         $menu->update(['enabled' => $enabledSubMenus->count() ? 1 : 0]);
                     }
                 }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+            }
+        );
         
-        return true;
+        // try {
+        //     DB::transaction(function () use ($data, $id) {
+        //         $menu = $this->find($id);
+        //         # 更新指定Menu记录
+        //         $menu->update($data);
+        //         # 更新与指定Menu记录绑定的卡片记录
+        //         $menuTab = new MenuTab();
+        //         $menuTab::whereMenuId($id)->delete();
+        //         $tabIds = $data['tab_ids'] ?? [];
+        //         $uri = $data['uri'] ?? '';
+        //         if (empty($uri)) {
+        //             if (!empty($tabIds)) {
+        //                 $menu->children->count() ?: $menuTab->store($id, $tabIds);
+        //             } else {
+        //                 $enabledSubMenus = $menu->children->filter(
+        //                     function (Menu $menu) { return $menu->enabled; }
+        //                 );
+        //                 $menu->update(['enabled' => $enabledSubMenus->count() ? 1 : 0]);
+        //             }
+        //         }
+        //     });
+        // } catch (Exception $e) {
+        //     throw $e;
+        // }
+        //
+        // return true;
         
     }
     

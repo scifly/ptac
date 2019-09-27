@@ -126,16 +126,12 @@ class Major extends Model {
      */
     function modify(array $data, $id) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                $this->find($id)->update($data);
-                $this->retain('MajorSubject', $id, $data['subject_ids'] ?? []);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->revise(
+            $this, $data, $id,
+            function (Major $major) use ($data, $id) {
+                $major->retain('MajorSubject', $id, $data['subject_ids'] ?? []);
+            }
+        );
         
     }
     

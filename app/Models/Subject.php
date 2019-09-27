@@ -194,20 +194,15 @@ class Subject extends Model {
      */
     function modify(array $data, $id) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                $this->find($id)->update($data);
-                $this->retain(
+        return $this->revise(
+            $this, $data, $id,
+            function (Subject $subject) use ($data, $id) {
+                $subject->retain(
                     'MajorSubject', $id,
                     $data['subject_ids'] ?? [], false
                 );
-            });
-            
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+            }
+        );
         
     }
     

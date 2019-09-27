@@ -90,6 +90,7 @@ class MessageTypeController extends Controller {
      * @param MessageTypeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(MessageTypeRequest $request, $id) {
         

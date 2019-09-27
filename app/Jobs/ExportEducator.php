@@ -58,11 +58,10 @@ class ExportEducator implements ShouldQueue {
                 if (!($user = $educator->user)) continue;
                 [$grades, $squads] = array_map(
                     function ($name) use ($educator) {
-                        $className = 'App\\Models\\' . ucfirst($name);
-                        $model = (new ReflectionClass($className))->newInstance();
                         /** @var Collection $collection */
-                        // $collection = $model->whereRaw($educator->id . ' IN (educator_ids)')->get();
-                        $collection = $model->where('educator_ids', 'like', '%,' . $educator->id . '%')->get();
+                        $collection = $this->model($name)
+                            ->where('educator_ids', 'like', '%,' . $educator->id . '%')
+                            ->get();
                 
                         return $collection->isEmpty() ? ''
                             : $collection->pluck('name')->join(',');

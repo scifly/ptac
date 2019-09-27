@@ -20,7 +20,7 @@ class CardComposer {
      * @param View $view
      */
     public function compose(View $view) {
-    
+        
         $action = explode('/', Request::path())[1];
         if ($action == 'index') {
             $data = [
@@ -40,14 +40,8 @@ class CardComposer {
                 ],
                 'titles'  => [
                     '#', '卡号', '通行权限', '持卡人', '角色', '手机号码',
-                    [
-                        'title' => '发卡时间',
-                        'html'  => $this->htmlDTRange('发卡时间'),
-                    ],
-                    [
-                        'title' => '更新于',
-                        'html'  => $this->htmlDTRange('更新于'),
-                    ],
+                    ['title' => '发卡时间', 'html' => $this->htmlDTRange('发卡时间')],
+                    ['title' => '更新于', 'html' => $this->htmlDTRange('更新于')],
                     [
                         'title' => '状态 . 操作',
                         'html'  => $this->htmlSelect(
@@ -68,8 +62,8 @@ class CardComposer {
             }
             $users = User::whereIn('id', $ids)->get()->when(
                 $action == 'create', function (Collection $users) {
-                   return $users->where('card_id', 0);
-                }
+                return $users->where('card_id', 0);
+            }
             );
             $card = new Card;
             $sn = $card->input();
@@ -86,7 +80,8 @@ class CardComposer {
                     <td>$sn</td>%s
                 </tr>
             HTML;
-            $list = ''; $i = 0;
+            $list = '';
+            $i = 0;
             /** @var User $user */
             foreach ($users as $user) {
                 $status = $action == 'create' ? ''
@@ -101,7 +96,6 @@ class CardComposer {
                     $user->card ? $user->card->sn : '',
                     $status
                 );
-        
                 $list .= $record;
                 $i++;
             }
@@ -109,10 +103,9 @@ class CardComposer {
                 ?: $list = '<tr><td colspan="6" class="text-center text-red">- 已发卡 -</td></tr>';
             $data = [
                 'list' => $list,
-                'edit' => $action == 'edit' ? true : null
+                'edit' => $action == 'edit' ? true : null,
             ];
         }
-        
         $view->with($data);
     }
     

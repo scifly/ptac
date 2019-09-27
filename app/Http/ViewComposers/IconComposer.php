@@ -9,12 +9,12 @@ use Illuminate\Contracts\View\View;
  */
 class IconComposer {
     
-    /**
-     * @param View $view
-     */
+    /** @param View $view */
     public function compose(View $view) {
-    
-        $view->with(['titles' => ['#', '名称', '备注', '创建于', '更新于', '状态 . 操作']]);
+        
+        $view->with([
+            'titles' => ['#', '名称', '备注', '创建于', '更新于', '状态 . 操作'],
+        ]);
         
     }
     

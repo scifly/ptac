@@ -1,10 +1,9 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\User;
-use Exception;
 use Illuminate\Contracts\View\View;
+use Throwable;
 
 /**
  * Class OperatorComposer
@@ -12,14 +11,12 @@ use Illuminate\Contracts\View\View;
  */
 class OperatorComposer {
     
-    use ModelTrait;
-    
     /**
      * @param View $view
-     * @throws Exception
+     * @throws Throwable
      */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new User)->compose()
         );

@@ -17,7 +17,7 @@ class ScoreRangeComposer {
      * @param View $view
      */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new ScoreRange)->compose()
         );

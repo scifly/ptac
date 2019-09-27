@@ -106,19 +106,9 @@ class Prize extends Model {
      */
     function modify(array $data, $id) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                throw_if(
-                    !$prize = $this->find($id),
-                    new Exception(__('messages.not_found'))
-                );
-                $prize->update($data);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->revise(
+            $this, $data, $id, null
+        );
         
     }
     

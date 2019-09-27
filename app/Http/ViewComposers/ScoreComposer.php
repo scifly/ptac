@@ -16,7 +16,7 @@ class ScoreComposer {
      * @throws Exception
      */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new Score)->compose()
         );

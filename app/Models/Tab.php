@@ -166,7 +166,9 @@ class Tab extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $tab = $this->create($data);
-                (new MenuTab)->store($tab->id, $data['menu_ids'], false);
+                (new MenuTab)->store(
+                    $tab->id, $data['menu_ids'], false
+                );
             });
         } catch (Exception $e) {
             throw $e;
@@ -187,26 +189,34 @@ class Tab extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (isset($id)) {
-            if (!($tab = $this->find($id))) return false;
-            try {
-                DB::transaction(function () use ($data, $id, $tab) {
-                    $tab->update($data);
-                    (new MenuTab)->store($id, $data['menu_ids'], false);
-                });
-            } catch (Exception $e) {
-                throw $e;
+        return $this->revise(
+            $this, $data, $id,
+            function (Tab $tag) use ($data) {
+                (new MenuTab)->store(
+                    $tag->id, $data['menu_ids'], false
+                );
             }
-        } else {
-            $ids = Request::input('ids');
-            $action = Request::input('action');
-            
-            return $this->whereIn('id', $ids)->update([
-                'enabled' => $action == 'enable' ? 1 : 0,
-            ]);
-        }
-        
-        return true;
+        );
+        // if (isset($id)) {
+        //     if (!($tab = $this->find($id))) return false;
+        //     try {
+        //         DB::transaction(function () use ($data, $id, $tab) {
+        //             $tab->update($data);
+        //             (new MenuTab)->store($id, $data['menu_ids'], false);
+        //         });
+        //     } catch (Exception $e) {
+        //         throw $e;
+        //     }
+        // } else {
+        //     $ids = Request::input('ids');
+        //     $action = Request::input('action');
+        //
+        //     return $this->whereIn('id', $ids)->update([
+        //         'enabled' => $action == 'enable' ? 1 : 0,
+        //     ]);
+        // }
+        //
+        // return true;
         
     }
     

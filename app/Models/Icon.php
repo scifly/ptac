@@ -96,7 +96,9 @@ class Icon extends Model {
      */
     function modify(array $data, $id = null) {
     
-        return $this->revise($this, $data, $id);
+        return $this->revise(
+            $this, $data, $id, null
+        );
         
     }
     

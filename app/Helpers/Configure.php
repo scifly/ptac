@@ -13,7 +13,7 @@ use Throwable;
  * @package App\Helpers
  */
 class Configure {
-
+    
     use ModelTrait;
     
     const TPL = <<<HTML
@@ -34,7 +34,7 @@ class Configure {
      * @throws ReflectionException
      */
     function html($class = null) {
-    
+        
         $records = $this->model($class ?? Request::input('paramId'))->all();
         $list = '';
         foreach ($records as $record) {
@@ -57,10 +57,13 @@ class Configure {
      * @throws ReflectionException
      */
     function compose() {
-    
+        
         $params = Arr::pluck(Constant::SYSTEM_PARAMS, 'name', 'id');
-
-        return [$params, $this->html(key($params))];
+        
+        return [
+            'params' => $params,
+            'list'   => $this->html(key($params)),
+        ];
         
     }
     
@@ -71,9 +74,9 @@ class Configure {
      * @throws Throwable
      */
     function init() {
-    
+        
         try {
-            DB::transaction(function () {});
+            DB::transaction(function () { });
             $params = Request::has('paramId')
                 ? [Request::input('paramId')]
                 : Arr::pluck(Constant::SYSTEM_PARAMS, 'id');
@@ -90,7 +93,7 @@ class Configure {
                         array_merge($datum, [
                             now()->toDateTimeString(),
                             now()->toDateTimeString(),
-                            Constant::ENABLED
+                            Constant::ENABLED,
                         ])
                     );
                 }
@@ -101,7 +104,7 @@ class Configure {
         }
         
         return true;
-    
+        
     }
     
 }

@@ -96,6 +96,7 @@ class ScoreRangeController extends Controller {
      * @param ScoreRangeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(ScoreRangeRequest $request, $id) {
         

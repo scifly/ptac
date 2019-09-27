@@ -132,8 +132,7 @@ class StudentController extends Controller {
      * 导入学籍
      *
      * @return JsonResponse
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws Throwable
      */
     public function import() {
         

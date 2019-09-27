@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, ModelTrait};
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -28,6 +28,8 @@ use Throwable;
  * @property-read WapSiteModule $wapsitemodule
  * @property-read Media $thumbnailmedia
  * @property-read Media $thumbnailMedia
+ * @property-read Media $media
+ * @property-read WapSiteModule $module
  * @method static Builder|WsmArticle whereContent($value)
  * @method static Builder|WsmArticle whereCreatedAt($value)
  * @method static Builder|WsmArticle whereEnabled($value)
@@ -42,8 +44,6 @@ use Throwable;
  * @method static Builder|WsmArticle newQuery()
  * @method static Builder|WsmArticle query()
  * @mixin Eloquent
- * @property-read Media $media
- * @property-read WapSiteModule $module
  */
 class WsmArticle extends Model {
     
@@ -149,10 +149,13 @@ class WsmArticle extends Model {
      * @param array $data
      * @param $id
      * @return bool|mixed
+     * @throws Throwable
      */
     function modify(array $data, $id) {
         
-        return $this->find($id)->update($data);
+        return $this->revise(
+            $this, $data, $id, null
+        );
         
     }
     
@@ -169,35 +172,44 @@ class WsmArticle extends Model {
         
     }
     
+    /** @return array */
+    function compose() {
+    
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            $data = [
+                'titles' => ['#', '所属栏目', '文章名称', '文章摘要', '创建于', '更新于', '状态 . 操作'],
+            ];
+        } else {
+            $article = WsmArticle::find(Request::route('id'));
+            $mediaIds = explode(',', $article ? $article->media_ids : null);
+            $data = [
+                'wsms'   => School::find($this->schoolId())->wapSite->modules->pluck('name', 'id'),
+                'medias' => Media::whereIn('id', $mediaIds)->get(),
+            ];
+        }
+        
+        return $data;
+        
+    }
+    
     /** 微信端 ------------------------------------------------------------------------------------------------------- */
     /**
      * 上传微网站文章轮播图
      *
      * @return JsonResponse
+     * @throws Throwable
      */
     function import() {
         
-        $files = Request::allFiles();
-        $media = new Media();
-        $uploadedFiles = [];
-        foreach ($files['images'] as $image) {
-            abort_if(
-                empty($image),
-                Constant::NOT_ACCEPTABLE,
-                __('messages.empty_file')
-            );
-            $uploadedFile = $media->import(
+        $media = new Media;
+        foreach (Request::allFiles()['images'] as $image) {
+            $uploads[] = $media->upload(
                 $image, __('messages.wsm_article.title')
             );
-            abort_if(
-                !$uploadedFile,
-                Constant::INTERNAL_SERVER_ERROR,
-                __('messages.file_upload_failed')
-            );
-            $uploadedFiles[] = $uploadedFile;
         }
         
-        return response()->json($uploadedFiles);
+        return response()->json($uploads ?? []);
         
     }
     

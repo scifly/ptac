@@ -283,4 +283,50 @@ class Consumption extends Model {
         
     }
     
+    /**
+     * @return array
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    function compose() {
+    
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            $data = [
+                'buttons' => [
+                    'stat'   => [
+                        'id'    => 'stat',
+                        'label' => '统计',
+                        'icon'  => 'fa fa-bar-chart',
+                    ],
+                    'export' => [
+                        'id'    => 'export',
+                        'label' => '批量导出',
+                        'icon'  => 'fa fa-download',
+                    ],
+                ],
+                'titles'  => ['#', '学生', '消费地点', '消费机ID', '类型', '金额', '时间'],
+            ];
+        } else {
+            $values = Student::whereIn('id', $this->contactIds('student'))->get();
+            foreach ($values as $v) {
+                $students[$v->id] = $v->user->realname . '(' . $v->squad->grade->name . ' / ' . $v->squad->name . ')';
+            }
+            [$classes, $grades] = array_map(
+                function (Builder $name, $data) {
+                    return $name::{'whereIn'}('id', $data)->pluck('name', 'id')->toArray();
+                }, ['Squad', 'Grade'], [$this->classIds(), $this->gradeIds()]
+            );
+            $data = [
+                'ranges'   => [1 => '学生', 2 => '班级', 3 => '年级'],
+                'students' => $students ?? [],
+                'classes'  => $classes,
+                'grades'   => $grades,
+            ];
+        }
+        
+        return $data;
+        
+    }
+    
 }

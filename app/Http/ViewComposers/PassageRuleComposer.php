@@ -10,15 +10,13 @@ use Illuminate\Contracts\View\View;
  */
 class PassageRuleComposer {
     
-    /**
-     * @param View $view
-     */
+    /** @param View $view */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new PassageRule)->compose()
         );
-    
+        
     }
     
 }

@@ -15,8 +15,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany,
     Relations\HasOne};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Arr, Facades\Auth, Facades\DB, Facades\Request, Collection as SCollection};
-use PhpOffice\PhpSpreadsheet\{Exception as PssException, Reader\Exception as PssrException};
+use Illuminate\Support\{Arr, Collection as SCollection, Facades\Auth, Facades\DB, Facades\Request};
 use ReflectionException;
 use Throwable;
 
@@ -236,55 +235,97 @@ class Student extends Model {
      */
     function modify(array $data, $id = null) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                if ($student = $this->find($id)) {
-                    # 如果学生班级发生变化，则需更新对应监护人的部门绑定关系
-                    if ($student->class_id != $data['class_id']) {
-                        $userIds = $student->custodians->pluck('user_id')->toArray();
-                        $deptId = Squad::find($data['class_id'])->department_id;
-                        foreach ($student->custodians as $custodian) {
-                            $condition = [
-                                'user_id'       => $custodian->user_id,
-                                'department_id' => $student->squad->department_id,
-                            ];
-                            if ($du = DepartmentUser::where($condition)->first()) {
-                                $du->update(['department_id' => $deptId]);
-                            } else {
-                                DepartmentUser::create(
-                                    array_combine(
-                                        (new DepartmentUser)->getFillable(),
-                                        [$deptId, $custodian->user_id, Constant::DISABLED]
-                                    )
-                                );
-                            }
+        $this->revise(
+            $this, $data, $id,
+            function (Student $student) use ($data, $id) {
+                # 如果学生班级发生变化，则需更新对应监护人的部门绑定关系
+                if ($student->class_id != $data['class_id']) {
+                    $deptId = Squad::find($data['class_id'])->department_id;
+                    foreach ($student->custodians as $custodian) {
+                        $condition = [
+                            'user_id'       => $custodian->user_id,
+                            'department_id' => $student->squad->department_id,
+                        ];
+                        if ($du = DepartmentUser::where($condition)->first()) {
+                            $du->update(['department_id' => $deptId]);
+                        } else {
+                            DepartmentUser::create(
+                                array_combine(
+                                    (new DepartmentUser)->getFillable(),
+                                    [$deptId, $custodian->user_id, Constant::DISABLED]
+                                )
+                            );
                         }
                     }
-                    # 更新用户
-                    $student->user->update($data['user']);
-                    # 更新一卡通
-                    (new Card)->store($student->user);
-                    # 更新学籍
-                    $student->update($data);
-                    # 保存绑定关系
-                    $this->bindings($student, $data);
-                } else {
-                    $this->batch($this);
                 }
-                empty($userIds = $userIds ?? []) ?: (new User)->sync(
-                    array_map(
-                        function ($userId) {
-                            return [$userId, '监护人', 'update'];
-                        }, $userIds
-                    )
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+                # 更新用户
+                $student->user->update($data['user']);
+                # 更新一卡通
+                (new Card)->store($student->user);
+                # 更新学籍
+                $student->update($data);
+                # 保存绑定关系
+                $student->bindings($student, $data);
+            }
+        );
+        $userIds = $this->find($id)->custodians->pluck('user_id')->toArray();
+        empty($userIds = $userIds ?? []) ?: (new User)->sync(
+            array_map(
+                function ($userId) {
+                    return [$userId, '监护人', 'update'];
+                }, $userIds
+            )
+        );
         
         return true;
-        
+        // try {
+        //     DB::transaction(function () use ($data, $id) {
+        //         if ($student = $this->find($id)) {
+        //             # 如果学生班级发生变化，则需更新对应监护人的部门绑定关系
+        //             if ($student->class_id != $data['class_id']) {
+        //                 $userIds = $student->custodians->pluck('user_id')->toArray();
+        //                 $deptId = Squad::find($data['class_id'])->department_id;
+        //                 foreach ($student->custodians as $custodian) {
+        //                     $condition = [
+        //                         'user_id'       => $custodian->user_id,
+        //                         'department_id' => $student->squad->department_id,
+        //                     ];
+        //                     if ($du = DepartmentUser::where($condition)->first()) {
+        //                         $du->update(['department_id' => $deptId]);
+        //                     } else {
+        //                         DepartmentUser::create(
+        //                             array_combine(
+        //                                 (new DepartmentUser)->getFillable(),
+        //                                 [$deptId, $custodian->user_id, Constant::DISABLED]
+        //                             )
+        //                         );
+        //                     }
+        //                 }
+        //             }
+        //             # 更新用户
+        //             $student->user->update($data['user']);
+        //             # 更新一卡通
+        //             (new Card)->store($student->user);
+        //             # 更新学籍
+        //             $student->update($data);
+        //             # 保存绑定关系
+        //             $this->bindings($student, $data);
+        //         } else {
+        //             $this->batch($this);
+        //         }
+        //         empty($userIds = $userIds ?? []) ?: (new User)->sync(
+        //             array_map(
+        //                 function ($userId) {
+        //                     return [$userId, '监护人', 'update'];
+        //                 }, $userIds
+        //             )
+        //         );
+        //     });
+        // } catch (Exception $e) {
+        //     throw $e;
+        // }
+        //
+        // return true;
     }
     
     /**
@@ -333,30 +374,35 @@ class Student extends Model {
     /**
      * 导入学籍
      *
-     * @throws PssException
-     * @throws PssrException
+     * @return bool
+     * @throws Throwable
      */
     function import() {
         
-        $records = $this->uploader();
-        $ns = array_count_values(
-            array_map('strval', Arr::pluck($records, 'G'))
-        );
-        foreach ($ns as $n => $count) {
-            if (!empty($n) && $count > 1) $ds[] = $n;
+        try {
+            $records = $this->records();
+            $ns = array_count_values(
+                array_map('strval', Arr::pluck($records, 'G'))
+            );
+            foreach ($ns as $n => $count) {
+                if (!empty($n) && $count > 1) $ds[] = $n;
+            }
+            $sns = $ds ?? [];
+            throw_if(
+                !empty($ds ?? []),
+                new Exception(
+                    join('', [
+                        (!empty($sns) ? ('学号: ' . join(',', $sns)) : ''),
+                        '有重复，请检查后重试',
+                    ])
+                )
+            );
+            ImportStudent::dispatch(
+                $records, $this->schoolId(), Auth::id()
+            );
+        } catch (Exception $e) {
+            throw $e;
         }
-        $sns = $ds ?? [];
-        abort_if(
-            !empty($ds ?? []),
-            Constant::NOT_ACCEPTABLE,
-            join('', [
-                (!empty($sns) ? ('学号: ' . join(',', $sns)) : ''),
-                '有重复，请检查后重试',
-            ])
-        );
-        ImportStudent::dispatch(
-            $records, $this->schoolId(), Auth::id()
-        );
         
         return true;
         
@@ -484,7 +530,7 @@ class Student extends Model {
             $list .= sprintf(
                 $tpl,
                 $user->id, $user->realname, $student->sn,
-                $face->uploader($user), $face->selector($cameras, $user),
+                $face->records($user), $face->selector($cameras, $user),
                 $face->state(
                     $user->face ? $user->face->state : 1,
                     $user->id
@@ -521,7 +567,7 @@ class Student extends Model {
      * @return SCollection
      */
     function list($students) {
-    
+        
         $list = collect([]);
         foreach ($students as $student) {
             $list[$student->id] = join(' - ', [$student->sn, $student->user->realname]);
@@ -701,7 +747,7 @@ class Student extends Model {
      * @throws Throwable
      */
     private function bindings(Student $student, array $data) {
-    
+        
         (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
         (new TagUser)->storeByUserId($student->user_id, $data['tag_ids'] ?? []);
         

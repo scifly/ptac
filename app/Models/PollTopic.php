@@ -134,19 +134,9 @@ class PollTopic extends Model {
      */
     function modify(array $data, $id) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                throw_if(
-                    !$topic = $this->find($id),
-                    new Exception(__('messages.not_found'))
-                );
-                $topic->update($data);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->revise(
+            $this, $data, $id, null
+        );
         
     }
     

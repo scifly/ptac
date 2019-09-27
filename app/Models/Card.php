@@ -71,7 +71,7 @@ class Card extends Model {
                         ->pluck('passage_rule_id');
                     
                     return PassageRule::whereIn('id', $prIds->unique())
-                            ->pluck('name')->join('<br />');
+                        ->pluck('name')->join('<br />');
                 },
             ],
             ['db' => 'User.realname', 'dt' => 3],

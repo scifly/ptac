@@ -195,25 +195,35 @@ class Squad extends Model {
      */
     function modify(array $data, $id = null) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                if ($class = $this->find($id)) {
-                    # 更新班级
-                    $class->update($data);
-                    (new Department)->alter($class);
-                    # 更新部门标签绑定关系
-                    (new DepartmentTag)->storeByDeptId(
-                        $class->department_id, $data['tag_ids'] ?? []
-                    );
-                } else {
-                    $this->batch($this);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->revise(
+            $this, $data, $id,
+            function (Squad $class) use ($data) {
+                (new Department)->alter($class);
+                # 更新部门标签绑定关系
+                (new DepartmentTag)->storeByDeptId(
+                    $class->department_id, $data['tag_ids'] ?? []
+                );
+            }
+        );
+        // try {
+        //     DB::transaction(function () use ($data, $id) {
+        //         if ($class = $this->find($id)) {
+        //             # 更新班级
+        //             $class->update($data);
+        //             (new Department)->alter($class);
+        //             # 更新部门标签绑定关系
+        //             (new DepartmentTag)->storeByDeptId(
+        //                 $class->department_id, $data['tag_ids'] ?? []
+        //             );
+        //         } else {
+        //             $this->batch($this);
+        //         }
+        //     });
+        // } catch (Exception $e) {
+        //     throw $e;
+        // }
+        //
+        // return true;
         
     }
     

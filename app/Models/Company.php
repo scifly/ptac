@@ -136,21 +136,28 @@ class Company extends Model {
      */
     function modify(array $data, $id) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                throw_if(
-                    !$company = $this->find($id),
-                    new Exception(__('messages.not_found'))
-                );
-                $company->update($data);
+        return $this->revise(
+            $this, $data, $id,
+            function ($company) {
                 (new Department)->alter($company);
                 (new Menu)->alter($company);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+            }
+        );
+        // try {
+        //     DB::transaction(function () use ($data, $id) {
+        //         throw_if(
+        //             !$company = $this->find($id),
+        //             new Exception(__('messages.not_found'))
+        //         );
+        //         $company->update($data);
+        //         (new Department)->alter($company);
+        //         (new Menu)->alter($company);
+        //     });
+        // } catch (Exception $e) {
+        //     throw $e;
+        // }
+        //
+        // return true;
         
     }
     

@@ -1,10 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\Constant;
 use App\Http\Requests\ActionRequest;
 use App\Models\Action;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -27,8 +25,7 @@ class ActionController extends Controller {
     function __construct(Action $action) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->action = $action;
-        $this->approve($action);
+        $this->approve($this->action = $action);
         
     }
     
@@ -36,7 +33,6 @@ class ActionController extends Controller {
      * 功能列表
      *
      * @return bool|JsonResponse
-     * @throws Exception
      * @throws Throwable
      */
     public function index() {
@@ -46,7 +42,7 @@ class ActionController extends Controller {
                 $this->action->index()
             );
         }
-        abort_if(!$this->action->scan(), Constant::NOT_FOUND);
+        $this->action->scan();
         
         return $this->output();
         

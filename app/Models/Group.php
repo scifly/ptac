@@ -177,20 +177,27 @@ class Group extends Model {
      */
     function modify(array $data, $id) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                throw_if(
-                    !$group = $this->find($id),
-                    new Exception(__('messages.not_found'))
-                );
-                $group->update($data);
-                $this->bindings($id, $data);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        return $this->revise(
+            $this, $data, $id,
+            function (Group $group) use ($data, $id) {
+                $group->bindings($id, $data);
+            }
+        );
         
-        return true;
+        // try {
+        //     DB::transaction(function () use ($data, $id) {
+        //         throw_if(
+        //             !$group = $this->find($id),
+        //             new Exception(__('messages.not_found'))
+        //         );
+        //         $group->update($data);
+        //         $group->bindings($id, $data);
+        //     });
+        // } catch (Exception $e) {
+        //     throw $e;
+        // }
+        //
+        // return true;
         
     }
     

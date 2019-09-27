@@ -17,7 +17,7 @@ class TemplateComposer {
      * @param View $view
      */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new Template)->compose()
         );

@@ -16,7 +16,7 @@ class GradeComposer {
      * @throws Exception
      */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new Grade)->compose()
         );

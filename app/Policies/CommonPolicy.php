@@ -23,13 +23,14 @@ class CommonPolicy {
     function operation(User $user, Model $model = null) {
         
         $perm = true;
-        [$schoolId, $userId] = array_map(
+        [$schoolId, $userId, $ids] = array_map(
             function ($field) use ($model) {
                 return $this->field($field, $model);
-            }, ['school_id', 'user_id']
+            }, ['school_id', 'user_id', 'ids']
         );
         !$schoolId ?: $perm &= $schoolId == $this->schoolId();
         !$userId ?: $perm &= $userId == Auth::id();
+        // !$ids ?: $perm &=
     
         return $this->action($user) && $perm;
         

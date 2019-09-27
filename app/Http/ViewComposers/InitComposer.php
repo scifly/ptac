@@ -2,7 +2,6 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\Configure;
-use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 use ReflectionException;
 
@@ -12,20 +11,6 @@ use ReflectionException;
  */
 class InitComposer {
     
-    use ModelTrait;
-    
-    protected $config;
-    
-    /**
-     * InitComposer constructor.
-     * @param Configure $config
-     */
-    function __construct(Configure $config) {
-        
-        $this->config = $config;
-        
-    }
-    
     /**
      * @param View $view
      * @throws ReflectionException
@@ -33,10 +18,7 @@ class InitComposer {
     public function compose(View $view) {
         
         $view->with(
-            array_combine(
-                ['params', 'list'],
-                $this->config->compose()
-            )
+            (new Configure)->compose()
         );
         
     }

@@ -90,6 +90,7 @@ class SchoolTypeController extends Controller {
      * @param SchoolTypeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(SchoolTypeRequest $request, $id = null) {
         

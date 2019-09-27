@@ -128,13 +128,16 @@ class Order extends Model {
     /**
      * 更新订单
      *
-     * @param $id
      * @param array $data
+     * @param $id
      * @return bool
+     * @throws Throwable
      */
     function modify(array $data, $id) {
         
-        return $this->find($id)->update($data);
+        return $this->revise(
+            $this, $data, $id, null
+        );
         
     }
     

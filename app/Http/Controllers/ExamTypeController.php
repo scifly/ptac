@@ -90,6 +90,7 @@ class ExamTypeController extends Controller {
      * @param ExamTypeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(ExamTypeRequest $request, $id) {
         

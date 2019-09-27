@@ -6,6 +6,7 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -97,10 +98,13 @@ class SubjectModule extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Throwable
      */
     function modify(array $data, $id) {
-        
-        return $this->find($id)->update($data);
+    
+        return $this->revise(
+            $this, $data, $id, null
+        );
         
     }
     
@@ -114,6 +118,22 @@ class SubjectModule extends Model {
     function remove($id = null) {
         
         return $this->purge(['SubjectModule'], 'id', 'purge', $id);
+        
+    }
+    
+    /** @return array */
+    function compose() {
+    
+        if (explode('/', Request::path())[1] == 'index') {
+            $data = [
+                'titles' => ['#', '科目名称', '次分类名称', '次分类权重', '创建于', '更新于', '状态 . 操作'],
+            ];
+        } else {
+            $builder = Subject::where(['school_id' => $this->schoolId(), 'enabled' => 1]);
+            $data = ['subjects' => $builder->pluck('name', 'id')];
+        }
+        
+        return $data;
         
     }
     

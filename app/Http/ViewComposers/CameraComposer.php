@@ -14,10 +14,10 @@ class CameraComposer {
      * @param View $view
      */
     public function compose(View $view) {
-    
-       $view->with(
-           (new Camera)->compose()
-       );
+        
+        $view->with(
+            (new Camera)->compose()
+        );
         
     }
     

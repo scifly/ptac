@@ -5,9 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
-                {!! Form::label('name', '用户列表', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '用户列表'])
                 <div class="col-sm-6">
                     <table id="simple-table" style="width: 100%"
                            class="display nowrap table table-striped table-bordered table-hover table-condensed">

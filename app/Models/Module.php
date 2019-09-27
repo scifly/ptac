@@ -180,10 +180,13 @@ class Module extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Throwable
      */
     function modify(array $data, $id = null) {
         
-        return $this->find($id)->update($data);
+        return $this->revise(
+            $this, $data, $id, null
+        );
         
     }
     
@@ -204,25 +207,16 @@ class Module extends Model {
      * 上传应用模块图标
      *
      * @return JsonResponse
+     * @throws Throwable
      */
     function import() {
         
-        $file = Request::file('file');
-        abort_if(
-            empty($file),
-            Constant::NOT_ACCEPTABLE,
-            __('messages.empty_file')
-        );
-        $uploadedFile = (new Media())->import(
-            $file, __('messages.wap_site_module.title')
-        );
-        abort_if(
-            !$uploadedFile,
-            Constant::INTERNAL_SERVER_ERROR,
-            __('messages.file_upload_failed')
+        $upload = (new Media)->upload(
+            Request::file('file'),
+            __('messages.wap_site_module.title')
         );
         
-        return response()->json($uploadedFile);
+        return response()->json($upload);
         
     }
     

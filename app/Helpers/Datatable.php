@@ -36,17 +36,13 @@ class Datatable {
         $modelName = class_basename($model);
         $useTable = $modelName . (in_array($modelName, ['Group', 'Order', 'Table']) ? 's' : '');
         $from = $tableName . ' AS ' . $useTable;
-        if (isset($joins)) {
-            foreach ($joins as $join) {
-                $from .=
-                    ' ' . $join['type'] . ' JOIN ' . $join['table'] .
-                    ' AS ' . $join['alias'] .
-                    ' ON ' . join(' AND ', $join['conditions']);
-            }
+        foreach ($joins ?? [] as $join) {
+            $from .=
+                ' ' . $join['type'] . ' JOIN ' . $join['table'] .
+                ' AS ' . $join['alias'] .
+                ' ON ' . join(' AND ', $join['conditions']);
         }
         // Build the SQL query string from the request
-        $limit = $this->limit();
-        $order = $this->order($columns);
         $where = $this->filter($columns);
         $keyword = Request::input('search');
         if (isset($keyword['value']) && $modelName == 'Message') {
@@ -59,7 +55,8 @@ class Datatable {
         }
         // Main query to actually get the data
         $fields = join(", ", $this->pluck($columns, 'db'));
-        $query = "SELECT SQL_CALC_FOUND_ROWS " . $fields . " FROM " . $from . $where . $order . $limit;
+        $query = "SELECT SQL_CALC_FOUND_ROWS " . $fields . " FROM "
+            . join([$from, $where, $this->order($columns), $this->limit()]);
         $data = DB::select($query);
         $query = "SELECT " . $useTable . ".id FROM " . $from . $where;
         $ids = DB::select($query);

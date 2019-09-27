@@ -183,32 +183,37 @@ class Grade extends Model {
      */
     function modify(array $data, $id = null) {
 
-        // $this->revise($this, $data, $id, function(Model $model) use ($data, $id) {
-        //     (new Department)->alter($model->{'find'}($id));
+        return $this->revise(
+            $this, $data, $id,
+            function(Grade $grade) use ($data) {
+                (new Department)->alter($grade);
+                (new DepartmentTag)->storeByDeptId(
+                    $grade->department_id, $data['tag_ids'] ?? []
+                );
+            }
+        );
+        // try {
+        //     DB::transaction(function () use ($data, $id) {
+        //         if (!$id) {
+        //             $this->batch($this);
+        //         } else {
+        //             throw_if(
+        //                 !$grade = $this->find($id),
+        //                 new Exception(__('messages.not_found'))
+        //             );
+        //             $grade->update($data);
+        //             (new Department)->alter($this->find($id));
+        //             # 更新部门标签绑定关系
+        //             (new DepartmentTag)->storeByDeptId(
+        //                 $grade->department_id, $data['tag_ids'] ?? []
+        //             );
+        //         }
+        //     });
+        // } catch (Exception $e) {
+        //     throw $e;
+        // }
         //
-        // });
-        try {
-            DB::transaction(function () use ($data, $id) {
-                if (!$id) {
-                    $this->batch($this);
-                } else {
-                    throw_if(
-                        !$grade = $this->find($id),
-                        new Exception(__('messages.not_found'))
-                    );
-                    $grade->update($data);
-                    (new Department)->alter($this->find($id));
-                    # 更新部门标签绑定关系
-                    (new DepartmentTag)->storeByDeptId(
-                        $grade->department_id, $data['tag_ids'] ?? []
-                    );
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        // return true;
         
     }
     

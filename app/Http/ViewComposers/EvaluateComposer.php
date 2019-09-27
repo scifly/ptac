@@ -16,7 +16,7 @@ class EvaluateComposer {
      * @throws ReflectionException
      */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new Evaluate)->compose()
         );

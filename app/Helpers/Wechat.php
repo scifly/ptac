@@ -584,23 +584,23 @@ class Wechat {
                     $errcode = $result['errcode'] ?? 0,
                     new Exception(Constant::WXERR[$errcode])
                 );
-                if ($code) return $result;
-                $token = $result['access_token'];
-                $data = [
-                    'expire_at'    => date(
-                        'Y-m-d H:i:s', time() + 7000
-                    ),
-                    'access_token' => $token,
-                ];
-                $app->update($data);
+                if ($code) {
+                    $token = $result;
+                } else {
+                    $token = $result['access_token'];
+                    $app->update([
+                        'expire_at'    => date('Y-m-d H:i:s', time() + 7000),
+                        'access_token' => $token,
+                    ]);
+                }
             } else {
                 $token = $app['access_token'];
             }
-    
-            return $token;
         } catch (Exception $e) {
             throw $e;
         }
+    
+        return $token;
         
     }
     

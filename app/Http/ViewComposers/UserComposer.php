@@ -2,8 +2,8 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\User;
-use Exception;
 use Illuminate\Contracts\View\View;
+use Throwable;
 
 /**
  * Class UserComposer
@@ -13,7 +13,7 @@ class UserComposer {
     
     /**
      * @param View $view
-     * @throws Exception
+     * @throws Throwable
      */
     public function compose(View $view) {
         

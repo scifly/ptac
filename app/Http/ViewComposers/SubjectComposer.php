@@ -16,7 +16,7 @@ class SubjectComposer {
      * @throws Exception
      */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new Subject)->compose()
         );

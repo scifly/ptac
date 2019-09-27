@@ -59,7 +59,7 @@ use Throwable;
  * @property-read Collection|Subject[] $subjects
  * @property-read Collection|Tag[] $tags
  * @property-read WapSite $wapSite
- * @property-read Collection|WapSiteModule[] $wapSiteModules
+ * @property-read Collection|WapSiteModule[] $modules
  * @property-read Collection|PassageLog[] $passageLogs
  * @property-read Collection|PassageRule[] $passageRules
  * @property-read App|null $app
@@ -84,7 +84,7 @@ use Throwable;
  * @property-read int|null $subjects_count
  * @property-read int|null $tags_count
  * @property-read int|null $turnstiles_count
- * @property-read int|null $wap_site_modules_count
+ * @property-read int|null $modules_count
  * @property-read int|null $flow_types_count
  * @method static Builder|School whereAddress($value)
  * @method static Builder|School whereCorpId($value)
@@ -200,7 +200,7 @@ class School extends Model {
     function wapSite() { return $this->hasOne('App\Models\WapSite'); }
     
     /** @return HasManyThrough */
-    function wapSiteModules() {
+    function modules() {
         
         return $this->hasManyThrough(
             'App\Models\WapSiteModule',
@@ -432,10 +432,8 @@ class School extends Model {
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
-     * 返回composer所需view数据
-     *
      * @return array
-     * @throws Exception
+     * @throws Throwable
      */
     function compose() {
         

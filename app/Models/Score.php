@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsT
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use Illuminate\View\View;
-use PhpOffice\PhpSpreadsheet\Exception as PssException;
 use ReflectionException;
 use Throwable;
 
@@ -210,13 +209,13 @@ class Score extends Model {
      * @param array $data
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function modify(array $data, $id = null) {
-        
-        return $id
-            ? $this->find($id)->update($data)
-            : $this->batch($this);
+    
+        return $this->revise(
+            $this, $data, $id, null
+        );
         
     }
     
@@ -366,49 +365,50 @@ class Score extends Model {
      * 导入成绩
      *
      * @return bool
-     * @throws PssException
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws Throwable
      */
     function import() {
-        
-        $records = $this->uploader(false);
-        $titles = $records[0];
-        array_shift($records);
-        $subjectNames = [];
-        for ($i = ord('D'); $i < ord('D') + sizeof($titles) - 3; $i++) {
-            $subjectNames[] = $titles[chr($i)];
-        }
-        $subjects = Subject::whereIn('name', $subjectNames)
-            ->where('school_id', $this->schoolId())->get();
-        $exam = Exam::find(Request::input('examId'));
-        abort_if(
-            !$exam,
-            Constant::NOT_FOUND,
-            __('messages.score.exam_not_found')
-        );
-        $examSubjectIds = explode(',', $exam->subject_ids);
-        foreach ($records as $record) {
-            $basic = [
-                'class'        => $record['A'],
-                'sn'           => $record['B'],
-                'student_name' => $record['C'],
-                'exam_id'      => Request::input('examId'),
-            ];
-            $index = 'D';
-            foreach ($subjects as $subject) {
-                if (!in_array($subject->id, $examSubjectIds)) continue;
-                $data[] = array_merge(
-                    $basic, [
-                        'subject_id' => $subject->id,
-                        'score'      => floatval($record[$index]),
-                    ]
-                );
-                $index = chr(ord($index) + 1);
+     
+        try {
+            $records = $this->records(false);
+            $titles = $records[0];
+            array_shift($records);
+            $subjectNames = [];
+            for ($i = ord('D'); $i < ord('D') + sizeof($titles) - 3; $i++) {
+                $subjectNames[] = $titles[chr($i)];
             }
+            $subjects = Subject::whereIn('name', $subjectNames)
+                ->where('school_id', $this->schoolId())->get();
+            throw_if(
+                !$exam = Exam::find(Request::input('examId')),
+                new Exception(__('messages.score.exam_not_found'))
+            );
+            $examSubjectIds = explode(',', $exam->subject_ids);
+            foreach ($records as $record) {
+                $basic = [
+                    'class'        => $record['A'],
+                    'sn'           => $record['B'],
+                    'student_name' => $record['C'],
+                    'exam_id'      => Request::input('examId'),
+                ];
+                $index = 'D';
+                foreach ($subjects as $subject) {
+                    if (!in_array($subject->id, $examSubjectIds)) continue;
+                    $data[] = array_merge(
+                        $basic, [
+                            'subject_id' => $subject->id,
+                            'score'      => floatval($record[$index]),
+                        ]
+                    );
+                    $index = chr(ord($index) + 1);
+                }
+            }
+            ImportScore::dispatch(
+                $data ?? [], Auth::id(), Request::input('classId')
+            );
+        } catch (Exception $e) {
+            throw $e;
         }
-        ImportScore::dispatch(
-            $data ?? [], Auth::id(), Request::input('classId')
-        );
         
         return true;
         

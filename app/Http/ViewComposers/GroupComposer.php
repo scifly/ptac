@@ -10,11 +10,9 @@ use Illuminate\Contracts\View\View;
  */
 class GroupComposer {
     
-    /**
-     * @param View $view
-     */
+    /** @param View $view */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new Group)->compose()
         );

@@ -133,7 +133,7 @@ class HomeWorkController extends Controller {
      * @return Factory|View
      * @throws Exception
      */
-    private function html5pay() {
+    function html5pay() {
     
         // return $this->hw->wIndex();
         if (Request::method() == 'POST') {

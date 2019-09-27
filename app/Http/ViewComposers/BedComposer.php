@@ -16,7 +16,7 @@ class BedComposer {
      * @throws ReflectionException
      */
     public function compose(View $view) {
-    
+        
         $view->with(
             (new Bed)->compose()
         );

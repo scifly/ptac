@@ -184,21 +184,28 @@ class Corp extends Model {
      */
     function modify(array $data, $id) {
         
-        try {
-            DB::transaction(function () use ($data, $id) {
-                throw_if(
-                    !$corp = $this->find($id),
-                    new Exception(__('messages.not_found'))
-                );
-                $corp->update($data);
+        return $this->revise(
+            $this, $data, $id,
+            function ($corp) {
                 (new Department)->alter($corp, 'company');
                 (new Menu)->alter($corp, 'company');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+            }
+        );
+        // try {
+        //     DB::transaction(function () use ($data, $id) {
+        //         throw_if(
+        //             !$corp = $this->find($id),
+        //             new Exception(__('messages.not_found'))
+        //         );
+        //         $corp->update($data);
+        //         (new Department)->alter($corp, 'company');
+        //         (new Menu)->alter($corp, 'company');
+        //     });
+        // } catch (Exception $e) {
+        //     throw $e;
+        // }
+        //
+        // return true;
         
     }
     
@@ -256,7 +263,7 @@ class Corp extends Model {
     
     /**
      * @return array
-     * @throws Exception
+     * @throws Throwable
      */
     function compose() {
         
