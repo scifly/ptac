@@ -24,8 +24,7 @@ class ExamTypeController extends Controller {
     function __construct(ExamType $et) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->et = $et;
-        $this->approve($et);
+        $this->approve($this->et = $et);
         
     }
     
