@@ -173,8 +173,8 @@ class Controller extends BaseController {
                     __('messages.not_found')
                 );
             }
-            $class = get_class($model);
-            $this->authorize($action, [$object ?? $class, $class]);
+            
+            $this->authorize($action, [$object ?? get_class($model)]);
             
             return $next($request);
         });
