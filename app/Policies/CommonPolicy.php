@@ -18,9 +18,10 @@ class CommonPolicy {
     /**
      * @param User $user
      * @param Model $model
+     * @param string $class
      * @return bool
      */
-    function operation(User $user, Model $model = null) {
+    function operation(User $user, Model $model = null, string $class = null) {
         
         $perm = true;
         [$schoolId, $userId, $ids] = array_map(
