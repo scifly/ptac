@@ -24,10 +24,15 @@ class ExamPolicy {
 
         [$subjectIds, $classIds, $examTypeId] = array_map(
             function ($field) use ($exam) {
-                return explode(',', $this->field($field, $exam));
+                return $this->field($field, $exam);
             }, ['subject_ids', 'class_ids', 'exam_type_id']
         );
         if (isset($subjectIds, $classIds, $examTypeId)) {
+            [$subjectIds, $classIds, $examTypeId] = array_map(
+                function ($ids) {
+                    return explode(',', $ids);
+                }, [$subjectIds, $classIds, $examTypeId]
+            );
             $schoolId = $this->schoolId();
             $perm = Subject::whereSchoolId($schoolId)->pluck('id')->flip()->has($subjectIds)
                 && ExamType::whereSchoolId($schoolId)->pluck('id')->flip()->has($examTypeId)
