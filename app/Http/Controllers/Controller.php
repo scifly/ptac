@@ -165,7 +165,6 @@ class Controller extends BaseController {
     protected function approve(Model $model, $action = 'operation') {
         
         $this->middleware(function ($request, $next) use ($model, $action) {
-            $args = [$class = get_class($model)];
             /** @var \Illuminate\Http\Request $request */
             if ($id = $request->route('id')) {
                 abort_if(
@@ -173,9 +172,8 @@ class Controller extends BaseController {
                     Constant::NOT_FOUND,
                     __('messages.not_found')
                 );
-                $args = [$class, $class];
             }
-            $this->authorize($action, $args);
+            $this->authorize($action, [$object ?? get_class($model)]);
             
             return $next($request);
         });
