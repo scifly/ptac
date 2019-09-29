@@ -17,14 +17,13 @@ class CameraController extends Controller {
     protected $camera;
     
     /**
-     * TurnstileController constructor.
+     * CameraController constructor.
      * @param Camera $camera
      */
     function __construct(Camera $camera) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->camera = $camera;
-        Request::has('ids') ?: $this->approve($camera);
+        $this->approve($this->camera = $camera);
         
     }
     

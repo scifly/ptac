@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GroupRequest;
 use App\Models\Group;
-use App\Models\Menu;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -22,14 +21,11 @@ class GroupController extends Controller {
     /**
      * GroupController constructor.
      * @param Group $group
-     * @param Menu $menu
      */
-    function __construct(Group $group, Menu $menu) {
+    function __construct(Group $group) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->group = $group;
-        $this->menu = $menu;
-        $this->approve($group);
+        $this->approve($this->group = $group);
         
     }
     

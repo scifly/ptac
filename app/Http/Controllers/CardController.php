@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Card;
-use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -11,7 +10,7 @@ use Throwable;
 /**
  * 一卡通
  *
- * Class CorpController
+ * Class CardController
  * @package App\Http\Controllers
  */
 class CardController extends Controller {
@@ -19,7 +18,7 @@ class CardController extends Controller {
     protected $card;
     
     /**
-     * CorpController constructor.
+     * CardController constructor.
      * @param Card $card
      */
     function __construct(Card $card) {

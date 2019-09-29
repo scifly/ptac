@@ -27,9 +27,8 @@ class SchoolController extends Controller {
     function __construct(School $school, Message $message) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->school = $school;
         $this->message = $message;
-        Request::has('ids') ?: $this->approve($school);
+        $this->approve($this->school = $school);
         
     }
     

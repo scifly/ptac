@@ -24,8 +24,7 @@ class MessageTypeController extends Controller {
     function __construct(MessageType $mt) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->mt = $mt;
-        $this->approve($mt);
+        $this->approve($this->mt = $mt);
         
     }
     

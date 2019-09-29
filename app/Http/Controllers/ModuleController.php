@@ -11,7 +11,7 @@ use Throwable;
 /**
  * 应用模块
  *
- * Class WapSiteModuleController
+ * Class ModuleController
  * @package App\Http\Controllers
  */
 class ModuleController extends Controller {
@@ -19,14 +19,13 @@ class ModuleController extends Controller {
     protected $module;
     
     /**
-     * WapSiteModuleController constructor.
+     * ModuleController constructor.
      * @param Module $module
      */
     public function __construct(Module $module) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->module = $module;
-        $this->approve($module);
+        $this->approve($this->module = $module);
         
     }
     

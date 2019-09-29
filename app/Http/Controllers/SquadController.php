@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SquadRequest;
-use App\Models\Educator;
 use App\Models\Squad;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -17,19 +16,16 @@ use Throwable;
  */
 class SquadController extends Controller {
     
-    protected $class, $educator;
+    protected $class;
     
     /**
      * SquadController constructor.
      * @param Squad $class
-     * @param Educator $educator
      */
-    public function __construct(Squad $class, Educator $educator) {
+    public function __construct(Squad $class) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->class = $class;
-        $this->educator = $educator;
-        $this->approve($class);
+        $this->approve($this->class = $class);
         
     }
     

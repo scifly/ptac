@@ -213,7 +213,7 @@ class Module extends Model {
         
         $upload = (new Media)->upload(
             Request::file('file'),
-            __('messages.wap_site_module.title')
+            __('messages.module.title')
         );
         
         return response()->json($upload);

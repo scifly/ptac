@@ -23,8 +23,7 @@ class PassageLogController extends Controller {
     function __construct(PassageLog $pl) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->pl = $pl;
-        $this->approve($pl);
+        $this->approve($this->pl = $pl);
         
     }
     

@@ -22,11 +22,13 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read MediaType $mediaType
- * @property-read WapSiteModule $wapsitemoudle
- * @property-read WsmArticle $wasmarticle
  * @property-read Collection|Menu[] $menus
- * @property-read WapSiteModule $wapSiteModule
- * @property-read WsmArticle $wsmArticle
+ * @property-read int|null $menus_count
+ * @property-read Collection|Article[] $articles
+ * @property-read int|null $articles_count
+ * @property-read MediaType $mType
+ * @property-read Collection|Column[] $columns
+ * @property-read int|null $columns_count
  * @method static Builder|Media whereCreatedAt($value)
  * @method static Builder|Media whereEnabled($value)
  * @method static Builder|Media whereId($value)
@@ -37,12 +39,6 @@ use Throwable;
  * @method static Builder|Media newModelQuery()
  * @method static Builder|Media newQuery()
  * @method static Builder|Media query()
- * @property-read int|null $menus_count
- * @property-read Collection|WsmArticle[] $articles
- * @property-read int|null $articles_count
- * @property-read MediaType $mType
- * @property-read Collection|WapSiteModule[] $wsms
- * @property-read int|null $wsms_count
  */
 class Media extends Model {
     
@@ -54,10 +50,10 @@ class Media extends Model {
     function mType() { return $this->belongsTo('App\Models\MediaType', 'media_type_id'); }
     
     /** @return HasMany */
-    function wsms() { return $this->hasMany('App\Models\WapSiteModule'); }
+    function columns() { return $this->hasMany('App\Models\Column'); }
     
     /** @return HasMany */
-    function articles() { return $this->hasMany('App\Models\WsmArticle'); }
+    function articles() { return $this->hasMany('App\Models\Article'); }
     
     /** @return HasMany */
     function menus() { return $this->hasMany('App\Models\Menu'); }
@@ -103,8 +99,8 @@ class Media extends Model {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
                 Request::replace(['ids' => $ids]);
-                $this->purge(['WapSite', 'WsmArticle', 'Message'], 'media_ids', 'clear');
-                $this->purge(['WapSiteModule', 'WsmArticle'], ['media_id', 'thumbnail_media_id'], 'reset');
+                $this->purge(['Wap', 'Article', 'Message'], 'media_ids', 'clear');
+                $this->purge(['Column', 'Article'], ['media_id', 'media_id'], 'reset');
                 $this->purge(['Media'], 'id');
                 array_map(function ($id) { Storage::disk('uploads')->delete($this->find($id)->path); }, $ids);
             });

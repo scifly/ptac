@@ -25,8 +25,7 @@ class CompanyController extends Controller {
     function __construct(Company $company) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->company = $company;
-        $this->approve($company);
+        $this->approve($this->company = $company);
         
     }
     

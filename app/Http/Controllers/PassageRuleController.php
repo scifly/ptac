@@ -18,14 +18,13 @@ class PassageRuleController extends Controller {
     protected $pr;
     
     /**
-     * PassageLogController constructor.
+     * PassageRuleController constructor.
      * @param PassageRule $pr
      */
     function __construct(PassageRule $pr) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->pr = $pr;
-        $this->approve($pr);
+        $this->approve($this->pr = $pr);
         
     }
     

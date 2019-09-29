@@ -29,9 +29,9 @@ class UserController extends Controller {
     function __construct(User $user, Message $message, Event $event) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->user = $user;
         $this->message = $message;
         $this->event = $event;
+        $this->user = $user;
         
     }
     

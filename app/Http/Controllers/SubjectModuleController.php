@@ -24,8 +24,7 @@ class SubjectModuleController extends Controller {
     function __construct(SubjectModule $sm) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->sm = $sm;
-        $this->approve($sm);
+        $this->approve($this->sm = $sm);
         
     }
     

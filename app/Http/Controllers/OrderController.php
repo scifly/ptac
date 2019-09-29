@@ -1,10 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\Constant;
 use App\Http\Requests\OrderRequest;
 use App\Models\Order;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -26,7 +24,7 @@ class OrderController extends Controller {
     function __construct(Order $order) {
         
         $this->middleware(['auth']);
-        $this->order = $order;
+        $this->approve($this->order = $order);
         
     }
     
@@ -69,14 +67,8 @@ class OrderController extends Controller {
      */
     public function show($id) {
         
-        abort_if(
-            !($order = $this->order->find($id)),
-            Constant::NOT_FOUND,
-            __('messages.not_found')
-        );
-        
         return $this->output([
-            'order' => $order,
+            'order' => $this->order->find($id),
         ]);
         
     }
@@ -87,17 +79,12 @@ class OrderController extends Controller {
      * @param OrderRequest $request
      * @param $id
      * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function update(OrderRequest $request, $id) {
         
-        abort_if(
-            !($order = $this->order->find($id)),
-            Constant::NOT_FOUND,
-            __('messages.not_found')
-        );
-        
-        return $order->update(
-            $request->all()
+        return $this->order->modify(
+            $request->all(), $id
         );
         
     }
@@ -107,18 +94,12 @@ class OrderController extends Controller {
      *
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         
-        abort_if(
-            !($order = $this->order->find($id)),
-            Constant::NOT_FOUND,
-            __('messages.not_found')
-        );
-        
         return $this->result(
-            $order->delete()
+            $this->order->remove($id)
         );
         
     }

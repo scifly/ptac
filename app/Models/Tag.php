@@ -275,7 +275,7 @@ class Tag extends Model {
         
         $tags = $this->whereSchoolId($schoolId ?? $this->schoolId())->get();
         if (!in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
-            $userIds = collect(explode(',', $this->visibleUserIds()));
+            $userIds = collect(explode(',', $this->visibleUserIds()))->flip();
             $deptIds = $this->departmentIds();
             $tags->filter(function (Tag $tag) use ($userIds, $deptIds) {
                 return $userIds->has($tag->users->pluck('id')) &&

@@ -1,9 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\Constant;
 use App\Http\Requests\TabRequest;
-use App\Models\Menu;
 use App\Models\Tab;
 use Exception;
 use Illuminate\Http\JsonResponse;

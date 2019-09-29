@@ -24,8 +24,7 @@ class SemesterController extends Controller {
     function __construct(Semester $semester) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->semester = $semester;
-        $this->approve($semester);
+        $this->approve($this->semester = $semester);
         
     }
     

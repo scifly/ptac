@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Models\{Media, WapSite, WapSiteModule, WsmArticle};
+use App\Models\{Article, Column, Media, Wap};
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\{Auth, Request};
@@ -41,25 +41,25 @@ class MobileComposer {
                     new Exception(__('messages.unauthorized'))
                 );
                 throw_if(
-                    !($wapSite = WapSite::whereSchoolId(session('schoolId'))->first()),
+                    !($wap = Wap::whereSchoolId(session('schoolId'))->first()),
                     new Exception(__('messages.not_found'))
                 );
                 $data = [
-                    'wapsite' => $wapSite,
-                    'medias'  => Media::whereIn('id', explode(',', $wapSite->media_ids))->get(),
+                    'wap'    => $wap,
+                    'medias' => Media::whereIn('id', explode(',', $wap->media_ids))->get(),
                 ];
-            } elseif ($action == 'module') {
+            } elseif ($action == 'column') {
                 $id = Request::input('id');
-                $articles = WsmArticle::where(['wsm_id' => $id, 'enabled' => 1])
+                $articles = Article::where(['column_id' => $id, 'enabled' => 1])
                     ->orderByDesc("created_at")->get();
                 $data = [
                     'articles' => $articles,
-                    'module'   => (new WapSiteModule)->find($id),
+                    'col'      => (new Column)->find($id),
                     'ws'       => true,
                 ];
             } else {
                 $id = Request::input('id');
-                $article = (new WsmArticle)->find($id);
+                $article = (new Article)->find($id);
                 $data = [
                     'article' => $article,
                     'medias'  => $this->media->whereIn(

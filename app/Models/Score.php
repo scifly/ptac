@@ -789,9 +789,8 @@ class Score extends Model {
             ->pluck('name')->toArray();
         $rows[] = array_merge(['班级', '学号', '姓名'], $subjects);
         if (!$classId) {
-            $classIds = array_intersect(
-                explode(',', $exam ? $exam->class_ids : ''),
-                $this->classIds()
+            $classIds = $this->classIds()->intersect(
+                explode(',', $exam ? $exam->class_ids : '')
             );
             $classId = $classIds[0] ?? null;
         }
@@ -1234,8 +1233,8 @@ class Score extends Model {
         $classId = Request::input('classId');
         $student = Student::find($studentId);
         abort_if(
-            !$this->contactIds('student')->has($studentId) ||
-            !in_array($classId, $this->classIds()) || !$student,
+            !$this->contactIds('student')->flip()->has($studentId) ||
+            !$this->classIds()->flip()->has($classId) || !$student,
             Constant::UNAUTHORIZED,
             __('messages.score.unauthorized_stat')
         );

@@ -25,8 +25,7 @@ class CustodianController extends Controller {
     function __construct(Custodian $custodian) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->custodian = $custodian;
-        Request::has('ids') ?: $this->approve($custodian);
+        $this->approve($this->custodian = $custodian);
         
     }
     

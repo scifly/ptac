@@ -59,7 +59,14 @@ $routes = [
         'update' => ['{id}' => 'put'],
     ],
     'app'             => $default,
-    'bed'             => $default,
+    'article'     => [
+        'index'   => ['get'],
+        'create'  => ['get', 'post'],
+        'store'   => ['post'],
+        'edit'    => ['{id}' => ['get', 'post']],
+        'update'  => ['{id}' => 'put'],
+        'destroy' => ['{id}' => 'delete'],
+    ],    'bed'             => $default,
     'building'        => $default,
     'camera'          => [
         'index' => ['get'],
@@ -67,6 +74,14 @@ $routes = [
     ],
     'card'            => $default,
     'class'           => $default,
+    'column' => [
+        'index'   => ['get'],
+        'create'  => ['get', 'post'],
+        'store'   => ['post'],
+        'edit'    => ['{id}' => ['get', 'post']],
+        'update'  => ['{id}' => 'put'],
+        'destroy' => ['{id}' => 'delete'],
+    ],
     'combo_type'      => $default,
     'company'         => $default,
     'consumption'     => [
@@ -272,26 +287,10 @@ $routes = [
         'reset'  => ['get', 'post'],
         'info'   => ['get'],
     ],
-    'wap_site'        => [
+    'wap'        => [
         'index'  => ['get'],
         'edit'   => ['{id}' => ['get', 'post']],
         'update' => ['{id}' => 'put'],
-    ],
-    'wap_site_module' => [
-        'index'   => ['get'],
-        'create'  => ['get', 'post'],
-        'store'   => ['post'],
-        'edit'    => ['{id}' => ['get', 'post']],
-        'update'  => ['{id}' => 'put'],
-        'destroy' => ['{id}' => 'delete'],
-    ],
-    'wsm_article'     => [
-        'index'   => ['get'],
-        'create'  => ['get', 'post'],
-        'store'   => ['post'],
-        'edit'    => ['{id}' => ['get', 'post']],
-        'update'  => ['{id}' => 'put'],
-        'destroy' => ['{id}' => 'delete'],
     ],
     # 演示(微信端)
     'demo'            => [
@@ -317,7 +316,7 @@ $routes = [
     ],
     'mobile'    => [
         'index'   => ['get'],
-        'module'  => ['get'],
+        'column'  => ['get'],
         'article' => ['get'],
     ],
     'mark'      => [

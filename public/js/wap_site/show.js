@@ -1,1 +1,0 @@
-page.show('wap_sites');

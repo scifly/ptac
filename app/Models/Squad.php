@@ -148,7 +148,7 @@ class Squad extends Model {
                 ],
             ],
         ];
-        $condition = 'Squad.id IN (' . join(',', $this->classIds()) . ')';
+        $condition = 'Squad.id IN (' . $this->classIds()->join(',') . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition

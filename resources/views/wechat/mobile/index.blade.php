@@ -6,7 +6,7 @@
 @section('content')
     <header class="wechat-header">
         <h1 class="wechat-title">
-            {!! $wapsite->school->name !!}
+            {!! $wap->school->name !!}
         </h1>
         <p class="wechat-sub-title">微网站</p>
     </header>
@@ -26,14 +26,14 @@
     </div>
     <!--九宫格图标-->
     <div class="weui-grids">
-        @foreach ($wapsite->wapSiteModules as $module)
-            <a href="{!! url(session('acronym') . '/mobiles/module?id=' . $module->id) !!}"
+        @foreach ($wap->columns as $column)
+            <a href="{!! url(session('acronym') . '/mobiles/module?id=' . $column->id) !!}"
                class="weui-grid js_grid"
             >
                 <div class=" weui-grid__icon">
-                    <img src="../{!! $module->media->path !!}" alt="">
+                    <img src="../{!! $column->media->path !!}" alt="">
                 </div>
-                <p class="weui-grid__label">{!! $module->name !!}</p>
+                <p class="weui-grid__label">{!! $column->name !!}</p>
             </a>
         @endforeach
     </div>

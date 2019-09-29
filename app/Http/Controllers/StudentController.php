@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
-use App\Models\{Grade, Student};
+use App\Models\Student;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -17,19 +17,16 @@ use Throwable;
  */
 class StudentController extends Controller {
     
-    protected $student, $grade;
+    protected $student;
     
     /**
      * StudentController constructor.
      * @param Student $student
-     * @param Grade $grade
      */
-    function __construct(Student $student, Grade $grade) {
+    function __construct(Student $student) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->student = $student;
-        $this->grade = $grade;
-        Request::has('ids') ?: $this->approve($student);
+        $this->approve($this->student = $student);
         
     }
     

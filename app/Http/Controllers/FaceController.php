@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Face;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -24,8 +23,7 @@ class FaceController extends Controller {
     function __construct(Face $face) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->face = $face;
-        $this->approve(new User);
+        $this->approve($this->face = $face);
         
     }
     

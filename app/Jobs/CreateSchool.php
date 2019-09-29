@@ -2,7 +2,7 @@
 namespace App\Jobs;
 
 use App\Helpers\{Broadcaster, Constant, JobTrait};
-use App\Models\{Action, Group, Icon, Menu, MenuTab, MenuType, School, Tab, WapSite};
+use App\Models\{Action, Group, Icon, Menu, MenuTab, MenuType, School, Tab, Wap};
 use Exception;
 use Illuminate\{Bus\Queueable,
     Contracts\Queue\ShouldQueue,
@@ -118,9 +118,9 @@ class CreateSchool implements ShouldQueue {
             DB::transaction(function () {
                 $position = Menu::all()->max('position');
                 # 创建学校微网站
-                WapSite::create([
+                Wap::create([
                     'school_id'  => $this->school->id,
-                    'site_title' => $this->school->name,
+                    'name' => $this->school->name,
                     'media_ids'  => '0',
                     'enabled'    => Constant::ENABLED,
                 ]);

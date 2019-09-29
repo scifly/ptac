@@ -24,8 +24,7 @@ class FlowTypeController extends Controller {
     function __construct(FlowType $flowType) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->flowType = $flowType;
-        $this->approve($flowType);
+        $this->approve($this->flowType = $flowType);
         
     }
     

@@ -18,14 +18,13 @@ class PrizeController extends Controller {
     protected $prize;
     
     /**
-     * IndicatorController constructor.
+     * PrizeController constructor.
      * @param Prize $prize
      */
     function __construct(Prize $prize) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->prize = $prize;
-        $this->approve($prize);
+        $this->approve($this->prize = $prize);
         
     }
     

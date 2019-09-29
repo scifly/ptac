@@ -16,16 +16,16 @@ use Throwable;
  */
 class OperatorController extends Controller {
     
-    protected $user;
+    protected $operator;
     
     /**
      * OperatorController constructor.
-     * @param User $user
+     * @param User $operator
      */
-    function __construct(User $user) {
+    function __construct(User $operator) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->approve($this->user = $user);
+        $this->approve($this->operator = $operator);
         
     }
     
@@ -38,7 +38,7 @@ class OperatorController extends Controller {
     public function index() {
         
         return Request::get('draw')
-            ? response()->json($this->user->index())
+            ? response()->json($this->operator->index())
             : $this->output();
         
     }
@@ -52,7 +52,7 @@ class OperatorController extends Controller {
     public function create() {
         
         return Request::method() == 'POST'
-            ? $this->user->csList()
+            ? $this->operator->csList()
             : $this->output();
         
     }
@@ -68,7 +68,7 @@ class OperatorController extends Controller {
     public function store(OperatorRequest $request) {
         
         return $this->result(
-            $this->user->store(
+            $this->operator->store(
                 $request->all()
             )
         );
@@ -85,8 +85,8 @@ class OperatorController extends Controller {
     public function edit($id) {
         
         return Request::method() == 'POST'
-            ? $this->user->csList()
-            : $this->output(['operator' => $this->user->find($id)]);
+            ? $this->operator->csList()
+            : $this->output(['operator' => $this->operator->find($id)]);
         
     }
     
@@ -102,7 +102,7 @@ class OperatorController extends Controller {
     public function update(OperatorRequest $request, $id = null) {
         
         return $this->result(
-            $this->user->modify(
+            $this->operator->modify(
                 $request->all(), $id
             )
         );
@@ -119,7 +119,7 @@ class OperatorController extends Controller {
     public function destroy($id = null) {
         
         return $this->result(
-            $this->user->remove($id)
+            $this->operator->remove($id)
         );
         
     }

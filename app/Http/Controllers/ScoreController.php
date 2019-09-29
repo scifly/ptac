@@ -26,9 +26,8 @@ class ScoreController extends Controller {
     public function __construct(Score $score, Exam $exam) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->score = $score;
         $this->exam = $exam;
-        Request::has('ids') ?: $this->approve($score);
+        $this->approve($this->score = $score);
         
     }
     

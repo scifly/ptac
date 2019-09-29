@@ -194,7 +194,7 @@ class Face extends Model {
         
         $upload = (new Media)->upload(
             Request::file('file'),
-            __('messages.wap_site_module.title')
+            __('messages.column.title')
         );
         
         return response()->json($upload);

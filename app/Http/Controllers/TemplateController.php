@@ -16,16 +16,16 @@ use Throwable;
  */
 class TemplateController extends Controller {
 
-    protected $template;
+    protected $tpl;
     
     /**
      * TemplateController constructor.
-     * @param Template $template
+     * @param Template $tpl
      */
-    function __construct(Template $template) {
+    function __construct(Template $tpl) {
 
         $this->middleware(['auth', 'checkrole']);
-        $this->template = $template;
+        $this->approve($this->tpl = $tpl);
         
     }
     
@@ -38,7 +38,7 @@ class TemplateController extends Controller {
     function index() {
     
         return Request::get('draw')
-            ? response()->json($this->template->index())
+            ? response()->json($this->tpl->index())
             : $this->output();
         
     }
@@ -65,7 +65,7 @@ class TemplateController extends Controller {
     function store(TemplateRequest $request) {
         
         return $this->result(
-            $this->template->config($request)
+            $this->tpl->config($request)
         );
 
     }
@@ -79,7 +79,7 @@ class TemplateController extends Controller {
     function fetch() {
         
         return $this->result(
-            $this->template->fetch(),
+            $this->tpl->fetch(),
             __('messages.template.started')
         );
         
@@ -95,7 +95,7 @@ class TemplateController extends Controller {
     function destroy($id = null) {
     
         return $this->result(
-            $this->template->remove($id)
+            $this->tpl->remove($id)
         );
     
     }

@@ -58,8 +58,8 @@ use Throwable;
  * @property-read Collection|Semester[] $semesters
  * @property-read Collection|Subject[] $subjects
  * @property-read Collection|Tag[] $tags
- * @property-read WapSite $wapSite
- * @property-read Collection|WapSiteModule[] $modules
+ * @property-read Wap $wap
+ * @property-read Collection|Column[] $modules
  * @property-read Collection|PassageLog[] $passageLogs
  * @property-read Collection|PassageRule[] $passageRules
  * @property-read App|null $app
@@ -112,6 +112,8 @@ use Throwable;
  * @property-read int|null $combo_types_count
  * @property-read Collection|Prize[] $prizes
  * @property-read int|null $prizes_count
+ * @property-read Collection|Column[] $columns
+ * @property-read int|null $columns_count
  */
 class School extends Model {
     
@@ -184,30 +186,16 @@ class School extends Model {
     function examTypes() { return $this->hasMany('App\Models\ExamType'); }
     
     /** @return HasManyThrough */
-    function exams() {
-        
-        return $this->hasManyThrough(
-            'App\Models\Exam',
-            'App\Models\ExamType'
-        );
-    
-    }
+    function exams() { return $this->hasManyThrough('App\Models\Exam', 'App\Models\ExamType'); }
     
     /** @return HasMany */
     function educators() { return $this->hasMany('App\Models\Educator'); }
     
     /** @return HasOne */
-    function wapSite() { return $this->hasOne('App\Models\WapSite'); }
+    function wap() { return $this->hasOne('App\Models\Wap'); }
     
     /** @return HasManyThrough */
-    function modules() {
-        
-        return $this->hasManyThrough(
-            'App\Models\WapSiteModule',
-            'App\Models\WapSite'
-        );
-    
-    }
+    function columns() { return $this->hasManyThrough('App\Models\Column', 'App\Models\Wap'); }
     
     /** @return HasManyThrough */
     function classes() {
@@ -403,7 +391,7 @@ class School extends Model {
                     'ConferenceRoom', 'ComboType', 'ExamType',
                     'Grade', 'Group', 'Major', 'Module',
                     'Poll', 'FlowType', 'Semester',
-                    'Subject', 'Tag', 'WapSite',
+                    'Subject', 'Tag', 'Wap',
                 ];
                 array_map(
                     function ($class) use ($ids) {

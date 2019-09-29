@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorRequest;
-use App\Models\{Custodian, Department, Educator, Message, School};
+use App\Models\{Custodian, Department, Educator, Message};
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -17,31 +17,27 @@ use Throwable;
  */
 class EducatorController extends Controller {
     
-    protected $educator, $department, $school, $custodian, $message;
+    protected $educator, $dept, $custodian, $msg;
     
     /**
      * EducatorController constructor.
      * @param Educator $educator
-     * @param Department $department
-     * @param School $school
+     * @param Department $dept
      * @param Custodian $custodian
-     * @param Message $message
+     * @param Message $msg
      */
     public function __construct(
         Educator $educator,
-        Department $department,
-        School $school,
+        Department $dept,
         Custodian $custodian,
-        Message $message
+        Message $msg
     ) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->educator = $educator;
-        $this->department = $department;
-        $this->school = $school;
+        $this->dept = $dept;
         $this->custodian = $custodian;
-        $this->message = $message;
-        Request::has('ids') ?: $this->approve($educator);
+        $this->msg = $msg;
+        $this->approve($this->educator = $educator);
         
     }
     
@@ -71,7 +67,7 @@ class EducatorController extends Controller {
             ? (
                 Request::has('field')
                 ? $this->custodian->csList()
-                : $this->department->contacts(false)
+                : $this->dept->contacts(false)
             )
             : $this->output();
         
@@ -106,7 +102,7 @@ class EducatorController extends Controller {
             ? (
                 Request::has('field')
                 ? $this->custodian->csList()
-                : $this->department->contacts(false)
+                : $this->dept->contacts(false)
             )
             : $this->output();
         
@@ -140,7 +136,7 @@ class EducatorController extends Controller {
     public function recharge($id) {
     
         return Request::get('draw')
-            ? response()->json($this->message->sms('educator', $id))
+            ? response()->json($this->msg->sms('educator', $id))
             : (
             Request::method() == 'PUT'
                 ? $this->educator->recharge($id, Request::all())
@@ -175,8 +171,7 @@ class EducatorController extends Controller {
     
         return $this->result(
             $this->educator->import(),
-            __('messages.import_started'),
-            __('messages.file_upload_failed')
+            __('messages.import_started')
         );
         
     }

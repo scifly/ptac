@@ -27,9 +27,8 @@ class MenuController extends Controller {
     function __construct(Menu $menu, MenuTab $mt) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->menu = $menu;
         $this->mt = $mt;
-        $this->approve($menu);
+        $this->approve($this->menu = $menu);
         
     }
     

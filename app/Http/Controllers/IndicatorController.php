@@ -24,8 +24,7 @@ class IndicatorController extends Controller {
     function __construct(Indicator $indicator) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->indicator = $indicator;
-        $this->approve($indicator);
+        $this->approve($this->indicator = $indicator);
         
     }
     

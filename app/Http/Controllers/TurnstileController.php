@@ -23,8 +23,7 @@ class TurnstileController extends Controller {
     function __construct(Turnstile $turnstile) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->turnstile = $turnstile;
-        Request::has('ids') ?: $this->approve($turnstile);
+        $this->approve($this->turnstile = $turnstile);
         
     }
     

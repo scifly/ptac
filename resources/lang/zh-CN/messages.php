@@ -36,10 +36,10 @@ return [
     'operator'                 => [
         'stored' => '保存超级管理员',
     ],
-    'action' => [
-        'title' => '功能',
-        'not_found' => '没有这个功能',
-        'misconfigured' => '功能配置错误'
+    'action'                   => [
+        'title'         => '功能',
+        'not_found'     => '没有这个功能',
+        'misconfigured' => '功能配置错误',
     ],
     'app'                      => [
         'title'      => '应用管理',
@@ -47,14 +47,16 @@ return [
         'not_found'  => '找不到指定的应用',
         'submitted'  => '已提交应用设置请求',
     ],
-    'turnstile'                => [
-        'title'     => '门禁管理',
-        'not_found' => '该门禁没有注册',
+    'article'                  => [
+        'title' => '微网站文章',
     ],
     'class'                    => [
         'title'              => '班级管理',
         'not_found'          => '未找到该班级的相关信息',
         'no_related_classes' => '您尚未绑定任何班级',
+    ],
+    'column'                   => [
+        'title' => '微网站栏目',
     ],
     'custodian'                => [
         'title'            => '监护人',
@@ -112,6 +114,9 @@ return [
         'submitted'        => '已提交消息发送请求',
         'preview'          => '消息预览已发送至你的手机微信，请打开相关应用查看',
     ],
+    'module'                   => [
+        'title' => '应用模块',
+    ],
     'passage_log'              => [
         'title'     => '通行记录',
         'submitted' => '已发送采集请求。数据采集完成后请重新加载当前页面',
@@ -162,9 +167,9 @@ return [
         'title'        => '短信充值',
         'insufficient' => '(上级)余额不足',
     ],
-    'tab' => [
-        'title' => '控制器(卡片)',
-        'not_found' => '没有这个控制器'
+    'tab'                      => [
+        'title'     => '控制器(卡片)',
+        'not_found' => '没有这个控制器',
     ],
     'template'                 => [
         'title'     => '消息模板',
@@ -172,6 +177,10 @@ return [
         'completed' => '消息模板下载完成',
         'failed'    => '操作失败',
         'not_found' => '找不到这个模板',
+    ],
+    'turnstile'                => [
+        'title'     => '门禁管理',
+        'not_found' => '该门禁没有注册',
     ],
     'user'                     => [
         'not_found'  => '没有这个用户',
@@ -181,13 +190,7 @@ return [
         'v_sent'     => '验证码已发送，请在30分钟内输入',
         'v_failed'   => '短信发送失败',
     ],
-    'wap_site'                 => [
+    'wap'                      => [
         'title' => '微网站',
-    ],
-    'wap_site_module'          => [
-        'title' => '微网站栏目',
-    ],
-    'wsm_article'              => [
-        'title' => '微网站文章',
     ],
 ];

@@ -24,8 +24,7 @@ class IconController extends Controller {
     function __construct(Icon $icon) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->icon = $icon;
-        $this->approve($icon);
+        $this->approve($this->icon = $icon);
         
     }
     

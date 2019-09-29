@@ -36,9 +36,9 @@ class MobileController extends Controller {
      *
      * @return Factory|View
      */
-    public function module() {
+    public function column() {
         
-        return view('wechat.mobile.module');
+        return view('wechat.mobile.column');
         
     }
     

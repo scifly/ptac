@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GradeRequest;
-use App\Models\Educator;
 use App\Models\Grade;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -16,19 +15,16 @@ use Throwable;
  */
 class GradeController extends Controller {
     
-    protected $grade, $educator;
+    protected $grade;
     
     /**
      * GradeController constructor.
      * @param Grade $grade
-     * @param Educator $educator
      */
-    function __construct(Grade $grade, Educator $educator) {
+    function __construct(Grade $grade) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->grade = $grade;
-        $this->educator = $educator;
-        $this->approve($grade);
+        $this->approve($this->grade = $grade);
         
     }
     

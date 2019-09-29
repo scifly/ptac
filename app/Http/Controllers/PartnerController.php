@@ -19,15 +19,15 @@ class PartnerController extends Controller {
     protected $partner, $message;
     
     /**
-     * OperatorController constructor.
+     * PartnerController constructor.
      * @param User $partner
      * @param ApiMessage $message
      */
     function __construct(User $partner, ApiMessage $message) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->partner = $partner;
         $this->message = $message;
+        $this->approve($this->partner = $partner);
         
     }
     

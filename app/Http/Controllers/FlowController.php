@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FlowRequest;
-use App\Models\{Media, Flow};
+use App\Models\Flow;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -15,18 +15,16 @@ use Throwable;
  */
 class FlowController extends Controller {
     
-    protected $flow, $media;
+    protected $flow;
     
     /**
      * FlowController constructor.
      * @param Flow $flow
-     * @param Media $media
      */
-    function __construct(Flow $flow, Media $media) {
+    function __construct(Flow $flow) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->flow = $flow;
-        $this->media = $media;
+        $this->approve($this->flow = $flow);
         
     }
     

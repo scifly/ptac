@@ -18,7 +18,7 @@ class BedController extends Controller {
     protected $bed;
     
     /**
-     * BuildingController constructor.
+     * BedController constructor.
      * @param Bed $bed
      */
     function __construct(Bed $bed) {

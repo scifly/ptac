@@ -17,19 +17,18 @@ use Throwable;
  */
 class CorpController extends Controller {
     
-    protected $corp, $message;
+    protected $corp, $msg;
     
     /**
      * CorpController constructor.
      * @param Corp $corp
-     * @param Message $message
+     * @param Message $msg
      */
-    function __construct(Corp $corp, Message $message) {
+    function __construct(Corp $corp, Message $msg) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->corp = $corp;
-        $this->message = $message;
-        $this->approve($corp);
+        $this->msg = $msg;
+        $this->approve($this->corp = $corp);
         
     }
     
@@ -119,7 +118,7 @@ class CorpController extends Controller {
     public function recharge($id) {
         
         return Request::get('draw')
-            ? response()->json($this->message->sms('corp', $id))
+            ? response()->json($this->msg->sms('corp', $id))
             : (
             Request::method() == 'PUT'
                 ? $this->corp->recharge($id, Request::all())

@@ -25,8 +25,7 @@ class MajorController extends Controller {
     function __construct(Major $major) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->major = $major;
-        $this->approve($major);
+        $this->approve($this->major = $major);
         
     }
     

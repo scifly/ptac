@@ -26,9 +26,8 @@ class TagController extends Controller {
     public function __construct(Tag $tag, Department $department) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->tag = $tag;
         $this->department = $department;
-        $this->approve($tag);
+        $this->approve($this->tag = $tag);
         
     }
     

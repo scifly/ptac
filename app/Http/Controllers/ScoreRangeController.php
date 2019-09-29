@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ScoreRangeRequest;
 use App\Models\ScoreRange;
-use App\Models\Subject;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Request;
@@ -17,19 +16,16 @@ use Throwable;
  */
 class ScoreRangeController extends Controller {
     
-    protected $sr, $subject;
+    protected $sr;
     
     /**
      * ScoreRangeController constructor.
      * @param ScoreRange $sr
-     * @param Subject $subject
      */
-    function __construct(ScoreRange $sr, Subject $subject) {
+    function __construct(ScoreRange $sr) {
         
         $this->middleware(['auth']);
-        $this->sr = $sr;
-        $this->subject = $subject;
-        $this->approve($sr);
+        $this->approve($this->sr = $sr);
         
     }
     
