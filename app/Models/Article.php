@@ -66,7 +66,7 @@ class Article extends Model {
         
         $columns = [
             ['db' => 'Article.id', 'dt' => 0],
-            ['db' => 'Column.name as cname', 'dt' => 1],
+            ['db' => 'Columns.name as cname', 'dt' => 1],
             ['db' => 'Article.name', 'dt' => 2],
             ['db' => 'Article.summary', 'dt' => 3],
             ['db' => 'Article.created_at', 'dt' => 4],
@@ -81,10 +81,10 @@ class Article extends Model {
         $joins = [
             [
                 'table'      => 'columns',
-                'alias'      => 'Column',
+                'alias'      => 'Columns',
                 'type'       => 'INNER',
                 'conditions' => [
-                    'Column.id = Article.column_id',
+                    'Columns.id = Article.column_id',
                 ],
             ],
             [
@@ -92,7 +92,7 @@ class Article extends Model {
                 'alias'      => 'Wap',
                 'type'       => 'INNER',
                 'conditions' => [
-                    'Wap.id = Column.wap_id',
+                    'Wap.id = Columns.wap_id',
                 ],
             ],
         ];

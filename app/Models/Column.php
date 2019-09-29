@@ -59,13 +59,13 @@ class Column extends Model {
     function index() {
         
         $columns = [
-            ['db' => 'Column.id', 'dt' => 0],
-            ['db' => 'Column.name', 'dt' => 1],
+            ['db' => 'Columns.id', 'dt' => 0],
+            ['db' => 'Columns.name', 'dt' => 1],
             ['db' => 'Wap.name as wname', 'dt' => 2],
-            ['db' => 'Column.created_at', 'dt' => 3],
-            ['db' => 'Column.updated_at', 'dt' => 4],
+            ['db' => 'Columns.created_at', 'dt' => 3],
+            ['db' => 'Columns.updated_at', 'dt' => 4],
             [
-                'db'        => 'Column.enabled', 'dt' => 5,
+                'db'        => 'Columns.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 },
@@ -77,7 +77,7 @@ class Column extends Model {
                 'alias'      => 'Wap',
                 'type'       => 'INNER',
                 'conditions' => [
-                    'Wap.id = Column.wap_id',
+                    'Wap.id = Columns.wap_id',
                 ],
             ],
         ];
