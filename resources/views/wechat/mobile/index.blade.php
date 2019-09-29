@@ -27,7 +27,7 @@
     <!--九宫格图标-->
     <div class="weui-grids">
         @foreach ($wap->columns as $column)
-            <a href="{!! url(session('acronym') . '/mobiles/module?id=' . $column->id) !!}"
+            <a href="{!! url(session('acronym') . '/mobiles/column?id=' . $column->id) !!}"
                class="weui-grid js_grid"
             >
                 <div class=" weui-grid__icon">

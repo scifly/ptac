@@ -316,7 +316,7 @@ $routes = [
     ],
     'mobile'    => [
         'index'   => ['get'],
-        'column'  => ['get'],
+        'module'  => ['get'],
         'article' => ['get'],
     ],
     'mark'      => [
