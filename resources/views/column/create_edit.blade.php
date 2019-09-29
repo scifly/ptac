@@ -35,7 +35,7 @@
                     {!! Form::label(
                         'file-image',
                         Html::tag('i', ' 上传图片', ['class' => 'fa fa-cloud-upload']),
-                        ['class' => 'custom-file-upload text-blue']
+                        ['class' => 'custom-file-upload text-blue'], false
                     ) !!}
                     {!! Form::file('file-image', [
                         'accept' => 'image/*',
