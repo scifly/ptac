@@ -108,11 +108,10 @@ class Wap extends Model {
      */
     function index() {
         
-        $conditions = [
+        $condition = [
             'school_id' => $this->schoolId(),
         ];
-        $wap = $this->where($conditions)->first();
-        if (!$wap) {
+        if (!$wap = $this->where($condition)->first()) {
             $wap = $this->create([
                 'school_id'  => $schoolId = $this->schoolId(),
                 'name' => School::find($schoolId)->name,

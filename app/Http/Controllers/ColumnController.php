@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
- * 微网站栏目
+ * 栏目
  *
  * Class ColumnController
  * @package App\Http\Controllers
