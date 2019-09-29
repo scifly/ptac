@@ -8,7 +8,7 @@ $.getMultiScripts([plugins.fileinput.js])
     $uploadFile.fileinput({
         language: 'zh',
         theme: 'explorer',
-        uploadUrl: page.siteRoot() + "wap_sites/uploadImages",
+        uploadUrl: page.siteRoot() + "waps/uploadImages",
         uploadAsync: false,
         maxFileCount: 5,
         minImageWidth: 50, //图片的最小宽度
