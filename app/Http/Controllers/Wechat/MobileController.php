@@ -8,7 +8,7 @@ use Illuminate\Routing\Redirector;
 use Illuminate\View\View;
 
 /**
- * 微网站
+ * 手机微网站
  *
  * Class MobileController
  * @package App\Http\Controllers\Wechat
@@ -21,7 +21,7 @@ class MobileController extends Controller {
     function __construct() { }
     
     /**
-     * 微网站首页
+     * 首页
      *
      * @return bool|Factory|RedirectResponse|Redirector|View
      */
@@ -32,7 +32,7 @@ class MobileController extends Controller {
     }
     
     /**
-     * 微网站栏目
+     * 栏目
      *
      * @return Factory|View
      */
@@ -43,7 +43,7 @@ class MobileController extends Controller {
     }
     
     /**
-     * 微网站文章
+     * 文章
      *
      * @return Factory|View
      */
