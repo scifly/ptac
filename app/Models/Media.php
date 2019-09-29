@@ -44,6 +44,8 @@ class Media extends Model {
     
     use ModelTrait;
     
+    protected $table = 'medias';
+    
     protected $fillable = ['media_type_id', 'path', 'remark', 'enabled'];
     
     /** @return BelongsTo */
