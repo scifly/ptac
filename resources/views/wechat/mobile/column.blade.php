@@ -8,7 +8,7 @@
 		<h1 class="wechat-title">{!! $col->name !!}</h1>
 		<p class="wechat-sub-title"></p>
 	</header>
-	<div id="main" style="width: 100%;height: auto;">
+	<div id="main" style="width: 100%; height: auto;">
 		<div class="weui-panel weui-panel_access">
 			<div class="weui-panel__bd">
 				@foreach($articles as $article)
@@ -16,10 +16,9 @@
 					   class="weui-media-box weui-media-box_appmsg"
 					>
 						<div class="weui-media-box__hd">
-							<img class="weui-media-box__thumb"
-								 src="../../{!! $article->thumbnailmedia->path !!}"
-								 alt=""
-							>
+							{!! Html::image('../../' . $article->media->path, null, [
+								'class' => 'weui-media-box__thumb'
+							]) !!}
 						</div>
 						<div class="weui-media-box__bd">
 							<h4 class="weui-media-box__title">{!! $article->name !!}</h4>

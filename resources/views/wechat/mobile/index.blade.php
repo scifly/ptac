@@ -14,7 +14,7 @@
         <div class="swiper-wrapper" style="">
             @foreach($medias as $key => $media)
                 <div class="swiper-slide" data-swiper-slide-index="{!! $key !!}">
-                    <img src="../{!! $media->path !!}" alt="">
+                    {!! Html::image('../' . $media->path, null) !!}
                 </div>
             @endforeach
         </div>
@@ -31,7 +31,7 @@
                class="weui-grid js_grid"
             >
                 <div class=" weui-grid__icon">
-                    <img src="../{!! $column->media->path !!}" alt="">
+                    {!! Html::image('../' . $column->media->path, null) !!}
                 </div>
                 <p class="weui-grid__label">{!! $column->name !!}</p>
             </a>

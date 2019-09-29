@@ -29,17 +29,17 @@
                     <div class="preview">
                         {!! Form::hidden('media_id', isset($media) ? $media->id : null) !!}
                         @if (isset($media))
-                            <img src="../../{!! $media->path !!}" id="{!! $media->id !!}" alt="">
+                            {!! Html::image('../../' . $media->path, null, [
+                                'id' => $media->id
+                            ]) !!}
                         @endif
                     </div>
                     {!! Form::label(
-                        'file-image',
-                        Html::tag('i', ' 上传图片', ['class' => 'fa fa-cloud-upload']),
+                        'file-image', Html::tag('i', ' 上传图片', ['class' => 'fa fa-cloud-upload']),
                         ['class' => 'custom-file-upload text-blue'], false
                     ) !!}
                     {!! Form::file('file-image', [
-                        'accept' => 'image/*',
-                        'class' => 'file-upload',
+                        'accept' => 'image/*', 'class' => 'file-upload',
                     ]) !!}
                 </div>
             </div>

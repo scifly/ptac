@@ -1,5 +1,5 @@
 <div class="box box-default box-solid">
-    {{ Form::hidden('id', $wap['id']) }}
+    {!! Form::hidden('id', $wap['id']) !!}
     <div class="box-header with-border">
         @include('shared.form_header', ['disabled' => true])
     </div>
@@ -7,7 +7,7 @@
         <div class="box-body box-profile" style="position: relative;padding: 20px;text-align: center;">
             <img class="avater" src="{!! asset("img/window-icon.png") !!}" alt="">
             <div class="maininfo">
-                <h3 class="profile-username">{{ $wap->name }}</h3>
+                <h3 class="profile-username">{!! $wap->name !!}</h3>
             </div>
             <a href="#" class="btn btn-primary btn-block btn-bianji" style="">
                 <i class="fa fa-edit"> 编辑</i>
@@ -23,13 +23,13 @@
             <div class="col-lg-6 otherinfo-con">
                 <strong class="title">所属学校</strong>
                 <p class="text-muted">
-                    {{ $wap->school->name }}
+                    {!! $wap->school->name !!}
                 </p>
                 <hr>
             </div>
             <div class="col-lg-6 otherinfo-con">
                 <strong class="title">状态</strong>
-                <p class="text-muted">{{ $wap->enabled ? '已启用' : '未启用' }}</p>
+                <p class="text-muted">{!! $wap->enabled ? '已启用' : '未启用' !!}</p>
                 <hr>
             </div>
         </div>
