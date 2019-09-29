@@ -140,7 +140,7 @@ class Column extends Model {
         } else {
             $module = Column::find(Request::route('id'));
             $data = [
-                'waps'  => Wap::whereSchoolId($this->schoolId())->pluck('site_title', 'id'),
+                'waps'  => Wap::whereSchoolId($this->schoolId())->pluck('name', 'id'),
                 'media' => $module ? $module->media : null,
             ];
         }
