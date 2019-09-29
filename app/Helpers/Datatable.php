@@ -34,7 +34,7 @@ class Datatable {
         
         $tableName = $model->getTable();
         $modelName = class_basename($model);
-        $useTable = $modelName . (in_array($modelName, ['Group', 'Order', 'Table']) ? 's' : '');
+        $useTable = $modelName . (in_array($modelName, ['Group', 'Order', 'Table', 'Column']) ? 's' : '');
         $from = $tableName . ' AS ' . $useTable;
         foreach ($joins ?? [] as $join) {
             $from .=
