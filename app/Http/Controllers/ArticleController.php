@@ -76,7 +76,7 @@ class ArticleController extends Controller {
     }
     
     /**
-     * 编辑微网站文章
+     * 编辑文章
      *
      * @param $id
      * @return bool|JsonResponse
@@ -93,7 +93,7 @@ class ArticleController extends Controller {
     }
     
     /**
-     * 更新微网站文章
+     * 更新文章
      *
      * @param ArticleRequest $request
      * @param $id
@@ -111,7 +111,7 @@ class ArticleController extends Controller {
     }
     
     /**
-     * 删除微网站文章
+     * 删除文章
      *
      * @param $id
      * @return JsonResponse
