@@ -28,7 +28,7 @@ use Throwable;
  * @property int $message_type_id 消息类型ID
  * @property int $media_type_id 媒体类型id
  * @property int $app_id 应用id
- * @property int $msl_id 消息发送批次id
+ * @property int $message_log_id 消息发送批次id
  * @property string $title 消息标题
  * @property string $content 消息内容
  * @property string $code 消息详情代码
@@ -47,7 +47,7 @@ use Throwable;
  * @property-read User $sender
  * @property-read Event|null $event
  * @property-read App|null $app
- * @property-read MessageSendingLog $messageSendinglog
+ * @property-read MessageLog $msgLog
  * @method static Builder|Message whereAppId($value)
  * @method static Builder|Message whereMessageTypeId($value)
  * @method static Builder|Message whereMediaTypeId($value)
@@ -55,7 +55,7 @@ use Throwable;
  * @method static Builder|Message whereCreatedAt($value)
  * @method static Builder|Message whereId($value)
  * @method static Builder|Message whereMessageId($value)
- * @method static Builder|Message whereMslId($value)
+ * @method static Builder|Message whereMessageLogId($value)
  * @method static Builder|Message whereEventId($value)
  * @method static Builder|Message whereRUserId($value)
  * @method static Builder|Message whereRead($value)
@@ -69,7 +69,6 @@ use Throwable;
  * @method static Builder|Message newQuery()
  * @method static Builder|Message query()
  * @mixin Eloquent
- * @property-read MessageSendingLog $msgLog
  */
 class Message extends Model {
     
@@ -94,7 +93,7 @@ class Message extends Model {
     </div>';
     protected $table = 'messages';
     protected $fillable = [
-        'message_type_id', 'media_type_id', 'app_id', 'msl_id',
+        'message_type_id', 'media_type_id', 'app_id', 'message_log_id',
         'title', 'content', 'code', 'message_id', 'url',
         's_user_id', 'r_user_id', 'read', 'sent', 'event_id',
     ];
@@ -113,7 +112,7 @@ class Message extends Model {
     function receiver() { return $this->belongsTo('App\Models\User', 'r_user_id', 'id'); }
     
     /** @return BelongsTo */
-    function msgLog() { return $this->belongsTo('App\Models\MessageSendingLog', 'msl_id', 'id'); }
+    function msgLog() { return $this->belongsTo('App\Models\MessageLog', 'message_log_id'); }
     
     /** @return BelongsTo` */
     function event() { return $this->belongsTo('App\Models\Event'); }
@@ -140,7 +139,7 @@ class Message extends Model {
                 },
             ],
             [
-                'db'        => 'Message.msl_id', 'dt' => 2,
+                'db'        => 'Message.message_log_id', 'dt' => 2,
                 'formatter' => function ($d) {
                     return $d ? $d : $this->badge('text-gray', '(n/a)');
                 },
@@ -177,11 +176,11 @@ class Message extends Model {
                 'db'        => 'User.realname', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     if ($d) return $d;
-                    $msl = $this->find($row['id'])->messageSendinglog;
+                    $msl = $this->find($row['id'])->msgLog;
                     
                     return $this->badge(
                         'text-gray',
-                        ($msl ? $msl->recipient_count : '0') . ' 人'
+                        ($msl ? $msl->recipients : '0') . ' 人'
                     );
                 },
             ],
@@ -546,7 +545,7 @@ class Message extends Model {
                     # 如果没有设置发送时间，或者设置了发送时间，
                     # 但发送时间早于当前时间, 则立即发送消息。
                     # 创建原始消息（被发送）记录
-                    $data['msl_id'] = MessageSendingLog::insertGetId([]);
+                    $data['message_log_id'] = MessageLog::insertGetId([]);
                     $data['read'] = $data['sent'] = 1;
                     SendMessage::dispatch([$this->create($data)], Auth::id());
                 } else {
@@ -666,7 +665,7 @@ class Message extends Model {
                     $response = view('wechat.info.replies', [
                         'replies' => $this->replies(
                             Request::input('id'),
-                            Request::input('msl_id')
+                            Request::input('message_log_id')
                         ),
                     ])->render();
                 }
@@ -818,7 +817,7 @@ class Message extends Model {
                 $data = [
                     'detail'  => $detail,
                     'content' => $content[$type],
-                    'replies' => $this->replies($id, $this->find($id)->msl_id),
+                    'replies' => $this->replies($id, $this->find($id)->message_log_id),
                 ];
                 break;
             case $acronym . '/messages/create':
@@ -1083,9 +1082,9 @@ class Message extends Model {
                     $this->create($data);
                 }
                 # 更新消息发送批次记录
-                $msl = $message->messageSendinglog;
-                $msl->increment('recipient_count', $users->count());
-                $msl->increment('received_count', $received);
+                $msl = $message->msgLog;
+                $msl->increment('recipients', $users->count());
+                $msl->increment('deliveries', $received);
             });
         } catch (Exception $e) {
             throw $e;
@@ -1277,17 +1276,17 @@ class Message extends Model {
         $message = $this->find($id);
         $content = json_decode($message->content, true);
         $content['msgtype'] = $type = $message->mediaType->name;
-        $msl = $message->messageSendinglog;
+        $msl = $message->msgLog;
         
         return [
-            'id'         => $message->id,
-            'title'      => $message->title,
-            'updated_at' => $this->humanDate($message->updated_at),
-            'sender'     => $message->sender->realname,
-            'recipients' => $msl ? $msl->recipient_count : 0,
-            'msl_id'     => $msl ? $msl->id : 0,
-            'type'       => $type,
-            $type        => json_encode($content),
+            'id'             => $message->id,
+            'title'          => $message->title,
+            'updated_at'     => $this->humanDate($message->updated_at),
+            'sender'         => $message->sender->realname,
+            'recipients'     => $msl ? $msl->recipients : 0,
+            'message_log_id' => $msl ? $msl->id : 0,
+            'type'           => $type,
+            $type            => json_encode($content),
         ];
         
     }
@@ -1309,8 +1308,8 @@ class Message extends Model {
                     new Exception(__('messages.not_found'))
                 );
                 $message->update(['read' => $read ? 1 : 0]);
-                if ($msl = MessageSendingLog::find($message->msl_id)) {
-                    $msl->increment('read_count', $read ? 1 : -1);
+                if ($msl = MessageLog::find($message->message_log_id)) {
+                    $msl->increment('views', $read ? 1 : -1);
                 }
             });
         } catch (Exception $e) {
@@ -1330,7 +1329,7 @@ class Message extends Model {
      */
     private function replies($id, $mslId) {
         
-        $where = ['msl_id' => $mslId];
+        $where = ['message_log_id' => $mslId];
         Auth::id() == $this->find($id)->sender->id
             ?: $where = array_merge($where, ['user_id' => Auth::id()]);
         $replies = MessageReply::where($where)->get();
@@ -1382,10 +1381,10 @@ class Message extends Model {
                     if ($type == 'sent') {
                         if (!$message->sender) return false;
                         $userId = $message->sender->id;
-                        $msl = $message->messageSendinglog;
+                        $msl = $message->msgLog;
                         $message->{'realname'} = $message->receiver
                             ? $message->receiver->realname
-                            : ($msl ? $msl->recipient_count : '0') . ' 人';
+                            : ($msl ? $msl->recipients : '0') . ' 人';
                         $message->{'color'} = $message->sent ? 'green' : ($message->event_id ? 'orange' : 'red');
                         $message->{'status'} = $message->sent ? '已发送' : ($message->event_id ? '定时' : '草稿');
                         $message->{'uri'} = 'mc/' . ($message->sent ? 'show' : 'edit') . '/' . $message->id;
@@ -1523,8 +1522,8 @@ class Message extends Model {
                 $color = $message->sent ? 'primary' : ($message->event_id ? 'warning' : 'error');
                 $status = $message->sent ? '已发' : ($message->event_id ? '定时' : '草稿');
                 $stat = '接收者';
-                $msl = $message->messageSendinglog;
-                $value = ($msl ? $msl->recipient_count : 0) . '人';
+                $msl = $message->msgLog;
+                $value = ($msl ? $msl->recipients : 0) . '人';
             } else {
                 $direction = '收件';
                 $color = $message->read ? 'primary' : 'error';

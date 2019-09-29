@@ -2,13 +2,7 @@
 namespace App\Jobs;
 
 use App\Helpers\{JobTrait, ModelTrait};
-use App\Models\{ApiMessage,
-    MediaType,
-    Message,
-    MessageSendingLog,
-    MessageType,
-    School,
-    User};
+use App\Models\{ApiMessage, MediaType, Message, MessageLog, MessageType, School, User};
 use Exception;
 use Illuminate\{Bus\Queueable,
     Contracts\Queue\ShouldQueue,
@@ -63,19 +57,18 @@ class SendMessageApi implements ShouldQueue {
                 # 在指定学校通讯录内的手机号码
                 $contacts = User::whereIn('mobile', $targets)->pluck('id', 'mobile');
                 # 创建发送日志
-                $msl = (new MessageSendingLog)->store([
-                    'read_count'     => 0,
-                    'received_count' => 0,
-                    'recipients'     => 0,
+                $msl = (new MessageLog)->store([
+                    'views'      => 0,
+                    'deliveries' => 0,
+                    'recipients' => 0,
                 ]);
-                
                 # 发送短信
                 $mobiles = $targets->diff($contacts->keys());
                 $result = $message->sendSms(
                     $mobiles, $this->content, $this->partner->id
                 );
                 $data = [
-                    'msl_id'          => $msl->id,
+                    'message_log_id'  => $msl->id,
                     'message_type_id' => $messageType->id,
                     's_user_id'       => $this->partner->id,
                     'content'         => $this->content,
@@ -83,7 +76,6 @@ class SendMessageApi implements ShouldQueue {
                     'sent'            => $result > 0 ? 1 : 0,
                 ];
                 $apiMessage->log($mobiles, $data);
-                
                 # 发送微信
                 $app = $school->app ?? $this->corpApp($school->corp_id);
                 $userids = User::whereIn('id', $contacts->values())->pluck('userid');
@@ -100,7 +92,7 @@ class SendMessageApi implements ShouldQueue {
                             $messageType->id, MediaType::whereName('text')->first()->id,
                             $app->id, $msl->id, $messageType->name . '(文本)',
                             json_encode($content), 0, 0, 'http://', 0,
-                            $this->partner->id, 0, 0, $result, null
+                            $this->partner->id, 0, 0, $result, null,
                         ])
                     )
                 );
@@ -120,7 +112,7 @@ class SendMessageApi implements ShouldQueue {
      * @throws Exception
      */
     function failed(Exception $e) {
-    
+        
         $this->eHandler($this, $e);
         
     }

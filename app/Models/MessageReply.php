@@ -11,9 +11,10 @@ use Throwable;
  * App\Models\MessageReply
  *
  * @property-read User $user
+ * @property-read MessageLog $msgLog
  * @mixin Eloquent
  * @property int $id
- * @property int $msl_id 所属消息批次
+ * @property int $message_log_id 所属消息批次
  * @property int $user_id 消息回复者id
  * @property string $content 回复内容
  * @property Carbon|null $created_at
@@ -21,7 +22,7 @@ use Throwable;
  * @method static Builder|MessageReply whereContent($value)
  * @method static Builder|MessageReply whereCreatedAt($value)
  * @method static Builder|MessageReply whereId($value)
- * @method static Builder|MessageReply whereMslId($value)
+ * @method static Builder|MessageReply whereMessageLogId($value)
  * @method static Builder|MessageReply whereUpdatedAt($value)
  * @method static Builder|MessageReply whereUserId($value)
  * @method static Builder|MessageReply newModelQuery()
@@ -33,10 +34,13 @@ class MessageReply extends Model {
     // todo: needs to be optimized
     use ModelTrait;
     
-    protected $fillable = ['msl_id', 'user_id', 'content'];
+    protected $fillable = ['message_log_id', 'user_id', 'content'];
     
     /** @return BelongsTo */
-    function user() { return $this->belongsTo('App\Models\User', 'user_id', 'id'); }
+    function user() { return $this->belongsTo('App\Models\User'); }
+    
+    /** @return BelongsTo */
+    function msgLog() { return $this->belongsTo('App\Models\MessageLog', 'message_log_id'); }
     
     /**
      * @param $data

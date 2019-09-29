@@ -125,7 +125,7 @@
         <div id="mycomment" class="weui-popup__container popup-bottom">
             <div class="weui-popup__overlay"></div>
             <div class="weui-popup__modal comment-content">
-                {!! Form::hidden('msl_id', $msg->{'msl_id'}, ['id' => 'msl_id']) !!}
+                {!! Form::hidden('message_log_id', $msg->{'message_log_id'}) !!}
                 <div style="background-color: #fff;height: 100%;">
                     <div class="comment-edit-con">
                         <p class="close-btn close-popup">

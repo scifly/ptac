@@ -29,7 +29,7 @@ class MessageRequest extends FormRequest {
             'message_type_id' => ['required', 'integer', Rule::in(MessageType::pluck('id'))],
             'media_type_id'   => ['required', 'integer', Rule::in(MediaType::pluck('id'))],
             'app_id'          => 'required|integer',
-            'msl_id'          => 'required|integer',
+            'message_log_id'  => 'required|integer',
             'title'           => 'required|string|max:64',
             'content'         => 'required|string',
             'code'            => 'required|string|max:255',

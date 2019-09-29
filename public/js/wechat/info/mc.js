@@ -216,8 +216,8 @@
                 mc.timing();
             },
             show: function () {
-                var $mslId = $('#msl_id'),
-                    $id = $('#id'),
+                var $mslId = $('input[name=message_log_id]'),
+                    $id = $('input[name=id]'),
                     $delete = $('.delete-message'),
                     $showComment = $('.js-show-comment'),
                     $comment = $('#mycomment'),
@@ -268,7 +268,7 @@
                         data: {
                             _token: wap.token(),
                             content: content,
-                            msl_id: $mslId.val()
+                            message_log_id: $mslId.val()
                         },
                         success: function (result) {
                             $.toptip(result['message'], 'success');
@@ -309,8 +309,8 @@
             },
             messageReplies: function () {
                 var $replies = $('.discuss_list'),
-                    $id = $('#id'),
-                    $mslId = $('#msl_id');
+                    $id = $('input[name=id]'),
+                    $mslId = $('input[name=message_log_id]');
 
                 $.ajax({
                     type: 'POST',
@@ -319,7 +319,7 @@
                     data: {
                         _token: wap.token(),
                         id: $id.val(),
-                        msl_id: $mslId.val()
+                        message_log_id: $mslId.val()
                     },
                     success: function (result) {
                         $replies.html(result);

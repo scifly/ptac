@@ -13,7 +13,7 @@ use Throwable;
  * Class ApiMessage 接口消息发送记录
  *
  * @property int $id
- * @property int $msl_id 消息发送批次id
+ * @property int $message_log_id 消息发送批次id
  * @property int $message_type_id 消息类型id
  * @property int $s_user_id 发送者用户id
  * @property string $mobile 手机号码
@@ -22,7 +22,7 @@ use Throwable;
  * @property int $sent 消息是否发送成功
  * @property Carbon|null $created_at 创建于
  * @property Carbon|null $updated_at 更新于
- * @property-read MessageSendingLog $messageSendingLog
+ * @property-read MessageLog $msgLog
  * @property-read MessageType $messageType
  * @method static Builder|ApiMessage newModelQuery()
  * @method static Builder|ApiMessage newQuery()
@@ -32,14 +32,13 @@ use Throwable;
  * @method static Builder|ApiMessage whereId($value)
  * @method static Builder|ApiMessage whereMessageTypeId($value)
  * @method static Builder|ApiMessage whereMobile($value)
- * @method static Builder|ApiMessage whereMslId($value)
+ * @method static Builder|ApiMessage whereMessageLogId($value)
  * @method static Builder|ApiMessage whereRead($value)
  * @method static Builder|ApiMessage whereSUserId($value)
  * @method static Builder|ApiMessage whereSent($value)
  * @method static Builder|ApiMessage whereUpdatedAt($value)
  * @mixin Eloquent
  * @property-read MessageType $mType
- * @property-read MessageSendingLog $msgLog
  * @property-read User $sender
  */
 class ApiMessage extends Model {
@@ -49,7 +48,7 @@ class ApiMessage extends Model {
     protected $table = 'api_messages';
     
     protected $fillable = [
-        'msl_id', 'message_type_id', 's_user_id',
+        'message_log_id', 'message_type_id', 's_user_id',
         'mobile', 'content', 'read', 'sent',
     ];
     
@@ -57,7 +56,7 @@ class ApiMessage extends Model {
     function mType() { return $this->belongsTo('App\Models\MessageType', 'message_type_id'); }
     
     /** @return BelongsTo */
-    function msgLog() { return $this->belongsTo('App\Models\MessageSendingLog', 'msl_id'); }
+    function msgLog() { return $this->belongsTo('App\Models\MessageLog', 'message_log_id'); }
     
     /** @return BelongsTo */
     function sender() { return $this->belongsTo('App\Models\User', 's_user_id'); }

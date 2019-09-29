@@ -255,7 +255,7 @@ class Score extends Model {
                         0, $mediaTypeId, $app->id, 0, $msgType, '', '0', uniqid(),
                         'http://', '0', $sUserId, 0, $msgTypeId, 0, 0, null
                     ]);
-                    $record['msl_id'] = MessageSendingLog::insertGetId([]);
+                    $record['message_log_id'] = MessageLog::insertGetId([]);
                     throw_if(
                         !$user = User::whereMobile($datum->mobile)->first(),
                         new Exception(__('messages.user.not_found'))

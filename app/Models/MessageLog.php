@@ -10,34 +10,34 @@ use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**
- * App\Models\MessageSendingLog
+ * App\Models\MessageLog
  *
  * @property int $id
- * @property int $read_count 已读数量
- * @property int $received_count 消息发送成功数
- * @property int $recipient_count 接收者数量
+ * @property int $views 已读数量
+ * @property int $deliveries 消息发送成功数
+ * @property int $recipients 接收者数量
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection|Message[] $messages
  * @property-read Collection|ApiMessage[] $apiMessages
- * @method static Builder|MessageSendingLog whereCreatedAt($value)
- * @method static Builder|MessageSendingLog whereId($value)
- * @method static Builder|MessageSendingLog whereReadCount($value)
- * @method static Builder|MessageSendingLog whereReceivedCount($value)
- * @method static Builder|MessageSendingLog whereRecipientCount($value)
- * @method static Builder|MessageSendingLog whereUpdatedAt($value)
- * @method static Builder|MessageSendingLog newModelQuery()
- * @method static Builder|MessageSendingLog newQuery()
- * @method static Builder|MessageSendingLog query()
+ * @method static Builder|MessageLog whereCreatedAt($value)
+ * @method static Builder|MessageLog whereId($value)
+ * @method static Builder|MessageLog whereViews($value)
+ * @method static Builder|MessageLog whereDeliveries($value)
+ * @method static Builder|MessageLog whereRecipients($value)
+ * @method static Builder|MessageLog whereUpdatedAt($value)
+ * @method static Builder|MessageLog newModelQuery()
+ * @method static Builder|MessageLog newQuery()
+ * @method static Builder|MessageLog query()
  * @mixin Eloquent
  * @property-read int|null $api_messages_count
  * @property-read int|null $messages_count
  */
-class MessageSendingLog extends Model {
+class MessageLog extends Model {
     
     use ModelTrait;
     
-    protected $fillable = ['read_count', 'received_count', 'recipient_count'];
+    protected $fillable = ['views', 'deliveries', 'recipients'];
     
     /** @return HasMany */
     function messages() { return $this->hasMany('App\Models\Message'); }
@@ -49,7 +49,7 @@ class MessageSendingLog extends Model {
      * 保存消息发送记录
      *
      * @param array $data
-     * @return MessageSendingLog|Model|null
+     * @return MessageLog|Model|null
      */
     function store(array $data) {
         
@@ -69,12 +69,11 @@ class MessageSendingLog extends Model {
         try {
             DB::transaction(function () use ($id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $messageIds = Message::whereIn('msl_id', $ids)
-                    ->pluck('id')->toArray();
-                Request::replace(['ids' => $messageIds]);
+                $messageIds = Message::whereIn('message_log_id', $ids)->pluck('id');
+                Request::replace(['ids' => $messageIds->toArray()]);
                 (new Message)->remove();
                 Request::replace(['ids' => $ids]);
-                $this->purge([class_basename($this), 'MessageReply'], 'msl_id');
+                $this->purge(['MessageLog', 'MessageReply'], 'message_log_id');
             });
         } catch (Exception $e) {
             throw $e;
