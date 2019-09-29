@@ -13,9 +13,7 @@
                 'items' => $waps
             ])
             <div class="form-group">
-                {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'name', 'label' => '名称'])
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control text-blue',
@@ -26,9 +24,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('media_id', '模块图片', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                @include('shared.label', ['field' => 'media_id', 'label' => '模块图片'])
                 <div class="col-sm-6">
                     <div class="preview">
                         {!! Form::hidden('media_id', isset($media) ? $media->id : null) !!}
@@ -36,9 +32,11 @@
                             <img src="../../{!! $media->path !!}" id="{!! $media->id !!}" alt="">
                         @endif
                     </div>
-                    <label for="file-image" class="custom-file-upload text-blue">
-                        <i class="fa fa-cloud-upload"></i> 上传图片
-                    </label>
+                    {!! Form::label(
+                        'file-image',
+                        Html::tag('i', ' 上传图片', ['class' => 'fa fa-cloud-upload']),
+                        ['class' => 'custom-file-upload text-blue']
+                    ) !!}
                     {!! Form::file('file-image', [
                         'accept' => 'image/*',
                         'class' => 'file-upload',
