@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\Consumption;
 use Exception;
 use Illuminate\Contracts\View\View;
@@ -12,8 +11,6 @@ use ReflectionException;
  * @package App\Http\ViewComposers
  */
 class ConsumptionComposer {
-    
-    use ModelTrait;
     
     /**
      * @param View $view

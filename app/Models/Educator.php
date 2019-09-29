@@ -500,8 +500,11 @@ class Educator extends Model {
     function export() {
         
         if (Request::input('range') == 0) {
-            $userIds = $this->userIds(Request::input('id'), 'educator');
-            $ids = User::with('educator')->whereIn('id', $userIds)
+            $userIds = (new Department)->userIds(
+                Request::input('id'), 'educator'
+            );
+            $ids = User::with('educator')
+                ->whereIn('id', $userIds)
                 ->get()->pluck('educator.id');
         } else {
             $ids = $this->contactIds('educator');
@@ -625,9 +628,9 @@ class Educator extends Model {
                 if (($educator = $this->find($id ?? Request::route('id'))) && Request::method() == 'GET') {
                     $user = $educator->user;
                     $educator->{'card'} = $user->card;
-                    $selectedDepartmentIds = !$educator ? []
+                    $selectedDeptIds = !$educator ? collect([])
                         : $educator->user->deptIds($educator->user_id);
-                    $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
+                    $selectedDepartments = $this->selectedNodes($selectedDeptIds);
                 }
                 $nil = collect([0 => '(请选择)']);
                 $data = array_merge(
@@ -641,7 +644,7 @@ class Educator extends Model {
                             $nil->union($classes->pluck('name', 'id')),
                             $nil->union($subjects->pluck('name', 'id')),
                             (new Group)->list(),
-                            join(',', $selectedDepartmentIds ?? []),
+                            join(',', $selectedDeptIds ?? []),
                             $selectedDepartments ?? [],
                         ]
                     ),
@@ -657,20 +660,20 @@ class Educator extends Model {
     /**
      * 选中的部门节点
      *
-     * @param $departmentIds
+     * @param $deptIds
      * @return array
      */
-    private function selectedNodes($departmentIds) {
+    private function selectedNodes($deptIds) {
         
-        $departments = Department::whereIn('id', $departmentIds)->get();
-        foreach ($departments as $department) {
-            $departmentType = DepartmentType::find($department['department_type_id']);
+        $departments = Department::whereIn('id', $deptIds)->get();
+        foreach ($departments as $dept) {
+            $dType = DepartmentType::find($dept['department_type_id']);
             $nodes[] = [
-                'id'     => $department->id,
-                'parent' => $department->parent_id ?? '#',
-                'text'   => $department->name,
-                'icon'   => $departmentType->icon,
-                'type'   => $departmentType->remark,
+                'id'     => $dept->id,
+                'parent' => $dept->parent_id ?? '#',
+                'text'   => $dept->name,
+                'icon'   => $dType->icon,
+                'type'   => $dType->remark,
             ];
         }
         

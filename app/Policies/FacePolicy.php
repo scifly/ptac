@@ -22,11 +22,17 @@ class FacePolicy {
      */
     function operation(User $user, Face $face = null) {
     
-        if ($userId = $this->field('user_id', $face)) {
-            $perm = collect(explode(',', $this->visibleUserIds()))->flip()->has($userId);
-        }
+        $perm = true;
+        $userIds = collect(explode(',', $this->visibleUserIds()))->flip();
+        [$userId, $ids] = array_map(
+            function ($field) use ($face) {
+                return $this->field($field, $face);
+            }, ['user_id', 'ids']
+        );
+        !$userId ?: $perm &= $userIds->has($userId);
+        !$ids ?: $perm &= $userIds->has(array_values($ids));
     
-        return $this->action($user) && ($perm ?? true);
+        return $this->action($user) && $perm;
         
     }
     

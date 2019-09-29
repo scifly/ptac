@@ -451,8 +451,6 @@ class School extends Model {
                 $apps = App::where('category', 2)->pluck('name', 'id');
                 $school = School::find(Request::route('id'));
                 $where = ['group_id' => Group::whereName('api')->first()->id, 'enabled' => 1];
-                $apis = User::where($where)->pluck('realname', 'id');
-                $selectedApis = collect([]);
                 !$school ?: $selectedApis = User::whereIn('id', explode(',', $school->user_ids))
                     ->pluck('realname', 'id');
                 
@@ -461,8 +459,8 @@ class School extends Model {
                         'apps'         => collect([null => '[所属公众号]'])->union($apps),
                         'corpId'       => $this->corpId(),
                         'uris'         => (new Action)->uris(),
-                        'apis'         => $apis,
-                        'selectedApis' => $selectedApis,
+                        'apis'         => User::where($where)->pluck('realname', 'id'),
+                        'selectedApis' => $selectedApis ?? collect([]),
                         'disabled'     => null,   # disabled - 是否显示'返回列表'和'取消'按钮
                 ];
             default:
@@ -476,15 +474,15 @@ class School extends Model {
      *
      * @param $field
      * @param $id
-     * @param null $gradeClass
+     * @param null $gClasses
      * @return array
      */
-    function fieldLists($field, $id, $gradeClass = null) {
+    function fieldLists($field, $id, $gClasses = null) {
         
         # todo - fetch field list by role
         if ($field == 'grade') {
-            if (isset($gradeClass)) {
-                [$classes, $students] = $this->getClass($id, $gradeClass);
+            if (isset($gClasses)) {
+                [$classes, $students] = $this->getClass($id, $gClasses);
             } else {
                 $classes = Squad::where([
                     'grade_id' => $id, 'enabled' => 1,

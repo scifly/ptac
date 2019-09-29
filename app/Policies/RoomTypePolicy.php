@@ -24,9 +24,14 @@ class RoomTypePolicy {
      */
     function operation(User $user, RoomType $rt = null) {
 
-        if ($corpId = $this->field('corp_id', $rt)) {
-            $perm = $corpId == $this->corpId();
-        }
+        [$corpId, $ids] = array_map(
+            function ($field) use ($rt) {
+                return $this->field($field, $rt);
+            }, ['corp_id', 'ids']
+        );
+        !$corpId ?: $perm = $corpId == $this->corpId();
+        !$ids ?: $perm = RoomType::whereCorpId($this->corpId())
+            ->pluck('id')->flip()->has(array_values($ids));
 
         return in_array($user->role(), ['运营', '企业']) && ($perm ?? true);
     

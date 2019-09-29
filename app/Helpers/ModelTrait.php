@@ -258,7 +258,7 @@ trait ModelTrait {
      *
      * @param null $userId
      * @param null $corpId - 返回对指定用户可见的、指定企业的所有学校id
-     * @return array
+     * @return SCollection
      */
     function schoolIds($userId = null, $corpId = null) {
         
@@ -285,7 +285,7 @@ trait ModelTrait {
         return $schools->when(
             $corpId, function (Collection $schools) use ($corpId) {
             return $schools->where('corp_id', $corpId);
-        })->pluck('id')->toArray();
+        })->pluck('id');
         
     }
     
@@ -294,7 +294,7 @@ trait ModelTrait {
      *
      * @param null $schoolId
      * @param null $userId
-     * @return array
+     * @return SCollection
      * @throws Exception
      */
     function gradeIds($schoolId = null, $userId = null) {
@@ -305,7 +305,7 @@ trait ModelTrait {
             ? School::find($schoolId)->grades
             : Grade::whereIn('department_id', $this->departmentIds($user->id));
         
-        return $grades->isEmpty() ? [0] : $grades->pluck('id')->toArray();
+        return $grades->isEmpty() ? collect([0]) : $grades->pluck('id');
         
     }
     
@@ -314,7 +314,7 @@ trait ModelTrait {
      *
      * @param null $schoolId
      * @param null $userId
-     * @return array
+     * @return SCollection
      * @throws Exception
      */
     function classIds($schoolId = null, $userId = null) {
@@ -325,7 +325,7 @@ trait ModelTrait {
             ? School::find($schoolId)->classes
             : Squad::whereIn('department_id', $this->departmentIds($user->id));
         
-        return $classes->isEmpty() ? [0] : $classes->pluck('id')->toArray();
+        return $classes->isEmpty() ? collect([0]) : $classes->pluck('id');
         
     }
     
@@ -334,7 +334,7 @@ trait ModelTrait {
      *
      * @param null $schoolId
      * @param null $userId
-     * @return array
+     * @return SCollection
      * @throws Exception
      */
     function examIds($schoolId = null, $userId = null) {
@@ -347,67 +347,43 @@ trait ModelTrait {
             $classIds = $this->classIds($schoolId);
             $exams = School::find($schoolId)->exams->filter(
                 function (Exam $exam) use ($classIds) {
-                    return !empty(
-                    array_intersect($classIds, explode(',', $exam->class_ids))
-                    );
+                    return $classIds->intersect(explode(',', $exam->class_ids))->isNotEmpty();
                 }
             );
         }
         
-        return $exams->pluck('id')->toArray();
+        return $exams->pluck('id');
         
     }
     
     /**
      * 获取对当前用户可见的、指定学校的联系人id
      *
-     * @param string $type - 联系人类型: custodian, student, educator
+     * @param string|null $type - 联系人类型: user(null), custodian, student, educator
      * @param User|null $user
      * @param null $schoolId
-     * @return array|null
+     * @return SCollection
      * @throws ReflectionException
      */
-    function contactIds($type, User $user = null, $schoolId = null) {
+    function contactIds($type = null, User $user = null, $schoolId = null) {
         
         $user = $user ?? Auth::user();
         $schoolId = $schoolId ?? ($this->schoolId() ?? session('schoolId'));
-        $userIds = [];
+        $userIds = collect([]);
+        $d = new Department;
         if (in_array($user->role($user->id), Constant::SUPER_ROLES)) {
-            $userIds = $this->userIds(
+            $userIds = $d->userIds(
                 School::find($schoolId)->department_id, $type
             );
         } else {
             foreach ($user->deptIds() as $id) {
-                $userIds = array_merge(
-                    $this->userIds($id, $type), $userIds
-                );
+                $userIds = $d->userIds($id, $type)->merge($userIds);
             }
         }
-        $userIds = array_unique($userIds);
+        $userIds = $userIds->unique();
         
-        return empty($userIds) ? [0]
-            : User::with($type)->whereIn('id', $userIds)->get()->pluck($type . '.id')->toArray();
-        
-    }
-    
-    /**
-     * 返回指定部门(含子部门）下的所有用户id
-     *
-     * @param $departmentId
-     * @param null $type
-     * @return array
-     * @throws ReflectionException
-     */
-    function userIds($departmentId, $type = null): array {
-        
-        $departmentIds = array_merge(
-            [$departmentId],
-            (new Department)->subIds($departmentId)
-        );
-        $builder = DepartmentUser::whereIn('department_id', $departmentIds);
-        !$type ?: $builder = $this->model(ucfirst($type))->whereIn('user_id', $builder->pluck('user_id'));
-        
-        return $builder->pluck('user_id')->unique()->toArray();
+        return $userIds->isEmpty() ? collect([0])
+            : User::with($type)->whereIn('id', $userIds)->get()->pluck($type . '.id');
         
     }
     
@@ -415,7 +391,7 @@ trait ModelTrait {
      * 返回指定用户可访问的所有部门Id
      *
      * @param $userId
-     * @return array
+     * @return SCollection
      * @throws Exception
      */
     function departmentIds($userId = null) {
@@ -424,37 +400,38 @@ trait ModelTrait {
             $userId = $userId ?? Auth::id();
             $user = User::find($userId);
             $role = $user->role($userId);
-            $department = new Department;
-            $deptIds = [];
+            $d = new Department;
+            $deptIds = collect([]);
             if (in_array($role, Constant::SUPER_ROLES)) {
                 $dept = $this->schoolId()
                     ? School::find($this->schoolId())->department
                     : $user->depts->first();
-                $deptIds = array_merge(
-                    [$dept->id],
-                    $department->subIds($dept->id)
+                $deptIds = collect([$dept->id])->merge(
+                    $d->subIds($dept->id)
                 );
             } else {
                 foreach ($user->deptIds() as $deptId) {
                     $deptIds[] = $deptId;
-                    $deptIds = array_merge(
-                        $department->subIds($deptId), $deptIds
-                    );
+                    $deptIds = $d->subIds($deptId)->merge($deptIds);
                 }
             }
         } catch (Exception $e) {
             throw $e;
         }
         
-        return array_unique($deptIds);
+        return $deptIds;
         
+    }
+    
+    function tagIds($userId = null) {
+    
     }
     
     /**
      * 返回指定用户可管理的所有菜单id（校级以下角色没有管理菜单的权限）
      *
      * @param null $userId
-     * @return array
+     * @return SCollection
      * @throws ReflectionException
      */
     function menuIds($userId = null) {
@@ -462,15 +439,17 @@ trait ModelTrait {
         $user = User::find($userId ?? Auth::id());
         $role = $user->role($user->id);
         if ($role == '运营') {
-            $menuIds = Menu::all()->pluck('id')->toArray();
+            $menuIds = Menu::all()->pluck('id');
         } elseif (in_array($role, ['企业', '学校'])) {
             $model = $this->model($role == '企业' ? 'Corp' : 'School');
-            $menuIds = (new Menu)->subIds(
-                $model::whereDepartmentId($user->depts->first()->id)->first()->menu_id
+            $menuIds = collect(
+                (new Menu)->subIds(
+                    $model::whereDepartmentId($user->depts->first()->id)->first()->menu_id
+                )
             );
         }
         
-        return $menuIds ?? [];
+        return $menuIds ?? collect([]);
         
     }
     
@@ -716,7 +695,7 @@ trait ModelTrait {
                     foreach ($input['student_ids'] as $key => $studentId) {
                         $student = Student::find($studentId);
                         throw_if(
-                            !$student || !in_array($studentId, $this->contactIds('student')),
+                            !$student || !$this->contactIds('student')->flip()->has($studentId),
                             new Exception(__('messages.student.not_found') . ':' . $studentId)
                         );
                         $departmentIds[] = $student->squad->department_id;
@@ -740,7 +719,7 @@ trait ModelTrait {
                             if (!$classId) continue;
                             $class = Squad::find($classId);
                             throw_if(
-                                !$class || !in_array($class->id, $this->classIds()),
+                                !$class || !$this->classIds()->flip()->has($class->id),
                                 new Exception(__('messages.class.not_found') . ':' . $classId)
                             );
                             $classDeptIds[] = $class->department_id;

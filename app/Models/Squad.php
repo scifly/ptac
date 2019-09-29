@@ -343,7 +343,7 @@ class Squad extends Model {
     function studentList($id) {
         
         abort_if(
-            isset($id) && (!in_array($id, $this->classIds()) || !$this->find($id)),
+            isset($id) && (!$this->classIds()->flip()->has($id) || !$this->find($id)),
             Constant::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );

@@ -22,7 +22,9 @@ class ParticipantPolicy {
     function operation(User $user) {
         
         if (!$user->educator) return false;
-        $educatorIds = Participant::whereConferenceId(Request::input('conference_id'))->pluck('educator_id');
+        $educatorIds = Participant::whereConferenceId(
+            Request::input('conference_id')
+        )->pluck('educator_id')->flip();
         
         return $this->action($user) && $educatorIds->has($user->educator->id);
         

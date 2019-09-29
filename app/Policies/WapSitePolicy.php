@@ -21,7 +21,7 @@ class WapSitePolicy {
     function operation(User $user, WapSite $ws = null) {
         
         if ($schoolId = $this->field('school_id', $ws)) {
-            $perm = collect($this->schoolIds())->flip()->has($schoolId);
+            $perm = $this->schoolIds()->flip()->has($schoolId);
         }
         
         return in_array($user->role(), Constant::SUPER_ROLES) && ($perm ?? true);

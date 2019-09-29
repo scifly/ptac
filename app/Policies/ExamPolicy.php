@@ -2,9 +2,10 @@
 namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
-use App\Models\{Exam, ExamType, Subject, User};
+use App\Models\{Exam, User};
 use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Collection;
 
 /**
  * Class ExamPolicy
@@ -22,10 +23,25 @@ class ExamPolicy {
      */
     function operation(User $user, Exam $exam = null) {
 
-        [$subjectIds, $classIds, $examTypeId] = array_map(
+        [$subjectIds, $classIds, $examTypeId, $ids] = array_map(
             function ($field) use ($exam) {
                 return $this->field($field, $exam);
-            }, ['subject_ids', 'class_ids', 'exam_type_id']
+            }, ['subject_ids', 'class_ids', 'exam_type_id', 'ids']
+        );
+        $schoolId = $this->schoolId();
+        /** @var Collection $sIds */
+        /** @var Collection $etIds */
+        [$sIds, $etIds] = array_map(
+            function ($name) use ($schoolId) {
+                return $name::{'whereSchoolId'}($schoolId)->pluck('id')->flip();
+            }, ['Subject', 'ExamType']
+        );
+        /** @var Collection $cIds */
+        /** @var Collection $eIds */
+        [$cIds, $eIds] = array_map(
+            function ($name) {
+                return collect($this->{$name}())->flip();
+            }, ['classIds', 'examIds']
         );
         if (isset($subjectIds, $classIds, $examTypeId)) {
             [$subjectIds, $classIds, $examTypeId] = array_map(
@@ -33,12 +49,10 @@ class ExamPolicy {
                     return explode(',', $ids);
                 }, [$subjectIds, $classIds, $examTypeId]
             );
-            $schoolId = $this->schoolId();
-            $perm = Subject::whereSchoolId($schoolId)->pluck('id')->flip()->has($subjectIds)
-                && ExamType::whereSchoolId($schoolId)->pluck('id')->flip()->has($examTypeId)
-                && collect($this->classIds())->flip()->has($classIds)
-                && (!$exam ? true : collect($this->examIds())->flip()->has($exam->id));
+            $perm = $sIds->has($subjectIds) && $etIds->has($examTypeId)
+                && $cIds->has($classIds) && (!$exam ? true : $eIds->has($exam->id));
         }
+        !$ids ?: $perm = $eIds->has(array_values($ids));
         
         return $this->action($user) && ($perm ?? true);
         

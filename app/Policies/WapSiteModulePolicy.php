@@ -20,11 +20,18 @@ class WapSiteModulePolicy {
      */
     function operation(User $user, WapSiteModule $wsm = null) {
         
-        if ($wsId = $this->field('wap_site_id', $wsm)) {
-            $perm = collect($this->schoolIds())->flip()->has(WapSite::find($wsId)->school_id);
-        }
+        $perm = true;
+        [$wsId, $ids] = array_map(
+            function ($field) use ($wsm) {
+                return $this->field($field, $wsm);
+            }, ['wap_site_id', 'ids']
+        );
+        $schoolIds = $this->schoolIds()->flip();
+        !$wsId ?: $perm &= $schoolIds->has(WapSite::find($wsId)->school_id);
+        !$ids ?: $perm &= WapSite::whereSchoolId($this->schoolId())->first()
+                ->modules->pluck('id')->flip()->has(array_values($ids));
         
-        return in_array($user->role(), Constant::SUPER_ROLES) && ($perm ?? true);
+        return in_array($user->role(), Constant::SUPER_ROLES) && $perm;
         
     }
     

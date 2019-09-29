@@ -19,19 +19,19 @@ use Throwable;
  */
 class MessageController extends Controller {
     
-    protected $message, $department;
+    protected $msg, $dept;
     
     /**
      * MessageController constructor.
-     * @param Message $message
-     * @param Department $departement
+     * @param Message $msg
+     * @param Department $dept
      */
-    public function __construct(Message $message, Department $departement) {
+    public function __construct(Message $msg, Department $dept) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->message = $message;
-        $this->department = $departement;
-        
+        $this->dept = $dept;
+        $this->approve($this->msg = $msg);
+    
     }
     
     /**
@@ -43,10 +43,14 @@ class MessageController extends Controller {
     public function index() {
         
         return Request::get('draw')
-            ? response()->json($this->message->index())
-            : (
-            Request::method() == 'POST'
-                ? (Request::has('file') ? $this->message->import() : $this->department->contacts())
+            ? response()->json(
+                $this->msg->index()
+            )
+            : (Request::method() == 'POST'
+                ? (Request::has('file')
+                    ? $this->msg->import()
+                    : $this->dept->contacts()
+                )
                 : $this->output()
             );
         
@@ -62,7 +66,7 @@ class MessageController extends Controller {
     public function store(MessageRequest $request) {
         
         return $this->result(
-            $this->message->store(
+            $this->msg->store(
                 $request->all()
             )
         );
@@ -79,7 +83,7 @@ class MessageController extends Controller {
     public function edit($id) {
         
         return response()->json(
-            $this->message->edit($id)
+            $this->msg->edit($id)
         );
         
     }
@@ -95,7 +99,7 @@ class MessageController extends Controller {
     public function update(MessageRequest $request, $id = null) {
         
         return $this->result(
-            $this->message->modify(
+            $this->msg->modify(
                 $request->all(), $id
             )
         );
@@ -111,7 +115,7 @@ class MessageController extends Controller {
      */
     public function show($id) {
         
-        return $this->message->show($id);
+        return $this->msg->show($id);
         
     }
     
@@ -126,7 +130,7 @@ class MessageController extends Controller {
     public function send(MessageRequest $request) {
         
         return $this->result(
-            $this->message->send($request->all()),
+            $this->msg->send($request->all()),
             !$request->has('preview')
                 ? __('messages.message.submitted')
                 : __('messages.message.preview'),
@@ -145,7 +149,7 @@ class MessageController extends Controller {
     public function destroy($id = null) {
         
         return $this->result(
-            $this->message->remove($id)
+            $this->msg->remove($id)
         );
         
     }

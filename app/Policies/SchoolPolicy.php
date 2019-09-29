@@ -2,7 +2,7 @@
 namespace App\Policies;
 
 use App\Helpers\{Constant, ModelTrait, PolicyTrait};
-use App\Models\{App, School, SchoolType, User};
+use App\Models\{App, Corp, School, SchoolType, User};
 use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use ReflectionException;
@@ -25,18 +25,20 @@ class SchoolPolicy {
     public function operation(User $user, School $school = null) {
         
         $perm = true;
-        [$schoolTypeId, $corpId, $menuId, $deptId, $appId] = array_map(
+        [$schoolTypeId, $corpId, $menuId, $deptId, $appId, $ids] = array_map(
             function ($field) use ($school) {
                 return $this->field($field, $school);
-            }, ['school_type_id', 'corp_id', 'menu_id', 'department_id', 'app_id']
+            }, ['school_type_id', 'corp_id', 'menu_id', 'department_id', 'app_id', 'ids']
         );
+        $corpIds = $user->corpIds()->flip();
         if (isset($schoolTypeId, $corpId)) {
-            $perm &= SchoolType::pluck('id')->flip()->has($schoolTypeId)
-                && collect($user->corpIds())->flip()->has($corpId);
+            $perm &= SchoolType::pluck('id')->flip()->has($schoolTypeId) && $corpIds->has($corpId);
         }
-        empty($menuId) ?: $perm &= collect($this->menuIds())->flip()->has($menuId);
-        empty($deptId) ?: $perm &= collect($this->departmentIds())->flip()->has($deptId);
-        empty($appId) ?: $perm &= collect($user->corpIds())->flip()->has(App::find($appId)->corp_id);
+        empty($menuId) ?: $perm &= $this->menuIds()->flip()->has($menuId);
+        empty($deptId) ?: $perm &= $this->departmentIds()->flip()->has($deptId);
+        empty($appId) ?: $perm &= $corpIds->has(App::find($appId)->corp_id);
+        !$ids ?: $perm &= Corp::find($this->corpId())->schools
+            ->pluck('id')->flip()->has(array_values($ids));
         
         return in_array($user->role(), Constant::SUPER_ROLES) && $perm;
         

@@ -109,7 +109,7 @@ class ImportStudent implements ShouldQueue, MassImport {
         ]);
         $fields = array_merge($fields, ['class_id', 'department_id']);
         $this->corpId = School::find($this->schoolId)->corp_id;
-        $isSchoolValid = in_array($this->schoolId, $this->schoolIds($this->userId));
+        $isSchoolValid = $this->schoolIds($this->userId)->flip()->has($this->schoolId);
         for ($i = 0; $i < count($data); $i++) {
             $datum = $data[$i];
             $gradeName = $datum['D'];
@@ -124,9 +124,9 @@ class ImportStudent implements ShouldQueue, MassImport {
             $result = Validator::make($user, $rules);
             $failed = $result->fails();
             $grade = Grade::where(['name' => $gradeName, 'school_id' => $this->schoolId])->get()->first();
-            $isGradeValid = $grade ? in_array($grade->id, $this->gradeIds($this->schoolId, $this->userId)) : false;
+            $isGradeValid = $grade ? $this->gradeIds($this->schoolId, $this->userId)->flip()->has($grade->id) : false;
             $class = $grade ? Squad::where(['name' => $className, 'grade_id' => $grade->id])->get()->first() : null;
-            $isClassValid = $class ? in_array($class->id, $this->classIds($this->schoolId, $this->userId)) : false;
+            $isClassValid = $class ? $this->classIds($this->schoolId, $this->userId)->flip()->has($class->id) : false;
             if (!(!$failed && $isSchoolValid && $isGradeValid && $isClassValid)) {
                 $datum['J'] = $failed
                     ? json_encode($result->errors(), JSON_UNESCAPED_UNICODE)

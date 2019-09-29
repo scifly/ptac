@@ -20,16 +20,16 @@ class CardPolicy {
      * @throws Exception
      */
     function operation(User $user, Card $card = null) {
-        
-        $userIds = collect(explode(',', $this->visibleUserIds()))->flip();
+    
         $perm = true;
+        $userIds = collect(explode(',', $this->visibleUserIds()))->flip();
         [$userId, $ids] = array_map(
             function ($field) use ($card) {
                 return $this->field($field, $card);
             }, ['user_id', 'ids']
         );
         !$userId ?: $perm &= $userIds->has($userId);
-        !$ids ?: $perm &= $userIds->has($ids);
+        !$ids ?: $perm &= $userIds->has(array_values($ids));
         
         return $this->action($user) && $perm;
         

@@ -219,8 +219,6 @@ class Tag extends Model {
     }
     
     /**
-     * 返回view所需数据
-     *
      * @param null $action
      * @param Model|null $model
      * @return array
@@ -244,7 +242,7 @@ class Tag extends Model {
                         $totag = explode(',', json_decode($model->{'content'}, true)['totag']);
                         $builder = $this->whereIn('tagid', $totag);
                     }
-                    $selectedTags = $builder->pluck('name', 'id')->toArray();
+                    $selectedTags = $builder->pluck('name', 'id');
                 }
                 
                 return [
@@ -278,10 +276,10 @@ class Tag extends Model {
         $tags = $this->whereSchoolId($schoolId ?? $this->schoolId())->get();
         if (!in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
             $userIds = collect(explode(',', $this->visibleUserIds()));
-            $deptIds = collect($this->departmentIds());
+            $deptIds = $this->departmentIds();
             $tags->filter(function (Tag $tag) use ($userIds, $deptIds) {
                 return $userIds->has($tag->users->pluck('id')) &&
-                    $deptIds->has($tag->depts->pluck('id'));
+                    $deptIds->flip()->has($tag->depts->pluck('id'));
             });
         }
         $list = collect([]);

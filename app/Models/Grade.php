@@ -135,7 +135,7 @@ class Grade extends Model {
         ];
         $condition = 'School.id = ' . $this->schoolId();
         if (!in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
-            $condition .= ' AND Grade.id IN (' . join(',', $this->gradeIds()) . ')';
+            $condition .= ' AND Grade.id IN (' . $this->gradeIds()->join(',') . ')';
         }
         
         return Datatable::simple(
@@ -283,7 +283,7 @@ class Grade extends Model {
     function classList($id) {
         
         abort_if(
-            !in_array($id, $this->gradeIds()) || !$this->find($id),
+            !$this->gradeIds()->flip()->has($id) || !$this->find($id),
             Constant::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );

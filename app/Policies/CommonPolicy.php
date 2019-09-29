@@ -1,11 +1,14 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\{ModelTrait, PolicyTrait};
+use App\Helpers\{Constant, ModelTrait, PolicyTrait};
 use App\Models\User;
+use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Schema;
+use ReflectionException;
 
 /**
  * Class CommonPolicy
@@ -18,10 +21,10 @@ class CommonPolicy {
     /**
      * @param User $user
      * @param $model
-     * @param string $class
      * @return bool
+     * @throws ReflectionException
      */
-    function operation(User $user, $model = null, string $class = null) {
+    function operation(User $user, $model = null) {
         
         $perm = true;
         [$schoolId, $userId, $ids] = array_map(
@@ -31,7 +34,21 @@ class CommonPolicy {
         );
         !$schoolId ?: $perm &= $schoolId == $this->schoolId();
         !$userId ?: $perm &= $userId == Auth::id();
-        // !$ids ?: $perm &=
+        if ($ids) {
+            $table = explode('/', Request::path())[0];
+            $model = $this->model(
+                Inflector::classify(Inflector::singularize($table))
+            );
+            $condition = ['school_id' => $this->schoolId()];
+            if (
+                Schema::hasColumn($table, 'user_id') &&
+                !in_array($user->role(), Constant::SUPER_ROLES)
+            ) {
+                $condition['user_id'] = $user->id;
+            }
+            $perm &= $model->where($condition)->pluck('id')
+                ->flip()->has(array_values($ids));
+        }
     
         return $this->action($user) && $perm;
         

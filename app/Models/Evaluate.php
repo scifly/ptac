@@ -211,7 +211,8 @@ class Evaluate extends Model {
                 'batch' => true
             ];
         } else {
-            $students = Student::with('user')->whereIn('id', $this->contactIds('student'))
+            $students = Student::with('user')
+                ->whereIn('id', $this->contactIds('student'))
                 ->get()->pluck('user.realname', 'id');
             $schoolId = $this->schoolId();
             $indicators = Indicator::whereSchoolId($schoolId)->pluck('name', 'id');

@@ -106,7 +106,7 @@ class Consumption extends Model {
                 ],
             ],
         ];
-        $condition = 'Student.id IN (' . join(',', $this->contactIds('student')) . ')';
+        $condition = 'Student.id IN (' . $this->contactIds('student')->join(',') . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition
@@ -267,11 +267,13 @@ class Consumption extends Model {
         $records[] = self::EXPORT_TITLES;
         /** @var Consumption $c */
         foreach ($consumptions as $c) {
+            $student = $c->student;
+            $user = $student->user;
             $records[] = [
                 $c->id,
-                $c->student->user->realname,
-                $c->student->user->gender ? '男' : '女',
-                $c->student->squad->name,
+                $user->realname,
+                $user->gender ? '男' : '女',
+                $student->squad->name,
                 $c->ctype ? '充值' : '消费',
                 '&yen; ' . $c->amount,
                 $c->ctime,

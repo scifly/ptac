@@ -22,17 +22,17 @@ class MenuPolicy {
      */
     public function operation(User $user, Menu $menu = null) {
     
-        [$parentId, $mTypeId] = array_map(
-            function ($field) use ($menu) {
-                return $this->field($field, $menu);
-            }, ['parent_id', 'menu_type_id']
-        );
-        if (isset($parentId, $mTypeId)) {
-            $perm = collect($this->menuIds())->flip()->has($menu ? [$menu->id, $parentId] : $parentId)
-                && MenuType::find($mTypeId)->name == '其他';
+        $perm = true;
+        $menuIds = $this->menuIds()->flip();
+        if ($parentId = $this->field('parent_id', $menu)) {
+            $perm &= $menuIds->has(
+                $menu ? array_values([$menu->id, $parentId]) : $parentId
+            );
+        } elseif ($menu) {
+            $perm &= $menuIds->has($menu->id);
         }
     
-        return $this->action($user) && ($perm ?? true);
+        return $this->action($user) && $perm;
         
     }
     

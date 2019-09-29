@@ -4,7 +4,7 @@ namespace App\Policies;
 use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{Educator, Evaluate, Indicator, Semester, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\{Collection, Facades\Auth};
 use ReflectionException;
 
 /**
@@ -24,10 +24,10 @@ class EvaluatePolicy {
     public function operation(User $user, Evaluate $eval = null) {
 
         if (!$user->educator) return false;
-        [$studentId, $indicatorId, $semesterId, $eduatorId] = array_map(
+        [$studentId, $indicatorId, $semesterId, $eduatorId, $ids] = array_map(
             function ($field) use ($eval) {
                 return $this->field($field, $eval);
-            }, ['student_id', 'indicator_id', 'semester_id', 'educator_id']
+            }, ['student_id', 'indicator_id', 'semester_id', 'educator_id', 'ids']
         );
         $schoolId = $this->schoolId();
         $perm = Auth::user()->educator->school_id == $schoolId;;
@@ -37,6 +37,9 @@ class EvaluatePolicy {
                 && Semester::whereSchoolId($schoolId)->pluck('id')->flip()->has($semesterId)
                 && Educator::find($eduatorId)->user_id == Auth::id();
         }
+        /** 批量操作 */
+        !$ids ?: $perm &= Evaluate::whereEducatorId(Auth::user()->educator->id)
+            ->pluck('id')->flip()->has(array_values($ids));
         
         return $this->action($user) && $perm;
         

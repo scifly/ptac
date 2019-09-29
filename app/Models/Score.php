@@ -183,7 +183,7 @@ class Score extends Model {
         ];
         $condition = in_array(Auth::user()->role(), Constant::SUPER_ROLES)
             ? 'School.id = ' . $this->schoolId()
-            : 'Squad.id IN (' . join(',', $this->classIds()) . ')';
+            : 'Squad.id IN (' . $this->classIds()->join(',') . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition
@@ -569,13 +569,13 @@ class Score extends Model {
         
         try {
             $schoolId = session('schoolId');
-            $allowedClassIds = $this->classIds($schoolId);
             $examId = Request::query('examId');
             $classId = Request::query('classId');
             $exam = Exam::find($examId);
             $class = Squad::find($classId);
             throw_if(
-                !$exam || !$class || !in_array($classId, $allowedClassIds),
+                !$exam || !$class ||
+                !$this->classIds($schoolId)->flip()->has($classId),
                 new Exception(__('messages.not_found'))
             );
             $data = $this->classStat(true)
@@ -672,9 +672,8 @@ class Score extends Model {
                 ? Score::find(Request::route('id'))->exam
                 : Exam::find($exams->keys()->first());
             # 指定考试对应的班级
-            $classIds = array_intersect(
-                explode(',', $exam ? $exam->class_ids : ''),
-                $this->classIds()
+            $classIds = $this->classIds()->intersect(
+                explode(',', $exam ? $exam->class_ids : '')
             );
             $classes = Squad::whereEnabled(1)->whereIn('id', $classIds)->pluck('name', 'id');
             # 指定考试对应的科目列表
@@ -1235,7 +1234,7 @@ class Score extends Model {
         $classId = Request::input('classId');
         $student = Student::find($studentId);
         abort_if(
-            !in_array($studentId, $this->contactIds('student')) ||
+            !$this->contactIds('student')->has($studentId) ||
             !in_array($classId, $this->classIds()) || !$student,
             Constant::UNAUTHORIZED,
             __('messages.score.unauthorized_stat')

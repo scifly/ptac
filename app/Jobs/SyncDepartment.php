@@ -10,6 +10,7 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
+    Support\Collection,
     Support\Facades\DB};
 use Pusher\PusherException;
 use Throwable;
@@ -116,31 +117,25 @@ class SyncDepartment implements ShouldQueue {
                 foreach ($syncIds ?? [] as $corpId => $_syncIds) {
                     # step 1 - 同步处于需要删除部门下的所有会员
                     $this->corp = Corp::find($corpId);
-                    $corpDIds = array_merge(
-                        [$this->corp->department_id],
+                    $corpDIds = collect([$this->corp->department_id])->merge(
                         $d->subIds($this->corp->department_id)
                     );
                     arsort($_syncIds);
-                    $deptIds = array_keys($_syncIds);
+                    $deptIds = collect(array_keys($_syncIds));
                     $uIds = DepartmentUser::whereIn('department_id', $deptIds)
-                        ->pluck('user_id')->unique()->toArray();
+                        ->pluck('user_id')->unique();
                     $uDeptIds = DepartmentUser::whereIn('user_id', $uIds)
-                        ->pluck('department_id')->unique()->toArray();
+                        ->pluck('department_id')->unique();
                     // $uUIds / $dUIds - 需要更新 / 删除的用户Id
-                    $uUIds = DepartmentUser::whereIn('department_id', array_diff($uDeptIds, $deptIds))
+                    $uUIds = DepartmentUser::whereIn('department_id', $uDeptIds->diff($deptIds))
                         ->pluck('user_id')->unique()->toArray();
                     /** @var User $user */
                     foreach (User::whereIn('id', $uUIds)->get() as $user) {
-                        $departments = array_diff(
-                            array_intersect(
-                                $user->departments->pluck('id')->toArray(),
-                                $corpDIds
-                            ), $deptIds
-                        );
-                        if (in_array($this->corp->department_id, $departments)) {
-                            $departments = array_merge(
-                                [$this->corp->departmentid],
-                                array_diff($departments, [$this->corp->department_id])
+                        $departments = $user->departments->pluck('id')
+                            ->intersect($corpDIds)->diff($deptIds);
+                        if ($departments->has($this->corp->department_id)) {
+                            $departments = collect([$this->corp->departmentid])->merge(
+                                $departments->diff([$this->corp->department_id])
                             );
                         }
                         $entAttrs = json_decode($user->ent_attrs, true);
@@ -150,17 +145,16 @@ class SyncDepartment implements ShouldQueue {
                             $user->email, $departments,
                         ]);
                     }
-                    $deletions = User::whereIn('id', array_diff($uIds, $uUIds))
-                        ->pluck('userid')->toArray();
+                    $deletions = User::whereIn('id', $uIds->diff($uUIds))->pluck('userid');
                     
                     [$updated, $deleted] = array_map(
                         function ($members, $method) {
                             return $this->syncMember($members, $method);
-                        }, [$updates ?? [], $deletions], ['update', 'delete']
+                        }, [collect($updates ?? []), $deletions], ['update', 'delete']
                     );
                     array_map(
                         function ($userids, $method) use ($deptIds) {
-                            $userIds = User::whereIn('userid', $userids)->pluck('id')->toArray();
+                            $userIds = User::whereIn('userid', $userids)->pluck('id');
                             if ($method == 'update') {
                                 DepartmentUser::whereIn('user_id', $userIds)
                                     ->whereIn('department_id', $deptIds)->delete();
@@ -175,7 +169,7 @@ class SyncDepartment implements ShouldQueue {
                     $deletedIds = array_merge(
                         $deletedIds,
                         $this->syncParty($deptIds),
-                        array_diff($this->deptIds(), $deptIds)
+                        $this->deptIds()->diff($deptIds)
                     );
                 }
             });
@@ -195,9 +189,9 @@ class SyncDepartment implements ShouldQueue {
      * @return array
      * @throws Throwable
      */
-    private function syncMember($members, $method) {
+    private function syncMember(Collection $members, $method) {
         
-        $data = $method == 'update' ? $members : array_chunk($members, 200);
+        $data = $method == 'update' ? $members : $members->chunk(200);
         $succeeded = [];
         $token = $this->token();
         foreach ($data as $datum) {
@@ -220,11 +214,11 @@ class SyncDepartment implements ShouldQueue {
     /**
      * 同步企业微信部门
      *
-     * @param array $deptIds
+     * @param Collection $deptIds
      * @return array|bool
      * @throws Throwable
      */
-    private function syncParty(array $deptIds = null) {
+    private function syncParty($deptIds = null) {
         
         $token = $this->token();
         if (!$deptIds) {
@@ -288,20 +282,18 @@ class SyncDepartment implements ShouldQueue {
         
     }
     
-    /**
-     * @return array
-     */
+    /** @return Collection */
     private function deptIds() {
     
         $d = new Department;
-        $ids = [];
+        $ids = collect([]);
         foreach ($this->departmentIds as $dId) {
-            $ids = array_merge(
-                $ids, array_merge([$dId], $d->subIds($dId))
+            $ids = $ids->merge(
+                collect([$dId])->merge($d->subIds($dId))
             );
         }
         
-        return array_unique($ids);
+        return $ids->unique();
         
     }
     

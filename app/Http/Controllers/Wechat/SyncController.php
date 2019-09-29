@@ -339,15 +339,11 @@ class SyncController extends Controller {
                 return Group::whereName($name)->first()->id;
             }, ['企业', '学校']
         );
-        $deptIds = explode(',', $this->event->{'Department'});
+        $deptIds = collect(explode(',', $this->event->{'Department'}));
         foreach ($this->schoolDepartmentIds as $schoolDeptId) {
-            $schoolDeptIds = array_merge(
-                [$schoolDeptId],
-                $dept->subIds($schoolDeptId)
-            );
-            $diffs = array_diff($deptIds, $schoolDeptIds);
-            if (empty($diffs)) {
-                return in_array($schoolDeptId, $deptIds) ? $sGId
+            $schoolDeptIds = collect([$schoolDeptId])->merge($dept->subIds($schoolDeptId));
+            if ($deptIds->diff($schoolDeptIds)->isEmpty()) {
+                return $deptIds->has($schoolDeptId) ? $sGId
                     : Group::where([
                         'name' => '教职员工', 'school_id' => $this->school()->id,
                     ])->first()->id;

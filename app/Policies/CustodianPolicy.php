@@ -26,13 +26,14 @@ class CustodianPolicy {
     
         $perm = true;
         if (!$ids = Request::input('ids')) {
-            $groupId = Request::input('user')['group_id'] ?? ($custodian ? $custodian->user->group_id : null);
+            $groupId = Request::input('user')['group_id']
+                ?? ($custodian ? $custodian->user->group_id : null);
             !$groupId ?: $perm &= $groupId == Group::whereName('监护人')->first()->id;
             $studentIds = Request::input('student_ids')
                 ?? ($custodian ? $custodian->students->pluck('id') : null);
-            !$studentIds ?: $perm &= collect($this->contactIds('student'))->flip()->has($studentIds);
+            !$studentIds ?: $perm &= $this->contactIds('student')->flip()->has($studentIds);
         } else {
-            $perm &= collect($this->contactIds('custodian'))->flip()->has(array_values($ids));
+            $perm &= $this->contactIds('custodian')->flip()->has(array_values($ids));
         }
         
         return $this->action($user) && $perm;

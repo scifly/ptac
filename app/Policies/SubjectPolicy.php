@@ -25,17 +25,20 @@ class SubjectPolicy {
      */
     function operation(User $user, Subject $subject = null) {
         
-        [$schoolId, $gradeIds] = array_map(
+        [$schoolId, $gradeIds, $ids] = array_map(
             function ($field) use ($subject) {
                 return $this->field($field, $subject);
-            }, ['school_id', 'grade_ids']
+            }, ['school_id', 'grade_ids', 'ids']
         );
+        $_schoolId = $this->schoolId();
         if (isset($schoolId, $gradeIds)) {
-            $perm = $schoolId == $this->schoolId()
-                && Grade::whereSchoolId($this->schoolId())->pluck('id')->flip()->has(
-                    explode(',', $gradeIds)
+            $perm = $schoolId == $_schoolId
+                && Grade::whereSchoolId($_schoolId)->pluck('id')->flip()->has(
+                    array_values(explode(',', $gradeIds))
                 );
         }
+        !$ids ?: $perm = Subject::whereSchoolId($_schoolId)
+            ->pluck('id')->flip()->has(array_values($ids));
         
         return $this->action($user) && ($perm ?? true);
         

@@ -93,7 +93,7 @@ class CorpAuth {
                 $schoolIds = Auth::user()->schoolIds(
                     Auth::id(), session('corpId')
                 );
-                if (count($schoolIds) > 1) {
+                if ($schoolIds->count() > 1) {
                     session(['schools' => true]);
                     
                     return redirect(

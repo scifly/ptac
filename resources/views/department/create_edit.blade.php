@@ -28,7 +28,6 @@
             @include('shared.tag.tags')
             @include('shared.remark')
             @include('shared.switch', [
-
                 'value' => $department['enabled'] ?? null
             ])
         </div>

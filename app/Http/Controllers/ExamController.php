@@ -24,8 +24,7 @@ class ExamController extends Controller {
     function __construct(Exam $exam) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->exam = $exam;
-        $this->approve($exam);
+        $this->approve($this->exam = $exam);
         
     }
     

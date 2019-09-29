@@ -40,7 +40,7 @@ class EducatorPolicy {
                 $perm &= Tag::whereSchoolId($this->schoolId())->pluck('id')->flip()->has($tagIds);
             }
         } else {
-            $perm &= collect($this->contactIds('educator'))->flip()->has(array_values($ids));
+            $perm &= $this->contactIds('educator')->flip()->has(array_values($ids));
         }
         
         return $this->action($user) && $perm;

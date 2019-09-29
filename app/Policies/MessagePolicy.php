@@ -19,6 +19,7 @@ class MessagePolicy {
      */
     function operation(User $user, Message $message = null) {
     
+    
     }
     
 }

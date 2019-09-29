@@ -23,9 +23,11 @@ class ConsumptionPolicy {
     function operation(User $user) {
 
         if ($rangeId = Request::input('range_id')) {
+            if (!in_array($rangeId, range(1, 3))) return false;
             $ids = (new Consumption)->studentIds($rangeId);
             $dRange = explode(' - ', Request::input('date_range'));
-            $perm = collect($this->contactIds('student'))->flip()->has($ids) && ($dRange[1] >= $dRange[0]);
+            $perm = $this->contactIds('student')->flip()->has(array_values($ids))
+                && ($dRange[1] >= $dRange[0]);
         }
         
         return $this->action($user) && ($perm ?? true);

@@ -19,6 +19,7 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\{Auth, DB, Hash, Request};
 use Illuminate\View\View;
 use Laravel\Passport\Client;
@@ -463,7 +464,7 @@ class User extends Authenticatable {
                 'userid'   => $attrs['userid'],
                 'username' => $user->username,
                 'position' => $attrs['position'] ?? $role,
-                'corpIds'  => $this->corpIds($id),
+                'corpIds'  => $this->corpIds($id)->toArray(),
             ];
             if ($method != 'delete') {
                 $departments = in_array($role, ['运营', '企业']) ? [1]
@@ -496,15 +497,15 @@ class User extends Authenticatable {
      * 返回指定用户所属的所有企业id
      *
      * @param $id
-     * @return array
+     * @return SCollection
      */
     function corpIds($id = null) {
         
         $user = $this->find($id ?? Auth::id());
         
         return $this->role($user->id) == '运营'
-            ? Corp::pluck('id')->toArray()
-            : [(new Department)->corpId($user->depts->first()->id)];
+            ? Corp::pluck('id')
+            : collect([(new Department)->corpId($user->depts->first()->id)]);
         
     }
     
@@ -713,7 +714,7 @@ class User extends Authenticatable {
      * 返回指定用户直属的部门集合
      *
      * @param null $id
-     * @return array
+     * @return SCollection
      */
     function deptIds($id = null) {
         
@@ -722,11 +723,11 @@ class User extends Authenticatable {
         $role = $this->role($id);
         
         return in_array($role, Constant::NON_EDUCATOR) && $role != '监护人'
-            ? $user->depts->pluck('id')->toArray()
+            ? $user->depts->pluck('id')
             : DepartmentUser::where([
                 'user_id' => $user->id,
                 'enabled' => $role == '监护人' ? 0 : 1,
-            ])->pluck('department_id')->toArray();
+            ])->pluck('department_id');
         
     }
     
@@ -738,7 +739,7 @@ class User extends Authenticatable {
     
         switch (Request::route()->uri) {
             case 'users/message':
-                /** @var \Illuminate\Support\Collection $nil */
+                /** @var SCollection $nil */
                 [$nil, $htmlApp, $htmlMessageType] = (new Message)->filters();
                 
                 return [
@@ -795,7 +796,7 @@ class User extends Authenticatable {
                             if ($role == '企业') {
                                 $corps = Corp::whereDepartmentId($departmentId);
                             } else {
-                                $corpId = head($this->corpIds($operator->id));
+                                $corpId = $this->corpIds($operator->id)->first();
                                 $corps = Corp::whereId($corpId);
                                 $schools = School::whereCorpId($corpId);
                             }

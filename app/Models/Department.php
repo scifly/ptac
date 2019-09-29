@@ -14,8 +14,11 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasMany,
     Relations\HasOne};
+use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\{Auth, DB, Request};
+use ReflectionException;
 use Throwable;
 
 /**
@@ -255,7 +258,6 @@ class Department extends Model {
         // }
         //
         // return true;
-        
     }
     
     /**
@@ -330,7 +332,7 @@ class Department extends Model {
                 : $this->topId();
         }
         $depts = $this->nodes($rootId);
-        $allowedIds = $this->departmentIds($user->id);
+        $allowedIds = $this->departmentIds($user->id)->flip();
         $nodes = [];
         for ($i = 0; $i < sizeof($depts); $i++) {
             $id = $depts[$i]['id'];
@@ -343,14 +345,14 @@ class Department extends Model {
                 $synced = $depts[$i]['synced'];
                 $title = $synced ? '已同步' : '未同步';
                 $syncMark = Html::tag('span', '*', [
-                    'class' => 'text-' . ($synced ? 'green' : 'red')
+                    'class' => 'text-' . ($synced ? 'green' : 'red'),
                 ])->toHtml();
             }
             $text = Html::tag('span', $name, [
-                'class' => $enabled ? $dt->color : 'text-gray',
-                'title' => $title ?? ''
-            ])->toHtml() . ($syncMark ?? '');
-            $selectable = $isSuperRole ? 1 : (in_array($id, $allowedIds) ? 1 : 0);
+                    'class' => $enabled ? $dt->color : 'text-gray',
+                    'title' => $title ?? '',
+                ])->toHtml() . ($syncMark ?? '');
+            $selectable = $isSuperRole ? 1 : ($allowedIds->has($id) ? 1 : 0);
             $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
             $nodes[] = [
                 'id'         => $id,
@@ -428,18 +430,18 @@ class Department extends Model {
      * 返回指定部门所有子部门的id
      *
      * @param $id
-     * @return array
+     * @return SCollection
      */
     function subIds($id) {
         
         static $subIds;
-        $childrenIds = Department::whereParentId($id)->pluck('id')->toArray();
+        $childrenIds = Department::whereParentId($id)->pluck('id');
         foreach ($childrenIds as $childId) {
             $subIds[] = $childId;
             $this->subIds($childId);
         }
         
-        return $subIds ?? [];
+        return collect($subIds ?? []);
         
     }
     
@@ -536,12 +538,13 @@ class Department extends Model {
             foreach ($visibleNodes as $node) {
                 if ($node['selectable']) {
                     $users = $this->find($node['id'])->users->filter(
-                        function (User $user) use($node, $visibleIds) {
+                        function (User $user) use ($node, $visibleIds) {
                             return (empty($visibleIds) || in_array($node['id'], $visibleIds))
                                 ? true : !in_array($user->role(), Constant::NON_EDUCATOR);
                         }
                     );
-                    /*$this->find($node['id'])->*/$users->each(
+                    /*$this->find($node['id'])->*/
+                    $users->each(
                         function (User $user) use ($node, &$contacts) {
                             if ($user->student || $user->educator) {
                                 $contacts[] = [
@@ -583,13 +586,38 @@ class Department extends Model {
     }
     
     /**
+     * 返回指定部门(含子部门）下的所有用户id
+     *
+     * @param $id
+     * @param null $type
+     * @return SCollection
+     * @throws ReflectionException
+     */
+    function userIds($id, $type = null) {
+    
+        $builder = DepartmentUser::whereIn(
+            'department_id',
+            collect([$id])->merge($this->subIds($id))
+        );
+        if ($type) {
+            /** @var QBuilder $builder */
+            $builder = $this->model($type)->whereIn(
+                'user_id', $builder->pluck('user_id')
+            );
+        }
+    
+        return $builder->pluck('user_id')->unique();
+        
+    }
+    
+    /**
      * 返回View所需数据
      *
      * @return array
      * @throws Exception
      */
     function compose() {
-    
+        
         return explode('/', Request::path())[1] == 'index'
             ? []
             : (new Tag)->compose(
@@ -632,10 +660,8 @@ class Department extends Model {
         if (!isset($rootId)) {
             $nodes = $this->orderBy('order')->get();
         } else {
-            $ids = array_merge(
-                [$rootId],
-                array_intersect(
-                    $this->departmentIds(Auth::id()),
+            $ids = collect([$rootId])->merge(
+                $this->departmentIds(Auth::id())->intersect(
                     $this->subIds($rootId)
                 )
             );
@@ -678,7 +704,7 @@ class Department extends Model {
         if (!isset($id, $parentId)) return false;
         # 如果部门(被移动的部门和目标部门）不在当前用户的可见范围内，则抛出401异常
         abort_if(
-            sizeof(array_intersect([$id, $parentId], $this->departmentIds(Auth::id()))) < 2,
+            collect([$id, $parentId])->intersect($this->departmentIds(Auth::id()))->count() < 2,
             Constant::UNAUTHORIZED,
             __('messages.forbidden')
         );

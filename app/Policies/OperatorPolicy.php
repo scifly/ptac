@@ -40,9 +40,10 @@ class OperatorPolicy {
                 $perm &= in_array(Group::find($groupId)->name, $roles);
             }
             $schoolId = Request::input('school_id');
-            !$schoolId ?: $perm &= in_array($schoolId, $this->schoolIds());
+            !$schoolId ?: $perm &= $this->schoolIds()->flip()->has($schoolId);
         } else {
-            $perm &= collect(explode(',', $this->visibleUserIds()))->flip()->has($ids);
+            $perm &= collect(explode(',', $this->visibleUserIds()))
+                ->flip()->has(array_values($ids));
         }
         
         return in_array($role, Constant::SUPER_ROLES) && $perm;

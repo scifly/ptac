@@ -27,8 +27,7 @@ class TabController extends Controller {
     function __construct(Tab $tab) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->tab = $tab;
-        Request::has('ids') ?: $this->approve($tab);
+        $this->approve($this->tab = $tab);
         
     }
     

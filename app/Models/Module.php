@@ -154,7 +154,7 @@ class Module extends Model {
                 ],
             ],
         ];
-        $condition = 'Module.school_id IN (' . join(',', $this->schoolIds()) . ')';
+        $condition = 'Module.school_id IN (' . $this->schoolIds()->join(',') . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition

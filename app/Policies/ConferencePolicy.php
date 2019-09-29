@@ -25,20 +25,20 @@ class ConferencePolicy {
         
         if (!$user->educator) return false;
         $perm = true;
-        [$userId, $roomId, $messageId] = array_map(
+        [$userId, $roomId, $messageId, $ids] = array_map(
             function ($field) use ($conference) {
                 return $this->field($field, $conference);
-            }, ['user_id', 'room_id', 'message_id']
+            }, ['user_id', 'room_id', 'message_id', 'ids']
         );
-        if ($userId) {
-            in_array($user->role(), Constant::SUPER_ROLES) ?: $perm &= $userId == Auth::id();
-        }
+        (!$userId && in_array($user->role(), Constant::SUPER_ROLES)) ?: $perm &= $userId == Auth::id();
         !$roomId ?: $perm &= Room::find($roomId)->building->school_id == $this->schoolId();
         if ($messageId) {
             $message = Message::find($messageId);
             $perm &= collect(explode(',', $this->visibleUserIds()))
-                ->has($message->targetUserIds($message));
+                ->flip()->has($message->targetUserIds($message));
         }
+        !$ids ?: $perm &= Conference::where(['user_id' => $user->id])
+            ->pluck('id')->has(array_values($ids));
         
         return $this->action($user) && $perm;
         

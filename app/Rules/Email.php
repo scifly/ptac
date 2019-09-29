@@ -30,7 +30,7 @@ class Email implements Rule {
         $userId = Request::input('user_id') ?? Request::input('id');
         # email所属用户
         $user = User::whereEmail($value)->first();
-        $existed = !$user ? false : in_array($this->corpId(), $user->corpIds($user->id));
+        $existed = !$user ? false : $user->corpIds($user->id)->flip()->has($this->corpId());
         Request::method() == 'POST' ?: $existed &= $user->id != $userId;
 
         return !$existed;

@@ -2,8 +2,9 @@
 namespace App\Http\Requests;
 
 use App\Helpers\{ModelTrait};
-use App\Models\{App, MediaType, Message, School, User};
+use App\Models\{App, MediaType, Message, MessageType, School, User};
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Throwable;
 
 /**
@@ -24,15 +25,22 @@ class MessageRequest extends FormRequest {
     /** @return array */
     public function rules() {
         
-        $rules = array_combine((new Message)->getFillable(), [
-            'required|integer', 'required|integer',
-            'required|integer', 'required|integer',
-            'required|string|max:64', 'required|string',
-            'required|string|max:255', 'required|integer',
-            'required|url|max:255', 'required|integer',
-            'required|integer', 'required|boolean',
-            'required|boolean', 'nullable|integer'
-        ]);
+        $rules = [
+            'message_type_id' => ['required', 'integer', Rule::in(MessageType::pluck('id'))],
+            'media_type_id'   => ['required', 'integer', Rule::in(MediaType::pluck('id'))],
+            'app_id'          => 'required|integer',
+            'msl_id'          => 'required|integer',
+            'title'           => 'required|string|max:64',
+            'content'         => 'required|string',
+            'code'            => 'required|string|max:255',
+            'message_id'      => 'required|integer',
+            'url'             => 'required|url|max:255',
+            's_user_id'       => 'required|integer',
+            'r_user_id'       => 'required|integer',
+            'read'            => 'required|boolean',
+            'sent'            => 'required|boolean',
+            'event_id'        => 'nullable|integer',
+        ];
         $rules = array_merge(
             $rules, $this->method() == 'send'
             ? [
@@ -60,7 +68,7 @@ class MessageRequest extends FormRequest {
                 $this->input('message_type_id'),
                 MediaType::whereName($this->input('type'))->first()->id,
                 $app->id, 0, $this->title($this->input('type')), '',
-                uniqid(), 0, 'http://', $this->user()->id ?? 0, 0, 0, 0, null
+                uniqid(), 0, 'http://', $this->user()->id ?? 0, 0, 0, 0, null,
             ]);
             if ($this->has('targetIds')) {
                 # 从后台发送消息
@@ -136,7 +144,7 @@ class MessageRequest extends FormRequest {
      * @return array
      */
     private function content($input, App $app) {
-    
+        
         # 消息草稿的用户类发送对象只需保存学生和教职员工的userid
         $userids = User::whereIn('id', $input['user_ids'] ?? []);
         $content = [
@@ -144,9 +152,9 @@ class MessageRequest extends FormRequest {
             'toparty' => join('|', $input['dept_ids'] ?? []),
             'totag'   => join('|', $input['tag_ids'] ?? []),
             'msgtype' => $type = $this->input('type'),
-            $type  => $this->input($type)
+            $type     => $this->input($type),
         ];
-        if ($app->category  == 1) {
+        if ($app->category == 1) {
             $content['agentid'] = $app->agentid;
         } else {
             $content['template_id'] = $this->input('template_id');

@@ -164,7 +164,7 @@ class ScoreTotal extends Model {
                 ],
             ],
         ];
-        $condition = 'Student.id IN (' . join(',', $this->contactIds('student')) . ')';
+        $condition = 'Student.id IN (' . $this->contactIds('student')->join(',') . ')';
         
         return Datatable::simple(
             $this, $columns, $joins, $condition
@@ -233,14 +233,14 @@ class ScoreTotal extends Model {
             # 对当前用户可见的学生Id
             $allowedStudentIds = $this->contactIds('student');
             # 参与指定考试的学生Id
-            $examStudentIds = self::whereExamId($examId)->pluck('student_id')->toArray();
+            $examStudentIds = $this->whereExamId($examId)->pluck('student_id');
             /**
              * 如果指定考试所属学校对当前用户不可见，或者指定考试包含的
              * 部分或所有学生对当前用户不可见，则抛出403异常
              */
             abort_if(
-                !in_array($exam->examType->school_id, $this->schoolIds())
-                || !empty(array_diff($allowedStudentIds, $examStudentIds)),
+                !$this->schoolIds()->flip()->has($exam->examType->school_id)
+                || $allowedStudentIds->diff($examStudentIds)->isNotEmpty(),
                 Constant::FORBIDDEN,
                 __('messages.forbidden')
             );

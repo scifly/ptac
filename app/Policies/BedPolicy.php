@@ -23,16 +23,21 @@ class BedPolicy {
      */
     function operation(User $user, Bed $bed = null) {
 
-        [$roomId, $studentId] = array_map(
+        [$roomId, $studentId, $ids] = array_map(
             function ($field) use ($bed) {
                 return $this->field($field, $bed);
-            }, ['room_id', 'student_id']
+            }, ['room_id', 'student_id', 'ids']
         );
+        $studentIds = $this->contactIds('student');
         if (isset($roomId, $studentId)) {
             $schoolId = $this->schoolId();
-            $perm = School::find($schoolId)->rooms->pluck('id')->flip()->flip()->has($roomId)
-                && collect($this->contactIds('student'))->flip()->has($studentId);
+            $roomIds = School::find($schoolId)->rooms->pluck('id');
+            $perm = $roomIds->flip()->has($roomId)
+                && $studentIds->flip()->has($studentId);
         }
+        !$ids ?: $perm = $this->model('Bed')
+            ->whereIn('student_id', $studentIds)
+            ->pluck('id')->flip()->has(array_values($ids));
         
         return $this->action($user) && ($perm ?? true);
         

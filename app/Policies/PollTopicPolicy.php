@@ -22,10 +22,10 @@ class PollTopicPolicy {
      */
     public function operation(User $user, PollTopic $topic = null) {
     
-        [$pollId, $category] = array_map(
+        [$pollId, $category, $ids] = array_map(
             function ($field) use ($topic) {
                 return $this->field($field, $topic);
-            }, ['poll_id', 'category']
+            }, ['poll_id', 'category', 'ids']
         );
         if (isset($pollId, $category)) {
             $content = json_decode(Request::input('content'), true);
@@ -33,6 +33,11 @@ class PollTopicPolicy {
             $poll = Poll::find($pollId);
             $perm = $poll->school_id == $this->schoolId()
                 && (in_array($user->role(), Constant::SUPER_ROLES) ? true : $poll->user_id == Auth::id());
+        }
+        if ($ids) {
+            $pollIds = Poll::whereUserId($user->id)->pluck('id');
+            $perm = PollTopic::whereIn('poll_id', $pollIds)
+                ->pluck('id')->flip()->has(array_values($ids));
         }
         
         return $this->action($user) && ($perm ?? true);

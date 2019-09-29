@@ -21,9 +21,9 @@ class GroupPolicy {
      */
     function operation(User $user, Group $group = null) {
     
-        [$menuIds, $tabIds, $actionIds] = array_map(
+        [$menuIds, $tabIds, $actionIds, $ids] = array_map(
             function ($key) { return explode(',', Request::input($key)); },
-            ['menu_ids', 'tab_ids', 'action_ids']
+            ['menu_ids', 'tab_ids', 'action_ids', 'ids']
         );
         if (isset($menuIds, $tabIds, $actionIds)) {
             $schoolId = Request::input('school_id');
@@ -35,6 +35,17 @@ class GroupPolicy {
             $aActionIds = Action::whereIn('tab_id', $aTabIds->diff($dTabIds))->pluck('id');
             $perm = $aGroupIds->has($group->id) && $aMenuIds->has($menuIds)
                 && $aTabIds->has($tabIds) && $aActionIds->has($actionIds);
+        }
+        if ($ids) {
+            $role = $user->role();
+            if ($role == '运营') {
+                $perm = true;
+            } elseif (in_array($role, ['企业', '学校'])) {
+                $perm = Group::whereIn('school_id', $this->schoolIds())
+                    ->pluck('id')->flip()->has($ids);
+            } else {
+                $perm = false;
+            }
         }
         
         return $this->action($user) && ($perm ?? true);

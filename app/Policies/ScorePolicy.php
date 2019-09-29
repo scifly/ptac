@@ -30,9 +30,9 @@ class ScorePolicy {
             }, ['student_id', 'subject_id', 'exam_id']
         );
         if (isset($studentId, $subjectId, $examId)) {
-            $perm = collect($this->contactIds('student'))->flip()->has($studentId)
+            $perm = $this->contactIds('student')->flip()->has($studentId)
                 && Subject::whereSchoolId($this->schoolId())->pluck('id')->flip()->has($subjectId)
-                && collect($this->examIds())->flip()->has($examId);
+                && $this->examIds()->flip()->has($examId);
         }
         
         return $this->action($user) && ($perm ?? true);

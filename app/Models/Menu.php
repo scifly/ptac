@@ -635,9 +635,8 @@ class Menu extends Model {
         if (!isset($id, $parentId)) return false;
         $user = Auth::user();
         if ($user->role() != '运营') {
-            $menuIds = $this->menuIds();
             abort_if(
-                !in_array($id, $menuIds) || !in_array($parentId, $menuIds),
+                !$this->menuIds()->flip()->has([$id, $parentId]),
                 Constant::UNAUTHORIZED,
                 __('messages.forbidden')
             );

@@ -30,7 +30,8 @@ class BedRequest extends FormRequest {
                 'room_id,' . $this->input('room_id') . ',' .
                 'student_id' . $this->input('student_id'),
             'room_id'    => 'required|integer',
-            'student_id' => 'required|integer',
+            'student_id' => 'required|integer|unique:beds,student_id,' .
+                $this->input('id') . ',id',
             'position'   => 'nullable|boolean',
             'remark'     => 'nullable|string|max:255',
             'enabled'    => 'required|boolean',

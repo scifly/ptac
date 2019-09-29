@@ -16,17 +16,16 @@ use Throwable;
  */
 class DepartmentController extends Controller {
     
-    protected $department;
+    protected $dept;
     
     /**
      * DepartmentController constructor.
-     * @param Department $department
+     * @param Department $dept
      */
-    function __construct(Department $department) {
+    function __construct(Department $dept) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->department = $department;
-        $this->approve($department);
+        $this->approve($this->dept = $dept);
         
     }
     
@@ -39,7 +38,7 @@ class DepartmentController extends Controller {
     public function index() {
         
         return Request::method() === 'POST'
-            ? $this->department->index()
+            ? $this->dept->index()
             : $this->output();
         
     }
@@ -69,7 +68,7 @@ class DepartmentController extends Controller {
     public function store(DepartmentRequest $request) {
         
         return $this->result(
-            $this->department->store(
+            $this->dept->store(
                 $request->all()
             )
         );
@@ -86,7 +85,7 @@ class DepartmentController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'department' => $this->department->find($id),
+            'department' => $this->dept->find($id),
         ]);
         
     }
@@ -102,7 +101,7 @@ class DepartmentController extends Controller {
     public function update(DepartmentRequest $request, $id) {
         
         return $this->result(
-            $this->department->modify(
+            $this->dept->modify(
                 $request->all(), $id
             )
         );
@@ -120,7 +119,7 @@ class DepartmentController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->department->remove($id),
+            $this->dept->remove($id),
             __('messages.department.request_submitted'),
             __('messages.department.has_children')
         );

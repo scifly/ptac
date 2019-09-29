@@ -43,8 +43,7 @@ class ImportEducator implements ShouldQueue, MassImport {
         $this->data = $data;
         $this->schoolId = $schoolId;
         $this->school = School::find($schoolId);
-        $this->schoolDeptIds = array_merge(
-            [$this->school->department_id],
+        $this->schoolDeptIds = collect([$this->school->department_id])->merge(
             (new Department)->subIds($this->school->department_id)
         );
         $this->groupId = $groupId;
@@ -140,9 +139,8 @@ class ImportEducator implements ShouldQueue, MassImport {
             'nullable|string',
             'nullable|string',
         ]);
-        $isSchoolValid = in_array($this->schoolId, $this->schoolIds($this->userId));
-        $schoolDepartmentIds = array_merge(
-            [$this->school->department_id],
+        $isSchoolValid = $this->schoolIds($this->userId)->flip()->has($this->schoolId);
+        $schoolDepartmentIds = collect([$this->school->department_id])->merge(
             (new Department)->subIds($this->school->department_id)
         );
         foreach ($data as &$datum) {
@@ -206,7 +204,7 @@ class ImportEducator implements ShouldQueue, MassImport {
                             $record['gender'] == '男' ? '1' : '0',
                             $record['mobile'], Constant::ENABLED,
                             json_encode([
-                                'userid' => uniqid('ptac_'),
+                                'userid'   => uniqid('ptac_'),
                                 'position' => $record['position'],
                             ], JSON_UNESCAPED_UNICODE),
                         ])
@@ -269,58 +267,55 @@ class ImportEducator implements ShouldQueue, MassImport {
      * @throws Throwable
      */
     private function binding(Educator $educator, array $record, $type) {
-    
+        
         try {
-           DB::transaction(function () use ($educator, $record, $type) {
-               # 用户部门绑定关系
-               (new DepartmentUser)->where([
-                   'user_id' => $educator->user_id, 'enabled' => 1
-               ])->delete();
-               $deptIds = array_intersect(
-                   (new Department)->whereIn('name', $record['departments'])
-                       ->pluck('id')->toArray(),
-                   $this->schoolDeptIds
-               );
-               foreach ($deptIds as $deptId) {
-                   $this->dus[] = [$deptId, $educator->user_id];
-               }
-               # 班级/年级主任、任教科目等绑定关系
-               [$gNames, $cNames, $cses] = array_map(
-                   function ($field) use ($record) {
-                       return explode(',', str_replace(['，', '：'], [',', ':'], $record[$field]));
-                   }, ['grades', 'classes', 'classes_subjects']
-               );
-               # 年级主任
-               foreach ($gNames as $gName) {
-                   $condition = ['school_id' => $this->schoolId, 'name' => $gName];
-                   if (!$grade = Grade::where($condition)->first()) continue;
-                   $this->directors[] = [$grade, $educator];
-               }
-               # 班级主任
-               $gradeIds = $this->school->grades->pluck('id')->toArray();
-               foreach ($cNames as $cName) {
-                   if (!$class = Squad::whereName($cName)->whereIn('grade_id', $gradeIds)->first()) continue;
-                   $this->directors[] = [$class, $educator];
-               }
-               # 班级科目绑定关系
-               foreach ($cses as $cs) {
-                   if (empty($cs)) continue;
-                   $paths = explode(':', $cs);
-                   $class = Squad::whereName($paths[0])->whereIn('grade_id', $gradeIds)->first();
-                   $subject = Subject::where(['name' => $paths[1], 'school_id' => $this->schoolId])->get()->first();
-                   if (!isset($class, $subject)) continue;
-                   ClassEducator::firstOrCreate(
-                       array_combine(
-                           (new ClassEducator)->getFillable(),
-                           [$educator->id, $class->id, $subject->id, 1]
-                       )
-                   );
-                   # 更新部门&用户绑定关系
-                   $this->dus[] = [$class->department_id, $educator->user_id];
-               }
-               # 添加企业微信同步数据
-               $this->members[] = [$educator->user_id, 'educator', $type];
-           });
+            DB::transaction(function () use ($educator, $record, $type) {
+                # 用户部门绑定关系
+                (new DepartmentUser)->where([
+                    'user_id' => $educator->user_id, 'enabled' => 1,
+                ])->delete();
+                $deptIds = (new Department)->whereIn('name', $record['departments'])
+                    ->pluck('id')->intersect($this->schoolDeptIds);
+                foreach ($deptIds as $deptId) {
+                    $this->dus[] = [$deptId, $educator->user_id];
+                }
+                # 班级/年级主任、任教科目等绑定关系
+                [$gNames, $cNames, $cses] = array_map(
+                    function ($field) use ($record) {
+                        return explode(',', str_replace(['，', '：'], [',', ':'], $record[$field]));
+                    }, ['grades', 'classes', 'classes_subjects']
+                );
+                # 年级主任
+                foreach ($gNames as $gName) {
+                    $condition = ['school_id' => $this->schoolId, 'name' => $gName];
+                    if (!$grade = Grade::where($condition)->first()) continue;
+                    $this->directors[] = [$grade, $educator];
+                }
+                # 班级主任
+                $gradeIds = $this->school->grades->pluck('id')->toArray();
+                foreach ($cNames as $cName) {
+                    if (!$class = Squad::whereName($cName)->whereIn('grade_id', $gradeIds)->first()) continue;
+                    $this->directors[] = [$class, $educator];
+                }
+                # 班级科目绑定关系
+                foreach ($cses as $cs) {
+                    if (empty($cs)) continue;
+                    $paths = explode(':', $cs);
+                    $class = Squad::whereName($paths[0])->whereIn('grade_id', $gradeIds)->first();
+                    $subject = Subject::where(['name' => $paths[1], 'school_id' => $this->schoolId])->get()->first();
+                    if (!isset($class, $subject)) continue;
+                    ClassEducator::firstOrCreate(
+                        array_combine(
+                            (new ClassEducator)->getFillable(),
+                            [$educator->id, $class->id, $subject->id, 1]
+                        )
+                    );
+                    # 更新部门&用户绑定关系
+                    $this->dus[] = [$class->department_id, $educator->user_id];
+                }
+                # 添加企业微信同步数据
+                $this->members[] = [$educator->user_id, 'educator', $type];
+            });
         } catch (Exception $e) {
             throw $e;
         }

@@ -656,18 +656,9 @@ class Student extends Model {
                                 $nil->union(['否', '是']), 'filter_oncampus'
                             ),
                         ],
-                        [
-                            'title' => '生日',
-                            'html'  => $this->htmlDTRange('生日', false),
-                        ],
-                        [
-                            'title' => '创建于',
-                            'html'  => $this->htmlDTRange('创建于'),
-                        ],
-                        [
-                            'title' => '更新于',
-                            'html'  => $this->htmlDTRange('更新于'),
-                        ],
+                        ['title' => '生日', 'html'  => $this->htmlDTRange('生日', false)],
+                        ['title' => '创建于', 'html'  => $this->htmlDTRange('创建于')],
+                        ['title' => '更新于', 'html'  => $this->htmlDTRange('更新于')],
                         [
                             'title' => '状态 . 操作',
                             'html'  => $this->htmlSelect(

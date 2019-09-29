@@ -254,17 +254,13 @@ class Message extends Model {
             ],
         ];
         $user = Auth::user();
-        $userIds = [$user->id];
+        $userIds = collect([$user->id]);
         if (in_array($user->role(), Constant::SUPER_ROLES)) {
-            $userIds = array_unique(
-                array_merge(
-                    $this->userIds(School::find($this->schoolId())->department_id),
-                    $userIds
-                )
-            );
+            $deptId = School::find($this->schoolId())->department_id;
+            $userIds = (new Department)->userIds($deptId)->merge($userIds);
         }
         $condition = !$received
-            ? 'Message.r_user_id = 0 AND Message.s_user_id IN' . ' (' . join(',', $userIds) . ')'
+            ? 'Message.r_user_id = 0 AND Message.s_user_id IN' . ' (' . $userIds->join(',') . ')'
             : 'Message.r_user_id = ' . Auth::id();
         
         return Datatable::simple(
@@ -1134,9 +1130,7 @@ class Message extends Model {
                 if ($user->student) {
                     return false;
                 } elseif ($user->custodian) {
-                    $custodianDeptIds = collect($user->departmentIds());
-                    
-                    return $custodianDeptIds->intersect($senderDeptIds)->isNotEmpty();
+                    return $user->departmentIds()->intersect($senderDeptIds)->isNotEmpty();
                 } else {
                     return true;
                 }
@@ -1200,15 +1194,11 @@ class Message extends Model {
         # 部门、标签类对象都需要转换成用户类对象
         [$toparty, $touser, $totag] = array_map(
             function ($field) use ($content) {
-                $to = $content[$field];
-                
-                return empty($to) ? [] : explode('|', $to);
+                return collect(explode('|', $content[$field] ?? null));
             }, ['toparty', 'touser', 'totag']
         );
-        $userIds = collect([])->merge(
-            User::whereIn('ent_attrs->userid', $touser)->pluck('id')->merge(
-                DepartmentUser::whereIn('department_id', $toparty)->pluck('user_id')
-            )
+        $userIds = User::whereIn('ent_attrs->userid', $touser)->pluck('id')->merge(
+            DepartmentUser::whereIn('department_id', $toparty)->pluck('user_id')
         );
         foreach ($totag as $tagId) {
             $tag = Tag::find($tagId);
@@ -1222,7 +1212,7 @@ class Message extends Model {
             }
         }
         
-        return $userIds;
+        return $userIds->unique();
         
     }
     
@@ -1239,9 +1229,7 @@ class Message extends Model {
         $allowedDeptIds = $this->departmentIds(Auth::id());
         /** @var User $user */
         foreach ($users as $user) {
-            $departmentId = head(
-                array_intersect($allowedDeptIds, $user->deptIds())
-            );
+            $departmentId = $allowedDeptIds->intersect($user->deptIds())->first();
             $targetIds[] = 'user-' . $departmentId . '-' . $user->id;
         }
         $targetsHtml = '';

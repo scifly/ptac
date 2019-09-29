@@ -189,23 +189,6 @@ class Conference extends Model {
         
     }
     
-    /**
-     * @param Conference|null $conference
-     * @return Collection
-     */
-    function educatorIds(Conference $conference = null) {
-        
-        if ($conference) {
-            $message = $conference->message;
-            $userIds = $message->targetUserIds($message);
-            
-            return Educator::whereIn('user_id', $userIds)->get()->pluck('id');
-        }
-        
-        return collect([]);
-        
-    }
-    
     /** Helper functions -------------------------------------------------------------------------------------------- */
     function compose() {
         
@@ -217,11 +200,14 @@ class Conference extends Model {
         } else {
             $schoolId = $this->schoolId();
             $conference = Conference::find(Request::route('id'));
-            $educators = Educator::whereSchoolId($schoolId)->with('user')->pluck('user.realname', 'id');
+            $message = $conference ? $conference->message : null;
+            $userIds = $message ? $message->targetUserIds($message) : null;
+            $educatorIds = Educator::whereIn('user_id', $userIds);
+            $educators = Educator::whereSchoolId($schoolId)->with('user')->get();
             $data = [
                 'rooms'             => (new Room)->rooms('会议'),
-                'educators'         => $educators,
-                'selectedEducators' => $this->educatorIds($conference),
+                'educators'         => $educators->pluck('user.realname', 'id'),
+                'selectedEducators' => $educatorIds->pluck('id'),
             ];
         }
         

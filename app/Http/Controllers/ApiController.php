@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Constant;
+use App\Http\Requests\ConsumptionRequest;
 use App\Jobs\SendMessageApi;
 use App\Models\{Consumption, Group, Message, User};
 use Exception;
