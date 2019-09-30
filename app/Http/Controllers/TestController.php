@@ -68,7 +68,7 @@ class TestController extends Controller {
         // $field = Request::query('f');
         $tables = DB::select('SHOW TABLES;');
         foreach ($tables as $table) {
-            echo $table . '<br />';
+            echo current($table) . '<br />';
             // if (Schema::hasColumn($table, $field)) {
             //     echo Inflector::classify(Inflector::singularize($table)) . '<br />';
             // }
