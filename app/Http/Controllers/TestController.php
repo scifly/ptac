@@ -65,12 +65,13 @@ class TestController extends Controller {
      */
     public function index() {
         
-        $field = Request::query('f');
+        // $field = Request::query('f');
         $tables = DB::select('SHOW TABLES;');
         foreach ($tables as $table) {
-            if (Schema::hasColumn($table, $field)) {
-                echo Inflector::classify(Inflector::singularize($table)) . '<br />';
-            }
+            echo $table . '<br />';
+            // if (Schema::hasColumn($table, $field)) {
+            //     echo Inflector::classify(Inflector::singularize($table)) . '<br />';
+            // }
         }
         // try {
         //     DB::transaction(function () {
