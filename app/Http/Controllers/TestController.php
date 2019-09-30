@@ -4,15 +4,19 @@ namespace App\Http\Controllers;
 use App\Helpers\{Broadcaster, Constant, ModelTrait};
 use App\Models\{Department};
 use Auth;
+use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Pusher\Pusher;
 use Pusher\PusherException;
 use ReflectionClass;
 use ReflectionMethod;
+use Schema;
 use Throwable;
 
 /**
@@ -61,8 +65,13 @@ class TestController extends Controller {
      */
     public function index() {
         
-        $cd = 7;
-        $this->test(5, function ($param) use ($cd)  { echo $param * 10 * $cd; });
+        $field = Request::query('f');
+        $tables = DB::select('SHOW TABLES;');
+        foreach ($tables as $table) {
+            if (Schema::hasColumn($table, $field)) {
+                echo Inflector::classify(Inflector::singularize($table)) . '<br />';
+            }
+        }
         // try {
         //     DB::transaction(function () {
         //         $apiGId = Group::whereName('api')->first()->id;
