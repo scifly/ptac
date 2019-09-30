@@ -382,39 +382,13 @@ class School extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                session(['schoolId' => $id]);
-                $classes = [
-                    'Department', 'Menu', 'Educator',
-                    'ConferenceRoom', 'ComboType', 'ExamType',
-                    'Grade', 'Group', 'Major', 'Module',
-                    'Poll', 'FlowType', 'Semester',
-                    'Subject', 'Tag', 'Wap',
-                ];
-                array_map(
-                    function ($class) use ($ids) {
-                        $model = $this->model($class);
-                        $isDM = in_array($class, ['Department', 'Menu']);
-                        $obj = $isDM ? $this : $model;
-                        $_id = $isDM ? 'id' : 'school_id';
-                        $field = $isDM ? ($class == 'Menu' ? 'menu_id' : 'department_id') : 'id';
-                        $foreignIds = $obj->whereIn($_id, $ids)->pluck($field)->toArray();
-                        if (!empty($foreignIds)) {
-                            Request::replace(['ids' => $foreignIds]);
-                            $model->remove();
-                        }
-                    }, $classes
-                );
-                Request::replace(['ids' => $ids]);
-                $this->purge(['School'], 'id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.school_id' => [
+                'Educator', 'ComboType', 'ExamType', 'Grade',
+                'Group', 'Major', 'Module', 'Poll', 'FlowType',
+                'Semester', 'Subject', 'Tag', 'Wap'
+            ]
+        ]);
         
     }
     

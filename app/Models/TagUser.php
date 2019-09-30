@@ -90,7 +90,7 @@ class TagUser extends Pivot {
      */
     function remove($id = null) {
         
-        return $this->purge(['TagUser'], 'id', 'purge', $id);
+        return $this->purge($id);
         
     }
     

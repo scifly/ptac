@@ -1,9 +1,11 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
+use Throwable;
 
 /**
  * App\Models\MajorSubject 专业与科目关系
@@ -29,6 +31,8 @@ use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot}
  */
 class MajorSubject extends Pivot {
     
+    use ModelTrait;
+    
     protected $fillable = ['major_id', 'subject_id', 'enabled'];
     
     /** @return BelongsTo */
@@ -36,5 +40,16 @@ class MajorSubject extends Pivot {
     
     /** @return BelongsTo */
     function subject() { return $this->belongsTo('App\Models\Subject'); }
+    
+    /**
+     * @param null $id
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        $this->purge($id);
+        
+    }
+    
     
 }

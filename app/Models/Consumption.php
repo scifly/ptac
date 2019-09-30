@@ -159,7 +159,7 @@ class Consumption extends Model {
      */
     function remove($id = null) {
         
-        return $this->purge(['Consumption'], 'id', 'purge', $id);
+        return $this->purge($id);
         
     }
     

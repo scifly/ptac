@@ -183,16 +183,9 @@ class PassageRule extends Model {
      */
     function remove($id) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $this->find($id)->delete();
-                (new RuleTurnstile)->wherePassageRuleId($id)->delete();
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.passage_rule_id' => ['RuleTurnstile']
+        ]);
         
     }
     

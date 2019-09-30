@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
@@ -36,6 +37,8 @@ use Throwable;
  * @mixin Eloquent
  */
 class CustodianStudent extends Pivot {
+    
+    use ModelTrait;
     
     protected $fillable = [
         'custodian_id', 'student_id', 'relationship',
@@ -83,6 +86,17 @@ class CustodianStudent extends Pivot {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * @param null $id
+     * @return mixed
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        return $this->purge($id);
         
     }
     

@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
@@ -34,6 +35,8 @@ use Throwable;
  * @mixin Eloquent
  */
 class DepartmentTag extends Pivot {
+    
+    use ModelTrait;
     
     protected $fillable = ['department_id', 'tag_id', 'enabled'];
     
@@ -75,6 +78,16 @@ class DepartmentTag extends Pivot {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * @param null $id
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        $this->purge($id);
         
     }
     

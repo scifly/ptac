@@ -4,10 +4,7 @@ namespace App\Models;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\HasMany};
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -54,20 +51,9 @@ class MediaType extends Model {
      */
     function remove($id) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $mediaIds = Media::whereIn('media_type_id', $ids)->pluck('id');
-                Request::replace(['ids' => $mediaIds->toArray()]);
-                (new Media)->remove();
-                Request::replace(['ids' => $ids]);
-                $this->purge(['MediaType'], 'id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'reset.media_type_id' => ['Message', 'Media']
+        ]);
         
     }
     

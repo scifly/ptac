@@ -4,9 +4,8 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
-use Illuminate\Support\{Carbon, Facades\DB, Facades\Request};
+use Illuminate\Support\{Carbon, Facades\Request};
 use ReflectionException;
 use Throwable;
 
@@ -153,20 +152,10 @@ class Bed extends Model {
      * @return bool
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
     
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                Request::replace(['ids' => $ids]);
-                $this->purge(['Bed'], 'bed_id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        return $this->purge($id);
     
-        return true;
-        
     }
     
     /**

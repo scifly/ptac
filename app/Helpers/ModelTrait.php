@@ -14,6 +14,7 @@ use App\Models\{App,
     Squad,
     Student,
     User};
+use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use Form;
 use Html;
@@ -83,49 +84,47 @@ trait ModelTrait {
     /**
      * 删除指定对象对应的记录
      *
-     * @param array $classes
-     * @param string $action
-     * @param $field
-     * @param $value
+     * @param $id
+     * @param array|null $params
      * @return bool
      * @throws Throwable
      */
-    function purge(array $classes, $field, $action = 'purge', $value = null) {
+    function purge($id, array $params = null) {
         
         try {
-            DB::transaction(function () use ($classes, $action, $field, $value) {
-                $fields = is_array($field) ? $field
-                    : array_fill(0, sizeof($classes), $field);
-                $values = $value
-                    ? (is_array($value) ? $value : [$value])
-                    : array_values(Request::input('ids'));
-                $action != 'purge' ?: $fields[0] = 'id';
+            DB::transaction(function () use ($id, $params) {
+                foreach ($params as $key => $classes) {
+                    $af = explode('.', $key);
+                    foreach ($classes as $class) {
+                        $relations[] = array_merge([$class] + $af);
+                    }
+                }
+                $table = explode('/', Request::path())[0];
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $this->model(Inflector::classify(Inflector::singularize($table)))
+                    ->whereIn('id', $ids)->delete();
                 array_map(
-                    function ($class, $field) use ($action, $values) {
+                    function ($relation) use ($ids) {
+                        [$class, $action, $field] = $relation;
                         $model = $this->model($class);
                         if (in_array($action, ['purge', 'reset'])) {
                             /** @var Builder $builder */
-                            $builder = $model->whereIn($field, $values);
-                            $action == 'purge' ? $builder->delete() : $builder->update([$field => 0]);
+                            $builder = $model->whereIn($field, $ids);
+                            if ($action == 'purge') {
+                                Request::replace(['ids' => $builder->pluck('id')->toArray()]);
+                                $model->remove();
+                            } else {
+                                $builder->update([$field => 0]);
+                            }
                         } elseif ($action == 'clear') {
-                            $records = $model->all()->filter(
-                                function (Model $record) use ($values, $field) {
-                                    $vals = array_intersect(
-                                        explode(',', $record->{$field}), $values
-                                    );
-                                    
-                                    return !empty($vals);
-                                }
-                            );
                             /** @var Model $record */
-                            foreach ($records as $record) {
-                                $val = join(',', array_diff(
-                                    explode(',', $record->{$field}), $values
-                                ));
-                                $record->update([$field => $val]);
+                            foreach ($model->all() as $record) {
+                                $original = collect(explode(',', $record->{$field}));
+                                if ($original->isEmpty()) continue;
+                                $record->update([$field => $original->diff($ids)]);
                             }
                         }
-                    }, $classes, $fields
+                    }, $relations ?? []
                 );
             });
         } catch (Exception $e) {

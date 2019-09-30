@@ -85,10 +85,7 @@ class PollReply extends Model {
      */
     function remove($id = null) {
         
-        return $this->purge(
-            [class_basename($this)],
-            'id', 'purge', $id
-        );
+        return $this->purge($id);
         
     }
     

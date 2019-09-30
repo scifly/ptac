@@ -5,10 +5,7 @@ use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -123,21 +120,9 @@ class ExamType extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $examIds = Exam::whereIn('exam_type_id', $ids)
-                    ->pluck('id')->toArray();
-                Request::replace(['ids' => $examIds]);
-                (new Exam)->remove();
-                Request::replace(['ids' => $ids]);
-                $this->purge(['ExamType'], 'id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.exam_type_id' => ['Exam']
+        ]);
         
     }
     

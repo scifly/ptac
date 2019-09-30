@@ -4,14 +4,13 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
     Relations\BelongsTo,
     Relations\HasMany,
     Relations\HasManyThrough};
-use Illuminate\Support\{Carbon, Facades\DB, Facades\Request};
+use Illuminate\Support\{Carbon};
 use Throwable;
 
 /**
@@ -100,7 +99,7 @@ class Building extends Model {
      * @return bool
      */
     function store(array $data) {
-        
+
         return $this->create($data) ? true : false;
         
     }
@@ -126,17 +125,9 @@ class Building extends Model {
      */
     function remove($id) {
     
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                Request::replace(['ids' => $ids]);
-                $this->purge(['Building', 'Room'], 'building_id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-    
-        return true;
+        return $this->purge($id, [
+            'purge.building_id' => ['Room']
+        ]);
         
     }
     

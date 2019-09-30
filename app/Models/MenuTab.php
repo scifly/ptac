@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -34,6 +35,8 @@ use Throwable;
  * @property-read Tab $tab
  */
 class MenuTab extends Pivot {
+    
+    use ModelTrait;
     
     protected $fillable = ['menu_id', 'tab_id', 'tab_order', 'enabled'];
     
@@ -116,6 +119,16 @@ class MenuTab extends Pivot {
             ->orderBy('tab_order')
             ->pluck('tab_id')
             ->toArray();
+        
+    }
+    
+    /**
+     * @param null $id
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        $this->purge($id);
         
     }
     

@@ -1,9 +1,11 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
+use Throwable;
 
 /**
  * App\Models\GroupMenu
@@ -29,6 +31,8 @@ use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot}
  */
 class GroupMenu extends Pivot {
     
+    use ModelTrait;
+    
     protected $fillable = ['group_id', 'menu_id', 'enabled'];
     
     /** @return BelongsTo */
@@ -36,5 +40,15 @@ class GroupMenu extends Pivot {
     
     /** @return BelongsTo */
     function group() { return $this->belongsTo('App\Models\Group'); }
+    
+    /**
+     * @param null $id
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        $this->purge($id);
+        
+    }
     
 }

@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasManyThrough};
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -171,28 +170,9 @@ class Company extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $companies = Company::whereIn('id', $ids)->get();
-                array_map(
-                    function ($class, Collection $_ids) {
-                        Request::replace(['ids' => $_ids->toArray()]);
-                        $this->model($class)->remove();
-                    }, ['Corp', 'Department', 'Menu'], [
-                        Corp::whereIn('company_id', $ids)->pluck('id'),
-                        $companies->pluck('department_id'),
-                        $companies->pluck('menu_id'),
-                    ]
-                );
-                Request::replace(['ids' => $ids]);
-                $this->purge([class_basename($this)], 'id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.company_id' => ['Corp']
+        ]);
         
     }
     

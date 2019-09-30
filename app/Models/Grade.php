@@ -182,10 +182,10 @@ class Grade extends Model {
      * @throws Throwable
      */
     function modify(array $data, $id = null) {
-
+        
         return $this->revise(
             $this, $data, $id,
-            function(Grade $grade) use ($data) {
+            function (Grade $grade) use ($data) {
                 (new Department)->alter($grade);
                 (new DepartmentTag)->storeByDeptId(
                     $grade->department_id, $data['tag_ids'] ?? []
@@ -214,7 +214,6 @@ class Grade extends Model {
         // }
         //
         // return true;
-        
     }
     
     /**
@@ -226,22 +225,10 @@ class Grade extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $this->purge(['Subject'], 'grade_ids', 'clear', $id);
-                $departmentIds = $this->whereIn('id', $ids)
-                    ->pluck('department_id')->toArray();
-                Request::replace(['ids' => $departmentIds]);
-                (new Department)->remove();
-                Request::replace(['ids' => $ids]);
-                $this->purge(['Grade', 'Squad'], 'grade_id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.grade_id'  => ['Squad'],
+            'clear.grade_ids' => ['Subject'],
+        ]);
         
     }
     

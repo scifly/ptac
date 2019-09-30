@@ -4,9 +4,7 @@ namespace App\Models;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\HasMany};
-use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**
@@ -53,21 +51,9 @@ class MenuType extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $menuIds = Menu::whereIn('menu_type_id', $ids)
-                    ->pluck('id')->toArray();
-                Request::replace(['ids' => $menuIds]);
-                (new Menu)->remove();
-                Request::replace(['ids' => $ids]);
-                $this->purge(['MenuType'], 'id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.menu_type_id' => ['Menu']
+        ]);
         
     }
     

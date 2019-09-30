@@ -283,9 +283,9 @@ class Card extends Model {
                 $perms = [];
                 foreach ($userIds as $userId) {
                     if (!$card = User::find($userId)->card) continue;
-                    $tList = $card->turnstiles->pluck('deviceid', 'id')->toArray();
-                    foreach ($tList as $tId => $deviceid) {
-                        if (!$perm = $this->perm($card->id, $tId)) continue;
+                    $tList = $card->turnstiles->pluck('deviceid', 'id');
+                    foreach ($tList as $id => $deviceid) {
+                        if (!$perm = $this->perm($card->id, $id)) continue;
                         $perms[$deviceid][] = $perm;
                     }
                 }
@@ -293,7 +293,7 @@ class Card extends Model {
                 empty($perms) ?: (new Turnstile)->invoke('pdel', ['data' => $perms]);
                 if (!$soft) {
                     $cards = $this->whereIn('user_id', $userIds);
-                    CardTurnstile::whereIn('card_id', $cards->pluck('id')->toArray())->delete();
+                    CardTurnstile::whereIn('card_id', $cards->pluck('id'))->delete();
                     $cards->delete();
                     User::whereIn('id', $userIds)->update(['card_id' => 0]);
                 }

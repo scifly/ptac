@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
@@ -35,6 +36,8 @@ use Throwable;
  * @mixin Eloquent
  */
 class RuleTurnstile extends Pivot {
+    
+    use ModelTrait;
     
     protected $fillable = [
         'turnstile_id', 'door', 'passage_rule_id', 'enabled',
@@ -79,6 +82,17 @@ class RuleTurnstile extends Pivot {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * @param null $id
+     * @return bool
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        return $this->purge($id);
         
     }
     

@@ -5,7 +5,6 @@ use App\Facades\Datatable;
 use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder,
     Collection,
     Model,
@@ -13,7 +12,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany,
     Relations\HasManyThrough};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\{DB, Request};
+use Illuminate\Support\Facades\{Request};
 use Throwable;
 
 /**
@@ -168,21 +167,9 @@ class Wap extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $columnIds = Column::whereIn('wap_id', $ids)
-                    ->pluck('id')->toArray();
-                Request::replace(['ids' => $columnIds]);
-                (new Column)->remove();
-                Request::replace(['ids' => $ids]);
-                $this->purge(['Wap'], 'id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.wap_id' => ['Column']
+        ]);
         
     }
     

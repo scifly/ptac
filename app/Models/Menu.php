@@ -300,25 +300,11 @@ class Menu extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $menuIds = [];
-                foreach ($ids as $id) {
-                    $menuIds = array_merge($menuIds, [$id], $this->subIds($id));
-                }
-                $ids = array_unique($menuIds);
-                array_map(
-                    function ($class, $field) use ($ids) {
-                        $this->model($class)->whereIn($field, $ids)->delete();
-                    }, ['GroupMenu', 'MenuTab', 'Menu'], ['menu_id', 'menu_id', 'id']
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.menu_id' => [
+                'GroupMenu', 'MenuTab', 'Company', 'Corp', 'School'
+            ]
+        ]);
         
     }
     

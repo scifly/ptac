@@ -4,10 +4,9 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\{Auth, DB, Request};
+use Illuminate\Support\Facades\{Auth, Request};
 use ReflectionException;
 use Throwable;
 
@@ -172,17 +171,7 @@ class Evaluate extends Model {
      */
     function remove($id) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                Request::replace(['ids' => $ids]);
-                $this->purge(['Indicator', 'Evaluate'], 'indicator_id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id);
         
     }
     

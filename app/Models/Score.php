@@ -228,7 +228,7 @@ class Score extends Model {
      */
     function remove($id = null) {
         
-        return $this->purge(['Score'], 'id', 'purge', $id);
+        return $this->purge($id);
         
     }
     

@@ -48,8 +48,9 @@ class ApiMessage extends Model {
     protected $table = 'api_messages';
     
     protected $fillable = [
-        'message_log_id', 'message_type_id', 's_user_id',
-        'mobile', 'content', 'read', 'sent',
+        'message_log_id', 'message_type_id',
+        's_user_id', 'mobile', 'content',
+        'read', 'sent',
     ];
     
     /** @return BelongsTo */

@@ -338,36 +338,12 @@ class Student extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                foreach ($ids as $id) {
-                    $student = $this->find($id);
-                    $cIds = array_merge(
-                        $cIds ?? [],
-                        $student->custodians->pluck('id')->toArray()
-                    );
-                    $uIds[] = $student->user_id;
-                }
-                if (!empty($cIds = array_unique($cIds ?? []))) {
-                    Request::replace(['ids' => $cIds]);
-                    (new Custodian)->remove();
-                }
-                if (!empty($uIds = $uIds ?? [])) {
-                    Request::replace(['ids' => $uIds]);
-                    (new User)->remove();
-                }
-                Request::replace(['ids' => $ids]);
-                $this->purge([
-                    class_basename($this), 'Bed', 'Consumption',
-                    'CustodianStudent', 'ScoreTotal', 'Score',
-                ], 'student_id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.student_id' => [
+                'Bed', 'Consumption', 'CustodianStudent',
+                'ScoreTotal', 'Score', 'ModuleStudent'
+            ]
+        ]);
         
     }
     

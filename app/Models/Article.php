@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\{Request};
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -141,7 +141,7 @@ class Article extends Model {
      */
     function remove($id = null) {
         
-        return $this->purge(['Article'], 'id', 'purge', $id);
+        return $this->purge($id);
         
     }
     

@@ -5,9 +5,7 @@ use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
-use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
@@ -150,26 +148,7 @@ class Order extends Model {
      */
     function remove($id) {
         
-        return $this->purge(['Order'], 'id', 'purge', $id);
-        
-    }
-    
-    /**
-     * 从订单记录中删除指定用户数据
-     *
-     * @param $userId
-     * @throws Throwable
-     */
-    function removeUser($userId) {
-        
-        try {
-            DB::transaction(function () use ($userId) {
-                Order::whereUserId($userId)->update(['user_id' => 0]);
-                Order::wherePayUserId($userId)->update(['pay_user_id' => 0]);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        return $this->purge($id);
         
     }
     

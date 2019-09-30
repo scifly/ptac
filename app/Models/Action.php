@@ -188,19 +188,10 @@ class Action extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                array_map(
-                    function (array $classes, string $action) use ($id) {
-                        $this->purge($classes, 'action_id', $action, $id);
-                    }, [['Action', 'ActionGroup'], ['Tab']], ['purge', 'reset']
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.action_id' => ['ActionGroup'],
+            'reset.action_id' => ['Tab']
+        ]);
         
     }
     

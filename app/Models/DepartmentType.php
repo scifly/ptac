@@ -4,9 +4,7 @@ namespace App\Models;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\HasMany};
-use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**
@@ -53,21 +51,7 @@ class DepartmentType extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $departmentIds = Department::whereIn('department_type_id', $ids)
-                    ->pluck('id')->unique()->values()->toArray();
-                Request::replace(['ids' => $departmentIds]);
-                (new Department)->remove();
-                Request::replace(['ids' => $ids]);
-                $this->purge([class_basename($this)], 'id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id);
         
     }
     

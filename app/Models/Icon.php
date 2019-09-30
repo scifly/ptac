@@ -5,9 +5,7 @@ use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\HasMany};
-use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
@@ -111,16 +109,10 @@ class Icon extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge(['Tab', 'Menu'], 'icon_id', 'reset', $id);
-                $this->purge(['Icon'], 'id', 'purge', $id);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        return $this->purge($id, [
+            'reset.icon_id' => ['Tab', 'Menu']
+        ]);
         
-        return true;
     }
     
 }

@@ -5,11 +5,10 @@ use App\Facades\Datatable;
 use App\Helpers\{ModelTrait};
 use App\Jobs\SyncApp;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\{Auth, DB, Request};
+use Illuminate\Support\Facades\{Auth, Request};
 use Throwable;
 
 /**
@@ -84,7 +83,7 @@ class App extends Model {
         2 => '公众号',
         3 => '管理工具',
     ];
-    
+    /** Properties -------------------------------------------------------------------------------------------------- */
     /** @return BelongsTo */
     function corp() { return $this->belongsTo('App\Models\Corp'); }
     
@@ -100,6 +99,7 @@ class App extends Model {
     /** @return HasMany */
     function templates() { return $this->hasMany('App\Models\Template'); }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 应用列表
      *
@@ -187,20 +187,14 @@ class App extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge(['Message', 'School'], 'app_id', 'reset', $id);
-                $this->purge(['App'], 'id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
+    
+        return $this->purge($id, [
+            'reset.app_id' => ['Message', 'School', 'Openid', 'Template']
+        ]);
+    
     }
     
+    /** Helper functions -------------------------------------------------------------------------------------------- */
     /** @return array */
     function compose() {
         

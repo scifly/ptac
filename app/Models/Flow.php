@@ -4,10 +4,9 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Eloquent;
-use Exception;
 use Html;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
-use Illuminate\Support\{Carbon, Facades\Auth, Facades\DB};
+use Illuminate\Support\{Carbon, Facades\Auth};
 use Request;
 use Throwable;
 
@@ -162,18 +161,7 @@ class Flow extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $ids = $this->whereUserId(Auth::id())->pluck('id')->intersect($ids);
-                Request::replace(['ids' => $ids]);
-                $this->purge(['Flow'], 'id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id);
         
     }
     

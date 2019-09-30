@@ -121,7 +121,7 @@ class ScoreRange extends Model {
      */
     function remove($id) {
         
-        return $this->purge(['ScoreRange'], 'id', 'purge', $id);
+        return $this->purge($id);
         
     }
     

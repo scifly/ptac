@@ -4,9 +4,8 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
-use Illuminate\Support\{Carbon, Facades\DB};
+use Illuminate\Support\{Carbon};
 use Throwable;
 
 /**
@@ -126,16 +125,9 @@ class ComboType extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge([class_basename($this)], 'id', 'purge', $id);
-                $this->purge(['Order'], 'combo_type_id', 'reset', $id);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'reset.combo_type_id' => ['Order']
+        ]);
         
     }
     

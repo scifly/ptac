@@ -6,6 +6,7 @@ use App\Models\Flow;
 use App\Models\FlowType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Class FlowTypeRequest
@@ -38,30 +39,36 @@ class FlowRequest extends FormRequest {
     }
     
     protected function prepareForValidation() {
-        
+    
         $input = $this->all();
-        $isPost = $this->method() == 'POST';
-        $logs = json_decode(
-            $isPost
-                ? FlowType::find($input['flow_type_id'])->steps
-                : Flow::find($input['id'])->logs,
-            true
-        );
-        if ($isPost) {
-            $logs[1]['status'] = 0;
-            $input['user_id'] = Auth::id();
+        if (Request::has('ids')) {
+            $input['ids'] = Flow::whereUserId(Auth::id())
+                ->pluck('id')->intersect($input['ids'])
+                ->toArray();
         } else {
-            $step = $input['step'];
-            $status = $input['status'];
-            $logs[$step]['status'] = $status;
-            $logs[$step]['userId'] = Auth::id();
-            if ($status == 1 && sizeof($logs) > $step) {
-                $logs[$step + 1]['status'] = 0;
+            $isPost = $this->method() == 'POST';
+            $logs = json_decode(
+                $isPost
+                    ? FlowType::find($input['flow_type_id'])->steps
+                    : Flow::find($input['id'])->logs,
+                true
+            );
+            if ($isPost) {
+                $logs[1]['status'] = 0;
+                $input['user_id'] = Auth::id();
+            } else {
+                $step = $input['step'];
+                $status = $input['status'];
+                $logs[$step]['status'] = $status;
+                $logs[$step]['userId'] = Auth::id();
+                if ($status == 1 && sizeof($logs) > $step) {
+                    $logs[$step + 1]['status'] = 0;
+                }
             }
+            $input['logs'] = json_encode($logs, JSON_UNESCAPED_UNICODE);
         }
-        $input['logs'] = json_encode($logs, JSON_UNESCAPED_UNICODE);
         $this->replace($input);
-        
+    
     }
     
 }

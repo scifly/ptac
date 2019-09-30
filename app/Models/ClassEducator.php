@@ -96,17 +96,4 @@ class ClassEducator extends Pivot {
         
     }
     
-    /**
-     * 删除教职员工班级绑定关系
-     *
-     * @param null $id
-     * @return bool|null
-     * @throws Throwable
-     */
-    function remove($id = null) {
-        
-        return $this->purge(['ClassEducator'], 'id', 'purge', $id);
-        
-    }
-    
 }

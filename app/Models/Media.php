@@ -7,7 +7,7 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\{DB, Request, Storage};
+use Illuminate\Support\Facades\{Storage};
 use Throwable;
 
 /**
@@ -97,20 +97,10 @@ class Media extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                Request::replace(['ids' => $ids]);
-                $this->purge(['Wap', 'Article', 'Message'], 'media_ids', 'clear');
-                $this->purge(['Column', 'Article'], ['media_id', 'media_id'], 'reset');
-                $this->purge(['Media'], 'id');
-                array_map(function ($id) { Storage::disk('uploads')->delete($this->find($id)->path); }, $ids);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'reset.media_id' => ['Column', 'Article', 'Flow'],
+            'clear.media_ids' => ['Wap', 'Article', 'Message']
+        ]);
         
     }
     

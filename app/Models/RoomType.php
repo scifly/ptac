@@ -4,10 +4,9 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Eloquent;
-use Exception;
-use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\{DB, Request};
+use Illuminate\Support\Facades\{Request};
 use Throwable;
 
 /**
@@ -48,6 +47,9 @@ class RoomType extends Model {
     
     /** @return BelongsTo */
     function corp() { return $this->belongsTo('App\Models\Corp'); }
+    
+    /** @return HasMany */
+    function rooms() { return $this->hasMany('App\Models\Room'); }
     
     /** @return array */
     function index() {
@@ -115,17 +117,9 @@ class RoomType extends Model {
      */
     function remove($id) {
     
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                Request::replace(['ids' => $ids]);
-                $this->purge(['RoomType', 'Room'], 'room_type_id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-    
-        return true;
+        return $this->purge($id, [
+            'purge.room_type_id' => ['Room']
+        ]);
         
     }
     

@@ -266,71 +266,9 @@ class Custodian extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                # 隶属于当前学校的学生id，监护人id，部门id，以及需要删除(部门绑定关系)的用户id
-                list($sIds, $cIds, $dIds, $rUIds, $uUIds) = value(
-                    function () use ($ids) {
-                        foreach ($ids as $id) {
-                            $custodian = $this->find($id);
-                            $csCnt = CustodianStudent::whereCustodianId($id)->count();
-                            (!$custodian->user->educator && $csCnt <= 1)
-                                ? $rUIds[] = $custodian->user_id
-                                : $uUIds[] = $custodian->user_id;
-                            $students = $custodian->students->filter(
-                                function (Student $student) {
-                                    return $student->squad->grade->school_id == $this->schoolId();
-                                }
-                            );
-                            if ($students->isNotEmpty()) {
-                                $sIds = array_merge(
-                                    $sIds ?? [],
-                                    $students->pluck('id')->toArray()
-                                );
-                                $cIds[] = $id;
-                                /** @var Student $student */
-                                foreach ($students as $student) {
-                                    $dIds[] = $student->squad->department_id;
-                                }
-                            }
-                        }
-                        
-                        return array_map('array_unique', [
-                            $sIds ?? [], $cIds ?? [], $dIds ?? [],
-                            $rUIds ?? [], $uUIds ?? [],
-                        ]);
-                    }
-                );
-                $user = new User;
-                # 删除用户 & 部门 / 监护人 & 学生绑定关系
-                if (!empty($uUIds)) {
-                    (new DepartmentUser)->where([
-                        ['user_id', 'in', $uUIds],
-                        ['department_id', 'in', $dIds],
-                    ])->delete();
-                    (new CustodianStudent)->where([
-                        ['custodian_id', 'in', $cIds],
-                        ['student_id', 'in', $sIds],
-                    ])->delete();
-                    Request::replace(['ids' => $uUIds]);
-                    $user->update(['position' => '教职员工']);
-                }
-                # 删除用户 & 监护人
-                if (!empty($rUIds)) {
-                    Request::replace(['ids' => $rUIds]);
-                    $user->remove();
-                    Request::replace([
-                        'ids' => $this->whereIn('user_id', $rUIds)->pluck('id')->toArray(),
-                    ]);
-                    $this->purge([class_basename($this), 'CustodianStudent'], 'custodian_id');
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.custodian_id' => ['CustodianStudent']
+        ]);
         
     }
     

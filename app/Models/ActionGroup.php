@@ -1,9 +1,11 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
 use Illuminate\Support\Carbon;
+use Throwable;
 
 /**
  * App\Models\ActionGroup
@@ -29,6 +31,8 @@ use Illuminate\Support\Carbon;
  */
 class ActionGroup extends Pivot {
     
+    use ModelTrait;
+    
     protected $fillable = ['action_id', 'group_id', 'enabled'];
     
     /** @return BelongsTo */
@@ -36,5 +40,16 @@ class ActionGroup extends Pivot {
     
     /** @return BelongsTo */
     function group() { return $this->belongsTo('App\Models\Group'); }
+    
+    /**
+     * @param null $id
+     * @return bool
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        return $this->purge($id);
+        
+    }
     
 }

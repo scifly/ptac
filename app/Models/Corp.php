@@ -228,36 +228,9 @@ class Corp extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $corps = $this->whereIn('id', $ids)->get();
-                [$appIds, $schoolIds] = array_map(
-                    function ($class) use ($ids) {
-                        return $this->model($class)->whereIn('corp_id', $ids)
-                            ->pluck('id')->toArray();
-                    }, ['App', 'School']
-                );
-                [$departmentIds, $menuIds] = array_map(
-                    function ($field) use ($corps) {
-                        return $corps->pluck($field)->toArray();
-                    }, ['department_id', 'menu_id']
-                );
-                array_map(
-                    function ($class, $ids) {
-                        Request::replace(['ids' => $ids]);
-                        $this->model($class)->remove();
-                    }, ['Department', 'Menu', 'App', 'School'],
-                    [$departmentIds, $menuIds, $appIds, $schoolIds]
-                );
-                Request::replace(['ids' => $ids]);
-                $this->purge([class_basename($this)], 'id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.corp_id' => ['App', 'School', 'RoomType']
+        ]);
         
     }
     

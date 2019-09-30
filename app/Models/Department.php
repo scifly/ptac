@@ -307,11 +307,14 @@ class Department extends Model {
      */
     function remove($id = null) {
         
-        $ids = $id ? [$id] : array_values(Request::input('ids'));
-        empty($this->whereIn('id', $ids)->pluck('id')->toArray())
-            ?: SyncDepartment::dispatch($ids, 'delete', Auth::id());
-        
-        return true;
+        return $this->find($id)->children->isEmpty()
+            ? $this->purge($id, [
+                'purge.department_id' => [
+                    'Company', 'Corp', 'School', 'Grade', 'Squad',
+                    'DepartmentUser', 'DepartmentTag'
+                ]
+            ])
+            : false;
         
     }
     

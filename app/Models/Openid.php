@@ -1,9 +1,11 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Carbon;
+use Throwable;
 
 /**
  * Class Openid
@@ -29,6 +31,8 @@ use Illuminate\Support\Carbon;
  * @mixin Eloquent
  */
 class Openid extends Model {
+    
+    use ModelTrait;
 
     protected $fillable = ['user_id', 'app_id', 'openid'];
     
@@ -37,5 +41,15 @@ class Openid extends Model {
     
     /** @return BelongsTo */
     function user() { return $this->belongsTo('App\Models\User'); }
+    
+    /**
+     * @param null $id
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        $this->purge($id);
+        
+    }
     
 }

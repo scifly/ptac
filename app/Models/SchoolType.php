@@ -5,9 +5,7 @@ use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\HasMany};
-use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**
@@ -107,21 +105,9 @@ class SchoolType extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $schoolIds = School::whereIn('school_type_id', $ids)
-                    ->pluck('id')->toArray();
-                Request::replace(['ids' => $schoolIds]);
-                (new School)->remove();
-                Request::replace(['ids' => $ids]);
-                $this->purge(['SchoolType'], 'id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'reset.school_type_id' => ['School']
+        ]);
         
     }
     

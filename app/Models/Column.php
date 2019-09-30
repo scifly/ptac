@@ -124,9 +124,9 @@ class Column extends Model {
      */
     function remove($id = null) {
         
-        return $this->purge(
-            ['Column', 'Article'], 'column_id', 'purge', $id
-        );
+        return $this->purge($id, [
+            'purge.column_id' => ['Article']
+        ]);
         
     }
     

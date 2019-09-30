@@ -64,7 +64,7 @@ class Tag extends Model {
     function creator() { return $this->belongsTo('App\Models\User'); }
     
     /** @return BelongsToMany */
-    function users() { return $this->belongsToMany('App\Models\User', 'tags_users'); }
+    function users() { return $this->belongsToMany('App\Models\User', 'tag_user'); }
     
     /** @return BelongsToMany */
     function depts() { return $this->belongsToMany('App\Models\Department', 'department_tag'); }
@@ -201,20 +201,9 @@ class Tag extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $this->sync($ids, 'delete');
-                $this->purge(
-                    [class_basename($this), 'TagUser', 'DepartmentTag'],
-                    'tag_id', 'purge', $ids
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.tag_id' => ['TagUser', 'DepartmentTag']
+        ]);
         
     }
     

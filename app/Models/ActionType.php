@@ -3,10 +3,8 @@ namespace App\Models;
 
 use App\Helpers\ModelTrait;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model};
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
@@ -44,16 +42,9 @@ class ActionType extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge(['ActionType'], 'action_type_id', 'purge', $id);
-                $this->purge(['Action'], 'action_type_ids', 'clear', $id);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'clear.action_type_ids' => ['Action']
+        ]);
         
     }
     

@@ -216,20 +216,10 @@ class Subject extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge(['Exam', 'ScoreRange'], 'subject_ids', 'clear', $id);
-                $this->purge(['Score'], 'subject_id', 'reset', $id);
-                $this->purge(
-                    [class_basename($this), 'ClassEducator', 'Event', 'SubjectModule', 'MajorSubject'],
-                    'subject_id', 'purge', $id
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.subject_id'  => ['ClassEducator', 'SubjectModule', 'MajorSubject', 'Score'],
+            'clear.subject_ids' => ['Exam', 'ScoreRange', 'ScoreTotal'],
+        ]);
         
     }
     
@@ -247,7 +237,6 @@ class Subject extends Model {
             $subject = Subject::find(Request::route('id'));
             $majors = $subject ? $subject->majors : null;
             $gradeIds = $subject ? $subject->grade_ids : null;
-            
             $data = array_combine(
                 ['grades', 'majors', 'selectedGrades', 'selectedMajors'],
                 [

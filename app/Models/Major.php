@@ -144,18 +144,9 @@ class Major extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge(
-                    ['Major', 'MajorSubject'],
-                    'major_id', 'purge', $id
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.major_id' => 'MajorSubject'
+        ]);
         
     }
     

@@ -588,19 +588,24 @@ class User extends Authenticatable {
      * 重置密码
      *
      * @return bool
+     * @throws Throwable
      */
     function reset() {
         
-        $user = $this->find(Auth::id());
-        abort_if(
-            !Hash::check(Request::input('old_password'), $user->password),
-            Constant::BAD_REQUEST,
-            __('messages.bad_request')
-        );
+        try {
+            $user = $this->find(Auth::id());
+            throw_if(
+                !Hash::check(Request::input('old_password'), $user->password),
+                new Exception(__('messages.bad_request'))
+            );
+            $user->update([
+                'password' => bcrypt(Request::input('password')),
+            ]);
+        } catch (Exception $e) {
+            throw $e;
+        }
         
-        return $user->update([
-            'password' => bcrypt(Request::input('password')),
-        ]);
+        return true;
         
     }
     
@@ -614,45 +619,24 @@ class User extends Authenticatable {
      */
     function remove($id = null, $partner = false) {
         
-        try {
-            DB::transaction(function () use ($id, $partner) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                if (!$partner) {
-                    $this->sync(
-                        array_map(
-                            function ($id) {
-                                return [$id, $this->role($id), 'delete'];
-                            }, $ids
-                        )
-                    );
-                    Request::replace(['ids' => $ids]);
-                    $this->purge(
-                        array_fill(0, 2, 'ProcedureStep'),
-                        ['approver_user_ids', 'related_user_ids'], 'clear'
-                    );
-                    $this->purge(
-                        array_fill(0, 2, 'Flow'),
-                        ['initiator_user_id', 'operator_user_id'], 'reset'
-                    );
-                    $this->purge([
-                        class_basename($this), 'DepartmentUser', 'TagUser', 'Card',
-                        'Tag', 'Poll', 'MessageReply', 'Face',
-                        'PollReply', 'PollQuestionnaireParticipant',
-                    ], 'user_id');
-                } else {
-                    $mtIds = MessageType::whereIn('user_id', $ids)
-                        ->pluck('id')->toArray();
-                    Request::replace(['ids' => $mtIds]);
-                    (new MessageType)->remove();
-                    Request::replace(['ids' => $ids]);
-                    $this->purge(['User'], 'id');
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id,
+            $partner
+                ? [
+                    'purge.user_id' => ['MessageType'],
+                    'reset.s_user_id' => ['ApiMessage']
+                ]
+                : [
+                    'purge.user_id'   => [
+                        'Conference', 'DepartmentUser', 'TagUser', 'Card', 'Tag',
+                        'Poll', 'MessageReply', 'Face', 'PollReply', 'Openid',
+                        'Custodian', 'Educator', 'Student', 'Flow', 'Order',
+                        'PassagLog',
+                    ],
+                    'reset.user_id'   => ['SmsCharge'],
+                    'reset.s_user_id' => ['Message'],
+                    'reset.r_user_id' => ['Message'],
+                ]
+        );
         
     }
     
@@ -736,7 +720,7 @@ class User extends Authenticatable {
      * @throws Throwable
      */
     function compose() {
-    
+        
         switch (Request::route()->uri) {
             case 'users/message':
                 /** @var SCollection $nil */

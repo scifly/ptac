@@ -11,7 +11,7 @@ use Exception;
 use Form;
 use Html;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo, Relations\HasOne};
 use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
@@ -119,6 +119,9 @@ class Message extends Model {
     
     /** @return BelongsTo */
     function app() { return $this->belongsTo('App\Models\App'); }
+    
+    /** @return HasOne */
+    function poll() { return $this->hasOne('App\Models\Poll'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
     /**
@@ -515,17 +518,9 @@ class Message extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                Request::replace(['ids' => $ids]);
-                $this->purge(['Message'], 'message_id', 'reset');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'reset.message_id' => ['Poll']
+        ]);
         
     }
     

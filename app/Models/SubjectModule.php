@@ -117,7 +117,7 @@ class SubjectModule extends Model {
      */
     function remove($id = null) {
         
-        return $this->purge(['SubjectModule'], 'id', 'purge', $id);
+        return $this->purge($id);
         
     }
     

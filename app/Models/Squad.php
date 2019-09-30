@@ -224,7 +224,6 @@ class Squad extends Model {
         // }
         //
         // return true;
-        
     }
     
     /**
@@ -236,25 +235,10 @@ class Squad extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $studentIds = Student::whereIn('class_id', $ids)
-                    ->pluck('id')->toArray();
-                Request::replace(['ids' => $studentIds]);
-                (new Student)->remove();
-                $departmentIds = $this->whereIn('id', $ids)
-                    ->pluck('department_id')->toArray();
-                Request::replace(['ids' => $departmentIds]);
-                (new Department)->remove();
-                Request::replace(['ids' => $ids]);
-                $this->purge(['Squad'], 'id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.class_id'  => ['Student', 'ClassEducator'],
+            'clear.class_ids' => ['Exam'],
+        ]);
         
     }
     
@@ -272,6 +256,7 @@ class Squad extends Model {
         $action = explode('/', Request::path())[1];
         if ($action == 'index') {
             $nil = collect([null => '全部']);
+            
             return [
                 'titles' => [
                     '#', '名称',

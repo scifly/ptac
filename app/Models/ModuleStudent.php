@@ -1,9 +1,11 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
+use Throwable;
 
 /**
  * App\Models\ModuleStudent 学生应用模块订阅
@@ -29,6 +31,8 @@ use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot}
  */
 class ModuleStudent extends Pivot {
     
+    use ModelTrait;
+    
     protected $fillable = ['module_id', 'student_id', 'expired_at'];
     
     /** @return BelongsTo */
@@ -36,5 +40,15 @@ class ModuleStudent extends Pivot {
     
     /** @return BelongsTo */
     function student() { return $this->belongsTo('App\Models\Student'); }
+    
+    /**
+     * @param null $id
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        $this->purge($id);
+        
+    }
     
 }

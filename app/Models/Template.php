@@ -202,7 +202,7 @@ class Template extends Model {
                         ])
                     )
                 );
-                $this->purge(['Template'], 'id');
+                $this->purge($id);
             });
         } catch (Exception $e) {
             throw $e;

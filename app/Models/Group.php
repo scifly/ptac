@@ -210,18 +210,11 @@ class Group extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge([
-                    'Group', 'ActionGroup', 'GroupMenu', 'GroupTab', 'Tab'],
-                    'group_id', 'purge', $id
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.group_id' => [
+                'ActionGroup', 'GroupMenu', 'GroupTab', 'Tab'
+            ]
+        ]);
         
     }
     

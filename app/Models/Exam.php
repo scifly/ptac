@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
-use Illuminate\Support\Facades\{Auth, DB, Request};
+use Illuminate\Support\Facades\{Auth, Request};
 use Throwable;
 
 /**
@@ -149,18 +149,9 @@ class Exam extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge(
-                    [class_basename($this), 'Score', 'ScoreTotal'],
-                    'exam_id', 'purge', $id
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.exam_id' => ['Score', 'ScoreTotal']
+        ]);
         
     }
     

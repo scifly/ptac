@@ -199,7 +199,9 @@ class Module extends Model {
      */
     function remove($id = null) {
         
-        return $this->purge(['Module'], 'id', 'purge', $id);
+        return $this->purge($id, [
+            'purge.module_id' => ['ModuleStudent']
+        ]);
         
     }
     

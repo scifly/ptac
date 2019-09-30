@@ -233,7 +233,6 @@ class Educator extends Model {
                 $this->whereIn('id', $ids)->pluck('user_id')->toArray()
             )
         );
-        
         // try {
         //     DB::transaction(function () use ($data, $id) {
         //         if (!$id) {
@@ -277,7 +276,6 @@ class Educator extends Model {
         // }
         //
         // return true;
-        
     }
     
     /**
@@ -305,47 +303,11 @@ class Educator extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $user = new User;
-                [$rUIds, $uUIds] = value(
-                    function () use ($ids, $user) {
-                        $uIds = $this->whereIn('id', $ids)
-                            ->pluck('user_id')->toArray();
-                        $rUIds = $user->whereIn('id', $uIds)->get()
-                            ->filter(function (User $user) { return !$user->custodian; })
-                            ->pluck('id')->toArray();
-                        $uUIds = array_diff($uIds, $rUIds);
-                        
-                        return [$rUIds, $uUIds];
-                    }
-                );
-                # 更新同时也是监护人的用户
-                if (!empty($uUIds)) {
-                    # 删除部门绑定关系
-                    (new DepartmentUser)->where([
-                        ['user_id', 'in', $uUIds],
-                        ['enabled', '=', 1],
-                    ])->delete();
-                    Request::replace(['ids' => $uUIds]);
-                    $cGId = Group::whereName('监护人')->first()->id;
-                    $user->modify(['group_id' => $cGId]);
-                }
-                # 删除用户
-                if (!empty($rUIds)) {
-                    Request::replace(['ids' => $rUIds]);
-                    $user->remove();
-                }
-                # 删除教职员工
-                Request::replace(['ids' => $ids]);
-                $this->purge(['Educator', 'Participant', 'ClassEducator', 'Evaluate'], 'educator_id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.educator_id'  => ['ClassEducator'],
+            'reset.educator_id'  => ['Evaluate'],
+            'clear.educator_ids' => ['Grade', 'Squad'],
+        ]);
         
     }
     
@@ -623,8 +585,7 @@ class Educator extends Model {
                     function (Subject $subject) use ($gradeIds) {
                         return !empty(array_intersect($gradeIds, explode(',', $subject->grade_ids)));
                     }
-                );
-                ;
+                );;
                 if (($educator = $this->find($id ?? Request::route('id'))) && Request::method() == 'GET') {
                     $user = $educator->user;
                     $educator->{'card'} = $user->card;

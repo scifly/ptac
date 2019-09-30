@@ -5,11 +5,10 @@ use App\Facades\Datatable;
 use App\Helpers\{Constant, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Html;
 use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\{Auth, DB, Request};
+use Illuminate\Support\Facades\{Auth, Request};
 use Throwable;
 
 /**
@@ -174,18 +173,9 @@ class Conference extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $this->purge(
-                    [class_basename($this), 'Participant'],
-                    'conference_id', 'purge', $id
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.conference_id' => ['Participant']
+        ]);
         
     }
     

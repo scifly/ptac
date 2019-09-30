@@ -4,9 +4,7 @@ namespace App\Models;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\HasMany};
-use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**
@@ -66,20 +64,9 @@ class MessageLog extends Model {
      */
     function remove($id = null) {
         
-        try {
-            DB::transaction(function () use ($id) {
-                $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $messageIds = Message::whereIn('message_log_id', $ids)->pluck('id');
-                Request::replace(['ids' => $messageIds->toArray()]);
-                (new Message)->remove();
-                Request::replace(['ids' => $ids]);
-                $this->purge(['MessageLog', 'MessageReply'], 'message_log_id');
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->purge($id, [
+            'purge.message_log_id' => ['Message', 'MessageReply']
+        ]);
         
     }
     

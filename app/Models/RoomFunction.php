@@ -1,9 +1,11 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
 use Eloquent;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\HasMany};
 use Illuminate\Support\Carbon;
+use Throwable;
 
 /**
  * Class RoomFunction
@@ -30,9 +32,24 @@ use Illuminate\Support\Carbon;
  */
 class RoomFunction extends Model {
 
+    use ModelTrait;
+    
     protected $fillable = ['name', 'remark', 'enabeld'];
     
     /** @return HasMany */
     function roomTypes() { return $this->hasMany('App\Models\RoomType'); }
+    
+    /**
+     * @param null $id
+     * @return bool
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        return $this->purge($id, [
+            'purge.room_function_id' => ['RoomType']
+        ]);
+        
+    }
     
 }
