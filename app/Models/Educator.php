@@ -304,7 +304,7 @@ class Educator extends Model {
     function remove($id = null) {
         
         return $this->purge($id, [
-            'purge.educator_id'  => ['ClassEducator'],
+            'purge.educator_id'  => ['ClassEducator', 'Participant'],
             'reset.educator_id'  => ['Evaluate'],
             'clear.educator_ids' => ['Grade', 'Squad'],
         ]);

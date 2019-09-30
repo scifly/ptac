@@ -519,7 +519,7 @@ class Message extends Model {
     function remove($id = null) {
         
         return $this->purge($id, [
-            'reset.message_id' => ['Poll']
+            'reset.message_id' => ['Conference', 'Poll']
         ]);
         
     }

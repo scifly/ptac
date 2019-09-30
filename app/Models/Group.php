@@ -211,9 +211,8 @@ class Group extends Model {
     function remove($id = null) {
         
         return $this->purge($id, [
-            'purge.group_id' => [
-                'ActionGroup', 'GroupMenu', 'GroupTab', 'Tab'
-            ]
+            'purge.group_id' => ['ActionGroup', 'GroupMenu', 'GroupTab'],
+            'reset.group_id' => ['Module', 'Tab', 'User']
         ]);
         
     }

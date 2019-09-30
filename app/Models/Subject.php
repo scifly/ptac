@@ -217,7 +217,7 @@ class Subject extends Model {
     function remove($id = null) {
         
         return $this->purge($id, [
-            'purge.subject_id'  => ['ClassEducator', 'SubjectModule', 'MajorSubject', 'Score'],
+            'purge.subject_id'  => ['ClassEducator', 'MajorSubject', 'Score', 'SubjectModule'],
             'clear.subject_ids' => ['Exam', 'ScoreRange', 'ScoreTotal'],
         ]);
         

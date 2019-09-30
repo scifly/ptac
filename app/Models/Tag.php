@@ -202,7 +202,7 @@ class Tag extends Model {
     function remove($id = null) {
         
         return $this->purge($id, [
-            'purge.tag_id' => ['TagUser', 'DepartmentTag']
+            'purge.tag_id' => ['DepartmentTag', 'TagUser']
         ]);
         
     }

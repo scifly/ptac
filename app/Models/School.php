@@ -384,9 +384,11 @@ class School extends Model {
         
         return $this->purge($id, [
             'purge.school_id' => [
-                'Educator', 'ComboType', 'ExamType', 'Grade',
-                'Group', 'Major', 'Module', 'Poll', 'FlowType',
-                'Semester', 'Subject', 'Tag', 'Wap'
+                'Building', 'Camera', 'ComboType', 'Educator',
+                'ExamType', 'FlowType', 'Grade', 'Group',
+                'Indicator', 'Major', 'Module', 'PassageLog',
+                'PassageRule', 'Poll', 'Prize', 'ScoreRange',
+                'Semester', 'Subject', 'Tag', 'Turnstile', 'Wap',
             ]
         ]);
         

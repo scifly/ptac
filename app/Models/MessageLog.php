@@ -65,7 +65,7 @@ class MessageLog extends Model {
     function remove($id = null) {
         
         return $this->purge($id, [
-            'purge.message_log_id' => ['Message', 'MessageReply']
+            'purge.message_log_id' => ['ApiMessage', 'Message', 'MessageReply']
         ]);
         
     }

@@ -243,7 +243,7 @@ class Grade extends Model {
         
         $action = explode('/', Request::path())[1];
         if ($action == 'index') {
-            return ['titles' => ['#', '名称', '年级主任', '创建于', '更新于', '同步状态', '状态 . 操作']];
+            $data = ['titles' => ['#', '名称', '年级主任', '创建于', '更新于', '同步状态', '状态 . 操作']];
         } else {
             $educators = Educator::where(['school_id' => $this->schoolId(), 'enabled' => 1])
                 ->with('user')->get()->pluck('user.realname', 'id');
@@ -251,12 +251,13 @@ class Grade extends Model {
             $selectedEducators = collect(
                 explode(',', rtrim($grade ? $grade->educator_ids : '', ','))
             );
-            
-            return array_merge(
+            $data = array_merge(
                 array_combine(['educators', 'selectedEducators'], [$educators, $selectedEducators]),
                 (new Tag)->compose('department', $grade ? $grade->dept : null)
             );
         }
+        
+        return $data;
         
     }
     

@@ -230,7 +230,7 @@ class Tab extends Model {
     function remove($id = null) {
         
         return $this->purge($id, [
-            'purge.tab_id' => ['MenuTab'],
+            'purge.tab_id' => ['Action', 'GroupTab', 'MenuTab'],
             'reset.tab_id' => ['Module']
         ]);
         

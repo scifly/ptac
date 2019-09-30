@@ -113,7 +113,7 @@ class MessageType extends Model {
     function remove($id = null) {
         
         return $this->purge($id, [
-            'reset.message_type_id' => ['Message', 'ApiMessage']
+            'reset.message_type_id' => ['ApiMessage', 'Message']
         ]);
         
     }

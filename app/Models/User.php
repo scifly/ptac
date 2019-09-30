@@ -622,17 +622,17 @@ class User extends Authenticatable {
         return $this->purge($id,
             $partner
                 ? [
-                    'purge.user_id' => ['MessageType'],
-                    'reset.s_user_id' => ['ApiMessage']
+                    'purge.user_id'   => ['MessageType'],
+                    'reset.s_user_id' => ['ApiMessage'],
                 ]
                 : [
                     'purge.user_id'   => [
-                        'Conference', 'DepartmentUser', 'TagUser', 'Card', 'Tag',
-                        'Poll', 'MessageReply', 'Face', 'PollReply', 'Openid',
-                        'Custodian', 'Educator', 'Student', 'Flow', 'Order',
-                        'PassagLog',
+                        'Card', 'Conference', 'Custodian', 'DepartmentUser',
+                        'Educator', 'Face', 'Flow', 'MessageReply',
+                        'Openid', 'PassageLog', 'PollReply', 'Poll',
+                        'Student', 'TagUser', 'Tag',
                     ],
-                    'reset.user_id'   => ['SmsCharge'],
+                    'reset.user_id'   => ['Order', 'SmsCharge'],
                     'reset.s_user_id' => ['Message'],
                     'reset.r_user_id' => ['Message'],
                 ]

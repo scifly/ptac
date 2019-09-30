@@ -340,8 +340,8 @@ class Student extends Model {
         
         return $this->purge($id, [
             'purge.student_id' => [
-                'Bed', 'Consumption', 'CustodianStudent',
-                'ScoreTotal', 'Score', 'ModuleStudent'
+                'Bed', 'Consumption', 'CustodianStudent', 'Evaluate',
+                'ModuleStudent', 'ScoreTotal', 'Score',
             ]
         ]);
         

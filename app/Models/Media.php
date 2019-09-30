@@ -98,8 +98,8 @@ class Media extends Model {
     function remove($id = null) {
         
         return $this->purge($id, [
-            'reset.media_id' => ['Column', 'Article', 'Flow'],
-            'clear.media_ids' => ['Wap', 'Article', 'Message']
+            'reset.media_id'  => ['Article', 'Column', 'Face', 'Flow', 'Menu', 'Module'],
+            'clear.media_ids' => ['Article', 'Wap'],
         ]);
         
     }
