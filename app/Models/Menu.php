@@ -371,21 +371,15 @@ class Menu extends Model {
      * @param $id
      * @param string $type
      * @return int|mixed
-     * @throws Throwable
      */
     function menuId($id, $type = '学校') {
         
-        $ex = new Exception(__('messages.not_found'));
-        try {
-            throw_if(!$menu = $this->find($id), $ex);
-            while ($menu->mType->name != $type) {
-                throw_if(!$menu = $menu->parent, $ex);
-            }
-        } catch (Exception $e) {
-            throw $e;
+        $menu = $this->find($id);
+        while ($menu && $menu->mType->name != $type) {
+            $menu = $menu->parent;
         }
         
-        return $menu->id;
+        return $menu ? $menu->id : null;
         
     }
     
@@ -401,6 +395,7 @@ class Menu extends Model {
         $html = $this->html($subs, $rootId);
         
         return $html; // substr($menu, 0, -10);
+        
     }
     
     /**
