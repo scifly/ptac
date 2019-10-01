@@ -78,12 +78,7 @@ class Tag extends Model {
         
         $columns = [
             ['db' => 'Tag.id', 'dt' => 0],
-            [
-                'db'        => 'Tag.name', 'dt' => 1,
-                'formatter' => function ($d) {
-                    return explode('.', $d)[0];
-                },
-            ],
+            ['db' => 'Tag.name', 'dt' => 1],
             ['db' => 'Tag.remark', 'dt' => 2],
             ['db' => 'Tag.created_at', 'dt' => 3],
             ['db' => 'Tag.updated_at', 'dt' => 4],
@@ -130,7 +125,7 @@ class Tag extends Model {
                 !isset($data['dept_ids']) ?: $this->retain(
                     'DepartmentTag', $tag->id, $data['dept_ids'], false
                 );
-                !$tag ?: $this->sync([$tag->id], 'create');
+                // !$tag ?: $this->sync([$tag->id], 'create');
             });
         } catch (Exception $e) {
             throw $e;
@@ -166,7 +161,6 @@ class Tag extends Model {
         // $this->sync(
         //     $id ? [$id] : array_values(Request::input('ids')), 'update'
         // );
-    
         return true;
         // try {
         //     DB::transaction(function () use ($data, $id) {
@@ -189,7 +183,6 @@ class Tag extends Model {
         // }
         //
         // return true;
-        
     }
     
     /**
@@ -202,7 +195,7 @@ class Tag extends Model {
     function remove($id = null) {
         
         return $this->purge($id, [
-            'purge.tag_id' => ['DepartmentTag', 'TagUser']
+            'purge.tag_id' => ['DepartmentTag', 'TagUser'],
         ]);
         
     }
@@ -229,7 +222,7 @@ class Tag extends Model {
                         $builder = $model->{'tags'};
                     } else {
                         $totag = explode(',', json_decode($model->{'content'}, true)['totag']);
-                        $builder = $this->whereIn('tagid', $totag);
+                        $builder = $this->whereIn('tag_id', $totag);
                     }
                     $selectedTags = $builder->pluck('name', 'id');
                 }
@@ -256,25 +249,14 @@ class Tag extends Model {
     /**
      * 返回对当前登录用户可见的标签列表
      *
-     * @param null $schoolId
      * @return SCollection
-     * @throws Exception
      */
-    function list($schoolId = null) {
+    function list() {
         
-        $tags = $this->whereSchoolId($schoolId ?? $this->schoolId())->get();
-        if (!in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
-            $userIds = collect(explode(',', $this->visibleUserIds()))->flip();
-            $deptIds = $this->departmentIds();
-            $tags->filter(function (Tag $tag) use ($userIds, $deptIds) {
-                return $userIds->has($tag->users->pluck('id')) &&
-                    $deptIds->flip()->has($tag->depts->pluck('id'));
-            });
-        }
-        $list = collect([]);
-        foreach ($tags->pluck('name', 'id') as $id => $name) {
-            $list[$id] = explode('.', $name)[0];
-        }
+        $list = $this->where('school_id', $this->schoolId())->get()->when(
+            !in_array(Auth::user()->role(), Constant::SUPER_ROLES),
+            function (SCollection $tags) { return $tags->where('user_id', Auth::id()); }
+        )->pluck('name', 'id');
         
         return collect([''])->union($list);
         
@@ -286,7 +268,7 @@ class Tag extends Model {
      * @param array $ids
      * @param $action
      */
-    private function sync(array $ids, $action) {
+    function sync(array $ids, $action) {
         
         empty($ids) ?: SyncTag::dispatch($ids, Auth::id(), $action);
         

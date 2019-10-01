@@ -16,17 +16,17 @@ use Throwable;
  */
 class TagController extends Controller {
     
-    protected $tag, $department;
+    protected $tag, $dept;
     
     /**
      * TagController constructor.
      * @param Tag $tag
-     * @param Department $department
+     * @param Department $dept
      */
-    public function __construct(Tag $tag, Department $department) {
+    public function __construct(Tag $tag, Department $dept) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->department = $department;
+        $this->dept = $dept;
         $this->approve($this->tag = $tag);
         
     }
@@ -54,7 +54,7 @@ class TagController extends Controller {
     public function create() {
         
         return Request::method() == 'POST'
-            ? $this->department->contacts()
+            ? $this->dept->contacts()
             : $this->output();
         
     }
@@ -85,15 +85,11 @@ class TagController extends Controller {
      */
     public function edit($id = null) {
         
-        if (Request::method() == 'POST') {
-            return $this->department->contacts();
-        }
-        $tag = $this->tag->find($id);
-        $tag->name = explode('.', $tag->name)[0];
-        
-        return $this->output([
-            'tag' => $tag,
-        ]);
+        return Request::method() == 'POST'
+            ? $this->dept->contacts()
+            : $this->output([
+                'tag' => $this->tag->find($id),
+            ]);
         
     }
     
