@@ -62,7 +62,7 @@ class RoomType extends Model {
             ['db' => 'RoomType.created_at', 'dt' => 4],
             ['db' => 'RoomType.updated_at', 'dt' => 5],
             [
-                'db'        => 'Building.enabled', 'dt' => 6,
+                'db'        => 'RoomType.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 },
