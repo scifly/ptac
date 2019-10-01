@@ -125,46 +125,19 @@ class Menu extends Model {
     function index() {
         
         try {
-            $response = response()->json();
             $action = Request::input('action');
             if ($action == 'tree') {
-                $response = $this->jsTree($this->rootId(true));
+                $response = $this->tree();
             } elseif ($action = 'sort') {
-                # 保存菜单排序
-                $positions = Request::get('data');
-                $originalPositions = $this->orderBy('position')
-                    ->whereIn('id', array_keys($positions))
-                    ->pluck('position', 'id')->toArray();
-                foreach ($positions as $id => $position) {
-                    $originalPosition = array_slice(
-                        $originalPositions, $position, 1, true
-                    );
-                    throw_if(
-                        !$menu = $this->find($id),
-                        new Exception(__('messages.not_found'))
-                    );
-                    $menu->update([
-                        'position' => $originalPosition[key($originalPosition)],
-                    ]);
-                }
+                $this->sort();
             } else {    # move
-                $id = Request::input('id');
-                $parentId = Request::input('parentId');
-                # 移动菜单
-                throw_if(
-                    !$this->find($id) || !$this->find($parentId),
-                    new Exception(__('messages.not_found'))
-                );
-                throw_if(
-                    $this->movable($id, $parentId) && !$this->move($id, $parentId),
-                    new Exception(__('messages.bad_request'))
-                );
+                $this->move();
             }
         } catch (Exception $e) {
             throw $e;
         }
         
-        return $response;
+        return $response ?? response()->json();
         
     }
     
@@ -512,12 +485,12 @@ class Menu extends Model {
     /**
      * 获取用于显示jstree的菜单数据
      *
-     * @param null $id
      * @return JsonResponse
+     * @throws Throwable
      */
-    private function jsTree($id) {
+    private function tree() {
         
-        $root = $this->find($id);
+        $root = $this->find($id = $this->rootId(true));
         $subs = $this->subs(
             $id, $this->subIds($id), true
         );
@@ -609,63 +582,76 @@ class Menu extends Model {
     }
     
     /**
-     * 指定菜单可否移动至指定的菜单下
+     * 菜单排序
      *
-     * @param $id
-     * @param $parentId
-     * @return bool
      * @throws Throwable
      */
-    private function movable($id, $parentId) {
+    private function sort() {
         
         try {
-            throw_if(
-                !isset($id, $parentId) ||
-                Auth::user()->role() != '运营' &&
-                !$this->menuIds()->flip()->has([$id, $parentId]),
-                __('messages.forbidden')
-            );
-            $parentType = $this->find($parentId)->mType->name;
-            switch ($this->find($id)->mType->name) {
-                case '运营':
-                    $movable = $parentType == '根';
-                    break;
-                case '企业':
-                    $movable = $parentType == '运营';
-                    break;
-                case '学校':
-                    # 如果学校所属企业发生变化，则不允许移动
-                    $school = School::whereMenuId($id)->first();
-                    $movable = $parentType !== '企业' ? false
-                        : $school->corp_id == Corp::whereMenuId($parentId)->first()->id;
-                    break;
-                case '其他':
-                    $movable = true;
-                    break;
-                default:
-                    $movable = false;
-                    break;
+            # 保存菜单排序
+            $positions = Request::get('data');
+            $originalPositions = $this->orderBy('position')
+                ->whereIn('id', array_keys($positions))
+                ->pluck('position', 'id')->toArray();
+            foreach ($positions as $id => $position) {
+                $originalPosition = array_slice(
+                    $originalPositions, $position, 1, true
+                );
+                throw_if(
+                    !$menu = $this->find($id),
+                    new Exception(__('messages.not_found'))
+                );
+                $menu->update([
+                    'position' => $originalPosition[key($originalPosition)],
+                ]);
             }
         } catch (Exception $e) {
             throw $e;
         }
-        
-        return $movable;
         
     }
     
     /**
      * 更改菜单所处位置
      *
-     * @param $id
-     * @param $parentId
-     * @return bool
      * @throws Throwable
      */
-    private function move($id, $parentId) {
+    private function move() {
         
         try {
-            DB::transaction(function () use ($id, $parentId) {
+            DB::transaction(function () {
+                $id = Request::input('id');
+                $parentId = Request::input('parentId');
+                throw_if(
+                    !isset($id, $parentId) ||
+                    !$this->find($id) || $this->find($parentId) ||
+                    Auth::user()->role() != '运营' &&
+                    !$this->menuIds()->flip()->has([$id, $parentId]),
+                    new Exception(__('messages.forbidden'))
+                );
+                $parentType = $this->find($parentId)->mType->name;
+                switch ($this->find($id)->mType->name) {
+                    case '运营':
+                        $movable = $parentType == '根';
+                        break;
+                    case '企业':
+                        $movable = $parentType == '运营';
+                        break;
+                    case '学校':
+                        # 如果学校所属企业发生变化，则不允许移动
+                        $school = School::whereMenuId($id)->first();
+                        $movable = $parentType !== '企业' ? false
+                            : $school->corp_id == Corp::whereMenuId($parentId)->first()->id;
+                        break;
+                    case '其他':
+                        $movable = true;
+                        break;
+                    default:
+                        $movable = false;
+                        break;
+                }
+                throw_if(!$movable, new Exception(__('messages.forbidden')));
                 $menu = $this->find($id);
                 $menu->parent_id = $parentId === '#' ? null : intval($parentId);
                 $menu->save();
@@ -680,8 +666,6 @@ class Menu extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-        
-        return true;
         
     }
     

@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Relations\BelongsTo, Relations\Pivot};
-use Illuminate\Support\{Arr, Facades\DB};
+use Illuminate\Support\{Arr, Collection, Facades\DB};
 use Throwable;
 
 /**
@@ -35,13 +35,13 @@ class DepartmentUser extends Pivot {
     
     use ModelTrait;
     
+    protected $fillable = ['department_id', 'user_id', 'enabled'];
+    
     /** @return BelongsTo */
     function user() { return $this->belongsTo('App\Models\User'); }
     
     /** @return BelongsTo */
     function dept() { return $this->belongsTo('App\Models\Department', 'department_id'); }
-    
-    protected $fillable = ['department_id', 'user_id', 'enabled'];
     
     /**
      * 按UserId保存记录
@@ -90,21 +90,17 @@ class DepartmentUser extends Pivot {
      * 按部门Id保存记录
      *
      * @param $deptId
-     * @param array $userIds
+     * @param Collection $userIds
      * @return bool
-     * @throws Exception
      * @throws Throwable
      */
-    function storeByDepartmentId($deptId, array $userIds) {
+    function storeByDeptId($deptId, Collection $userIds) {
         
         try {
             DB::transaction(function () use ($deptId, $userIds) {
                 foreach ($userIds as $userId) {
-                    $du = $this->where([
-                        'department_id' => $deptId,
-                        'user_id'       => $userId,
-                    ])->first();
-                    if (!$du) {
+                    $where = ['department_id' => $deptId, 'user_id' => $userId];
+                    if (!$this->where($where)->first()) {
                         $records[] = [
                             'user_id'       => $userId,
                             'department_id' => $deptId,
@@ -143,12 +139,7 @@ class DepartmentUser extends Pivot {
         try {
             DB::transaction(function () use ($userId, $deptId) {
                 $this->where('user_id', $userId)->delete();
-                $this->create(
-                    array_combine(
-                        $this->fillable,
-                        [$deptId, $userId, 1]
-                    )
-                );
+                $this->create(array_combine($this->fillable, [$deptId, $userId, 1]));
             });
         } catch (Exception $e) {
             throw $e;
