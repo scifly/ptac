@@ -1,4 +1,4 @@
-t<div class="box box-default box-solid main-form">
+<div class="box box-default box-solid main-form">
     <div class="box-header with-border">
         @include('shared.form_header')
     </div>
