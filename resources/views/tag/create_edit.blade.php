@@ -1,4 +1,4 @@
-<div class="box box-default box-solid main-form">
+t<div class="box box-default box-solid main-form">
     <div class="box-header with-border">
         @include('shared.form_header')
     </div>
@@ -27,14 +27,11 @@
                 @include('shared.label', ['field' => 'targets', 'label' => '部门/用户'])
                 <div class="col-sm-6">
                     <div id="checked-nodes">{!! $targets ?? '' !!}</div>
-                    {!! Form::hidden('selected-node-ids', $targetIds ?? null, [
-                        'id' => 'selected-node-ids',
-                    ]) !!}
-                    {!! Form::button('<i class="fa fa-user-plus text-blue">&nbsp;选择</i>', [
-                        'id' => 'choose',
-                        'class' => 'btn btn-box-tool',
-                        'style' => 'margin-top: 3px;'
-                    ]) !!}
+                    {!! Form::hidden('selected-node-ids', $targetIds ?? null, ['id' => 'selected-node-ids']) !!}
+                    {!! Form::button(
+                        Html::tag('i', ' 选择', ['class' => 'fa fa-user-plus text-blue']),
+                        ['id' => 'choose', 'class' => 'btn btn-box-tool', 'style' => 'margin-top: 3px;']
+                    ) !!}
                 </div>
             </div>
             @include('shared.remark')

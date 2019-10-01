@@ -163,9 +163,9 @@ class Tag extends Model {
                 );
             }
         );
-        $this->sync(
-            $id ? [$id] : array_values(Request::input('ids')), 'update'
-        );
+        // $this->sync(
+        //     $id ? [$id] : array_values(Request::input('ids')), 'update'
+        // );
     
         return true;
         // try {

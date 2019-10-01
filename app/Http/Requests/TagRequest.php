@@ -27,21 +27,14 @@ class TagRequest extends FormRequest {
     public function rules() {
         
         return [
-            /*'name' => [
-                'required', 'string', 'max:255',
-                Rule::unique('teams')->ignore($this->input('id'))->where(function (Builder $query) {
-                    $query->where('name', $this->input('name'));
-                    $query->where('school_id', $this->input('school_id'));
-                })
-            ],*/
-            'name'           => 'required|string|between:2,32|unique:tags,name,' .
-                $this->input('id') . ',id',
-            // 'school_id,' . $this->input('school_id'),
-            'school_id'      => 'required|integer',
-            'user_id'        => 'required|integer',
-            'remark'         => 'nullable|string|max:255',
-            'enabled'        => 'required|boolean',
-            'synced'         => 'required|boolean',
+            'name'      => 'required|string|between:2,32|unique:tags,name,' .
+                $this->input('id') . ',id,' .
+                'user_id,' . $this->input('user_id'),
+            'school_id' => 'required|integer',
+            'user_id'   => 'required|integer',
+            'remark'    => 'nullable|string|max:255',
+            'enabled'   => 'required|boolean',
+            'synced'    => 'required|boolean',
         ];
         
     }
