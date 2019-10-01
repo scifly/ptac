@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\{Carbon, Facades\Auth, Facades\Request};
+use Illuminate\Support\{Carbon, Collection as SCollection, Facades\Auth, Facades\Request};
 use Throwable;
 
 /**
@@ -248,13 +248,13 @@ class Face extends Model {
     /**
      * 设备选择下拉列表html
      *
-     * @param array $cameras
+     * @param SCollection $cameras
      * @param User $user
      * @return string
      */
-    function selector(array $cameras, User $user) {
+    function selector(SCollection $cameras, User $user) {
         
-        $selected = ($face = $user->face) ? $face->cameras->pluck('id')->toArray() : null;
+        $selected = ($face = $user->face) ? $face->cameras->pluck('id') : null;
         $id = 'cameraids-' . $user->id;
 
         return Form::select($id . '[]', $cameras, $selected, [
@@ -332,11 +332,12 @@ class Face extends Model {
             HTML;
             $list = '';
             $face = new Face;
+            $cameras = (new Camera)->list();
             foreach (User::whereIn('id', $ids)->get() as $user) {
                 $list .= sprintf(
                     $tpl, $user->id, $user->realname, $user->group->name,
                     $user->mobile ?? 'n/a', $face->records($user),
-                    $face->selector((new Camera)->cameras(), $user),
+                    $face->selector($cameras, $user),
                     $face->state($user->face ? $user->face->state : 1, $user->id)
                 );
             }

@@ -90,7 +90,7 @@ class Custodian extends Model {
                                 ? $student->squad->grade->school_id == $this->schoolId() : false;
                         }
                     );
-                    $userIds = $students->isNotEmpty() ? $students->pluck('user_id')->toArray() : [0];
+                    $userIds = $students->isNotEmpty() ? $students->pluck('user_id') : [0];
                     
                     return User::whereIn('id', $userIds)->pluck('realname')->join(',');
                 },
@@ -358,14 +358,17 @@ class Custodian extends Model {
                     <td class="text-center">%s</td>
                 </tr>
             HTML;
-            $cameras = (new Camera)->cameras();
+            $cameras = (new Camera)->list();
             /** @var User $user */
             foreach ($users as $user) {
                 $student = $this->student($user, $class);
                 $list .= sprintf(
                     $tpl,
-                    $user->id, $user->realname, $student->user->realname, $student->sn,
-                    $face->records($user), $face->selector($cameras, $user),
+                    $user->id, $user->realname,
+                    $student->user->realname,
+                    $student->sn,
+                    $face->records($user),
+                    $face->selector($cameras, $user),
                     $face->state(
                         $user->face ? $user->face->state : 1,
                         $user->id
@@ -502,11 +505,11 @@ class Custodian extends Model {
                     ? '<th>卡号</th>'
                     : '<th>人脸</th><th>设备</th><th class="text-center">状态</th>';
                 $classes = Squad::whereIn('id', $this->classIds())
-                    ->get()->pluck('name', 'id')->toArray();
+                    ->get()->pluck('name', 'id');
                 $data = [
                     'prompt'  => '家长列表',
                     'formId'  => 'formCustodian',
-                    'classes' => ['(请选择一个班级)'] + $classes,
+                    'classes' => collect(['(请选择一个班级)'])->merge($classes),
                     'titles'  => $titles,
                     'columns' => 7,
                 ];
@@ -518,7 +521,7 @@ class Custodian extends Model {
                 [$grades, $classes] = $this->gcList();
                 $records = Student::with('user:id,realname')
                     ->where(['class_id' => array_key_first($classes), 'enabled' => 1])
-                    ->get()->toArray();
+                    ->get();
                 foreach ($records as $record) {
                     if (!isset($record['user'])) continue;
                     $students[$record['id']] = $record['user']['realname'] . '-' . $record['sn'];
@@ -565,11 +568,11 @@ class Custodian extends Model {
         
         $grades = Grade::whereIn('id', $this->gradeIds())
             ->where('enabled', 1)
-            ->pluck('name', 'id')->toArray();
+            ->pluck('name', 'id');
         $classes = Squad::where([
-            'grade_id' => array_key_first($grades),
+            'grade_id' => $grades->keys()->first(),
             'enabled'  => 1,
-        ])->pluck('name', 'id')->toArray();
+        ])->pluck('name', 'id');
         
         return [$grades, $classes];
         
@@ -582,8 +585,7 @@ class Custodian extends Model {
     private function custodians($classId) {
         
         $class = Squad::find($classId);
-        $userIds = DepartmentUser::whereDepartmentId($class->department_id)
-            ->pluck('user_id')->toArray();
+        $userIds = DepartmentUser::whereDepartmentId($class->department_id)->pluck('user_id');
         
         return [
             $class,

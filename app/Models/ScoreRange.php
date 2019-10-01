@@ -138,8 +138,7 @@ class ScoreRange extends Model {
             $classes = DB::table('classes')
                 ->where('grade_id', $request['grade_id'])
                 ->select('id', 'grade_id')
-                ->pluck('id')
-                ->toArray();
+                ->pluck('id');
         } else {
             $classes = [$request['class_id']];
         }

@@ -432,7 +432,7 @@ class Educator extends Model {
                 </tr>
             HTML;
             $list = '';
-            $cameras = (new Camera)->cameras();
+            $cameras = (new Camera)->list();
             /** @var User $user */
             foreach ($users as $user) {
                 $list .= sprintf(
@@ -492,7 +492,7 @@ class Educator extends Model {
             case 'index':
                 $nil = collect([null => '全部']);
                 $departments = Department::whereIn('id', $this->departmentIds(Auth::id()))
-                    ->pluck('name', 'id')->toArray();
+                    ->pluck('name', 'id');
                 $data = [
                     'buttons'        => [
                         'import' => [
@@ -563,11 +563,11 @@ class Educator extends Model {
                     ? '<th>卡号</th>'
                     : '<th>人脸</th><th>设备</th><th class="text-center">状态</th>';
                 $departments = Department::whereIn('id', $this->departmentIds())
-                    ->pluck('name', 'id')->toArray();
+                    ->pluck('name', 'id');
                 $data = [
                     'prompt'  => '教师列表',
                     'formId'  => 'formEducator',
-                    'classes' => ['(请选择一个部门)'] + $departments,
+                    'classes' => collect(['(请选择一个部门)'])->merge($departments),
                     'titles'  => $titles,
                     'columns' => 6,
                 ];
@@ -580,10 +580,10 @@ class Educator extends Model {
                 break;
             default:    # 创建/编辑
                 $classes = Squad::whereIn('id', $this->classIds())->where('enabled', 1)->get();
-                $gradeIds = array_unique($classes->pluck('grade_id')->toArray());
+                $gradeIds = $classes->pluck('grade_id')->unique();
                 $subjects = Subject::where(['enabled' => 1, 'school_id' => $this->schoolId()])->get()->filter(
                     function (Subject $subject) use ($gradeIds) {
-                        return !empty(array_intersect($gradeIds, explode(',', $subject->grade_ids)));
+                        return !empty($gradeIds->intersect(explode(',', $subject->grade_ids)));
                     }
                 );;
                 if (($educator = $this->find($id ?? Request::route('id'))) && Request::method() == 'GET') {
@@ -648,8 +648,7 @@ class Educator extends Model {
      */
     private function users($deptId) {
         
-        $userIds = DepartmentUser::whereDepartmentId($deptId)
-            ->pluck('user_id')->toArray();
+        $userIds = DepartmentUser::whereDepartmentId($deptId)->pluck('user_id');
         
         return User::whereIn('id', $userIds)->get()->filter(
             function (User $user) {

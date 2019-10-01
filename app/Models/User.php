@@ -682,7 +682,7 @@ class User extends Authenticatable {
                 $corps = $builder->pluck('name', 'id'),
                 'corp_id'
             );
-            Group::find($value)->name != '学校' ?: $corpId = array_key_first($corps->toArray());
+            Group::find($value)->name != '学校' ?: $corpId = $corps->keys()->first();
         } else {
             $corpId = $value;
         }

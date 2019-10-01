@@ -467,9 +467,8 @@ class Message extends Model {
         $message = json_decode($detail[$type]);
         $userids = explode('|', $message->{'touser'});
         $deptIds = explode('|', $message->{'toparty'});
-        $recipients = array_merge(
-            User::whereIn('ent_attrs->userid', $userids)->pluck('realname')->toArray(),
-            Department::whereIn('id', $deptIds)->pluck('name')->toArray()
+        $recipients = User::whereIn('ent_attrs->userid', $userids)->pluck('realname')->merge(
+            Department::whereIn('id', $deptIds)->pluck('name')
         );
         $content = $message->{$type};
         switch ($type) {
@@ -503,7 +502,7 @@ class Message extends Model {
             'msgTitle'   => $detail['title'],
             'msgBody'    => $msgBody,
             'sentAt'     => $detail['updated_at'],
-            'recipients' => join('; ', $recipients),
+            'recipients' => $recipients->join('; '),
             'sender'     => $detail['sender'],
         ])->render();
         
@@ -519,7 +518,7 @@ class Message extends Model {
     function remove($id = null) {
         
         return $this->purge($id, [
-            'reset.message_id' => ['Conference', 'Poll']
+            'reset.message_id' => ['Conference', 'Poll'],
         ]);
         
     }

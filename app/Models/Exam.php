@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\{Auth, Request};
 use Throwable;
 
@@ -243,24 +244,23 @@ class Exam extends Model {
      *
      * @param $classId
      * @param null $keyword
-     * @return array
+     * @return SCollection
      * @throws Throwable
      */
-    function examsByClassId($classId, $keyword = null) {
+    function exams($classId, $keyword = null) {
         
         abort_if(
             !$classId,
             Constant::NOT_ACCEPTABLE,
             __('messages.score.zero_classes')
         );
-        $exams = $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')->get();
-        $filtered = $exams->reject(function (Exam $exam) use ($keyword) {
-            return $keyword
-                ? mb_strpos($exam->name, $keyword) === false ? true : false
-                : false;
-        });
-        
-        return $filtered->toArray();
+        return $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')->get()->reject(
+            function (Exam $exam) use ($keyword) {
+                return $keyword
+                    ? mb_strpos($exam->name, $keyword) === false ? true : false
+                    : false;
+            }
+        );
         
     }
     
@@ -308,18 +308,18 @@ class Exam extends Model {
      */
     function classList($id, $action = null) {
         
-        $exam = $this->find($id);
-        if (!$exam) {
-            $classes = [];
-        } else {
+        ;
+        if ($exam = $this->find($id)) {
             $classes = Squad::whereIn('id', explode(',', $exam->class_ids))
                 ->where('enabled', 1)
-                ->pluck('name', 'id')
-                ->toArray();
+                ->pluck('name', 'id');
         }
         
         return response()->json([
-            'html' => $this->htmlSelect($classes, $action ? $action . '_class_id' : 'class_id'),
+            'html' => $this->htmlSelect(
+                $classes ?? collect([]),
+                $action ? $action . '_class_id' : 'class_id'
+            ),
         ]);
         
     }

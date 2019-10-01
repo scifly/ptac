@@ -353,15 +353,10 @@ class Squad extends Model {
     function departments($userId = null) {
         
         $user = User::find($userId ?? Auth::id());
-        // abort_if(
-        //     !$user->educator,
-        //     Constant::UNAUTHORIZED,
-        //     __('messages.unauthorized')
-        // );
         $ids = $this->classIds(session('schoolId'), $user->id);
-        $departmentIds = $this->whereIn('id', $ids)->pluck('department_id')->toArray();
+        $deptIds = $this->whereIn('id', $ids)->pluck('department_id');
         
-        return Department::whereIn('id', $departmentIds)->get();
+        return Department::whereIn('id', $deptIds)->get();
         
     }
     

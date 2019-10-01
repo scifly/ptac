@@ -489,17 +489,12 @@ class School extends Model {
      */
     private function getClass($gradeId, $gradeClass): array {
         
-        $classes = $students = [];
+        $classes = $students = collect([]);
         foreach ($gradeClass as $k => $g) {
             if ($k == $gradeId) {
-                $classes = Squad::whereEnabled(1)
-                    ->whereIn('id', $g)
-                    ->pluck('name', 'id')
-                    ->toArray();
+                $classes = Squad::whereEnabled(1)->whereIn('id', $g)->pluck('name', 'id');
                 foreach ($g as $v) {
-                    $students = Student::whereClassId($v)
-                        ->where('enabled', 1)
-                        ->pluck('sn', 'id');
+                    $students = Student::whereClassId($v)->where('enabled', 1)->pluck('sn', 'id');
                     break;
                 }
             }

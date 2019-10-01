@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasOne};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Auth, DB, Request};
-use ReflectionException;
 use Throwable;
 
 /**
@@ -171,7 +170,7 @@ class Menu extends Model {
      * @return $this|Model
      */
     function stow(Model $model, $beLongsTo = null) {
-
+        
         return $this->create([
             'parent_id'    => $beLongsTo
                 ? $model->{$beLongsTo}->menu_id
@@ -214,7 +213,6 @@ class Menu extends Model {
                 }
             }
         );
-        
         // try {
         //     DB::transaction(function () use ($data, $id) {
         //         $menu = $this->find($id);
@@ -241,7 +239,6 @@ class Menu extends Model {
         // }
         //
         // return true;
-        
     }
     
     /**
@@ -273,8 +270,8 @@ class Menu extends Model {
         
         return $this->purge($id, [
             'purge.menu_id' => [
-                'GroupMenu', 'MenuTab', 'Company', 'Corp', 'School'
-            ]
+                'GroupMenu', 'MenuTab', 'Company', 'Corp', 'School',
+            ],
         ]);
         
     }
@@ -289,7 +286,7 @@ class Menu extends Model {
     function subIds($id) {
         
         static $subIds;
-        $childrenIds = Menu::whereParentId($id)->pluck('id')->toArray();
+        $childrenIds = Menu::whereParentId($id)->pluck('id');
         foreach ($childrenIds as $childId) {
             $subIds[] = $childId;
             $this->subIds($childId);
@@ -368,7 +365,6 @@ class Menu extends Model {
         $html = $this->html($subs, $rootId);
         
         return $html; // substr($menu, 0, -10);
-        
     }
     
     /**
@@ -410,10 +406,10 @@ class Menu extends Model {
             $icon = 'fa fa-weixin text-green';
         }
         $menu = $this->find($menuId);
-    
+        
         return [
             'icon' => $icon ?? 'fa fa-send-o text-blue',
-            'name' => $menu ? $menu->name : '运营'
+            'name' => $menu ? $menu->name : '运营',
         ];
         
     }
@@ -548,21 +544,19 @@ class Menu extends Model {
         if ($rootId == 1) {
             $menus = $this->where('id', '<>', 1)
                 ->orderBy('position')->get()->toArray();
-        } else {
-            if (!in_array($user->role(), Constant::SUPER_ROLES)) {
-                $menus = GroupMenu::with('menu')
-                    ->where('group_id', $user->group_id)
-                    ->get()->pluck('menu')->toArray();
-                $arr = [];
-                foreach ($menus as $key => $menu) {
-                    $arr[$key] = $menu['position'];
-                }
-                array_multisort($arr, SORT_ASC, $menus);
-            } else {
-                $menus = $this->whereIn('id', $childrenIds)
-                    ->orderBy('position')
-                    ->get()->toArray();
+        } elseif (!in_array($user->role(), Constant::SUPER_ROLES)) {
+            $menus = GroupMenu::with('menu')
+                ->where('group_id', $user->group_id)
+                ->get()->pluck('menu')->toArray();
+            $arr = [];
+            foreach ($menus as $key => $menu) {
+                $arr[$key] = $menu['position'];
             }
+            array_multisort($arr, SORT_ASC, $menus);
+        } else {
+            $menus = $this->whereIn('id', $childrenIds)
+                ->orderBy('position')
+                ->get()->toArray();
         }
         foreach ($menus as $menu) {
             if (!$disabled && !$menu['enabled']) continue;

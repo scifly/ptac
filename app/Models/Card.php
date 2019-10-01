@@ -250,7 +250,7 @@ class Card extends Model {
                     }
                     if ($status == 1) {
                         $tList = !$user->card ? []
-                            : $user->card->turnstiles->pluck('deviceid', 'id')->toArray();
+                            : $user->card->turnstiles->pluck('deviceid', 'id');
                         foreach ($tList as $tId => $deviceid) {
                             $inserts[$deviceid][] = $this->perm($user->card_id, $tId);
                         }
@@ -416,7 +416,7 @@ class Card extends Model {
                     ? explode(' ~ ', $input['daterange'])
                     : array_fill(0, 2, null);
                 (new CardTurnstile)->store(
-                    Card::whereIn('user_id', $userIds)->pluck('id')->toArray(),
+                    Card::whereIn('user_id', $userIds)->pluck('id'),
                     $tIds, $start, $end, $ruleids
                 );
                 $data = [];
@@ -493,7 +493,7 @@ class Card extends Model {
                     $prIds = RuleTurnstile::where(['turnstile_id' => $t->id, 'door' => $i])
                         ->pluck('passage_rule_id');
                     $_prs = PassageRule::orderBy('ruleid')->whereIn('id', $prIds)
-                        ->pluck('name', 'ruleid')->toArray();
+                        ->pluck('name', 'ruleid');
                 }
                 $rules = !empty($_prs) ? ($prs + ($_prs ?? [])) : ['(禁止通行)'];
                 $doors .= sprintf($td, Form::select('ruleids[' . $t->id . '][]', $rules, null, [
@@ -510,7 +510,7 @@ class Card extends Model {
         
         return [
             'formId'     => 'form' . $type,
-            'sections'   => ['(请选择一个部门)'] + $builder->pluck('name', 'id')->toArray(),
+            'sections'   => ['(请选择一个部门)'] + $builder->pluck('name', 'id'),
             'turnstiles' => join('', $tList),
         ];
         

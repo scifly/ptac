@@ -268,12 +268,12 @@ class Student extends Model {
                 $student->bindings($student, $data);
             }
         );
-        $userIds = $this->find($id)->custodians->pluck('user_id')->toArray();
-        empty($userIds = $userIds ?? []) ?: (new User)->sync(
+        $userIds = $this->find($id)->custodians->pluck('user_id');
+        $userIds->isEmpty() ?: (new User)->sync(
             array_map(
                 function ($userId) {
                     return [$userId, '监护人', 'update'];
-                }, $userIds
+                }, $userIds->toArray()
             )
         );
         
@@ -498,15 +498,16 @@ class Student extends Model {
                 <td class="text-center">%s</td>
             </tr>
         HTML;
-        $cameras = (new Camera)->cameras();
         $list = '';
+        $cameras = (new Camera)->list();
         /** @var Student $student */
         foreach ($students as $student) {
             $user = $student->user;
             $list .= sprintf(
                 $tpl,
                 $user->id, $user->realname, $student->sn,
-                $face->records($user), $face->selector($cameras, $user),
+                $face->records($user),
+                $face->selector($cameras, $user),
                 $face->state(
                     $user->face ? $user->face->state : 1,
                     $user->id
@@ -557,14 +558,13 @@ class Student extends Model {
      * 返回指定学生参加的所有考试
      *
      * @param $id
-     * @return array
+     * @return SCollection
      */
     function exams($id) {
         
         return (new Exam)->whereRaw('FIND_IN_SET(' . $this->find($id)->class_id . ', class_ids)')
             ->orderBy('start_date', 'desc')
-            ->where('enabled', 1)
-            ->get()->toArray();
+            ->where('enabled', 1)->get();
         
     }
     
@@ -661,11 +661,11 @@ class Student extends Model {
                     ? '<th>卡号</th>'
                     : '<th>人脸</th><th>设备</th><th class="text-center">状态</th>';
                 $classes = Squad::whereIn('id', $this->classIds())
-                    ->get()->pluck('name', 'id')->toArray();
+                    ->get()->pluck('name', 'id');
                 $data = [
                     'prompt'  => '学生列表',
                     'formId'  => 'formStudent',
-                    'classes' => [0 => '(请选择一个班级)'] + $classes,
+                    'classes' => collect(['(请选择一个班级)'])->merge($classes),
                     'titles'  => $titles,
                     'columns' => 6,
                 ];
@@ -685,17 +685,14 @@ class Student extends Model {
                 }
                 $gradeId = Request::route('id')
                     ? $this->find(Request::route('id'))->squad->grade_id
-                    : key($grades);
-                $builder = empty($grades)
+                    : $grades->keys()->first();
+                $builder = $grades->isEmpty()
                     ? Squad::whereIn('id', $this->classIds())
                     : Squad::where(['grade_id' => $gradeId, 'enabled' => 1]);
                 $data = array_merge(
                     array_combine(
                         ['student', 'grades', 'classes'],
-                        [
-                            $student, $grades,
-                            $builder->pluck('name', 'id')->toArray(),
-                        ]
+                        [$student, $grades, $builder->pluck('name', 'id')]
                     ),
                     (new Tag)->compose('user', $user ?? null)
                 );
@@ -730,12 +727,10 @@ class Student extends Model {
         
         $grades = Grade::whereIn('id', $this->gradeIds())
             ->where('enabled', 1)
-            ->pluck('name', 'id')
-            ->toArray();
-        $classes = Squad::whereGradeId(array_key_first($grades))
+            ->pluck('name', 'id');
+        $classes = Squad::whereGradeId($grades->keys()->first())
             ->where('enabled', 1)
-            ->pluck('name', 'id')
-            ->toArray();
+            ->pluck('name', 'id');
         
         return [$grades, $classes];
         

@@ -316,7 +316,7 @@ class Consumption extends Model {
             }
             [$classes, $grades] = array_map(
                 function (Builder $name, $data) {
-                    return $name::{'whereIn'}('id', $data)->pluck('name', 'id')->toArray();
+                    return $name::{'whereIn'}('id', $data)->pluck('name', 'id');
                 }, ['Squad', 'Grade'], [$this->classIds(), $this->gradeIds()]
             );
             $data = [

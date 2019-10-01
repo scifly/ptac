@@ -212,7 +212,7 @@ class Score extends Model {
      * @throws Throwable
      */
     function modify(array $data, $id = null) {
-    
+        
         return $this->revise(
             $this, $data, $id, null
         );
@@ -253,7 +253,7 @@ class Score extends Model {
                     if (!$datum->mobile) continue;
                     $record = array_combine((new Message)->getFillable(), [
                         0, $mediaTypeId, $app->id, 0, $msgType, '', '0', uniqid(),
-                        'http://', '0', $sUserId, 0, $msgTypeId, 0, 0, null
+                        'http://', '0', $sUserId, 0, $msgTypeId, 0, 0, null,
                     ]);
                     $record['message_log_id'] = MessageLog::insertGetId([]);
                     throw_if(
@@ -261,13 +261,13 @@ class Score extends Model {
                         new Exception(__('messages.user.not_found'))
                     );
                     $record['content'] = json_encode([
-                        'touser'  => json_decode($user->ent_attrs, true)['userid'],
-                        'msgtype' => 'text',
-                        'agentid' => $app->category == 1 ? $app->appid : 0,
-                        'text'    => [
+                        'touser'      => json_decode($user->ent_attrs, true)['userid'],
+                        'msgtype'     => 'text',
+                        'agentid'     => $app->category == 1 ? $app->appid : 0,
+                        'text'        => [
                             'content' => $datum->content,
                         ],
-                        'template_id' => $app->category == 1 ? Template::first()->id : null
+                        'template_id' => $app->category == 1 ? Template::first()->id : null,
                     ], JSON_UNESCAPED_UNICODE);
                     $messages[] = Message::create($record);
                 }
@@ -368,7 +368,7 @@ class Score extends Model {
      * @throws Throwable
      */
     function import() {
-     
+        
         try {
             $records = $this->records(false);
             $titles = $records[0];
@@ -484,35 +484,39 @@ class Score extends Model {
     function wIndex() {
         
         try {
-            $user = Auth::user();
+            $role = Auth::user()->role();
             $schoolId = session('schoolId');
             $pageSize = 4;
             $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
-            $exam = new Exam();
-            throw_if(
-                $user->role() == '学生',
-                new Exception(__('messages.unauthorized'))
-            );
+            $exam = new Exam;
+            throw_if($role == '学生', new Exception(__('messages.unauthorized')));
             if (Request::method() == 'POST') {
                 $targetId = Request::input('target_id');
-                $classId = $user->role() == '监护人' ? Student::find($targetId)->class_id : $targetId;
-                $keyword = Request::has('keyword') ? Request::input('keyword') : null;
-                $exams = array_slice($exam->examsByClassId($classId, $keyword), $start, $pageSize);
+                $classId = $role == '监护人' ? Student::find($targetId)->class_id : $targetId;
+                $exams = $exam->exams($classId, Request::input('keyword'))->slice($start, $pageSize);
                 $response = response()->json(['exams' => $exams]);
             } else {
-                if ($user->role() == '监护人') {
-                    $targets = $user->custodian->myStudents();
-                    $exams = array_slice((new Student)->exams(array_key_first($targets)), $start, $pageSize);
+                if ($role == '监护人') {
+                    $custodian = User::find(Auth::id())->custodian;
+                    $targets = $custodian->students->filter(
+                        function (Student $student) {
+                            return $student->squad->grade->school->corp_id == session('corpId');
+                        }
+                    )->pluck('user.realname', 'id');
+                    $classId = (new Student)->find($targets->keys()->first())->class_id;
+                    $exams = (new Exam)->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')
+                        ->orderBy('start_date', 'desc')
+                        ->where('enabled', 1);
                     $type = 'student';
                 } else {
                     $targets = Squad::whereIn('id', $this->classIds($schoolId))
-                        ->where('enabled', 1)->pluck('name', 'id')->toArray();
-                    $exams = array_slice($exam->examsByClassId(array_key_first($targets)), $start, $pageSize);
+                        ->where('enabled', 1)->pluck('name', 'id');
+                    $exams = $exam->exams($targets->keys()->first());
                     $type = 'class';
                 }
-                $response = view('wechat.score.index', [
+                $response = view('wechat.mark.index', [
                     'targets' => $targets,
-                    'exams'   => $exams,
+                    'exams'   => $exams->slice($start, $pageSize),
                     'type'    => $type,
                 ]);
             }
@@ -545,7 +549,7 @@ class Score extends Model {
             throw $e;
         }
         
-        return view('wechat.score.stat', [
+        return view('wechat.mark.stat', [
             'data'      => $this->wAnalyze([
                 'exam_id'    => $examId,
                 'student_id' => $studentId,
@@ -590,7 +594,7 @@ class Score extends Model {
             throw $e;
         }
         
-        return view('wechat.score.analyze', [
+        return view('wechat.mark.analyze', [
             'data'    => $data,
             'examId'  => $examId,
             'classId' => $classId,
@@ -620,7 +624,7 @@ class Score extends Model {
             : $this->classDetail();
         
     }
-
+    
     /**
      * 返回用于显示指定学生、考试、科目成绩的图表数据
      *
@@ -643,7 +647,7 @@ class Score extends Model {
         $subjectIds = explode(',', $exam->subject_ids);
         $subjects = Subject::whereIn('id', $subjectIds)->pluck('name', 'id');
         
-        return view('wechat.score.graph', [
+        return view('wechat.mark.graph', [
             'subjects' => $subjects,
             'student'  => $student,
             'exam'     => $exam,
@@ -659,11 +663,11 @@ class Score extends Model {
      * @throws Exception
      */
     function compose() {
-    
+        
         if ($acronym = session('acronym')) {
             $data = [
                 'acronym' => $acronym,
-                'userid'  => json_decode(Auth::user()->ent_attrs, true)['userid']
+                'userid'  => json_decode(Auth::user()->ent_attrs, true)['userid'],
             ];
         } else {
             # 对当前用户可见的考试列表
@@ -705,7 +709,7 @@ class Score extends Model {
                         $builder = $class != 'Subject'
                             ? $model->whereIn('id', $this->{$field . 'Ids'}())
                             : $model->whereSchoolId($this->schoolId());
-                
+                        
                         return $this->htmlSelect(
                             $nil->union($builder->{'pluck'}('name', 'id')),
                             'filter_' . $field
@@ -747,8 +751,8 @@ class Score extends Model {
                         ['title' => '科目名称', 'html' => $htmlSubject],
                         ['title' => '考试名称', 'html' => $htmlExam],
                         '成绩', '年级排名', '班级排名',
-                        ['title' => '创建于', 'html'  => $this->htmlDTRange('创建于')],
-                        ['title' => '更新于', 'html'  => $this->htmlDTRange('更新于')],
+                        ['title' => '创建于', 'html' => $this->htmlDTRange('创建于')],
+                        ['title' => '更新于', 'html' => $this->htmlDTRange('更新于')],
                         [
                             'title' => '状态 . 操作',
                             'html'  => $this->htmlSelect(
@@ -769,7 +773,7 @@ class Score extends Model {
                 $data = array_merge($data, ['students' => $student->list($students)]);
             }
         }
-    
+        
         return $data;
         
     }
@@ -1002,10 +1006,11 @@ class Score extends Model {
             'stat'  => $stat,
             'total' => $total,
         ];
+        
         return Request::method() == 'POST'
-            ? response()->json(array_merge($detail, ['exam'  => $exam->toArray()]))
+            ? response()->json(array_merge($detail, ['exam' => $exam->toArray()]))
             : view(
-                'wechat.score.student',
+                'wechat.mark.student',
                 array_merge($detail, [
                     'subjects'  => $subjectList,
                     'exam'      => $exam,
@@ -1075,7 +1080,7 @@ class Score extends Model {
         $student = Request::input('student');
         
         return $classId && $examId
-            ? view('wechat.score.squad', [
+            ? view('wechat.mark.squad', [
                 'data'    => $this->examDetail($examId, $classId, $student),
                 'classId' => $classId,
                 'examId'  => $examId,

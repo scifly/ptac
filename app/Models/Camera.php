@@ -8,6 +8,7 @@ use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsToMany};
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -157,11 +158,11 @@ class Camera extends Model {
     /**
      * 返回人脸是设备列表
      *
-     * @return array
+     * @return SCollection
      */
-    function cameras() {
+    function list() {
         
-        return [0 => '【所有设备】'] + $this->all()->pluck('name', 'id')->toArray();
+        return [0 => '【所有设备】'] + $this->all()->pluck('name', 'id');
         
     }
     

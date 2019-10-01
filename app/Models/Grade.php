@@ -279,7 +279,7 @@ class Grade extends Model {
         
         return [
             $this->htmlSelect($items, 'class_id'),
-            array_key_first($items->toArray()),
+            $items->keys()->first()
         ];
         
     }
