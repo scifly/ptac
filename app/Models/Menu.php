@@ -124,12 +124,12 @@ class Menu extends Model {
      */
     function index() {
         
-        $response = response()->json();
-        switch (Request::input('action')) {
-            case 'tree':
+        try {
+            $response = response()->json();
+            $action = Request::input('action');
+            if ($action == 'tree') {
                 $response = $this->jsTree($this->rootId(true));
-                break;
-            case 'sort':
+            } elseif ($action = 'sort') {
                 # 保存菜单排序
                 $positions = Request::get('data');
                 $originalPositions = $this->orderBy('position')
@@ -139,31 +139,29 @@ class Menu extends Model {
                     $originalPosition = array_slice(
                         $originalPositions, $position, 1, true
                     );
-                    $this->find($id)->update([
+                    throw_if(
+                        !$menu = $this->find($id),
+                        new Exception(__('messages.not_found'))
+                    );
+                    $menu->update([
                         'position' => $originalPosition[key($originalPosition)],
                     ]);
                 }
-                break;
-            case 'move':
+            } else {    # move
                 $id = Request::input('id');
                 $parentId = Request::input('parentId');
                 # 移动菜单
-                abort_if(
+                throw_if(
                     !$this->find($id) || !$this->find($parentId),
-                    Constant::NOT_FOUND,
-                    __('messages.not_found')
+                    new Exception(__('messages.not_found'))
                 );
-                if ($this->movable($id, $parentId)) {
-                    $moved = $this->move($id, $parentId);
-                    abort_if(
-                        !$moved,
-                        Constant::BAD_REQUEST,
-                        __('messages.bad_request')
-                    );
-                }
-                break;
-            default:
-                break;
+                throw_if(
+                    $this->movable($id, $parentId) && !$this->move($id, $parentId),
+                    new Exception(__('messages.bad_request'))
+                );
+            }
+        } catch (Exception $e) {
+            throw $e;
         }
         
         return $response;
@@ -348,16 +346,21 @@ class Menu extends Model {
         $deptId = in_array($role, Constant::SUPER_ROLES) ? $user->depts->first()->id : null;
         switch ($role) {
             case '运营':
-                return !$subRoot ? $rootMId : ($smId ?? ($cmId ?? $rootMId));
+                $rootId = !$subRoot ? $rootMId : ($smId ?? ($cmId ?? $rootMId));
+                break;
             case '企业':
                 $cmId = $cmId ?? Corp::whereDepartmentId($deptId)->first()->menu_id;
-                
-                return !$subRoot ? $cmId : ($smId ?? $cmId);
+                $rootId = !$subRoot ? $cmId : ($smId ?? $cmId);
+                break;
             case '学校':
-                return $smId ?? School::whereDepartmentId($deptId)->first()->menu_id;
+                $rootId = $smId ?? School::whereDepartmentId($deptId)->first()->menu_id;
+                break;
             default:
-                return School::find($user->educator->school_id)->menu_id;
+                $rootId = School::find($user->educator->school_id)->menu_id;
+                break;
         }
+        
+        return $rootId;
         
     }
     
@@ -367,14 +370,18 @@ class Menu extends Model {
      * @param $id
      * @param string $type
      * @return int|mixed
+     * @throws Throwable
      */
     function menuId($id, $type = '学校') {
         
-        if (!$menu = $this->find($id)) return null;
-        $mtName = $menu->mType->name;
-        while ($mtName != $type) {
-            if (!($menu = $menu->parent)) return null;
-            $mtName = $menu->mType->name;
+        $ex = new Exception(__('messages.not_found'));
+        try {
+            throw_if(!$menu = $this->find($id), $ex);
+            while ($menu->mType->name != $type) {
+                throw_if(!$menu = $menu->parent, $ex);
+            }
+        } catch (Exception $e) {
+            throw $e;
         }
         
         return $menu->id;
@@ -424,24 +431,19 @@ class Menu extends Model {
      *
      * @param $id
      * @return array
+     * @throws Throwable
      */
     function department($id) {
         
         $icon = 'fa fa-send-o text-blue';
-        $name = '运营';
-        $departmentMenuId = $this->menuId($id);
-        if ($departmentMenuId) {
+        if ($menuId = $this->menuId($id)) {
             $icon = 'fa fa-university text-purple';
-            $name = $this->find($departmentMenuId)->name;
-        } else {
-            $departmentMenuId = $this->menuId($id, '企业');
-            if ($departmentMenuId) {
-                $icon = 'fa fa-weixin text-green';
-                $name = $this->find($departmentMenuId)->name;
-            }
+        } elseif ($menuId = $this->menuId($id, '企业')) {
+            $icon = 'fa fa-weixin text-green';
         }
-        
-        return ['icon' => $icon, 'name' => $name];
+        $menu = $this->find($menuId);
+    
+        return ['icon' => $icon, 'name' => $menu ? $menu->name : '运营'];
         
     }
     

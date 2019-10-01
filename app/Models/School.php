@@ -401,35 +401,35 @@ class School extends Model {
      */
     function compose() {
         
-        switch (explode('/', Request::path())[1]) {
-            case 'index':
-                return [
-                    'titles' => [
-                        '#', '名称', '地址', '类型', '公众号',
-                        '创建于', '更新于', '状态 . 操作',
-                    ],
-                    'batch'  => true,
-                ];
-            case 'create':
-            case 'edit':
-                $apps = App::where('category', 2)->pluck('name', 'id');
-                $school = School::find(Request::route('id'));
-                $where = ['group_id' => Group::whereName('api')->first()->id, 'enabled' => 1];
-                !$school ?: $selectedApis = User::whereIn('id', explode(',', $school->user_ids))
-                    ->pluck('realname', 'id');
-                
-                return [
-                        'schoolTypes'  => SchoolType::whereEnabled(1)->pluck('name', 'id'),
-                        'apps'         => collect([null => '[所属公众号]'])->union($apps),
-                        'corpId'       => $this->corpId(),
-                        'uris'         => (new Action)->uris(),
-                        'apis'         => User::where($where)->pluck('realname', 'id'),
-                        'selectedApis' => $selectedApis ?? collect([]),
-                        'disabled'     => null,   # disabled - 是否显示'返回列表'和'取消'按钮
-                ];
-            default:
-                return (new Message)->compose('recharge');
+        $action = $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            $data = [
+                'titles' => [
+                    '#', '名称', '地址', '类型', '公众号',
+                    '创建于', '更新于', '状态 . 操作',
+                ],
+                'batch'  => true,
+            ];
+        } elseif (in_array($action, ['create', 'edit'])) {
+            $apps = App::where('category', 2)->pluck('name', 'id');
+            $school = School::find(Request::route('id'));
+            $where = ['group_id' => Group::whereName('api')->first()->id, 'enabled' => 1];
+            !$school ?: $selectedApis = User::whereIn('id', explode(',', $school->user_ids))
+                ->pluck('realname', 'id');
+            $data = [
+                'schoolTypes'  => SchoolType::whereEnabled(1)->pluck('name', 'id'),
+                'apps'         => collect([null => '[所属公众号]'])->union($apps),
+                'corpId'       => $this->corpId(),
+                'uris'         => (new Action)->uris(),
+                'apis'         => User::where($where)->pluck('realname', 'id'),
+                'selectedApis' => $selectedApis ?? collect([]),
+                'disabled'     => null,   # disabled - 是否显示'返回列表'和'取消'按钮
+            ];
+        } else {
+            $data = (new Message)->compose('recharge');
         }
+        
+        return $data;
         
     }
     
