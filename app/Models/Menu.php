@@ -431,7 +431,6 @@ class Menu extends Model {
      */
     function department($id) {
         
-        $icon = 'fa fa-send-o text-blue';
         if ($menuId = $this->menuId($id)) {
             $icon = 'fa fa-university text-purple';
         } elseif ($menuId = $this->menuId($id, '企业')) {
@@ -439,24 +438,27 @@ class Menu extends Model {
         }
         $menu = $this->find($menuId);
     
-        return ['icon' => $icon, 'name' => $menu ? $menu->name : '运营'];
+        return [
+            'icon' => $icon ?? 'fa fa-send-o text-blue',
+            'name' => $menu ? $menu->name : '运营'
+        ];
         
     }
     
     /**
      * 获取所有叶节点菜单
      *
-     * @param null $rootMenuId
+     * @param null $rootId
      * @return Collection|static[]
      */
-    function leaves($rootMenuId = null) {
+    function leaves($rootId = null) {
         
         $leafPath = [];
-        $ids = $rootMenuId
-            ? $this->subIds($rootMenuId)
-            : $this->all()->pluck('id')->toArray();
+        $ids = $rootId
+            ? $this->subIds($rootId)
+            : $this->all()->pluck('id');
         foreach ($ids as $id) {
-            if (empty($this->find($id)->children->count())) {
+            if ($this->find($id)->children->isEmpty()) {
                 $path = $this->leafPath($id, $leafPath);
                 $leaves[$id] = $path;
                 $leafPath = [];
@@ -612,36 +614,43 @@ class Menu extends Model {
      * @param $id
      * @param $parentId
      * @return bool
-     * @throws ReflectionException
+     * @throws Throwable
      */
     private function movable($id, $parentId) {
         
-        if (!isset($id, $parentId)) return false;
-        $user = Auth::user();
-        if ($user->role() != '运营') {
-            abort_if(
+        try {
+            throw_if(
+                !isset($id, $parentId) ||
+                Auth::user()->role() != '运营' &&
                 !$this->menuIds()->flip()->has([$id, $parentId]),
-                Constant::UNAUTHORIZED,
                 __('messages.forbidden')
             );
+            $parentType = $this->find($parentId)->mType->name;
+            switch ($this->find($id)->mType->name) {
+                case '运营':
+                    $movable = $parentType == '根';
+                    break;
+                case '企业':
+                    $movable = $parentType == '运营';
+                    break;
+                case '学校':
+                    # 如果学校所属企业发生变化，则不允许移动
+                    $school = School::whereMenuId($id)->first();
+                    $movable = $parentType !== '企业' ? false
+                        : $school->corp_id == Corp::whereMenuId($parentId)->first()->id;
+                    break;
+                case '其他':
+                    $movable = true;
+                    break;
+                default:
+                    $movable = false;
+                    break;
+            }
+        } catch (Exception $e) {
+            throw $e;
         }
-        $parentType = $this->find($parentId)->mType->name;
-        switch ($this->find($id)->mType->name) {
-            case '运营':
-                return $parentType == '根';
-            case '企业':
-                return $parentType == '运营';
-            case '学校':
-                # 如果学校所属企业发生变化，则不允许移动
-                $school = School::whereMenuId($id)->first();
-                
-                return $parentType !== '企业' ? false
-                    : $school->corp_id == Corp::whereMenuId($parentId)->first()->id;
-            case '其他':
-                return true;
-            default:
-                return false;
-        }
+        
+        return $movable;
         
     }
     
