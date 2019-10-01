@@ -12,7 +12,7 @@
             @include('shared.label', ['field' => 'name', 'label' => '名称'])
             <div class="col-sm-6">
                 <div class="input-group">
-                    @include('shared.icon_addon', ['class' => 'fa-building-o'])
+                    @include('shared.icon_addon', ['class' => 'fa-home'])
                     {!! Form::text('name', null, [
                         'class' => 'form-control text-blue',
                         'required' => 'true',
