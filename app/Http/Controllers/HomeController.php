@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\Constant;
 use App\Models\{Action, Menu, MenuTab, Tab};
 use Exception;
 use Illuminate\Contracts\View\Factory;
@@ -18,19 +17,15 @@ use Throwable;
  */
 class HomeController extends Controller {
     
-    protected $tab, $mt, $menu;
+    protected $menu;
     
     /**
      * HomeController constructor.
-     * @param Tab $tab
-     * @param MenuTab $mt
      * @param Menu $menu
      */
-    public function __construct(Tab $tab, MenuTab $mt, Menu $menu) {
+    public function __construct(Menu $menu) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->tab = $tab;
-        $this->mt = $mt;
         $this->menu = $menu;
         
     }
@@ -81,53 +76,57 @@ class HomeController extends Controller {
      */
     public function menu($id) {
         
-        session('menuId') != $id
-            ? session(['menuId' => $id, 'menuChanged' => true])
-            : Session::forget('menuChanged');
-        # 获取指定菜单包含的卡片列表
-        $tabIds = $this->mt->tabIdsByMenuId($id);
-        # 获取当前用户可以访问的卡片（控制器）id
-        $allowedTabIds = $this->tab->allowedTabIds();
-        # 封装当前用户可以访问的卡片数组
-        foreach ($tabIds as $tabId) {
-            $tab = Tab::find($tabId);
-            $action = Action::find($tab->action_id);
-            if (!in_array($tabId, $allowedTabIds) || !$action->route) continue;
-            $tabArray[] = [
-                'id'     => 'tab_' . $tab->id,
-                'name'   => $tab->comment,
-                'icon'   => $tab->icon_id ? $tab->icon->name : null,
-                'active' => false,
-                'url'    => $action->route,
-            ];
-        }
-        abort_if(
-            empty($tabArray ?? []), Constant::NOT_FOUND,
-            __('messages.menu.misconfigured')
-        );
-        # 刷新页面时打开当前卡片, 不一定是第一个卡片
-        $tabArray[0]['active'] = true;
-        if (session('tabId')) {
-            $tabArray[0]['active'] = false;
-            $key = array_search(
-                'tab_' . session('tabId'),
-                array_column($tabArray, 'id')
-            );
-            $tabArray[$key]['active'] = true;
-            if (!session('tabChanged') && !session('menuChanged')) {
-                $tabArray[$key]['url'] = session('tabUrl');
+        try {
+            session('menuId') != $id
+                ? session(['menuId' => $id, 'menuChanged' => true])
+                : Session::forget('menuChanged');
+            # 获取指定菜单包含的卡片列表
+            $tabIds = MenuTab::whereMenuId($id)->orderBy('tab_order')->pluck('tab_id');
+            # 获取当前用户可以访问的卡片（控制器）id
+            $allowedTabIds = (new Tab)->allowedTabIds()->flip();
+            # 封装当前用户可以访问的卡片数组
+            foreach ($tabIds as $tabId) {
+                $tab = Tab::find($tabId);
+                $action = Action::find($tab->action_id);
+                if (!$allowedTabIds->has($tabId) || !$action->route) continue;
+                $tabs[] = [
+                    'id'     => 'tab_' . $tab->id,
+                    'name'   => $tab->comment,
+                    'icon'   => $tab->icon_id ? $tab->icon->name : null,
+                    'active' => false,
+                    'url'    => $action->route,
+                ];
             }
+            throw_if(
+                empty($tabs ?? []),
+                new Exception(__('messages.menu.misconfigured'))
+            );
+            # 刷新页面时打开当前卡片, 不一定是第一个卡片
+            $tabs[0]['active'] = true;
+            if (session('tabId')) {
+                $tabs[0]['active'] = false;
+                $key = array_search(
+                    'tab_' . session('tabId'),
+                    array_column($tabs, 'id')
+                );
+                $tabs[$key]['active'] = true;
+                if (!session('tabChanged') && !session('menuChanged')) {
+                    $tabs[$key]['url'] = session('tabUrl');
+                }
+            }
+        } catch (Exception $e) {
+            throw $e;
         }
         
         return Request::ajax()
             ? response()->json([
-                'html'       => view('shared.site_content', ['tabs' => $tabArray])->render(),
+                'html'       => view('shared.site_content', ['tabs' => $tabs])->render(),
                 'department' => $this->menu->department($id),
                 'title'      => $this->menu->find(session('menuId'))->name,
             ])
             : view('layouts.web', [
                 'menu'       => $this->menu->htmlTree($this->menu->rootId()),
-                'tabs'       => $tabArray,
+                'tabs'       => $tabs,
                 'menuId'     => $id,
                 'department' => $this->menu->department($id),
             ]);

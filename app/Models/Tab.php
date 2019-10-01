@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\BelongsToMany,
     Relations\HasMany};
+use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use ReflectionClass;
 use Throwable;
@@ -358,7 +359,7 @@ class Tab extends Model {
     /**
      * 根据角色返回可访问的卡片id
      *
-     * @return array
+     * @return SCollection
      */
     function allowedTabIds() {
         
@@ -387,7 +388,7 @@ class Tab extends Model {
                 break;
         }
         
-        return $builder->pluck($field ?? 'id')->toArray();
+        return $builder->pluck($field ?? 'id');
         
     }
 

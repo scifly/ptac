@@ -62,7 +62,6 @@ class MenuTab extends Pivot {
                 $field = $this->fillable[$forward ? 0 : 1];
                 $fields = array_merge($this->fillable, ['created_at', 'updated_at']);
                 $this->where($field, $value)->delete();
-                $records = [];
                 foreach ($ids as $id) {
                     $records[] = array_combine($fields, [
                         $forward ? $value : $id,
@@ -72,7 +71,7 @@ class MenuTab extends Pivot {
                         now()->toDateTimeString(),
                     ]);
                 }
-                $this->insert($records);
+                $this->insert($records ?? []);
             });
         } catch (Exception $e) {
             throw $e;
@@ -104,21 +103,6 @@ class MenuTab extends Pivot {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 根据指定菜单包含的卡片Id数组
-     *
-     * @param $menuId
-     * @return array
-     */
-    function tabIdsByMenuId($menuId) {
-        
-        return $this->whereMenuId($menuId)
-            ->orderBy('tab_order')
-            ->pluck('tab_id')
-            ->toArray();
         
     }
     
