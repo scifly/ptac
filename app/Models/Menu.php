@@ -333,6 +333,7 @@ class Menu extends Model {
      *      false 返回当前角色可访问的最顶级菜单id,
      *      true  返回当前角色可访问的最直接顶级(学校或企业)菜单id
      * @return int|mixed
+     * @throws Throwable
      */
     function rootId($subRoot = false) {
         
