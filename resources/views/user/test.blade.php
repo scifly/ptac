@@ -36,6 +36,7 @@
         ajax: {
             url: 'index',
             dataType: 'json',
+            minimumInputLength: 1
         }
     });
     // Pusher.logToConsole = true;

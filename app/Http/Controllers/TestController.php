@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\{Broadcaster, Constant, ModelTrait};
-use App\Models\{Department};
+use App\Models\{Department, User};
 use Auth;
 use Doctrine\Common\Inflector\Inflector;
 use Exception;
@@ -66,14 +66,16 @@ class TestController extends Controller {
     public function index() {
         
         if (Request::ajax()) {
-            $data = [
-                'results' => [
-                    ['id' => 1, 'text' => 'Option 1'],
-                    ['id' => 2, 'text' => 'Option 2'],
-                    ['id' => 3, 'text' => 'Option 3'],
-                    ['id' => 4, 'text' => 'Option 4'],
-                ]
-            ];
+            $data = [];
+            $keyword = Request::query('term');
+            $users = User::where('username', 'like', '%' . $keyword . '%')
+                ->pluck('realname', 'id');
+            foreach ($users as $id => $text) {
+                $data['results'][] = [
+                    'id' => $id,
+                    'text' => $text
+                ];
+            }
             return response()->json($data);
         }
         
