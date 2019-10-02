@@ -35,9 +35,9 @@
     $('select[name=test]').select2({
         ajax: {
             url: 'index',
-            dataType: 'json',
-            minimumInputLength: 1
-        }
+            dataType: 'json'
+        },
+        minimumInputLength: 1
     });
     // Pusher.logToConsole = true;
     // var pusher = new Pusher('4e759473d69a97307905', {
