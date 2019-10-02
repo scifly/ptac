@@ -65,14 +65,20 @@ class TestController extends Controller {
      */
     public function index() {
         
-        $field = Request::query('f');
-        $tables = DB::select('SHOW TABLES;');
-        foreach ($tables as $table) {
-            $t = current($table);
-            if (Schema::hasColumn($t, $field)) {
-                echo Inflector::classify(Inflector::singularize($t)) . '<br />';
-            }
+        if (Request::ajax()) {
+            $data = [
+                'results' => [
+                    ['id' => 1, 'text' => 'Option 1'],
+                    ['id' => 2, 'text' => 'Option 2'],
+                    ['id' => 3, 'text' => 'Option 3'],
+                    ['id' => 4, 'text' => 'Option 4'],
+                ]
+            ];
+            return response()->json($data);
         }
+        
+        return view('user.test');
+        
         // try {
         //     DB::transaction(function () {
         //         $apiGId = Group::whereName('api')->first()->id;
@@ -108,6 +114,19 @@ class TestController extends Controller {
         // } catch (Exception $e) {
         //     throw $e;
         // }
+        
+    }
+    
+    function foreignKeys() {
+    
+        $field = Request::query('f');
+        $tables = DB::select('SHOW TABLES;');
+        foreach ($tables as $table) {
+            $t = current($table);
+            if (Schema::hasColumn($t, $field)) {
+                echo Inflector::classify(Inflector::singularize($t)) . '<br />';
+            }
+        }
         
     }
     
