@@ -37,7 +37,8 @@
             url: 'index',
             dataType: 'json'
         },
-        minimumInputLength: 1
+        minimumInputLength: 1,
+        language: 'zh-CN'
     });
     // Pusher.logToConsole = true;
     // var pusher = new Pusher('4e759473d69a97307905', {
