@@ -17,7 +17,7 @@
     'id' => 'testform',
     'enctype' => 'multipart/form-data'
 ]) !!}
-{!! Form::select('test', [], null) !!}
+{!! Form::select('test', [], null, ['style' => 'width: 200px;']) !!}
 {!! Form::text('option[]', null, ['class' => 'test']) !!}
 {!! Form::text('option[]', null, ['class' => 'test']) !!}
 {!! Form::text('option[]', null, ['class' => 'test']) !!}
