@@ -267,24 +267,21 @@ trait ModelTrait {
         if ($role == '运营') {
             $schools = School::all();
         } elseif ($role == '企业') {
-            $corp = Corp::whereDepartmentId($user->depts->first()->id)->first();
-            $schools = $corp->schools;
+            $schools = Corp::whereDepartmentId($user->depts->first()->id)->first()->schools;
         } elseif ($role == '学生') {
             $schools->push($user->student->squad->grade->school);
-        } else {
-            if ($user->custodian) {
-                foreach ($user->custodian->students as $student) {
-                    $schoolIds[] = $student->squad->grade->school_id;
-                }
+        } elseif ($custodian = $user->custodian) {
+            foreach ($custodian->students as $student) {
+                $schools->push($student->squad->grade->school);
             }
-            !$user->educator ?: $schoolIds[] = $user->educator->school_id;
-            $schools = School::whereIn('id', array_unique($schoolIds ?? []))->get();
+        } elseif ($educator = $user->educator) {
+            $schools->push($educator->school);
         }
         
         return $schools->when(
             $corpId, function (Collection $schools) use ($corpId) {
             return $schools->where('corp_id', $corpId);
-        })->pluck('id');
+        })->unique()->pluck('id');
         
     }
     
@@ -762,12 +759,12 @@ trait ModelTrait {
     function corpApp($corpId, $name = null) {
         
         try {
-            $val = [
+            $where = [
                 'corp_id' => $corpId,
                 'name'    => $name ?? config('app.name'),
             ];
             throw_if(
-                !$app = App::where($val)->first(),
+                !$app = App::where($where)->first(),
                 new Exception(__('messages.app.not_found'))
             );
         } catch (Exception $e) {

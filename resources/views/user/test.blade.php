@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>test</title>
     <meta name="csrf-token" content="{{ csrf_token() }}" id="csrf_token">
+    {!! Html::style('js/plugins/select2/css/select2.min.css') !!}
 </head>
 <body>
 <h1>Pusher Test</h1>
@@ -16,6 +17,7 @@
     'id' => 'testform',
     'enctype' => 'multipart/form-data'
 ]) !!}
+{!! Form::select('test', [], null) !!}
 {!! Form::text('option[]', null, ['class' => 'test']) !!}
 {!! Form::text('option[]', null, ['class' => 'test']) !!}
 {!! Form::text('option[]', null, ['class' => 'test']) !!}
@@ -27,6 +29,8 @@
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/pusher.min.js') }}"></script>
 <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
+{!! Html::script('js/plugins/select2/js/select2.full.min.js') !!}
+{!! Html::script('js/plugins/select2/js/i18n/zh-CN.js') !!}
 <script>
     // Pusher.logToConsole = true;
     // var pusher = new Pusher('4e759473d69a97307905', {

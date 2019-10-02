@@ -481,11 +481,10 @@ class Educator extends Model {
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
-     * @param null $id
      * @return array
      * @throws Throwable
      */
-    function compose($id = null) {
+    function compose() {
         
         $action = explode('/', Request::path())[1];
         switch ($action) {
@@ -532,14 +531,8 @@ class Educator extends Model {
                             ),
                         ],
                         '职务', '手机号码',
-                        [
-                            'title' => '创建于',
-                            'html'  => $this->htmlDTRange('创建于'),
-                        ],
-                        [
-                            'title' => '更新于',
-                            'html'  => $this->htmlDTRange('更新于'),
-                        ],
+                        ['title' => '创建于', 'html'  => $this->htmlDTRange('创建于')],
+                        ['title' => '更新于', 'html'  => $this->htmlDTRange('更新于')],
                         [
                             'title' => '状态 . 操作',
                             'html'  => $this->htmlSelect(
@@ -579,21 +572,23 @@ class Educator extends Model {
                 $data = (new Message)->compose('recharge');
                 break;
             default:    # 创建/编辑
-                $classes = Squad::whereIn('id', $this->classIds())->where('enabled', 1)->get();
+                $classes = Squad::whereIn('id', $this->classIds())
+                    ->where('enabled', 1)->get();
                 $gradeIds = $classes->pluck('grade_id')->unique();
-                $subjects = Subject::where(['enabled' => 1, 'school_id' => $this->schoolId()])->get()->filter(
-                    function (Subject $subject) use ($gradeIds) {
-                        return !empty($gradeIds->intersect(explode(',', $subject->grade_ids)));
-                    }
-                );;
-                if (($educator = $this->find($id ?? Request::route('id'))) && Request::method() == 'GET') {
+                $subjects = Subject::where(['enabled' => 1, 'school_id' => $this->schoolId()])
+                    ->get()->filter(
+                        function (Subject $subject) use ($gradeIds) {
+                            return $gradeIds->intersect(explode(',', $subject->grade_ids))->isNotEmpty();
+                        }
+                    );
+                $educator = $this->find(Request::route('id'));
+                if ($educator && Request::method() == 'GET') {
                     $user = $educator->user;
                     $educator->{'card'} = $user->card;
-                    $selectedDeptIds = !$educator ? collect([])
-                        : $educator->user->deptIds($educator->user_id);
+                    $selectedDeptIds = $user->deptIds($educator->user_id);
                     $selectedDepartments = $this->selectedNodes($selectedDeptIds);
                 }
-                $nil = collect([0 => '(请选择)']);
+                $nil = collect(['(请选择)']);
                 $data = array_merge(
                     array_combine(
                         [
@@ -605,7 +600,7 @@ class Educator extends Model {
                             $nil->union($classes->pluck('name', 'id')),
                             $nil->union($subjects->pluck('name', 'id')),
                             (new Group)->list(),
-                            join(',', $selectedDeptIds ?? []),
+                            ($selectedDeptIds ?? collect([]))->join(','),
                             $selectedDepartments ?? [],
                         ]
                     ),
