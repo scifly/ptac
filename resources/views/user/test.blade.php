@@ -32,13 +32,12 @@
 {!! Html::script('js/plugins/select2/js/select2.full.min.js') !!}
 {!! Html::script('js/plugins/select2/js/i18n/zh-CN.js') !!}
 <script>
-    $('input[name=test]').select2({
+    $('select[name=test]').select2({
         ajax: {
             url: 'index',
             dataType: 'json',
-
         }
-    })
+    });
     // Pusher.logToConsole = true;
     // var pusher = new Pusher('4e759473d69a97307905', {
     //         cluster: 'eu',
