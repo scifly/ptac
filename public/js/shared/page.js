@@ -630,9 +630,9 @@ var page = {
             page.loadCss(plugins.select2.css);
             $.getMultiScripts([plugins.select2.js])
                 .done(function () {
-                    $.getMultiScripts([plugins.select2.jscn]).done(function () {
-                        init(options);
-                    });
+                    $.getMultiScripts([plugins.select2.jscn]).done(
+                        function () { init(options); }
+                    );
                 });
         } else {
             init(options);
