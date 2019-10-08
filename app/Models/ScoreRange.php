@@ -119,7 +119,7 @@ class ScoreRange extends Model {
      * @return bool|null
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
         
         return $this->purge($id);
         

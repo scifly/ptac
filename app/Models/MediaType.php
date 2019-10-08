@@ -49,7 +49,7 @@ class MediaType extends Model {
      * @return bool|null
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
         
         return $this->purge($id, [
             'reset.media_type_id' => ['Media', 'Message']

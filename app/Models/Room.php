@@ -147,7 +147,7 @@ class Room extends Model {
      * @return bool
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
     
         return $this->purge($id, [
             'purge.room_id' => ['Bed']

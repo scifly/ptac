@@ -123,7 +123,7 @@ class Building extends Model {
      * @return bool
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
     
         return $this->purge($id, [
             'purge.building_id' => ['Room']

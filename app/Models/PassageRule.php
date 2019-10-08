@@ -181,7 +181,7 @@ class PassageRule extends Model {
      * @return bool|null
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
         
         return $this->purge($id, [
             'purge.passage_rule_id' => ['RuleTurnstile']
