@@ -38,7 +38,7 @@ class CreateSchool implements ShouldQueue {
         '门禁设置' => [0, '考勤管理', null, 'fa fa-credit-card', ['门禁通行规则', '门禁设备']],
         '通行记录' => [0, '考勤管理', null, 'fa fa-commenting', ['门禁通行记录']],
         '日常管理' => [0, null, null, 'fa fa-calculator', null],
-        '自媒体管理' => [0, '日常管理', null, 'fa fa-photo', ['微网站栏目', '微网站文章', '微网站']],
+        '自媒体管理' => [0, '日常管理', null, 'fa fa-photo', ['微网站', '栏目', '文章']],
         '学生消费管理' => [0, '日常管理', null, 'fa fa-money', ['消费记录']],
         '流程审批' => [0, '日常管理', null, 'fa fa-money', ['流程审批']],
         '会议管理' => [0, '日常管理', null, 'fa fa-home', ['会议']],
@@ -129,6 +129,8 @@ class CreateSchool implements ShouldQueue {
                 $menuTypeId = MenuType::whereName('其他')->first()->id;
                 foreach ($this->menus as $name => &$data) {
                     [$id, $parent, $uri, $icon, $tabs] = $data;
+                    if (!Icon::whereName($icon)->first()) Log::debug($icon);
+                    // $iconId = $icon ? Icon::whereName($icon)->first()->id : null;
                     # 创建菜单
                     $menuId = Menu::insertGetId([
                         'parent_id'    => !$parent
@@ -138,21 +140,18 @@ class CreateSchool implements ShouldQueue {
                         'name'         => $name,
                         'uri'          => $uri,
                         'position'     => $position += 1,
-                        'icon_id'      => $icon ? Icon::whereName($icon)->first()->id : null,
+                        'icon_id'      => $iconId ?? null,
                         'enabled'      => Constant::ENABLED,
                     ]);
                     $data[$id] = $menuId;
                     # 创建菜单卡片绑定关系
                     foreach ($tabs ?? [] as $name) {
                         $tab = Tab::whereComment($name)->first();
-                        if (!$tab) {
-                            Log::debug($name);
-                        }
-                        // MenuTab::create([
-                        //     'menu_id' => $menuId,
-                        //     'tab_id'  => $tab->id,
-                        //     'enabled' => Constant::ENABLED,
-                        // ]);
+                        MenuTab::create([
+                            'menu_id' => $menuId,
+                            'tab_id'  => $tab->id,
+                            'enabled' => Constant::ENABLED,
+                        ]);
                     }
                 }
                 exit;
