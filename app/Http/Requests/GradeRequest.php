@@ -30,7 +30,7 @@ class GradeRequest extends FormRequest {
                 'school_id,' . $this->input('school_id'),
             'department_id' => 'required|integer',
             'school_id'     => 'required|integer',
-            'educator_ids'  => 'required|string',
+            'educator_ids'  => 'nullable|string',
             'tag_ids'       => 'required|array',
             'enabled'       => 'required|boolean',
         ];
@@ -40,11 +40,8 @@ class GradeRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        $input['educator_ids'] = isset($input['educator_ids'])
-            ? join(',', $input['educator_ids']) : '0';
-        if (!isset($input['department_id'])) {
-            $input['department_id'] = 0;
-        }
+        $input['educator_ids'] = join(',', $input['educator_ids'] ?? []);
+        $input['department_id'] = $input['department_id'] ?? 0;
         $input['school_id'] = $this->schoolId();
         $this->replace($input);
         

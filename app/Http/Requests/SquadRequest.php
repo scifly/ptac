@@ -42,15 +42,8 @@ class SquadRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['educator_ids'])) {
-            $input['educator_ids'] = join(',', $input['educator_ids']);
-        }
-        if (!isset($input['educator_ids'])) {
-            $input['educator_ids'] = '0';
-        }
-        if (!isset($input['department_id'])) {
-            $input['department_id'] = 0;
-        }
+        $input['educator_ids'] = join(',', $input['educator_ids'] ?? []);
+        $input['department_id'] = $input['department_id'] ?? 0;
         $this->replace($input);
         
     }

@@ -270,14 +270,8 @@ class Squad extends Model {
                         ),
                     ],
                     '班主任',
-                    [
-                        'title' => '创建于',
-                        'html'  => $this->htmlDTRange('创建于'),
-                    ],
-                    [
-                        'title' => '更新于',
-                        'html'  => $this->htmlDTRange('更新于'),
-                    ],
+                    ['title' => '创建于', 'html'  => $this->htmlDTRange('创建于')],
+                    ['title' => '更新于', 'html'  => $this->htmlDTRange('更新于')],
                     [
                         'title' => '同步状态',
                         'html'  => $this->htmlSelect(
