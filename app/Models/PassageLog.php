@@ -164,6 +164,17 @@ class PassageLog extends Model {
     }
     
     /**
+     * @param null $id
+     * @return bool
+     * @throws Throwable
+     */
+    function remove($id = null) {
+    
+        return $this->purge($id);
+    
+    }
+    
+    /**
      * 批量导出记录
      *
      * @return string
