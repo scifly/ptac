@@ -133,6 +133,17 @@ class Camera extends Model {
     }
     
     /**
+     * @param null $id
+     * @return bool
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        return $this->purge($id);
+        
+    }
+    
+    /**
      * 返回composer所需的view数据
      *
      * @return array
