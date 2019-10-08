@@ -49,7 +49,7 @@ class SchoolRequest extends FormRequest {
         
         if (!$this->has('ids')) {
             $input = $this->all();
-            $input['user_ids'] = join(',', $input['user_ids']);
+            $input['user_ids'] = join(',', $input['user_ids'] ?? []);
             $this->replace($input);
         }
         
