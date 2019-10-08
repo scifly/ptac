@@ -92,37 +92,33 @@ trait ModelTrait {
         
         try {
             DB::transaction(function () use ($id, $params) {
-                foreach ($params ?? [] as $key => $classes) {
-                    $af = explode('.', $key);
-                    foreach ($classes as $class) {
-                        $relations[] = array_merge([$class], $af);
-                    }
-                }
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $this->model(get_called_class())->whereIn('id', $ids)->delete();
-                array_map(
-                    function ($relation) use ($ids) {
-                        [$class, $action, $field] = $relation;
-                        $model = $this->model($class);
-                        if (in_array($action, ['purge', 'reset'])) {
-                            /** @var Builder $builder */
-                            $builder = $model->whereIn($field, $ids);
-                            if ($action == 'purge') {
-                                Request::replace(['ids' => $builder->pluck('id')->toArray()]);
-                                $model->remove();
-                            } else {
-                                $builder->update([$field => 0]);
-                            }
-                        } elseif ($action == 'clear') {
-                            /** @var Model $record */
-                            foreach ($model->all() as $record) {
-                                $original = collect(explode(',', $record->{$field}));
-                                if ($original->isEmpty()) continue;
-                                $record->update([$field => $original->diff($ids)]);
+                if (!empty($ids)) {
+                    $this->model(get_called_class())->whereIn('id', $ids)->delete();
+                    foreach ($params ?? [] as $key => $classes) {
+                        [$action, $field] = explode('.', $key);
+                        foreach ($classes as $class) {
+                            $model = $this->model($class);
+                            if (in_array($action, ['purge', 'reset'])) {
+                                /** @var Builder $builder */
+                                $builder = $model->whereIn($field, $ids);
+                                if ($action == 'purge') {
+                                    Request::replace(['ids' => $builder->pluck('id')->toArray()]);
+                                    $model->remove();
+                                } else {
+                                    $builder->update([$field => 0]);
+                                }
+                            } elseif ($action == 'clear') {
+                                /** @var Model $record */
+                                foreach ($model->all() as $record) {
+                                    $original = collect(explode(',', $record->{$field}));
+                                    if ($original->isEmpty()) continue;
+                                    $record->update([$field => $original->diff($ids)]);
+                                }
                             }
                         }
-                    }, $relations ?? []
-                );
+                    }
+                }
             });
         } catch (Exception $e) {
             throw $e;
