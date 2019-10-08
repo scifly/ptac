@@ -62,6 +62,17 @@ class ClassEducator extends Pivot {
     }
     
     /**
+     * @param null $id
+     * @return bool
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        return $this->purge($id);
+        
+    }
+    
+    /**
      * 保存指定教职员工的班级科目绑定关系
      *
      * @param $educatorId
