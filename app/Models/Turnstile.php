@@ -144,6 +144,17 @@ class Turnstile extends Model {
     }
     
     /**
+     * @param null $id
+     * @return bool
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        return $this->purge($id);
+        
+    }
+    
+    /**
      * 调用接口
      *
      * @param string $api - 接口名称
