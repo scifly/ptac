@@ -31,7 +31,7 @@ class GradeRequest extends FormRequest {
             'department_id' => 'required|integer',
             'school_id'     => 'required|integer',
             'educator_ids'  => 'nullable|string',
-            'tag_ids'       => 'required|array',
+            'tag_ids'       => 'nullable|array',
             'enabled'       => 'required|boolean',
         ];
         
