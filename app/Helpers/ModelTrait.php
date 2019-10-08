@@ -92,7 +92,7 @@ trait ModelTrait {
         
         try {
             DB::transaction(function () use ($id, $params) {
-                foreach ($params as $key => $classes) {
+                foreach ($params ?? [] as $key => $classes) {
                     $af = explode('.', $key);
                     foreach ($classes as $class) {
                         $relations[] = array_merge([$class], $af);
