@@ -249,7 +249,7 @@ class Grade extends Model {
                 ->with('user')->get()->pluck('user.realname', 'id');
             $grade = Grade::find(Request::route('id'));
             $selectedEducators = collect(
-                explode(',', rtrim($grade ? $grade->educator_ids : '', ','))
+                explode(',', $grade ? $grade->educator_ids : '')
             );
             $data = array_merge(
                 array_combine(['educators', 'selectedEducators'], [$educators, $selectedEducators]),
