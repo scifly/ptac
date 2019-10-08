@@ -101,8 +101,8 @@ trait ModelTrait {
                 }
                 $table = explode('/', Request::path())[0];
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $this->model(Inflector::classify(Inflector::singularize($table)))
-                    ->whereIn('id', $ids)->delete();
+                $class = $table == 'corps' ? 'Corp' : Inflector::classify(Inflector::singularize($table));
+                $this->model($class)->whereIn('id', $ids)->delete();
                 array_map(
                     function ($relation) use ($ids) {
                         [$class, $action, $field] = $relation;
