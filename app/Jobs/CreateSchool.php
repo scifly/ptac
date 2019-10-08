@@ -42,7 +42,7 @@ class CreateSchool implements ShouldQueue {
         '学生消费管理' => [0, '日常管理', null, 'fa fa-money', ['消费记录']],
         '流程审批' => [0, '日常管理', null, 'fa fa-money', ['流程审批']],
         '会议管理' => [0, '日常管理', null, 'fa fa-home', ['会议']],
-        '调查问卷' => [0, '日常管理', null, 'fa fa-comment', ['调查问卷', '问卷题目']],
+        '调查问卷' => [0, '日常管理', null, 'fa fa-commenting', ['调查问卷', '问卷题目']],
         '德育管理' => [0, '日常管理', null, 'fa fa-map-signs', ['考核记录']],
         '成绩中心' => [0, null, null, 'fa fa-file', null],
         '考试设置' => [0, '成绩中心', null, null, ['考试', '考试类型']],
@@ -128,9 +128,8 @@ class CreateSchool implements ShouldQueue {
                 # 创建学校基础菜单
                 $menuTypeId = MenuType::whereName('其他')->first()->id;
                 foreach ($this->menus as $name => &$data) {
-                    [$id, $parent, $uri, $icon, $tabs] = $data;
-                    if (!Icon::whereName($icon)->first()) Log::debug($icon);
-                    // $iconId = $icon ? Icon::whereName($icon)->first()->id : null;
+                    [$id, $parent, $uri, $style, $tabs] = $data;
+                    $icon = Icon::whereName($style)->first();
                     # 创建菜单
                     $menuId = Menu::insertGetId([
                         'parent_id'    => !$parent
@@ -140,7 +139,7 @@ class CreateSchool implements ShouldQueue {
                         'name'         => $name,
                         'uri'          => $uri,
                         'position'     => $position += 1,
-                        'icon_id'      => $iconId ?? null,
+                        'icon_id'      => $icon ? $icon->id : null,
                         'enabled'      => Constant::ENABLED,
                     ]);
                     $data[$id] = $menuId;
@@ -154,7 +153,6 @@ class CreateSchool implements ShouldQueue {
                         ]);
                     }
                 }
-                exit;
                 # 创建“教职员工”基本角色
                 foreach ($this->educatorMenus as $name) {
                     $menuIds[] = $this->menus[$name][0];
