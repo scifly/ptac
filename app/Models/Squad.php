@@ -235,7 +235,7 @@ class Squad extends Model {
      */
     function remove($id = null) {
         
-        return $this->purge($id, [
+        return $this->mdPurge($id, [
             'purge.class_id'  => ['ClassEducator', 'Student'],
             'clear.class_ids' => ['Exam'],
         ]);

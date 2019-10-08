@@ -225,7 +225,7 @@ class Grade extends Model {
      */
     function remove($id = null) {
         
-        return $this->purge($id, [
+        return $this->mdPurge($id, [
             'purge.grade_id'  => ['Squad'],
             'clear.grade_ids' => ['Subject'],
         ]);

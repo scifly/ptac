@@ -382,7 +382,7 @@ class School extends Model {
      */
     function remove($id = null) {
         
-        return $this->purge($id, [
+        return $this->mdPurge($id, [
             'purge.school_id' => [
                 'Building', 'Camera', 'ComboType', 'Educator',
                 'ExamType', 'FlowType', 'Grade', 'Group',

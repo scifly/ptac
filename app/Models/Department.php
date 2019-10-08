@@ -288,11 +288,12 @@ class Department extends Model {
                 $dept->children->isNotEmpty(),
                 new Exception(__('messages.department.has_children'))
             );
+            throw_if(
+                $dept->dType->name != '其他',
+                new Exception(__('messages.department.forbidden'))
+            );
             $this->purge($id, [
-                'purge.department_id' => [
-                    'Company', 'Corp', 'School', 'Grade', 'Squad',
-                    'DepartmentUser', 'DepartmentTag',
-                ],
+                'purge.department_id' => ['DepartmentUser', 'DepartmentTag'],
             ]);
         } catch (Exception $e) {
             throw $e;

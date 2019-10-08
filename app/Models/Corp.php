@@ -227,10 +227,16 @@ class Corp extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-        
-        return $this->purge($id, [
-            'purge.corp_id' => ['App', 'School', 'RoomType']
-        ]);
+    
+        try {
+            DB::transaction(function () use ($id) {
+                $this->mdPurge($id, ['purge.corp_id' => ['App', 'School', 'RoomType']]);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
         
     }
     

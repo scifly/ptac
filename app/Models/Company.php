@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasManyThrough};
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Request;
 use Throwable;
 
 /**
@@ -170,9 +171,15 @@ class Company extends Model {
      */
     function remove($id = null) {
         
-        return $this->purge($id, [
-            'purge.company_id' => ['Corp']
-        ]);
+        try {
+            DB::transaction(function () use ($id) {
+                $this->mdPurge($id, ['purge.company_id' => ['Corp']]);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     

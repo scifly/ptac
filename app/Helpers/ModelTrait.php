@@ -4,12 +4,15 @@ namespace App\Helpers;
 use App\Models\{App,
     Corp,
     Department,
+    DepartmentTag,
     DepartmentType,
     DepartmentUser,
     Exam,
     Grade,
     Group,
+    GroupMenu,
     Menu,
+    MenuTab,
     School,
     Squad,
     Student,
@@ -119,6 +122,55 @@ trait ModelTrait {
                         }
                     }
                 }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
+     * 删除运营/企业/学校/(年级/班级)
+     *
+     * @param $id
+     * @param $params
+     * @return bool
+     * @throws Throwable
+     */
+    function mdPurge($id, array $params) {
+    
+        try {
+            DB::transaction(function () use ($id, $params) {
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                $this->purge($id, $params);
+                $deptIds = $menuIds = collect([]);
+                foreach ($ids as $id) {
+                    $record = $this->find($id);
+                    $deptId = $record->department_id;
+                    $menuId = $record->menu_id;
+                    $deptIds = $deptIds->merge([$deptId])->merge(
+                        $record->department->subIds($deptId)
+                    );
+                    if (!in_array(class_basename($this), ['Grade', 'Squad'])) {
+                        $menuIds = $menuIds->merge([$menuId])->merge(
+                            $record->menu->subIds($menuIds)
+                        );
+                    }
+                }
+                array_map(
+                    function ($class) use ($deptIds, $menuIds) {
+                        $m = 'Menu'; $d = 'Department';
+                        $c = strpos($class, $m) !== false ? $m : $d;
+                        $field = $class == $c ? 'id' : lcfirst($c) . '_id';
+                        $ids = $c == $m ? $menuIds : $deptIds;
+                        $class::{'whereIn'}($field, $ids)->delete();
+                    }, [
+                        'Department', 'Menu', 'DepartmentUser',
+                        'DepartmentTag', 'MenuTab', 'GroupMenu'
+                    ]
+                );
             });
         } catch (Exception $e) {
             throw $e;

@@ -277,10 +277,12 @@ class Menu extends Model {
                 $menu->children->isNotEmpty(),
                 new Exception(__('messages.menu.has_children'))
             );
+            throw_if(
+                $menu->mType->name != '其他',
+                new Exception(__('messages.menu.forbidden'))
+            );
             $this->purge($id, [
-                'purge.menu_id' => [
-                    'GroupMenu', 'MenuTab', 'Company', 'Corp', 'School',
-                ],
+                'purge.menu_id' => ['GroupMenu', 'MenuTab'],
             ]);
         } catch (Exception $e) {
             throw $e;

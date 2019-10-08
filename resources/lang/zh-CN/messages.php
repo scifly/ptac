@@ -70,6 +70,7 @@ return [
         'not_found'         => '没有这个部门',
         'request_submitted' => '已提交部门删除请求',
         'deleted'           => '部门已删除，请重新加载部门树查看操作结果',
+        'forbidden'         => '请删除该部门对应的运营/企业/学校/年级/班级对象'
     ],
     'educator'                 => [
         'title'                     => '教职员工',
@@ -100,6 +101,7 @@ return [
         'title'         => '菜单管理',
         'has_children'  => '请先删除子菜单',
         'misconfigured' => '菜单配置错误',
+        'forbidden'     => '请删除该菜单对应的运营/企业/学校对象'
     ],
     'message'                  => [
         'title'            => '消息',
