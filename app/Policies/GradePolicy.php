@@ -29,8 +29,8 @@ class GradePolicy {
         $perm = !$grade ? true : $gradeIds->has($grade->id);
         [$schoolId, $educatorIds, $deptId, $ids] = array_map(
             function ($field) use ($grade) {
-                return Request::input($field)
-                    ?? ($grade ? explode(',', $grade->{$field}) : null);
+                $value = Request::input($field) ?? ($grade ? $grade->{$field} : null);
+                return $value ? explode(',', $value) : null;
             }, ['school_id', 'educator_ids', 'department_id', 'ids']
         );
         if (isset($schoolId, $educatorIds)) {
