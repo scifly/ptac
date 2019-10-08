@@ -311,30 +311,6 @@ class Department extends Model {
     }
     
     /**
-     * 返回指定部门所属的企业id
-     *
-     * @param $id
-     * @return int|mixed
-     */
-    function corpId($id) {
-        
-        $dept = $this->find($id);
-        $dType = $dept->dType->name;
-        if (in_array($dType, ['运营', '部门'])) {
-            return null;
-        } elseif ($dType == '企业') {
-            return Corp::whereDepartmentId($id)->first()->id;
-        }
-        if (!$parent = $dept->parent) return null;
-        while ($parent->dType->name != '企业') {
-            return $this->corpId($parent->id);
-        }
-        
-        return Corp::whereDepartmentId($parent->id)->first()->id;
-        
-    }
-    
-    /**
      * 判断指定部门是否需要同步到企业微信
      *
      * @param Department|null $dept
@@ -582,7 +558,8 @@ class Department extends Model {
                     'title' => $title ?? '',
                 ])->toHtml() . ($syncMark ?? '');
             $selectable = $isSuperRole ? 1 : ($allowedIds->has($id) ? 1 : 0);
-            $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
+            $corp_id = !in_array($type, ['root', 'company'])
+                ? $this->corpId($id) : null;
             $nodes[] = [
                 'id'         => $id,
                 'parent'     => $parentId,

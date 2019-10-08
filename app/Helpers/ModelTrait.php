@@ -229,22 +229,33 @@ trait ModelTrait {
     /**
      * 根据角色 & 菜单id获取corp_id
      *
+     * @param null $deptId
      * @return int|mixed
      */
-    function corpId() {
+    function corpId($deptId = null) {
         
-        if (!$menuId = Session::exists('menuId')) return null;
-        $user = Auth::user();
-        $menu = new Menu;
-        $role = $user->role();
-        if (in_array($role, ['运营', '企业'])) {
-            $mId = $menu->menuId($menuId, '企业');
-            $corpId = !$mId ?: Corp::whereMenuId($mId)->first()->id;
-        } elseif ($role == '学校') {
-            $mId = $menu->menuId($menuId);
-            $corpId = School::whereMenuId($mId)->first()->corp_id;
+        if ($deptId) {
+            $dept = Department::find($deptId);
+            while ($dept->dType->name != '企业') {
+                $dept = $dept->parent;
+                return $dept ? $this->corpId($dept->id) : null;
+            }
+            $corp = $dept->corp;
+            $corpId = $corp ? $corp->id : null;
         } else {
-            $corpId = $user->educator->school->corp_id;
+            if (!$menuId = Session::exists('menuId')) return null;
+            $user = Auth::user();
+            $menu = new Menu;
+            $role = $user->role();
+            if (in_array($role, ['运营', '企业'])) {
+                $mId = $menu->menuId($menuId, '企业');
+                $corpId = !$mId ?: Corp::whereMenuId($mId)->first()->id;
+            } elseif ($role == '学校') {
+                $mId = $menu->menuId($menuId);
+                $corpId = School::whereMenuId($mId)->first()->corp_id;
+            } else {
+                $corpId = $user->educator->school->corp_id;
+            }
         }
         
         return $corpId;
