@@ -119,9 +119,7 @@ class DepartmentController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->dept->remove($id),
-            __('messages.department.request_submitted'),
-            __('messages.department.has_children')
+            $this->dept->remove($id)
         );
         
     }

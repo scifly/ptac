@@ -268,13 +268,25 @@ class Menu extends Model {
      */
     function remove($id = null) {
         
-        return $this->find($id)->children->isEmpty()
-            ? $this->purge($id, [
+        try {
+            throw_if(
+                !$menu = $this->find($id),
+                new Exception(__('messages.not_found'))
+            );
+            throw_if(
+                $menu->children->isNotEmpty(),
+                new Exception(__('messages.menu.has_children'))
+            );
+            $this->purge($id, [
                 'purge.menu_id' => [
                     'GroupMenu', 'MenuTab', 'Company', 'Corp', 'School',
                 ],
-            ])
-            : false;
+            ]);
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
         
     }
     

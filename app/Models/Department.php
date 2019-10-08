@@ -277,16 +277,28 @@ class Department extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    function remove($id = null) {
-        
-        return $this->find($id)->children->isEmpty()
-            ? $this->purge($id, [
+    function remove($id) {
+
+        try {
+            throw_if(
+                !$dept = $this->find($id),
+                new Exception(__('messages.not_found'))
+            );
+            throw_if(
+                $dept->children->isNotEmpty(),
+                new Exception(__('messages.department.has_children'))
+            );
+            $this->purge($id, [
                 'purge.department_id' => [
                     'Company', 'Corp', 'School', 'Grade', 'Squad',
                     'DepartmentUser', 'DepartmentTag',
                 ],
-            ])
-            : false;
+            ]);
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
         
     }
     
