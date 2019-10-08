@@ -145,7 +145,7 @@ class Major extends Model {
     function remove($id = null) {
         
         return $this->purge($id, [
-            'purge.major_id' => 'MajorSubject'
+            'purge.major_id' => ['MajorSubject']
         ]);
         
     }
