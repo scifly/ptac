@@ -154,8 +154,8 @@ class CreateSchool implements ShouldQueue {
                         //     'enabled' => Constant::ENABLED,
                         // ]);
                     }
-                    exit;
                 }
+                exit;
                 # 创建“教职员工”基本角色
                 foreach ($this->educatorMenus as $name) {
                     $menuIds[] = $this->menus[$name][0];
