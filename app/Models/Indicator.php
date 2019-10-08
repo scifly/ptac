@@ -119,7 +119,7 @@ class Indicator extends Model {
     function remove($id = null) {
         
         return $this->purge($id, [
-            'purge.indicator_id' => 'Evaluate'
+            'purge.indicator_id' => ['Evaluate']
         ]);
         
     }
