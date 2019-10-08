@@ -111,7 +111,7 @@ $routes = [
         'store'   => ['post'],
         'edit'    => ['{id}' => 'get'],
         'update'  => ['{id}' => 'put'],
-        'destroy' => ['{id}' => 'delete'],
+        'destroy' => ['{id}' => ['delete', 'get']],
     ],
     'educator'        => [
         'index'    => ['get'],
@@ -167,7 +167,7 @@ $routes = [
         'store'   => ['post'],
         'edit'    => ['{id}' => 'get'],
         'update'  => ['{id}' => 'put'],
-        'destroy' => ['{id}' => 'delete'],
+        'destroy' => ['{id}' => ['delete', 'get']],
         'sort'    => ['{id}' => ['get', 'post']],
     ],
     'message'         => [
