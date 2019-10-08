@@ -14,7 +14,6 @@ use App\Models\{App,
     Squad,
     Student,
     User};
-use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use Form;
 use Html;
@@ -99,10 +98,8 @@ trait ModelTrait {
                         $relations[] = array_merge([$class], $af);
                     }
                 }
-                $table = explode('/', Request::path())[0];
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $class = $table == 'corps' ? 'Corp' : Inflector::classify(Inflector::singularize($table));
-                $this->model($class)->whereIn('id', $ids)->delete();
+                $this->model(get_called_class())->whereIn('id', $ids)->delete();
                 array_map(
                     function ($relation) use ($ids) {
                         [$class, $action, $field] = $relation;
@@ -144,9 +141,11 @@ trait ModelTrait {
      */
     function model($name) {
         
-        $class = ucfirst($name);
+        $ns = 'App\Models';
+        $class = strpos($name, $ns) !== false
+            ? $name : join('\\', [$ns, ucfirst($name)]);
         
-        return (new ReflectionClass("App\Models\\$class"))->newInstance();
+        return (new ReflectionClass($class))->newInstance();
         
     }
     
