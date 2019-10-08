@@ -95,7 +95,7 @@ class Grade extends Model {
             [
                 'db'        => 'Grade.educator_ids', 'dt' => 2,
                 'formatter' => function ($d) {
-                    Educator::with('user')
+                    return Educator::with('user')
                         ->whereIn('id', explode(',', $d))
                         ->get()->pluck('user.realname')->join(', ');
                 },
