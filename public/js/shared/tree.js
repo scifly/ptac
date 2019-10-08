@@ -110,7 +110,9 @@
                                 case 'school':
                                     return pType === 'corp' && nCorpId === pCorpId;
                                 case 'grade':
-                                    if (nCorpId !== pCorpId) { return false; }
+                                    if (nCorpId !== pCorpId) {
+                                        return false;
+                                    }
                                     switch (pType) {
                                         case 'school':
                                             return true;
@@ -134,7 +136,9 @@
                                     }
                                 // return $.inArray(pType, ['school', 'other']) > -1;
                                 case 'squad':
-                                    if (nCorpId !== pCorpId) { return false; }
+                                    if (nCorpId !== pCorpId) {
+                                        return false;
+                                    }
                                     switch (pType) {
                                         case 'grade':
                                             return true;
@@ -150,7 +154,9 @@
                                             return false;
                                     }
                                 case 'other':
-                                    if (nCorpId !== pCorpId) { return false; }
+                                    if (nCorpId !== pCorpId) {
+                                        return false;
+                                    }
                                     var children = nNode.children_d,
                                         childrenTypes = [];
                                     $.each(children, function () {
@@ -241,78 +247,67 @@
             },
             customMenu: function (node, table, $dialog, $activeTabPane) {
                 var create = {
-                    label: '创建',
-                    icon: 'fa fa-plus',
-                    action: function (node) {
-                        var url = table + '/create/' + tree.getSelector(node).id;
-                        page.getTabContent($activeTabPane, url);
-                    }
-                };
-                var edit = {
-                    label: '编辑',
-                    icon: 'fa fa-edit',
-                    action: function (node) {
-                        var url = table + '/edit/' + tree.getSelector(node).id;
-                        page.getTabContent($activeTabPane, url);
-                    }
-                };
-                var del = {
-                    label: '删除',
-                    icon: 'fa fa-remove',
-                    action: function (node) {
-                        $dialog.modal({backdrop: true});
-                        nodeid = tree.getSelector(node).id;
+                        label: '创建',
+                        icon: 'fa fa-plus',
+                        action: function (node) {
+                            var url = table + '/create/' + tree.getSelector(node).id;
+                            page.getTabContent($activeTabPane, url);
+                        }
                     },
-                    _disabled: function (node) {
-                        var children = tree.getSelector(node).children_d;
-                        var type, disabled = false;
-                        $.each(children, function () {
-                            type = $('#tree').jstree(true).get_node(this).type;
-                            disabled = $.inArray(type, ['grade', 'squad']) > -1;
-                            if (disabled) return false;
-                        });
-                        return disabled;
-                    }
-                };
-                var rank = {
-                    label: '卡片排序',
-                    icon: 'fa fa-navicon',
-                    action: function (node) {
-                        nodeid = tree.getSelector(node).id;
-                        var url = table + '/sort/' + tree.getSelector(node).id;
-                        page.getTabContent($activeTabPane, url);
-                    }
-                };
-                switch (table) {
-                    case 'departments':
-                        switch (node.type) {
-                            case 'school':
-                            case 'grade':
-                            case 'squad':
-                                return {createItem: create};
-                            case 'other':
-                                return {createItem: create, renameItem: edit, delItem: del};
-                            default:
-                                return {};
+                    edit = {
+                        label: '编辑',
+                        icon: 'fa fa-edit',
+                        action: function (node) {
+                            var url = table + '/edit/' + tree.getSelector(node).id;
+                            page.getTabContent($activeTabPane, url);
                         }
-                    case 'menus':
-                        switch (node.type) {
-                            case 'root':
-                            case 'company':
-                            case 'corp':
-                            case 'school':
-                                return {createItem: create};
-                            case 'other':
-                                if (node.children.length === 0) {
-                                    return {createItem: create, renameItem: edit, delItem: del, rankTabs: rank};
-                                }
-                                return {createItem: create, renameItem: edit, delItem: del};
-                            default:
-                                return {}
+                    },
+                    del = {
+                        label: '删除',
+                        icon: 'fa fa-remove',
+                        action: function (node) {
+                            $dialog.modal({backdrop: true});
+                            nodeid = tree.getSelector(node).id;
+                        },
+                        _disabled: function (node) {
+                            var children = tree.getSelector(node).children_d;
+                            var type, disabled = false;
+                            $.each(children, function () {
+                                type = $('#tree').jstree(true).get_node(this).type;
+                                disabled = $.inArray(type, ['grade', 'squad']) > -1;
+                                if (disabled) return false;
+                            });
+                            return disabled;
                         }
-                    default:
-                        return {};
+                    },
+                    rank = {
+                        label: '卡片排序',
+                        icon: 'fa fa-navicon',
+                        action: function (node) {
+                            nodeid = tree.getSelector(node).id;
+                            var url = table + '/sort/' + tree.getSelector(node).id;
+                            page.getTabContent($activeTabPane, url);
+                        }
+                    },
+                    menus = {createItem: create, renameItem: edit, delItem: del};
+
+                if (table === 'departments') {
+                    if ($.inArray(node.type, ['school', 'grade', 'squad']) > -1) {
+                        return {createItem: create};
+                    } else if (node.type === 'other') {
+                        return menus;
+                    }
+                } else if (table === 'menus') {
+                    if ($.inArray(node.type, ['root', 'company', 'corp', 'school']) > -1) {
+                        return {createItem: create};
+                    } else if (node.type === 'other') {
+                        if (node.children.length === 0) {
+                            $.extend(menus, {rankTabs: rank});
+                        }
+                        return menus;
+                    }
                 }
+                return {}
             },
             index: function (table) {
                 page.unbindEvents();
@@ -430,14 +425,14 @@
                     // 将选中的节点增加到右侧列表
                     var nodeHtml =
                         '<li id="tree' + selected.node.id + '">' +
-                            '<span class="handle ui-sortable-handle">' +
-                                '<i class="' + selected.node.icon + '"></i>' +
-                            '</span>' +
-                            '<span class="text">' + selected.node.text + '</span>' +
-                            '<div class="tools">' +
-                                '<i class="fa fa-close remove-node"></i>' +
-                                '<input type="hidden" value="' + selected.node.id + '"/>' +
-                            '</div>' +
+                        '<span class="handle ui-sortable-handle">' +
+                        '<i class="' + selected.node.icon + '"></i>' +
+                        '</span>' +
+                        '<span class="text">' + selected.node.text + '</span>' +
+                        '<div class="tools">' +
+                        '<i class="fa fa-close remove-node"></i>' +
+                        '<input type="hidden" value="' + selected.node.id + '"/>' +
+                        '</div>' +
                         '</li>';
                     $('.todo-list').append(nodeHtml);
                 }).on('uncheck_node.jstree', function (node, selected) {
@@ -531,9 +526,9 @@
                         var node = $tree.jstree("get_node", selectedNodes[i]),
                             checkedNode =
                                 '<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">' +
-                                    '<i class="' + node.icon + '"> ' + node.text + '</i> ' +
-                                    '<i class="fa fa-close remove-selected"></i>' +
-                                    '<input type="hidden" name="selectedDepartments[]" value="' + node.id + '"/>' +
+                                '<i class="' + node.icon + '"> ' + node.text + '</i> ' +
+                                '<i class="fa fa-close remove-selected"></i>' +
+                                '<input type="hidden" name="selectedDepartments[]" value="' + node.id + '"/>' +
                                 '</button>';
                         $checkedNodes.append(checkedNode);
                         nodeArray[i] = node.id;

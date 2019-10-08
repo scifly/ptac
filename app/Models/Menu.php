@@ -268,11 +268,13 @@ class Menu extends Model {
      */
     function remove($id = null) {
         
-        return $this->purge($id, [
-            'purge.menu_id' => [
-                'GroupMenu', 'MenuTab', 'Company', 'Corp', 'School',
-            ],
-        ]);
+        return $this->find($id)->children->isEmpty()
+            ? $this->purge($id, [
+                'purge.menu_id' => [
+                    'GroupMenu', 'MenuTab', 'Company', 'Corp', 'School',
+                ],
+            ])
+            : false;
         
     }
     
