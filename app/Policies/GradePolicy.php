@@ -30,6 +30,7 @@ class GradePolicy {
         [$schoolId, $educatorIds, $deptId, $ids] = array_map(
             function ($field) use ($grade) {
                 $value = Request::input($field) ?? ($grade ? $grade->{$field} : null);
+                !is_array($value) ?: $value = join(',', $value);
                 return $value ? explode(',', $value) : null;
             }, ['school_id', 'educator_ids', 'department_id', 'ids']
         );
