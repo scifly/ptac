@@ -96,7 +96,7 @@ trait ModelTrait {
                 foreach ($params as $key => $classes) {
                     $af = explode('.', $key);
                     foreach ($classes as $class) {
-                        $relations[] = [$class] + $af;
+                        $relations[] = array_merge([$class], $af);
                     }
                 }
                 $table = explode('/', Request::path())[0];
