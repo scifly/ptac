@@ -697,7 +697,7 @@ class Department extends Model {
             $ids[] = $parent->id;
             $ids = $this->parentIds($parent->id, $ids);
         }
-        // $ids[] = $parent->id;
+        $ids[] = $parent->id;
         
         return $ids;
         
