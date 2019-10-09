@@ -278,7 +278,7 @@ class Department extends Model {
      * @throws Throwable
      */
     function remove($id) {
-
+        
         try {
             throw_if(
                 !$dept = $this->find($id),
@@ -298,7 +298,7 @@ class Department extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
@@ -391,68 +391,29 @@ class Department extends Model {
      */
     function contacts($contact = true) {
         
-        $user = Auth::user();
-        $role = $user->role();
-        # 如果角色为教职员工且需要返回联系人，则返回整棵树，
-        # 但不可见部门仅返回教职员工类联系人。
-        $mixed = $contact && !in_array($role, Constant::NON_EDUCATOR);
-        $contacts = [];
-        if (in_array($role, Constant::SUPER_ROLES) || $mixed) {
-            $id = School::find($this->schoolId())->department_id;
-            $visibleNodes = $this->tree($id);
-        } else {
-            $nodes = $this->tree();
-            # 当前用户可访问部门的所有上级部门id
-            $allowedParentIds = [];
-            foreach ($this->departmentIds($user->id) as $id) {
-                $allowedParentIds[$id] = $this->parentIds($id);
-            }
-            # 对当前用户可见的所有部门节点
-            $visibleNodes = [];
-            foreach ($nodes as $node) {
-                if (!$node['selectable']) {
-                    foreach ($allowedParentIds as $id => $parentIds) {
-                        if (in_array($node['id'], $parentIds)) {
-                            $visibleNodes[] = $node;
-                            break;
-                        }
-                    }
-                } else {
-                    $visibleNodes[] = $node;
-                }
-            }
-        }
+        $id = School::find($this->schoolId())->department_id;
+        $visibleNodes = $this->tree($id);
         if ($contact) {
             # 获取可见部门下的学生、教职员工 & 不可见部门下的教职员工
-            $visibleIds = $mixed ? $this->departmentIds($user->id) : [];
+            $visibleIds = $this->departmentIds()->flip();
             foreach ($visibleNodes as $node) {
-                if ($node['selectable']) {
-                    $users = $this->find($node['id'])->users->filter(
-                        function (User $user) use ($node, $visibleIds) {
-                            return (empty($visibleIds) || in_array($node['id'], $visibleIds))
-                                ? true : !in_array($user->role(), Constant::NON_EDUCATOR);
-                        }
-                    );
-                    /*$this->find($node['id'])->*/
-                    $users->each(
-                        function (User $user) use ($node, &$contacts) {
-                            if ($user->student || $user->educator) {
-                                $contacts[] = [
-                                    'id'         => 'user-' . $node['id'] . '-' . $user->id,
-                                    'parent'     => $node['id'],
-                                    'text'       => $user->realname,
-                                    'selectable' => 1,
-                                    'type'       => 'user',
-                                ];
-                            }
-                        }
-                    );
+                $deptId = $node['id'];
+                foreach ($this->find($deptId)->users as $user) {
+                    if ($user->educator || $visibleIds->has($deptId) && $user->student) {
+                        $contacts[] = [
+                            'id'         => 'user-' . $deptId . '-' . $user->id,
+                            'parent'     => $deptId,
+                            'text'       => $user->realname,
+                            'selectable' => 1,
+                            'type'       => 'user',
+                        ];
+                    }
                 }
             }
         }
         
         return response()->json(
-            array_merge($visibleNodes, $contacts)
+            array_merge($visibleNodes, $contacts ?? [])
         );
         
     }
@@ -525,11 +486,9 @@ class Department extends Model {
      */
     private function tree($rootId = null) {
         
-        $user = Auth::user();
-        $isSuperRole = in_array($user->role(), Constant::SUPER_ROLES);
-        isset($rootId) ?: $rootId = $isSuperRole ? $this->rootId(true) : $this->topId();
-        $depts = $this->nodes($rootId);
-        $allowedIds = $this->departmentIds($user->id)->flip();
+        $rootId = $rootId ?? $this->rootId(true);
+        $ids = collect([$rootId])->merge($this->subIds($rootId));
+        $depts = $this->orderBy('order')->whereIn('id', $ids)->get();
         $nodes = [];
         for ($i = 0; $i < sizeof($depts); $i++) {
             $id = $depts[$i]['id'];
@@ -549,15 +508,13 @@ class Department extends Model {
                     'class' => $enabled ? $dt->color : 'text-gray',
                     'title' => $title ?? '',
                 ])->toHtml() . ($syncMark ?? '');
-            $selectable = $isSuperRole ? 1 : ($allowedIds->has($id) ? 1 : 0);
-            $corp_id = !in_array($type, ['root', 'company'])
-                ? $this->corpId($id) : null;
+            $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
             $nodes[] = [
                 'id'         => $id,
                 'parent'     => $parentId,
                 'text'       => $text,
                 'type'       => $type,
-                'selectable' => $selectable,
+                'selectable' => 1,
                 'corp_id'    => $corp_id,
             ];
         }
@@ -721,26 +678,9 @@ class Department extends Model {
             $nodes = $this->orderBy('order')->whereIn('id', $ids)->get();
         }
         
+        
+        
         return $nodes;
-        
-    }
-    
-    /**
-     * 返回用户所处的顶级部门id
-     *
-     * @return int
-     */
-    private function topId() {
-        
-        $levels = [];
-        $ids = Auth::user()->deptIds();
-        foreach ($ids as $id) {
-            $level = 0;
-            $levels[$id] = $this->level($id, $level);
-        }
-        asort($levels);
-        
-        return $this->find(array_key_first($levels))->parent_id;
         
     }
     
