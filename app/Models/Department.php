@@ -345,7 +345,7 @@ class Department extends Model {
      */
     function subIds($id) {
         
-        static $subIds;
+        // static $subIds;
         $childrenIds = Department::whereParentId($id)->pluck('id');
         foreach ($childrenIds as $childId) {
             $subIds[] = $childId;
