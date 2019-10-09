@@ -150,9 +150,9 @@ trait ModelTrait {
                     $deptId = $record->department_id;
                     $menuId = $record->menu_id;
                     !$deptId ?: $deptIds = $deptIds->prepend($deptId)->merge(
-                        $record->department->subIds($deptId)
+                        $record->dept->subIds($deptId)
                     );
-                    !$menuId ?: $menuIds = $menuIds->merge([$menuId])->merge(
+                    !$menuId ?: $menuIds = $menuIds->prepend($menuId)->merge(
                         $record->menu->subIds($menuId)
                     );
                 }
