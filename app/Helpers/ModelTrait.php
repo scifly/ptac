@@ -509,7 +509,7 @@ trait ModelTrait {
             $deptIds = collect([]);
             if (in_array($role, Constant::SUPER_ROLES)) {
                 $dept = $this->schoolId()
-                    ? School::find($this->schoolId())->department
+                    ? School::find($this->schoolId())->dept
                     : $user->depts->first();
                 $deptIds = collect([$dept->id])->merge(
                     $d->subIds($dept->id)
