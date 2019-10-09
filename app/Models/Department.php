@@ -523,7 +523,7 @@ class Department extends Model {
      *
      * @param null $rootId
      * @return array
-     * @throws Exception
+     * @throws Throwable
      */
     private function tree($rootId = null) {
         
@@ -771,39 +771,35 @@ class Department extends Model {
         
     }
     
-    /**
-     * 获取当前用户的根部门ID
-     *
-     * @param bool $subRoot
-     * @return int|mixed
-     */
-    private function rootId($subRoot = false) {
-        
-        $user = Auth::user();
-        $rootDepartmentTypeId = DepartmentType::whereName('根')->first()->id;
-        $rootDId = Department::whereDepartmentTypeId($rootDepartmentTypeId)->first()->id;
-        # 当前菜单id
-        $menuId = session('menuId');
-        $menu = Menu::find($menuId);
-        # 学校的根菜单id
-        $smId = $menu->menuId($menuId);
-        # 学校的根部门id
-        $sdId = $smId ? School::whereMenuId($smId)->first()->department_id : null;
-        # 企业的根菜单id
-        $cmId = $menu->menuId($menuId, '企业');
-        # 企业的根部门id
-        $cdId = $cmId ? Corp::whereMenuId($cmId)->first()->department_id : null;
-        switch ($user->role()) {
-            case '运营':
-                return !$subRoot ? $rootDId : ($sdId ?? ($cdId ?? $rootDId));
-            case '企业':
-                return !$subRoot ? $cdId : ($sdId ?? $cdId);
-            case '学校':
-                return $sdId;
-            default:
-                return School::find($user->educator->school_id)->department_id;
-        }
-        
-    }
+    // /**
+    //  * 获取当前用户的根部门ID
+    //  *
+    //  * @param bool $direct
+    //  * @return int|mixed
+    //  */
+    // private function rootId($direct = false) {
+    //
+    //     $role = Auth::user()->role();
+    //     $menuId = session('menuId');
+    //     $rId = $this->whereParentId(null)->first()->id;
+    //     [$smId, $cmId] = array_map(
+    //         function ($type) use ($menuId) {
+    //             return $this->menuId($menuId, $type);
+    //         }, ['学校', '企业', '根']
+    //     );
+    //
+    //     $smId = $this->menuId($menuId = session('menuId'));
+    //     $cmId = $this->menuId($menuId, '企业');
+    //     $sId = $smId ? Menu::find($smId)->school->department_id : null;
+    //     $cId = $cmId ? Menu::find($cmId)->corp->department_id : null;
+    //     if ($role == '运营') {
+    //         return !$direct ? $rId : ($sId ?? ($cId ?? $rId));
+    //     } elseif ($role == '企业') {
+    //         return !$direct ? $cId : ($sId ?? $cId);
+    //     } else {
+    //         return $sId;
+    //     }
+    //
+    // }
     
 }

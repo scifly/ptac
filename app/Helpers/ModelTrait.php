@@ -270,9 +270,61 @@ trait ModelTrait {
      */
     function schoolId() {
         
-        $menuId = (new Menu)->menuId(session('menuId'));
+        $menuId = $this->menuId(session('menuId'));
         
         return $menuId ? School::whereMenuId($menuId)->first()->id : null;
+        
+    }
+    
+    /**
+     * 根据菜单ID返回其父级菜单中类型为$type的菜单ID
+     *
+     * @param $id
+     * @param string $type
+     * @return int|mixed
+     */
+    function menuId($id, $type = '学校') {
+        
+        $menu = Menu::find($id);
+        while ($menu && $menu->mType->name != $type) {
+            $menu = $menu->parent;
+        }
+        
+        return $menu ? $menu->id : null;
+        
+    }
+    
+    /**
+     * 获取当前登录用户的顶级菜单/部门id
+     *
+     * @param bool $direct
+     *      false 返回当前角色可访问的最顶级菜单/部门id,
+     *      true  返回当前角色可访问的最直接顶级(学校或企业)菜单/部门id
+     * @return int|mixed
+     * @throws Throwable
+     */
+    function rootId($direct = false) {
+        
+        $role = Auth::user()->role();
+        $id = session('menuId');
+        $rid = Menu::whereParentId(null)->first()->id;
+        [$sId, $cId] = array_map(
+            function ($type) use ($id) {
+                return $this->menuId($id, $type);
+            }, ['学校', '企业']
+        );
+        if (stripos(get_called_class(), 'Department') !== false) {
+            $rid = Department::whereParentId(null)->first()->id;
+            $sId = $sId ? Menu::find($sId)->school->department_id : null;
+            $cId = $cId ? Menu::find($cId)->corp->department_id : null;
+        }
+        if ($role == '运营') {
+            return !$direct ? $rid : ($sId ?? ($cId ?? $rid));
+        } elseif ($role == '企业') {
+            return !$direct ? $cId : ($sId ?? $cId);
+        }
+        
+        return $sId;
         
     }
     
@@ -295,13 +347,12 @@ trait ModelTrait {
         } else {
             if (!$menuId = Session::exists('menuId')) return null;
             $user = Auth::user();
-            $menu = new Menu;
             $role = $user->role();
             if (in_array($role, ['运营', '企业'])) {
-                $mId = $menu->menuId($menuId, '企业');
+                $mId = $this->menuId($menuId, '企业');
                 $corpId = !$mId ?: Corp::whereMenuId($mId)->first()->id;
             } elseif ($role == '学校') {
-                $mId = $menu->menuId($menuId);
+                $mId = $this->menuId($menuId);
                 $corpId = School::whereMenuId($mId)->first()->corp_id;
             } else {
                 $corpId = $user->educator->school->corp_id;
@@ -498,7 +549,7 @@ trait ModelTrait {
             $menuIds = Menu::all()->pluck('id');
         } elseif (in_array($role, ['企业', '学校'])) {
             $model = $this->model($role == '企业' ? 'Corp' : 'School');
-            $menuIds = (new Menu)->subIds(
+            $menuIds = $this->subIds(
                 $model::whereDepartmentId($user->depts->first()->id)->first()->menu_id
             );
         }

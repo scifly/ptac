@@ -2,7 +2,7 @@
 namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
-use App\Models\{Action, Group, Menu, School, Tab, User};
+use App\Models\{Action, Group, School, Tab, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
@@ -29,7 +29,7 @@ class GroupPolicy {
             $schoolId = Request::input('school_id');
             $sGId = Group::whereName('学校')->first()->id;
             $aGroupIds = Group::whereSchoolId($schoolId)->pluck('id');
-            $aMenuIds = (new Menu)->subIds(School::find($schoolId)->menu_id);
+            $aMenuIds = $this->subIds(School::find($schoolId)->menu_id);
             $aTabIds = Tab::whereIn('group_id', [0, $sGId])->pluck('id');
             $dTabIds = Tab::whereIn('name', ['部门', '角色', '菜单', '超级用户'])->pluck('id');
             $aActionIds = Action::whereIn('tab_id', $aTabIds->diff($dTabIds))->pluck('id');

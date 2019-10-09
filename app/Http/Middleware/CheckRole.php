@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Middleware;
 
-use App\Helpers\ModelTrait;
 use App\Models\{Action, ActionGroup, Group, GroupMenu, Menu, Tab};
 use Closure;
 use Exception;

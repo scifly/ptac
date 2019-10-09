@@ -164,7 +164,7 @@ class SyncController extends Controller {
     protected function deleteUser() {
         
         !($user = User::whereUserid($this->event->{'UserID'})->first())
-            ?: $user->purge(['User'], 'id', 'purge', $user->id);
+            ?: $user->purge($user->id);
         
     }
     
@@ -341,7 +341,9 @@ class SyncController extends Controller {
         );
         $deptIds = collect(explode(',', $this->event->{'Department'}));
         foreach ($this->schoolDepartmentIds as $schoolDeptId) {
-            $schoolDeptIds = collect([$schoolDeptId])->merge($dept->subIds($schoolDeptId));
+            $schoolDeptIds = collect([$schoolDeptId])->merge(
+                $dept->subIds($schoolDeptId)
+            );
             if ($deptIds->diff($schoolDeptIds)->isEmpty()) {
                 return $deptIds->has($schoolDeptId) ? $sGId
                     : Group::where([

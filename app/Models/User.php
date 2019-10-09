@@ -206,6 +206,7 @@ class User extends Authenticatable {
      * (超级)用户列表
      *
      * @return array
+     * @throws Throwable
      */
     function index() {
         

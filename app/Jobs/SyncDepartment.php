@@ -118,7 +118,7 @@ class SyncDepartment implements ShouldQueue {
                     # step 1 - 同步处于需要删除部门下的所有会员
                     $this->corp = Corp::find($corpId);
                     $corpDIds = collect([$this->corp->department_id])->merge(
-                        $d->subIds($this->corp->department_id)
+                        $this->subIds($this->corp->department_id)
                     );
                     arsort($_syncIds);
                     $deptIds = collect(array_keys($_syncIds));
@@ -285,11 +285,12 @@ class SyncDepartment implements ShouldQueue {
     /** @return Collection */
     private function deptIds() {
     
-        $d = new Department;
         $ids = collect([]);
         foreach ($this->departmentIds as $dId) {
             $ids = $ids->merge(
-                collect([$dId])->merge($d->subIds($dId))
+                collect([$dId])->merge(
+                    $this->subIds($dId)
+                )
             );
         }
         

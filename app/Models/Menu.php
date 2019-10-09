@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany,
     Relations\HasOne};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
@@ -294,62 +293,57 @@ class Menu extends Model {
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
-    /**
-     * 获取当前登录用户的顶级菜单ID
-     *
-     * @param bool $subRoot
-     *      false 返回当前角色可访问的最顶级菜单id,
-     *      true  返回当前角色可访问的最直接顶级(学校或企业)菜单id
-     * @return int|mixed
-     * @throws Throwable
-     */
-    function rootId($subRoot = false) {
-        
-        $user = Auth::user();
-        $role = $user->role();
-        $rootMTId = MenuType::whereName('根')->first()->id;
-        $rootMId = Menu::whereMenuTypeId($rootMTId)->first()->id;
-        $menuId = session('menuId') != '0' ? session('menuId') : $rootMId;
-        $smId = $this->menuId($menuId);
-        $cmId = $this->menuId($menuId, '企业');
-        $deptId = in_array($role, Constant::SUPER_ROLES) ? $user->depts->first()->id : null;
-        switch ($role) {
-            case '运营':
-                $rootId = !$subRoot ? $rootMId : ($smId ?? ($cmId ?? $rootMId));
-                break;
-            case '企业':
-                $cmId = $cmId ?? Corp::whereDepartmentId($deptId)->first()->menu_id;
-                $rootId = !$subRoot ? $cmId : ($smId ?? $cmId);
-                break;
-            case '学校':
-                $rootId = $smId ?? School::whereDepartmentId($deptId)->first()->menu_id;
-                break;
-            default:
-                $rootId = School::find($user->educator->school_id)->menu_id;
-                break;
-        }
-        
-        return $rootId;
-        
-    }
+    // /**
+    //  * 获取当前登录用户的顶级菜单/部门id
+    //  *
+    //  * @param bool $direct
+    //  *      false 返回当前角色可访问的最顶级菜单/部门id,
+    //  *      true  返回当前角色可访问的最直接顶级(学校或企业)菜单/部门id
+    //  * @return int|mixed
+    //  * @throws Throwable
+    //  */
+    // function rootId($direct = false) {
+    //
+    //     $role = Auth::user()->role();
+    //     $id = session('menuId');
+    //     $rid = Menu::whereParentId(null)->first()->id;
+    //     [$sId, $cId] = array_map(
+    //         function ($type) use ($id) {
+    //             return $this->menuId($id, $type);
+    //         }, ['学校', '企业']
+    //     );
+    //     if (stripos(get_called_class(), 'Department') !== false) {
+    //         $rid = Department::whereParentId(null)->first()->id;
+    //         $sId = $sId ? Menu::find($sId)->school->department_id : null;
+    //         $cId = $cId ? Menu::find($cId)->corp->department_id : null;
+    //     }
+    //     if ($role == '运营') {
+    //         return !$direct ? $rid : ($sId ?? ($cId ?? $rid));
+    //     } elseif ($role == '企业') {
+    //         return !$direct ? $cId : ($sId ?? $cId);
+    //     }
+    //
+    //     return $sId;
+    //
+    // }
     
-    /**
-     * 根据菜单ID返回其父级菜单中类型为$type的菜单ID
-     *
-     * @param $id
-     * @param string $type
-     * @return int|mixed
-     */
-    function menuId($id, $type = '学校') {
-        
-        $menu = $this->find($id);
-        while ($menu && $menu->mType->name != $type) {
-            $menu = $menu->parent;
-        }
-        
-        return $menu ? $menu->id : null;
-        
-    }
+    // /**
+    //  * 根据菜单ID返回其父级菜单中类型为$type的菜单ID
+    //  *
+    //  * @param $id
+    //  * @param string $type
+    //  * @return int|mixed
+    //  */
+    // function menuId($id, $type = '学校') {
+    //
+    //     $menu = $this->find($id);
+    //     while ($menu && $menu->mType->name != $type) {
+    //         $menu = $menu->parent;
+    //     }
+    //
+    //     return $menu ? $menu->id : null;
+    //
+    // }
     
     /**
      * 获取后台Menu的HTML字符串

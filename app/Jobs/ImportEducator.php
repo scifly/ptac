@@ -44,7 +44,7 @@ class ImportEducator implements ShouldQueue, MassImport {
         $this->schoolId = $schoolId;
         $this->school = School::find($schoolId);
         $this->schoolDeptIds = collect([$this->school->department_id])->merge(
-            (new Department)->subIds($this->school->department_id)
+            $this->subIds($this->school->department_id)
         );
         $this->groupId = $groupId;
         $this->userId = $userId;
@@ -141,7 +141,7 @@ class ImportEducator implements ShouldQueue, MassImport {
         ]);
         $isSchoolValid = $this->schoolIds($this->userId)->flip()->has($this->schoolId);
         $schoolDepartmentIds = collect([$this->school->department_id])->merge(
-            (new Department)->subIds($this->school->department_id)
+            $this->subIds($this->school->department_id)
         );
         foreach ($data as &$datum) {
             $paths = explode(' . ', $datum['E']);

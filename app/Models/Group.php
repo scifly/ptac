@@ -134,7 +134,7 @@ class Group extends Model {
         ];
         if ($id = $this->schoolId()) {
             $condition .= 'AND School.id = ' . $id;
-        } elseif ($menuId = (new Menu)->menuId(session('menuId'), '企业')) {
+        } elseif ($menuId = $this->menuId(session('menuId'), '企业')) {
             $condition .= 'AND Corp.id = ' . Corp::whereMenuId($menuId)->first()->id;
         }
         
@@ -230,7 +230,7 @@ class Group extends Model {
             $where = ['enabled' => Constant::ENABLED];
             if ($id = $this->schoolId()) {
                 $where['id'] = $id;
-            } elseif ($menuId = (new Menu)->menuId(session('menuId'), '企业')) {
+            } elseif ($menuId = $this->menuId(session('menuId'), '企业')) {
                 $where['corp_id'] = Corp::whereMenuId($menuId)->first()->id;
             }
             $data['schools'] = School::where($where)->pluck('name', 'id');
