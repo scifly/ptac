@@ -402,11 +402,9 @@ class Department extends Model {
             $visibleNodes = $this->tree($id);
         } else {
             $nodes = $this->tree();
-            # 当前用户可访问的所有部门id
-            $allowedDeptIds = $this->departmentIds($user->id);
             # 当前用户可访问部门的所有上级部门id
             $allowedParentIds = [];
-            foreach ($allowedDeptIds as $id) {
+            foreach ($this->departmentIds($user->id) as $id) {
                 $allowedParentIds[$id] = $this->parentIds($id);
             }
             # 对当前用户可见的所有部门节点
@@ -697,7 +695,7 @@ class Department extends Model {
         $parent = $this->find($id)->parent;
         while ($parent->dType->name != '学校') {
             $ids[] = $parent->id;
-            $ids = $this->parentIds($parent->id);
+            $ids = $this->parentIds($parent->id, $ids);
         }
         $ids[] = $parent->id;
         
