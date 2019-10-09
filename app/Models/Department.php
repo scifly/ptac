@@ -346,12 +346,9 @@ class Department extends Model {
      */
     function subIds($id, $subIds = []) {
 
-        $childrenIds = $this->find($id)->children->pluck('id');
-        if ($childrenIds->isNotEmpty()) {
-            foreach ($childrenIds as $childId) {
-                $subIds[] = $childId;
-                $subIds = $this->subIds($childId, $subIds);
-            }
+        foreach ($this->find($id)->children->pluck('id') as $childId) {
+            $subIds[] = $childId;
+            $subIds = $this->subIds($childId, $subIds);
         }
         
         return $subIds;
