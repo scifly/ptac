@@ -147,14 +147,18 @@ trait ModelTrait {
                 $deptIds = $menuIds = collect([]);
                 foreach ($ids as $id) {
                     $record = $this->find($id);
-                    $deptId = $record->department_id;
-                    $menuId = $record->menu_id;
-                    !$deptId ?: $deptIds = $deptIds->prepend($deptId)->merge(
-                        $record->dept->subIds($deptId)
-                    );
-                    !$menuId ?: $menuIds = $menuIds->prepend($menuId)->merge(
-                        $record->menu->subIds($menuId)
-                    );
+                    if ($deptId = $record->department_id) {
+                        $deptIds->prepend($deptId);
+                        $deptIds = $deptIds->merge(
+                            $record->dept->subIds($deptId)
+                        );
+                    }
+                    if ($menuId = $record->menu_id) {
+                        $menuIds->prepend($menuId);
+                        $menuIds = $menuIds->merge(
+                            $record->menu->subIds($menuId)
+                        );
+                    }
                 }
                 array_map(
                     function ($class) use ($deptIds, $menuIds) {
