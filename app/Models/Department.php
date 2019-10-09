@@ -686,21 +686,20 @@ class Department extends Model {
      * 返回指定部门的所有上级（校级及以下）部门id
      *
      * @param integer $id
-     * @param array $parentIds
+     * @param array $ids
      * @return array
      */
-    function parentIds($id, $parentIds = []): array {
+    function parentIds($id, $ids = []): array {
         
         // static $ids = [];
         $parent = $this->find($id)->parent;
-        $dType = $parent->dType->name;
-        while ($dType != '学校') {
-            $parentIds[] = $parent->id;
-            $parentIds = $this->parentIds($parent->id, $parentIds);
+        if ($parent->dType->name != '学校') {
+            $ids[] = $parent->id;
+            $ids = $this->parentIds($parent->id, $ids);
         }
-        $parentIds[] = $parent->id;
+        $ids[] = $parent->id;
         
-        return $parentIds;
+        return $ids;
         
     }
     
