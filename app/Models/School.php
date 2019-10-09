@@ -44,7 +44,7 @@ use Throwable;
  * @property-read Collection|Squad[] $classes
  * @property-read Collection|SubjectModule[] $subjectModules
  * @property-read Corp $corp
- * @property-read Department $department
+ * @property-read Department $dept
  * @property-read Collection|Educator[] $educators
  * @property-read Collection|ExamType[] $examTypes
  * @property-read Collection|Exam[] $exams
@@ -129,7 +129,7 @@ class School extends Model {
     
     /** Properties -------------------------------------------------------------------------------------------------- */
     /** @return BelongsTo */
-    function department() { return $this->belongsTo('App\Models\Department'); }
+    function dept() { return $this->belongsTo('App\Models\Department', 'department_id'); }
     
     /** @return BelongsTo */
     function menu() { return $this->belongsTo('App\Models\Menu'); }
