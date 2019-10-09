@@ -229,12 +229,10 @@ class Tag extends Model {
      */
     function list() {
         
-        $list = $this->where('school_id', $this->schoolId())->get()->when(
+        return $this->where('school_id', $this->schoolId())->get()->when(
             !in_array(Auth::user()->role(), Constant::SUPER_ROLES),
             function (SCollection $tags) { return $tags->where('user_id', Auth::id()); }
         )->pluck('name', 'id');
-        
-        return collect([''])->union($list);
         
     }
     

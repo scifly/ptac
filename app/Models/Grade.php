@@ -192,28 +192,7 @@ class Grade extends Model {
                 );
             }
         );
-        // try {
-        //     DB::transaction(function () use ($data, $id) {
-        //         if (!$id) {
-        //             $this->batch($this);
-        //         } else {
-        //             throw_if(
-        //                 !$grade = $this->find($id),
-        //                 new Exception(__('messages.not_found'))
-        //             );
-        //             $grade->update($data);
-        //             (new Department)->alter($this->find($id));
-        //             # 更新部门标签绑定关系
-        //             (new DepartmentTag)->storeByDeptId(
-        //                 $grade->department_id, $data['tag_ids'] ?? []
-        //             );
-        //         }
-        //     });
-        // } catch (Exception $e) {
-        //     throw $e;
-        // }
-        //
-        // return true;
+
     }
     
     /**
