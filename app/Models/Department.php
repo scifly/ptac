@@ -341,18 +341,20 @@ class Department extends Model {
      * 返回指定部门所有子部门的id
      *
      * @param $id
+     * @param array $subIds
      * @return SCollection
      */
-    function subIds($id) {
-        
-        // static $subIds;
-        $childrenIds = Department::whereParentId($id)->pluck('id');
-        foreach ($childrenIds as $childId) {
-            $subIds[] = $childId;
-            $this->subIds($childId);
+    function subIds($id, $subIds = []) {
+
+        $childrenIds = $this->find($id)->children->pluck('id');
+        if ($childrenIds->isNotEmpty()) {
+            foreach ($childrenIds as $childId) {
+                $subIds[] = $childId;
+                $subIds = $this->subIds($childId, $subIds);
+            }
         }
         
-        return collect($subIds ?? []);
+        return $subIds;
         
     }
     
