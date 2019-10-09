@@ -23,6 +23,7 @@ class EducatorPolicy {
      */
     function operation(User $user, Educator $educator = null) {
         
+        // todo: 导出范围检查
         $perm = true;
         if (!$ids = Request::input('ids')) {
             $deptIds = Request::input('selectedDepartments');

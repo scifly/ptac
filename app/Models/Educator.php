@@ -462,18 +462,21 @@ class Educator extends Model {
     function export() {
         
         if (Request::input('range') == 0) {
+            # 导出指定部门的记录
             $userIds = (new Department)->userIds(
                 Request::input('id'), 'educator'
             );
             $ids = User::with('educator')
-                ->whereIn('id', $userIds)
-                ->get()->pluck('educator.id');
+                ->whereIn('id', $userIds)->get()
+                ->pluck('educator.id');
         } else {
+            # 导出所有记录
             $ids = $this->contactIds('educator');
         }
-        $educators = $this->whereIn('id', $ids)
-            ->where('school_id', $this->schoolId())->get();
-        ExportEducator::dispatch($educators, self::EXCEL_TITLES, Auth::id());
+        ExportEducator::dispatch(
+            $this->whereIn('id', $ids)->get(),
+            self::EXCEL_TITLES, Auth::id()
+        );
         
         return true;
         

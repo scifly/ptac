@@ -66,7 +66,7 @@ use Throwable;
 class Menu extends Model {
     
     use ModelTrait;
-    // todo: needs to be optimized
+    
     protected $fillable = [
         'parent_id', 'name', 'remark', 'uri',
         'menu_type_id', 'position', 'media_id',
@@ -287,7 +287,7 @@ class Menu extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }

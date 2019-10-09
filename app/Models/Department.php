@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasMany,
     Relations\HasOne};
-use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\{Auth, DB, Request};
@@ -305,39 +304,6 @@ class Department extends Model {
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
-     * 返回指定部门所处的级别
-     *
-     * @param integer $id 部门ID
-     * @param integer $level 部门所处级别
-     * @return int|null
-     */
-    function level($id, &$level) {
-        
-        if (!($dept = $this->find($id))) return null;
-        if ($parent = $dept->parent) {
-            $level += 1;
-            $this->level($parent->id, $level);
-        }
-        
-        return $level;
-        
-    }
-    
-    /**
-     * 判断指定部门是否需要同步到企业微信
-     *
-     * @param Department|null $dept
-     * @return bool
-     */
-    function needSync(Department $dept = null) {
-        
-        return !$dept ? false : !in_array(
-            $dept->dType->name, ['根', '运营', '企业']
-        );
-        
-    }
-    
-    /**
      * 获取联系人树
      *
      * @param bool $contact - true：获取联系人
@@ -394,51 +360,6 @@ class Department extends Model {
     }
     
     /**
-     * 返回指定部门父级部门中类型为$type的部门id
-     *
-     * @param $id
-     * @param string $type
-     * @return int|mixed
-     */
-    function deptId($id, $type = '学校') {
-        
-        if (!$dept = $this->find($id)) return null;
-        while ($dept->dType->name != $type) {
-            if (!$dept = $dept->parent) return null;
-        }
-        
-        return $dept->id;
-        
-    }
-    
-    /**
-     * 返回指定部门(含子部门）下的所有用户id
-     *
-     * @param $id
-     * @param null $type
-     * @return SCollection
-     * @throws ReflectionException
-     */
-    function userIds($id, $type = null) {
-        
-        $builder = DepartmentUser::whereIn(
-            'department_id',
-            collect([$id])->merge($this->subIds($id))
-        );
-        if ($type) {
-            /** @var QBuilder $builder */
-            $builder = $this->model($type)->whereIn(
-                'user_id', $builder->pluck('user_id')
-            );
-        }
-        
-        return $builder->pluck('user_id')->unique();
-        
-    }
-    
-    /**
-     * 返回View所需数据
-     *
      * @return array
      * @throws Exception
      */
@@ -453,36 +374,72 @@ class Department extends Model {
     }
     
     /**
-     * 获取用于显示jstree的部门数据
+     * 判断指定部门是否需要同步到企业微信
      *
-     * @param null $rootId
-     * @return array
-     * @throws Throwable
+     * @param Department|null $dept
+     * @return bool
      */
-    private function tree1($rootId = null) {
+    function needSync(Department $dept = null) {
         
-        $rootId = $rootId ?? $this->rootId(true);
-        $ids = collect([$rootId])->merge($this->subIds($rootId));
-        $depts = $this->orderBy('order')->whereIn('id', $ids)->get();
-        $firstId = $depts->first()->id;
-        /** @var Department $dept */
-        foreach ($depts as $dept) {
-            $dt = $dept->dType;
-            $text = Html::tag('span', $dept->name, [
-                'class' => $dept->enabled ? $dt->color : 'text-gray',
-                'title' => $title ?? '',
-            ])->toHtml();
-            $nodes[] = [
-                'id'         => $id = $dept->id,
-                'parent'     => $firstId == $id ? '#' : $dept->parent_id,
-                'text'       => $text,
-                'type'       => $type = $dt->remark,
-                'selectable' => 1,
-                'corp_id'    => !in_array($type, ['root', 'company']) ? $this->corpId($id) : null,
-            ];
+        return !$dept ? false : !in_array(
+            $dept->dType->name, ['根', '运营', '企业']
+        );
+        
+    }
+    
+    /**
+     * 返回指定部门(含子部门）下的所有用户id
+     *
+     * @param $id
+     * @param null $role
+     * @return SCollection
+     * @throws ReflectionException
+     */
+    function userIds($id, $role = null) {
+        
+        $deptIds = collect([$id])->merge($this->subIds($id));
+        $userIds = DepartmentUser::whereIn('department_id', $deptIds)->pluck('user_id');
+        !$role ?: $userIds = $userIds->intersect($this->model($role)->pluck('user_id'));
+        
+        return $userIds->unique();
+        
+    }
+    
+    /**
+     * 返回指定部门所处的级别
+     *
+     * @param integer $id 部门ID
+     * @param integer $level 部门所处级别
+     * @return int|null
+     */
+    function level($id, &$level) {
+        
+        if (!($dept = $this->find($id))) return null;
+        if ($parent = $dept->parent) {
+            $level += 1;
+            $this->level($parent->id, $level);
         }
         
-        return $nodes ?? [];
+        return $level;
+        
+    }
+    
+    /**
+     * 返回指定部门的所有上级（校级及以下）部门id
+     *
+     * @param integer $id
+     * @param array $ids
+     * @return array
+     */
+    function parentIds($id, $ids = []): array {
+        
+        $dept = $this->find($id);
+        if ($dept->dType->name != '学校') {
+            $ids[] = $dept->parent_id;
+            $ids = $this->parentIds($dept->parent_id, $ids);
+        }
+        
+        return $ids;
         
     }
     
@@ -619,25 +576,6 @@ class Department extends Model {
                 );
             }
         }
-        
-    }
-    
-    /**
-     * 返回指定部门的所有上级（校级及以下）部门id
-     *
-     * @param integer $id
-     * @param array $ids
-     * @return array
-     */
-    function parentIds($id, $ids = []): array {
-        
-        $dept = $this->find($id);
-        if ($dept->dType->name != '学校') {
-            $ids[] = $dept->parent_id;
-            $ids = $this->parentIds($dept->parent_id, $ids);
-        }
-        
-        return $ids;
         
     }
     

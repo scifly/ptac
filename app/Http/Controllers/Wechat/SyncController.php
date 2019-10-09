@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\{Corp, Department, DepartmentType, DepartmentUser, Educator, Group, Mobile, School, User};
 use Doctrine\Common\Inflector\Inflector;
 use Exception;
-use Illuminate\Database\Eloquent\{Builder, Model};
 use Illuminate\Support\Facades\{DB, Request};
 use SimpleXMLElement;
 use Throwable;
@@ -98,10 +97,11 @@ class SyncController extends Controller {
                 $user = User::create($data);
                 $departmentIds = [$this->corp->department_id];
                 if (Group::find($groupId)->name != '企业') {
+                    $deptId = head((array)$this->event->{'Department'});
                     Educator::create(
                         array_combine(
                             (new Educator)->getFillable(),
-                            [$user->id, $this->school()->id, 0, 0, 1]
+                            [$user->id, $this->school($deptId)->id, 0, 0, 1]
                         )
                     );
                     $departmentIds = (array)$this->event->{'Department'};
@@ -345,9 +345,10 @@ class SyncController extends Controller {
                 $dept->subIds($schoolDeptId)
             );
             if ($deptIds->diff($schoolDeptIds)->isEmpty()) {
+                $deptId = head((array)$this->event->{'Department'});
                 return $deptIds->has($schoolDeptId) ? $sGId
                     : Group::where([
-                        'name' => '教职员工', 'school_id' => $this->school()->id,
+                        'name' => '教职员工', 'school_id' => $this->school($deptId)->id,
                     ])->first()->id;
             }
         }
@@ -359,15 +360,18 @@ class SyncController extends Controller {
     /**
      * 返回会员所属的学校对象
      *
-     * @return School|Builder|Model|null|object
+     * @param $deptId
+     * @param null $school
+     * @return School
      */
-    private function school() {
-        
-        $deptId = (new Department)->deptId(
-            head((array)$this->event->{'Department'})
-        );
-        
-        return School::whereDepartmentId($deptId)->first();
+    private function school($deptId, $school = null) {
+    
+        $dept = Department::find($deptId);
+        if (!$dept->school) {
+            $school = $this->school($dept->parent_id, $school);
+        }
+    
+        return $school;
         
     }
     
