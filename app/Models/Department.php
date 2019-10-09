@@ -692,12 +692,11 @@ class Department extends Model {
     function parentIds($id, $ids = []): array {
         
         // static $ids = [];
-        $parent = $this->find($id)->parent;
-        if ($parent->dType->name != '学校') {
-            $ids[] = $parent->id;
-            $ids = $this->parentIds($parent->id, $ids);
+        $dept = $this->find($id);
+        if ($dept->dType->name != '学校') {
+            $ids[] = $dept->parent_id;
+            $ids = $this->parentIds($dept->parent_id, $ids);
         }
-        $ids[] = $parent->id;
         
         return $ids;
         
