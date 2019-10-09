@@ -28,11 +28,11 @@ class GroupPolicy {
         if (isset($menuIds, $tabIds, $actionIds)) {
             $schoolId = Request::input('school_id');
             $sGId = Group::whereName('学校')->first()->id;
-            $aGroupIds = Group::whereSchoolId($schoolId)->pluck('id');
-            $aMenuIds = collect((new Menu)->subIds(School::find($schoolId)->menu_id));
-            $aTabIds = Tab::whereIn('group_id', [0, $sGId])->pluck('id');
-            $dTabIds = Tab::whereIn('name', ['部门', '角色', '菜单', '超级用户'])->pluck('id');
-            $aActionIds = Action::whereIn('tab_id', $aTabIds->diff($dTabIds))->pluck('id');
+            $aGroupIds = Group::whereSchoolId($schoolId)->pluck('id')->flip();
+            $aMenuIds = (new Menu)->subIds(School::find($schoolId)->menu_id)->flip();
+            $aTabIds = Tab::whereIn('group_id', [0, $sGId])->pluck('id')->flip();
+            $dTabIds = Tab::whereIn('name', ['部门', '角色', '菜单', '超级用户'])->pluck('id')->flip();
+            $aActionIds = Action::whereIn('tab_id', $aTabIds->diff($dTabIds))->pluck('id')->flip();
             $perm = $aGroupIds->has($group->id) && $aMenuIds->has($menuIds)
                 && $aTabIds->has($tabIds) && $aActionIds->has($actionIds);
         }

@@ -144,20 +144,17 @@ trait ModelTrait {
         try {
             DB::transaction(function () use ($id, $params) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
-                $this->purge($id, $params);
                 $deptIds = $menuIds = collect([]);
                 foreach ($ids as $id) {
                     $record = $this->find($id);
                     $deptId = $record->department_id;
                     $menuId = $record->menu_id;
-                    $deptIds = $deptIds->merge([$deptId])->merge(
+                    !$deptId ?: $deptIds = $deptIds->prepend($deptId)->merge(
                         $record->department->subIds($deptId)
                     );
-                    if (!in_array(class_basename($this), ['Grade', 'Squad'])) {
-                        $menuIds = $menuIds->merge([$menuId])->merge(
-                            $record->menu->subIds($menuIds)
-                        );
-                    }
+                    !$menuId ?: $menuIds = $menuIds->merge([$menuId])->merge(
+                        $record->menu->subIds($menuId)
+                    );
                 }
                 array_map(
                     function ($class) use ($deptIds, $menuIds) {
@@ -171,6 +168,7 @@ trait ModelTrait {
                         'DepartmentTag', 'MenuTab', 'GroupMenu'
                     ]
                 );
+                $this->purge($id, $params);
             });
         } catch (Exception $e) {
             throw $e;
@@ -496,10 +494,8 @@ trait ModelTrait {
             $menuIds = Menu::all()->pluck('id');
         } elseif (in_array($role, ['企业', '学校'])) {
             $model = $this->model($role == '企业' ? 'Corp' : 'School');
-            $menuIds = collect(
-                (new Menu)->subIds(
-                    $model::whereDepartmentId($user->depts->first()->id)->first()->menu_id
-                )
+            $menuIds = (new Menu)->subIds(
+                $model::whereDepartmentId($user->depts->first()->id)->first()->menu_id
             );
         }
         

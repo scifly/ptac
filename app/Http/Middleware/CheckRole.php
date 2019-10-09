@@ -49,7 +49,7 @@ class CheckRole {
                 # 菜单权限
                 $menuId = session('menuId');
                 $abort = $abort
-                    ? !in_array($menuId, $this->menu->subIds($this->menu->rootId()))
+                    ? $this->menu->subIds($this->menu->rootId())->has($menuId)
                     : !GroupMenu::where(array_merge(['menu_id' => $menuId], $where))->first();
             } else {
                 # 功能权限

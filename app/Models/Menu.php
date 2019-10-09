@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany,
     Relations\HasOne};
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection as SCollection;
 use Illuminate\Support\Facades\{Auth, DB, Request};
 use Throwable;
 
@@ -297,18 +298,18 @@ class Menu extends Model {
      * 获取指定菜单所有的子菜单Id
      *
      * @param $id
-     * @return array
+     * @return SCollection
      */
     function subIds($id) {
         
         static $subIds;
-        $childrenIds = Menu::whereParentId($id)->pluck('id');
+        $childrenIds = $this->whereParentId($id)->pluck('id');
         foreach ($childrenIds as $childId) {
             $subIds[] = $childId;
             $this->subIds($childId);
         }
         
-        return $subIds ?? [];
+        return $subIds ?? collect([]);
         
     }
     
