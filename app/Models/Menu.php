@@ -309,7 +309,7 @@ class Menu extends Model {
             $this->subIds($childId);
         }
         
-        return $subIds ?? collect([]);
+        return ($subIds ?? collect([]))->unique();
         
     }
     
