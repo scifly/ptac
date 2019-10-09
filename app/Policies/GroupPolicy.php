@@ -22,7 +22,7 @@ class GroupPolicy {
     function operation(User $user, Group $group = null) {
     
         [$menuIds, $tabIds, $actionIds, $ids] = array_map(
-            function ($key) { return explode(',', Request::input($key)); },
+            function ($key) { return Request::input($key) ? explode(',', Request::input($key)) : null; },
             ['menu_ids', 'tab_ids', 'action_ids', 'ids']
         );
         if (isset($menuIds, $tabIds, $actionIds)) {
