@@ -65,21 +65,22 @@ class TestController extends Controller {
      */
     public function index() {
         
-        if (Request::ajax()) {
-            $data = [];
-            $keyword = Request::query('term');
-            $users = User::where('username', 'like', '%' . $keyword . '%')
-                ->pluck('realname', 'id');
-            foreach ($users as $id => $text) {
-                $data['results'][] = [
-                    'id' => $id,
-                    'text' => $text
-                ];
-            }
-            return response()->json($data);
-        }
-        
-        return view('user.test');
+        (new Department)->parentIds(39);
+        // if (Request::ajax()) {
+        //     $data = [];
+        //     $keyword = Request::query('term');
+        //     $users = User::where('username', 'like', '%' . $keyword . '%')
+        //         ->pluck('realname', 'id');
+        //     foreach ($users as $id => $text) {
+        //         $data['results'][] = [
+        //             'id' => $id,
+        //             'text' => $text
+        //         ];
+        //     }
+        //     return response()->json($data);
+        // }
+        //
+        // return view('user.test');
         
         // try {
         //     DB::transaction(function () {
