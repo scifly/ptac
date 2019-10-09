@@ -248,11 +248,11 @@ class Grade extends Model {
             $educators = Educator::where(['school_id' => $this->schoolId(), 'enabled' => 1])
                 ->with('user')->get()->pluck('user.realname', 'id');
             $grade = Grade::find(Request::route('id'));
-            $selectedEducators = collect(
-                explode(',', $grade ? $grade->educator_ids : '')
-            );
+            if ($grade && !empty($grade->educator_ids)) {
+                $selectedEducators = collect(explode(',', $grade->educator_ids));
+            }
             $data = array_merge(
-                array_combine(['educators', 'selectedEducators'], [$educators, $selectedEducators]),
+                array_combine(['educators', 'selectedEducators'], [$educators, $selectedEducators ?? null]),
                 (new Tag)->compose('department', $grade ? $grade->dept : null)
             );
         }
