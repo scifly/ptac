@@ -293,58 +293,6 @@ class Menu extends Model {
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
-    // /**
-    //  * 获取当前登录用户的顶级菜单/部门id
-    //  *
-    //  * @param bool $direct
-    //  *      false 返回当前角色可访问的最顶级菜单/部门id,
-    //  *      true  返回当前角色可访问的最直接顶级(学校或企业)菜单/部门id
-    //  * @return int|mixed
-    //  * @throws Throwable
-    //  */
-    // function rootId($direct = false) {
-    //
-    //     $role = Auth::user()->role();
-    //     $id = session('menuId');
-    //     $rid = Menu::whereParentId(null)->first()->id;
-    //     [$sId, $cId] = array_map(
-    //         function ($type) use ($id) {
-    //             return $this->menuId($id, $type);
-    //         }, ['学校', '企业']
-    //     );
-    //     if (stripos(get_called_class(), 'Department') !== false) {
-    //         $rid = Department::whereParentId(null)->first()->id;
-    //         $sId = $sId ? Menu::find($sId)->school->department_id : null;
-    //         $cId = $cId ? Menu::find($cId)->corp->department_id : null;
-    //     }
-    //     if ($role == '运营') {
-    //         return !$direct ? $rid : ($sId ?? ($cId ?? $rid));
-    //     } elseif ($role == '企业') {
-    //         return !$direct ? $cId : ($sId ?? $cId);
-    //     }
-    //
-    //     return $sId;
-    //
-    // }
-    
-    // /**
-    //  * 根据菜单ID返回其父级菜单中类型为$type的菜单ID
-    //  *
-    //  * @param $id
-    //  * @param string $type
-    //  * @return int|mixed
-    //  */
-    // function menuId($id, $type = '学校') {
-    //
-    //     $menu = $this->find($id);
-    //     while ($menu && $menu->mType->name != $type) {
-    //         $menu = $menu->parent;
-    //     }
-    //
-    //     return $menu ? $menu->id : null;
-    //
-    // }
-    
     /**
      * 获取后台Menu的HTML字符串
      *
@@ -660,13 +608,14 @@ class Menu extends Model {
      *
      * @param $menus
      * @param $currentParent
+     * @param string $html
      * @param int $currLevel
      * @param int $prevLevel
      * @return string
      */
-    private function html($menus, $currentParent, $currLevel = 0, $prevLevel = -1) {
+    private function html($menus, $currentParent, $html = '', $currLevel = 0, $prevLevel = -1) {
         
-        static $html;
+        // static $html;
         $activeId = session('menuId');
         foreach ($menus as $menuId => $menu) {
             $mId = $menuId;
@@ -693,7 +642,7 @@ class Menu extends Model {
                 }
                 if ($hasChildren) {
                     $currLevel++;
-                    $this->html($menus, $menuId, $currLevel, $prevLevel);
+                    $this->html($menus, $menuId, $html, $currLevel, $prevLevel);
                     $currLevel--;
                 }
                 

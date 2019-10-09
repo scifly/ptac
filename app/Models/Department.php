@@ -387,7 +387,7 @@ class Department extends Model {
      *
      * @param bool $contact - 部门树是否包含部门中的联系人
      * @return array|JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     function contacts($contact = true) {
         
@@ -770,36 +770,5 @@ class Department extends Model {
         }
         
     }
-    
-    // /**
-    //  * 获取当前用户的根部门ID
-    //  *
-    //  * @param bool $direct
-    //  * @return int|mixed
-    //  */
-    // private function rootId($direct = false) {
-    //
-    //     $role = Auth::user()->role();
-    //     $menuId = session('menuId');
-    //     $rId = $this->whereParentId(null)->first()->id;
-    //     [$smId, $cmId] = array_map(
-    //         function ($type) use ($menuId) {
-    //             return $this->menuId($menuId, $type);
-    //         }, ['学校', '企业', '根']
-    //     );
-    //
-    //     $smId = $this->menuId($menuId = session('menuId'));
-    //     $cmId = $this->menuId($menuId, '企业');
-    //     $sId = $smId ? Menu::find($smId)->school->department_id : null;
-    //     $cId = $cmId ? Menu::find($cmId)->corp->department_id : null;
-    //     if ($role == '运营') {
-    //         return !$direct ? $rId : ($sId ?? ($cId ?? $rId));
-    //     } elseif ($role == '企业') {
-    //         return !$direct ? $cId : ($sId ?? $cId);
-    //     } else {
-    //         return $sId;
-    //     }
-    //
-    // }
     
 }
