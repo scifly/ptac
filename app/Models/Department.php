@@ -691,7 +691,6 @@ class Department extends Model {
      */
     function parentIds($id, $ids = []): array {
         
-        // static $ids = [];
         $dept = $this->find($id);
         if ($dept->dType->name != '学校') {
             $ids[] = $dept->parent_id;
