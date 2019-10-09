@@ -67,7 +67,7 @@ class EducatorController extends Controller {
             ? (
                 Request::has('field')
                 ? $this->custodian->csList()
-                : $this->dept->contacts(false)
+                : $this->dept->tree(false)
             )
             : $this->output();
         
@@ -102,7 +102,7 @@ class EducatorController extends Controller {
             ? (
                 Request::has('field')
                 ? $this->custodian->csList()
-                : $this->dept->contacts(false)
+                : $this->dept->tree(false)
             )
             : $this->output();
         

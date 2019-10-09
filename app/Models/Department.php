@@ -114,7 +114,7 @@ class Department extends Model {
         try {
             $action = Request::input('action');
             if ($action == 'tree') {
-                $response = response()->json($this->tree());
+                $response = $this->tree(false, false);
             } elseif ($action == 'sort') {
                 $this->sort();
             } else {
@@ -338,65 +338,40 @@ class Department extends Model {
     }
     
     /**
-     * 返回所有叶节点部门
-     *
-     * @return array
-     * @throws Exception
-     */
-    function leaves() {
-        
-        $leaves = [];
-        $leafPath = [];
-        $depts = $this->nodes();
-        /** @var Department $dept */
-        foreach ($depts as $dept) {
-            if (empty($dept->children->count())) {
-                $path = self::leafPath($dept->id, $leafPath);
-                $leaves[$dept->id] = $path;
-                $leafPath = [];
-            }
-        }
-        
-        return $leaves;
-        
-    }
-    
-    /**
-     * 获取指定部门的完整路径
-     *
-     * @param $id
-     * @param array $path
-     * @return string
-     */
-    function leafPath($id, array &$path) {
-        
-        $this->truncate();
-        if (!($dept = $this->find($id))) return '';
-        $path[] = $dept->name;
-        !isset($dept->parent_id) ?: $this->leafPath(
-            $dept->parent_id, $path
-        );
-        krsort($path);
-        
-        return join(' . ', $path);
-        
-    }
-    
-    /**
      * 获取联系人树
      *
-     * @param bool $contact - 部门树是否包含部门中的联系人
+     * @param bool $contact - true：获取联系人
+     * @param bool $direct - true: 获取校级树
      * @return array|JsonResponse
      * @throws Throwable
      */
-    function contacts($contact = true) {
+    function tree($contact = true, $direct = true) {
         
-        $id = School::find($this->schoolId())->department_id;
-        $visibleNodes = $this->tree($id);
+        $rootId = $rootId ?? $this->rootId($direct);
+        $ids = collect([$rootId])->merge($this->subIds($rootId));
+        $depts = $this->orderBy('order')->whereIn('id', $ids)->get();
+        $firstId = $depts->first()->id;
+        $nodes = [];
+        /** @var Department $dept */
+        foreach ($depts as $dept) {
+            $dt = $dept->dType;
+            $text = Html::tag('span', $dept->name, [
+                'class' => $dept->enabled ? $dt->color : 'text-gray',
+                'title' => $title ?? '',
+            ])->toHtml();
+            $nodes[] = [
+                'id'         => $id = $dept->id,
+                'parent'     => $firstId == $id ? '#' : $dept->parent_id,
+                'text'       => $text,
+                'selectable' => 1,
+                'type'       => $type = $dt->remark,
+                'corp_id'    => !in_array($type, ['root', 'company']) ? $this->corpId($id) : null,
+            ];
+        }
         if ($contact) {
             # 获取可见部门下的学生、教职员工 & 不可见部门下的教职员工
             $visibleIds = $this->departmentIds()->flip();
-            foreach ($visibleNodes as $node) {
+            foreach ($nodes as $node) {
                 $deptId = $node['id'];
                 foreach ($this->find($deptId)->users as $user) {
                     if ($user->educator || $visibleIds->has($deptId) && $user->student) {
@@ -413,7 +388,7 @@ class Department extends Model {
         }
         
         return response()->json(
-            array_merge($visibleNodes, $contacts ?? [])
+            array_merge($nodes, $contacts ?? [])
         );
         
     }
@@ -484,68 +459,28 @@ class Department extends Model {
      * @return array
      * @throws Throwable
      */
-    private function tree($rootId = null) {
+    private function tree1($rootId = null) {
         
         $rootId = $rootId ?? $this->rootId(true);
         $ids = collect([$rootId])->merge($this->subIds($rootId));
         $depts = $this->orderBy('order')->whereIn('id', $ids)->get();
-        $nodes = [];
+        $firstId = $depts->first()->id;
         /** @var Department $dept */
         foreach ($depts as $dept) {
-            $id = $dept->id;
-            $parentId = $depts->first()->id == $id ? '#' : $dept->parent_id;
             $dt = $dept->dType;
-            $enabled = $dept->enabled;
-            $type = $dt->remark;
-            if (!in_array($type, ['root', 'company', 'corp'])) {
-                $synced = $dept->synced;
-                $title = $synced ? '已同步' : '未同步';
-                $syncMark = Html::tag('span', '*', [
-                    'class' => 'text-' . ($synced ? 'green' : 'red'),
-                ])->toHtml();
-            }
             $text = Html::tag('span', $dept->name, [
-                'class' => $enabled ? $dt->color : 'text-gray',
+                'class' => $dept->enabled ? $dt->color : 'text-gray',
                 'title' => $title ?? '',
-            ])->toHtml() . ($syncMark ?? '');
-            $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
+            ])->toHtml();
             $nodes[] = [
-                'id'         => $id,
-                'parent'     => $parentId,
+                'id'         => $id = $dept->id,
+                'parent'     => $firstId == $id ? '#' : $dept->parent_id,
                 'text'       => $text,
-                'type'       => $type,
+                'type'       => $type = $dt->remark,
                 'selectable' => 1,
-                'corp_id'    => $corp_id,
+                'corp_id'    => !in_array($type, ['root', 'company']) ? $this->corpId($id) : null,
             ];
         }
-        // for ($i = 0; $i < sizeof($depts); $i++) {
-        //     $id = $depts[$i]['id'];
-        //     $parentId = $i == 0 ? '#' : $depts[$i]['parent_id'];
-        //     $dt = DepartmentType::find($depts[$i]['department_type_id']);
-        //     $name = $depts[$i]['name'];
-        //     $enabled = $depts[$i]['enabled'];
-        //     $type = $dt->remark;
-        //     if (!in_array($type, ['root', 'company', 'corp'])) {
-        //         $synced = $depts[$i]['synced'];
-        //         $title = $synced ? '已同步' : '未同步';
-        //         $syncMark = Html::tag('span', '*', [
-        //             'class' => 'text-' . ($synced ? 'green' : 'red'),
-        //         ])->toHtml();
-        //     }
-        //     $text = Html::tag('span', $name, [
-        //         'class' => $enabled ? $dt->color : 'text-gray',
-        //         'title' => $title ?? '',
-        //     ])->toHtml() . ($syncMark ?? '');
-        //     $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
-        //     $nodes[] = [
-        //         'id'         => $id,
-        //         'parent'     => $parentId,
-        //         'text'       => $text,
-        //         'type'       => $type,
-        //         'selectable' => 1,
-        //         'corp_id'    => $corp_id,
-        //     ];
-        // }
         
         return $nodes ?? [];
         
@@ -588,39 +523,37 @@ class Department extends Model {
         try {
             DB::transaction(function () {
                 $id = Request::input('id');
-                $parentId = Request::input('parentId');
+                $pId = Request::input('parentId');
                 throw_if(
-                    !isset($id, $parentId) ||
-                    !$this->find($id) || !$this->find($parentId) ||
-                    collect([$id, $parentId])->intersect($this->departmentIds(Auth::id()))->count() < 2,
+                    !isset($id, $pId) ||
+                    !$this->find($id) || !$this->find($pId) ||
+                    collect([$id, $pId])->intersect($this->departmentIds(Auth::id()))->count() < 2,
                     __('messages.forbidden')
                 );
-                [$type, $parentType] = array_map(
-                    function ($id) { return $this->find($id)->dType->name; },
-                    [$id, $parentId]
+                [$type, $pType] = array_map(
+                    function ($id) {
+                        return $this->find($id)->dType->name;
+                    }, [$id, $pId]
                 );
+                $same = $this->corpId($id) == $this->corpId($pId);
                 switch ($type) {
                     case '运营':
-                        $movable = $parentType == '根';
+                        $movable = $pType == '根';
                         break;
                     case '企业':
-                        $movable = $parentType == '运营';
+                        $movable = $pType == '运营';
                         break;
                     case '学校':
-                        $movable = $parentType != '企业' ? false
-                            : $this->corpId($id) == $this->corpId($parentId);
+                        $movable = $pType != '企业' ? false : $same;
                         break;
                     case '年级':
-                        $movable = !in_array($parentType, ['学校', '其他']) ? false
-                            : $this->corpId($id) == $this->corpId($parentId);
+                        $movable = !in_array($pType, ['学校', '其他']) ? false : $same;
                         break;
                     case '班级':
-                        $movable = !in_array($parentType, ['年级', '其他']) ? false
-                            : $this->corpId($id) == $this->corpId($parentId);
+                        $movable = !in_array($pType, ['年级', '其他']) ? false : $same;
                         break;
                     case '其他':
-                        $movable = !in_array($parentType, ['运营', '企业'])
-                            && $this->corpId($id) == $this->corpId($parentId);
+                        $movable = !in_array($pType, ['运营', '企业']) && $same;
                         break;
                     default:
                         $movable = false;
@@ -628,28 +561,28 @@ class Department extends Model {
                 }
                 throw_if(!$movable, new Exception(__('messages.forbidden')));
                 $dept = $this->find($id);
-                $dept->parent_id = $parentId === '#' ? null : intval($parentId);
+                $dept->parent_id = $pId === '#' ? null : intval($pId);
                 throw_if(!$dept->save(), new Exception(__('messages.fail')));
                 # 更新部门对应企业/学校/年级/班级、菜单等对象
                 switch ($dept->dType->name) {
                     case '企业':
-                        $corp = Corp::whereDepartmentId($id)->first();
-                        $company = Company::whereDepartmentId($parentId)->first();
+                        $corp = $this->find($id)->corp;
+                        $company = $this->find($pId)->company;
                         $corp->update(['company_id' => $company->id]);
-                        Menu::find($corp->menu_id)->first()->update([
+                        Menu::find($corp->menu_id)->update([
                             'parent_id' => Menu::find($company->menu_id)->first()->id,
                         ]);
                         break;
                     case '年级':
-                        $grade = Grade::whereDepartmentId($id)->first();
-                        $parent = $this->find($parentId);
+                        $grade = $this->find($id)->grade;
+                        $parent = $this->find($pId);
                         if ($parent->dType->name == '学校') {
                             $grade->update(['school_id' => $parent->school->id]);
                         }
                         break;
                     case '班级':
                         $class = Squad::whereDepartmentId($id)->first();
-                        $parent = $this->find($parentId);
+                        $parent = $this->find($pId);
                         if ($parent->dType->name == '年级') {
                             $class->update(['grade_id' => $parent->grade->id]);
                         }
@@ -664,49 +597,6 @@ class Department extends Model {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 返回指定部门的所有上级（校级及以下）部门id
-     *
-     * @param integer $id
-     * @param array $ids
-     * @return array
-     */
-    function parentIds($id, $ids = []): array {
-        
-        $dept = $this->find($id);
-        if ($dept->dType->name != '学校') {
-            $ids[] = $dept->parent_id;
-            $ids = $this->parentIds($dept->parent_id, $ids);
-        }
-        
-        return $ids;
-        
-    }
-    
-    /**
-     * 根据根部门ID返回所有下级部门对象
-     *
-     * @param null $rootId
-     * @return Collection|static[]
-     * @throws Exception
-     */
-    private function nodes($rootId = null) {
-        
-        if (!isset($rootId)) {
-            $nodes = $this->orderBy('order')->get();
-        } else {
-            $ids = collect([$rootId])->merge(
-                $this->departmentIds(Auth::id())->intersect(
-                    $this->subIds($rootId)
-                )
-            );
-            $nodes = $this->orderBy('order')->whereIn('id', $ids)->get();
-        }
-        
-        return $nodes;
         
     }
     
@@ -729,6 +619,25 @@ class Department extends Model {
                 );
             }
         }
+        
+    }
+    
+    /**
+     * 返回指定部门的所有上级（校级及以下）部门id
+     *
+     * @param integer $id
+     * @param array $ids
+     * @return array
+     */
+    function parentIds($id, $ids = []): array {
+        
+        $dept = $this->find($id);
+        if ($dept->dType->name != '学校') {
+            $ids[] = $dept->parent_id;
+            $ids = $this->parentIds($dept->parent_id, $ids);
+        }
+        
+        return $ids;
         
     }
     

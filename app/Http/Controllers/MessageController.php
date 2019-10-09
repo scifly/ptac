@@ -49,7 +49,7 @@ class MessageController extends Controller {
             : (Request::method() == 'POST'
                 ? (Request::has('file')
                     ? $this->msg->import()
-                    : $this->dept->contacts()
+                    : $this->dept->tree()
                 )
                 : $this->output()
             );

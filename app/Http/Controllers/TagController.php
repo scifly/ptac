@@ -54,7 +54,7 @@ class TagController extends Controller {
     public function create() {
         
         return Request::method() == 'POST'
-            ? $this->dept->contacts()
+            ? $this->dept->tree()
             : $this->output();
         
     }
@@ -86,7 +86,7 @@ class TagController extends Controller {
     public function edit($id = null) {
         
         return Request::method() == 'POST'
-            ? $this->dept->contacts()
+            ? $this->dept->tree()
             : $this->output([
                 'tag' => $this->tag->find($id),
             ]);
