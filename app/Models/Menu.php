@@ -295,25 +295,6 @@ class Menu extends Model {
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
-     * 获取指定菜单所有的子菜单Id
-     *
-     * @param $id
-     * @return SCollection
-     */
-    function subIds($id) {
-        
-        static $subIds;
-        $childrenIds = $this->whereParentId($id)->pluck('id');
-        foreach ($childrenIds as $childId) {
-            $subIds[] = $childId;
-            $this->subIds($childId);
-        }
-        
-        return ($subIds ?? collect([]))->unique();
-        
-    }
-    
-    /**
      * 获取当前登录用户的顶级菜单ID
      *
      * @param bool $subRoot

@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Middleware;
 
+use App\Helpers\ModelTrait;
 use App\Models\{Action, ActionGroup, Group, GroupMenu, Menu, Tab};
 use Closure;
 use Exception;
@@ -49,7 +50,7 @@ class CheckRole {
                 # 菜单权限
                 $menuId = session('menuId');
                 $abort = $abort
-                    ? $this->menu->subIds($this->menu->rootId())->has($menuId)
+                    ? $this->menu->subIds($this->menu->rootId())->flip()->has($menuId)
                     : !GroupMenu::where(array_merge(['menu_id' => $menuId], $where))->first();
             } else {
                 # 功能权限

@@ -508,6 +508,24 @@ trait ModelTrait {
     }
     
     /**
+     * 获取指定树节点所有的子节点id
+     *
+     * @param $id
+     * @param array $subIds
+     * @return SCollection
+     */
+    function subIds($id, $subIds = []) {
+        
+        foreach ($this->find($id)->children->pluck('id') as $childId) {
+            $subIds[] = $childId;
+            $subIds = $this->subIds($childId, $subIds);
+        }
+        
+        return collect($subIds);
+        
+    }
+    
+    /**
      * 从上传的excel文件中获取需要导入的数据
      *
      * @param bool $removeTitles

@@ -338,24 +338,6 @@ class Department extends Model {
     }
     
     /**
-     * 返回指定部门所有子部门的id
-     *
-     * @param $id
-     * @param array $subIds
-     * @return SCollection
-     */
-    function subIds($id, $subIds = []) {
-
-        foreach ($this->find($id)->children->pluck('id') as $childId) {
-            $subIds[] = $childId;
-            $subIds = $this->subIds($childId, $subIds);
-        }
-        
-        return $subIds;
-        
-    }
-    
-    /**
      * 返回所有叶节点部门
      *
      * @return array
