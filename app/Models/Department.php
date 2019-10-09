@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\{Constant, ModelTrait};
+use App\Helpers\{ModelTrait};
 use App\Jobs\SyncDepartment;
 use Carbon\Carbon;
 use Eloquent;
@@ -490,24 +490,24 @@ class Department extends Model {
         $ids = collect([$rootId])->merge($this->subIds($rootId));
         $depts = $this->orderBy('order')->whereIn('id', $ids)->get();
         $nodes = [];
-        for ($i = 0; $i < sizeof($depts); $i++) {
-            $id = $depts[$i]['id'];
-            $parentId = $i == 0 ? '#' : $depts[$i]['parent_id'];
-            $dt = DepartmentType::find($depts[$i]['department_type_id']);
-            $name = $depts[$i]['name'];
-            $enabled = $depts[$i]['enabled'];
+        /** @var Department $dept */
+        foreach ($depts as $dept) {
+            $id = $dept->id;
+            $parentId = $depts->first()->id == $id ? '#' : $dept->parent_id;
+            $dt = $dept->dType;
+            $enabled = $dept->enabled;
             $type = $dt->remark;
             if (!in_array($type, ['root', 'company', 'corp'])) {
-                $synced = $depts[$i]['synced'];
+                $synced = $dept->synced;
                 $title = $synced ? '已同步' : '未同步';
                 $syncMark = Html::tag('span', '*', [
                     'class' => 'text-' . ($synced ? 'green' : 'red'),
                 ])->toHtml();
             }
-            $text = Html::tag('span', $name, [
-                    'class' => $enabled ? $dt->color : 'text-gray',
-                    'title' => $title ?? '',
-                ])->toHtml() . ($syncMark ?? '');
+            $text = Html::tag('span', $dept->name, [
+                'class' => $enabled ? $dt->color : 'text-gray',
+                'title' => $title ?? '',
+            ])->toHtml() . ($syncMark ?? '');
             $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
             $nodes[] = [
                 'id'         => $id,
@@ -518,8 +518,36 @@ class Department extends Model {
                 'corp_id'    => $corp_id,
             ];
         }
+        // for ($i = 0; $i < sizeof($depts); $i++) {
+        //     $id = $depts[$i]['id'];
+        //     $parentId = $i == 0 ? '#' : $depts[$i]['parent_id'];
+        //     $dt = DepartmentType::find($depts[$i]['department_type_id']);
+        //     $name = $depts[$i]['name'];
+        //     $enabled = $depts[$i]['enabled'];
+        //     $type = $dt->remark;
+        //     if (!in_array($type, ['root', 'company', 'corp'])) {
+        //         $synced = $depts[$i]['synced'];
+        //         $title = $synced ? '已同步' : '未同步';
+        //         $syncMark = Html::tag('span', '*', [
+        //             'class' => 'text-' . ($synced ? 'green' : 'red'),
+        //         ])->toHtml();
+        //     }
+        //     $text = Html::tag('span', $name, [
+        //         'class' => $enabled ? $dt->color : 'text-gray',
+        //         'title' => $title ?? '',
+        //     ])->toHtml() . ($syncMark ?? '');
+        //     $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
+        //     $nodes[] = [
+        //         'id'         => $id,
+        //         'parent'     => $parentId,
+        //         'text'       => $text,
+        //         'type'       => $type,
+        //         'selectable' => 1,
+        //         'corp_id'    => $corp_id,
+        //     ];
+        // }
         
-        return $nodes;
+        return $nodes ?? [];
         
     }
     
@@ -677,8 +705,6 @@ class Department extends Model {
             );
             $nodes = $this->orderBy('order')->whereIn('id', $ids)->get();
         }
-        
-        
         
         return $nodes;
         
