@@ -608,13 +608,14 @@ class Menu extends Model {
      *
      * @param $menus
      * @param $currentParent
+     * @param string $html
      * @param int $currLevel
      * @param int $prevLevel
      * @return string
      */
-    private function html($menus, $currentParent, $currLevel = 0, $prevLevel = -1) {
+    private function html($menus, $currentParent, $html = '', $currLevel = 0, $prevLevel = -1) {
         
-        static $html;
+        // static $html;
         $activeId = session('menuId');
         foreach ($menus as $menuId => $menu) {
             $mId = $menuId;
@@ -641,7 +642,7 @@ class Menu extends Model {
                 }
                 if ($hasChildren) {
                     $currLevel++;
-                    $this->html($menus, $menuId, $currLevel, $prevLevel);
+                    $html = $this->html($menus, $menuId, $html, $currLevel, $prevLevel);
                     $currLevel--;
                 }
                 
