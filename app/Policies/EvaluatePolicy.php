@@ -4,7 +4,7 @@ namespace App\Policies;
 use App\Helpers\{ModelTrait, PolicyTrait};
 use App\Models\{Educator, Evaluate, Indicator, Semester, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\{Collection, Facades\Auth};
+use Illuminate\Support\{Facades\Auth};
 use ReflectionException;
 
 /**

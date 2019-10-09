@@ -4,15 +4,12 @@ namespace App\Helpers;
 use App\Models\{App,
     Corp,
     Department,
-    DepartmentTag,
     DepartmentType,
     DepartmentUser,
     Exam,
     Grade,
     Group,
-    GroupMenu,
     Menu,
-    MenuTab,
     School,
     Squad,
     Student,
@@ -183,14 +180,15 @@ trait ModelTrait {
     }
     
     /**
-     * 返回指定名称对应的Model对象
+     * 返回指定类名对应的model对象
      *
-     * @param $name
+     * @param null $name
      * @return object
      * @throws ReflectionException
      */
-    function model($name) {
+    function model($name = null) {
         
+        $name = $name ?? get_called_class();
         $ns = 'App\Models';
         $class = strpos($name, $ns) !== false
             ? $name : join('\\', [$ns, ucfirst($name)]);
@@ -528,10 +526,6 @@ trait ModelTrait {
         
         return $deptIds;
         
-    }
-    
-    function tagIds($userId = null) {
-    
     }
     
     /**

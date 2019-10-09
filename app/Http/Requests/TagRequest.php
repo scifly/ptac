@@ -45,7 +45,6 @@ class TagRequest extends FormRequest {
         $input = $this->all();
         $input['school_id'] = $this->schoolId();
         $input['user_id'] = Auth::id();
-        // $input['name'] = $input['name'] . '.' . $this->schoolId();
         $input['synced'] = 0;
         if (isset($input['selected-node-ids'])) {
             $deptIds = $userIds = [];

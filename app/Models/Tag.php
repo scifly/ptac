@@ -145,7 +145,7 @@ class Tag extends Model {
      */
     function modify(array $data = null, $id = null) {
         
-        $this->revise(
+        return $this->revise(
             $this, $data, $id,
             function (Tag $tag) use ($data, $id) {
                 TagUser::whereTagId($id)->delete();
@@ -158,31 +158,7 @@ class Tag extends Model {
                 );
             }
         );
-        // $this->sync(
-        //     $id ? [$id] : array_values(Request::input('ids')), 'update'
-        // );
-        return true;
-        // try {
-        //     DB::transaction(function () use ($data, $id) {
-        //         if ($id) {
-        //             $tag = $this->find($id);
-        //             TagUser::whereTagId($tag->id)->delete();
-        //             DepartmentTag::whereTagId($tag->id)->delete();
-        //             !isset($data['user_ids']) ?: $this->retain(
-        //                 'TagUser', $id, $data['user_ids']
-        //             );
-        //             !isset($data['dept_ids']) ?: $this->retain(
-        //                 'DepartmentTag', $tag->id, $data['dept_ids'], false
-        //             );
-        //             $tag->update($data);
-        //         }
-        //         $this->sync($id ? [$id] : Request::input('ids'), 'update');
-        //     });
-        // } catch (Exception $e) {
-        //     throw $e;
-        // }
-        //
-        // return true;
+
     }
     
     /**

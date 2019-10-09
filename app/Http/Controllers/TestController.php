@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\{Broadcaster, Constant, ModelTrait};
-use App\Models\{Department, User};
+use App\Models\{Department};
 use Auth;
 use Doctrine\Common\Inflector\Inflector;
 use Exception;

@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasManyThrough};
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Request;
 use Throwable;
 
 /**

@@ -11,7 +11,6 @@ use Illuminate\{Bus\Queueable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels};
 use Pusher\PusherException;
-use ReflectionClass;
 use Throwable;
 
 /**

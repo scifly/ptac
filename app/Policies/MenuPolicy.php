@@ -2,7 +2,7 @@
 namespace App\Policies;
 
 use App\Helpers\{ModelTrait, PolicyTrait};
-use App\Models\{Menu, MenuType, User};
+use App\Models\{Menu, User};
 use Illuminate\Auth\Access\HandlesAuthorization;
 use ReflectionException;
 
