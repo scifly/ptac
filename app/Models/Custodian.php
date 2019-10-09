@@ -520,7 +520,7 @@ class Custodian extends Model {
             default:    # 创建/编辑
                 [$grades, $classes] = $this->gcList();
                 $records = Student::with('user:id,realname')
-                    ->where(['class_id' => array_key_first($classes), 'enabled' => 1])
+                    ->where(['class_id' => $classes->keys()->first(), 'enabled' => 1])
                     ->get();
                 foreach ($records as $record) {
                     if (!isset($record['user'])) continue;
