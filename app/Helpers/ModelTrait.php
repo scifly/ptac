@@ -163,7 +163,7 @@ trait ModelTrait {
                         $c = strpos($class, $m) !== false ? $m : $d;
                         $field = $class == $c ? 'id' : lcfirst($c) . '_id';
                         $ids = $c == $m ? $menuIds : $deptIds;
-                        $class::{'whereIn'}($field, $ids)->delete();
+                        $this->model($class)->{'whereIn'}($field, $ids)->delete();
                     }, [
                         'Department', 'Menu', 'DepartmentUser',
                         'DepartmentTag', 'MenuTab', 'GroupMenu'
