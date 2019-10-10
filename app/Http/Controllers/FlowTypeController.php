@@ -50,9 +50,8 @@ class FlowTypeController extends Controller {
      */
     public function create() {
         
-        return Request::method() == 'POST'
-            ? $this->ft->step()
-            : $this->output();
+        return (Request::method() == 'POST' || Request::query('term'))
+            ? $this->ft->step() : $this->output();
         
     }
     
