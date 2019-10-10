@@ -68,9 +68,8 @@ class Menu extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'parent_id', 'name', 'remark', 'uri',
-        'menu_type_id', 'position', 'media_id',
-        'action_id', 'icon_id', 'enabled',
+        'parent_id', 'menu_type_id', 'name', 'uri', 'remark',
+        'media_id', 'position', 'icon_id', 'enabled',
     ];
     const TREE = <<<HTML
         <li class="treeview%s">
