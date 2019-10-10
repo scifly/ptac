@@ -1,4 +1,4 @@
-{!! Form::model($flowType, [
+{!! Form::model($ft, [
     'method' => 'put',
     'id' => 'formFlowType',
     'data-parsley-validate' => 'true'
