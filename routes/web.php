@@ -92,8 +92,8 @@ $routes = [
     ],
     'conference'      => $default,
     'corp'            => array_merge(
-        $default, ['recharge' => ['{id}' => ['get', 'put']]],
-        ),
+        $default, ['recharge' => ['{id}' => ['get', 'put']]]
+    ),
     'custodian'       => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
