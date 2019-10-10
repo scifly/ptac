@@ -37,11 +37,13 @@ class FlowTypeRequest extends FormRequest {
         
         $input = $this->all();
         $input['school_id'] = $this->schoolId();
-        foreach ($input['steps'] as $step) {
-            if (empty($step['name']) || empty($step['ids'])) continue;
+        $names = $input['names'];
+        $educatorIds = $input['educator_ids'];
+        for ($i = 0; $i < sizeof($names); $i++) {
+            if (empty($names[$i]) || empty($educatorIds[$i])) continue;
             $steps[] = [
-                'name' => $step['name'],
-                'ids' => $step['ids']
+                'name' => $names[$i],
+                'ids'  => $educatorIds[$i],
             ];
         }
         $input['steps'] = json_encode(

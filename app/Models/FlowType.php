@@ -178,7 +178,7 @@ class FlowType extends Model {
                 'class' => 'form-control', 'required' => 'true'
             ]);
             $ids = Form::select(
-                'ids[]',
+                'educator_ids[]',
                 $step['items'] ?? [],
                 $step['ids'] ?? [],
                 [
