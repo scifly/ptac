@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Models\Menu;
 use App\Models\MenuType;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -40,8 +41,9 @@ class MenuRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        $input['position'] = $input['position'] ?? 0;
+        $input['position'] = Menu::all()->max('position') + 1;
         $input['menu_type_id'] = MenuType::whereName('其他')->first()->id;
+        $input['tab_ids'] = $input['tab_ids'] ?? [];
         $this->replace($input);
         
     }

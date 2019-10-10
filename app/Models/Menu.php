@@ -149,10 +149,8 @@ class Menu extends Model {
         
         try {
             DB::transaction(function () use ($data) {
-                $data['position'] = $this->all()->max('position') + 1;
                 $menu = $this->create($data);
-                $tabIds = $data['tab_ids'] ?? [];
-                (new MenuTab)->store($menu->id, $tabIds);
+                (new MenuTab)->store($menu->id, $data['tab_ids']);
             });
         } catch (Exception $e) {
             throw $e;
