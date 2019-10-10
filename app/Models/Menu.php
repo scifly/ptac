@@ -149,7 +149,7 @@ class Menu extends Model {
         try {
             DB::transaction(function () use ($data) {
                 $menu = $this->create($data);
-                (new MenuTab)->store($menu->id, $data['tab_ids']);
+                // (new MenuTab)->store($menu->id, $data['tab_ids']);
             });
         } catch (Exception $e) {
             throw $e;
