@@ -20,7 +20,7 @@
                 $(document).off('click', '.remove-step');
                 ft.add(action);
                 ft.remove();
-                options['name'] = 'select[name="steps[][ids]"]';
+                options['name'] = 'select[name="ids[]"]';
                 options['option']['ajax']['url'] = url;
                 page[action]('formFlowType', 'flow_types', [options]);
             },

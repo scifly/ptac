@@ -80,11 +80,8 @@ class FlowTypeController extends Controller {
      */
     public function edit($id) {
         
-        return Request::method() == 'POST'
-            ? $this->ft->step()
-            : $this->output([
-                'flowType' => $this->ft->find($id),
-            ]);
+        return (Request::method() == 'POST' || Request::query('term'))
+            ? $this->ft->step() : $this->output(['ft' => $this->ft->find($id)]);
         
     }
     

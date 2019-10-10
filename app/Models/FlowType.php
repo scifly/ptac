@@ -174,11 +174,11 @@ class FlowType extends Model {
             }
             $data = response()->json($data ?? []);
         } else {
-            $name = Form::text('steps[][name]', $step['name'] ?? null, [
+            $name = Form::text('names[]', $step['name'] ?? null, [
                 'class' => 'form-control', 'required' => 'true'
             ]);
             $ids = Form::select(
-                'steps[][ids]',
+                'ids[]',
                 $step['items'] ?? [],
                 $step['ids'] ?? [],
                 [
