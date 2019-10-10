@@ -378,11 +378,7 @@ class Menu extends Model {
         
     }
     
-    /**
-     * 返回composer所需的view数据
-     *
-     * @return array
-     */
+    /** @return array */
     function compose() {
         
         $action = explode('/', Request::path())[1];
@@ -556,38 +552,33 @@ class Menu extends Model {
         try {
             DB::transaction(function () {
                 $id = Request::input('id');
-                $parentId = Request::input('parentId');
+                $pId = Request::input('parentId');
                 throw_if(
-                    !isset($id, $parentId) ||
-                    !$this->find($id) || $this->find($parentId) ||
-                    Auth::user()->role() != '运营' &&
-                    !$this->menuIds()->flip()->has([$id, $parentId]),
+                    !isset($id, $pId) || !$this->find($id) || !$this->find($pId) ||
+                    Auth::user()->role() != '运营' && !$this->menuIds()->flip()->has([$id, $pId]),
                     new Exception(__('messages.forbidden'))
                 );
-                $parentType = $this->find($parentId)->mType->name;
-                switch ($this->find($id)->mType->name) {
-                    case '运营':
-                        $movable = $parentType == '根';
-                        break;
-                    case '企业':
-                        $movable = $parentType == '运营';
-                        break;
-                    case '学校':
-                        # 如果学校所属企业发生变化，则不允许移动
-                        $school = School::whereMenuId($id)->first();
-                        $movable = $parentType !== '企业' ? false
-                            : $school->corp_id == Corp::whereMenuId($parentId)->first()->id;
-                        break;
-                    case '其他':
-                        $movable = true;
-                        break;
-                    default:
-                        $movable = false;
-                        break;
+                [$type, $pType] = array_map(
+                    function ($id) {
+                        return $this->find($id)->mType->name;
+                    }, [$id, $pId]
+                );
+                $movable = false;
+                if ($type == '运营') {
+                    $movable = $pType == '根';
+                } elseif ($type == '企业') {
+                    $movable = $pType == '运营';
+                } elseif ($type == '学校') {
+                    # 如果学校所属企业发生变化，则不允许移动
+                    $school = School::whereMenuId($id)->first();
+                    $movable = $pType !== '企业' ? false
+                        : $school->corp_id == Corp::whereMenuId($pId)->first()->id;
+                } elseif ($type == '其他') {
+                    $movable = true;
                 }
                 throw_if(!$movable, new Exception(__('messages.forbidden')));
                 $menu = $this->find($id);
-                $menu->parent_id = $parentId === '#' ? null : intval($parentId);
+                $menu->parent_id = $pId === '#' ? null : intval($pId);
                 $menu->save();
                 /** 当企业类菜单所属运营类菜单发生变化时，更新企业所属运营者及所属部门 */
                 if ($menu->mType->name == '企业') {
@@ -615,7 +606,6 @@ class Menu extends Model {
      */
     private function html($menus, $currentParent, $html = '', $currLevel = 0, $prevLevel = -1) {
         
-        // static $html;
         $activeId = session('menuId');
         foreach ($menus as $menuId => $menu) {
             $mId = $menuId;
@@ -626,29 +616,22 @@ class Menu extends Model {
             $hasChildren = $this->whereParentId($mId)->where('enabled', 1)->count();
             $mUrl = empty($mUri) ? 'pages/' . $mId : $mUri;
             if ($currentParent == $menu['parent_id']) {
-                if ($hasChildren) {
-                    $html .= sprintf(
+                $html .= $hasChildren ? sprintf(
                         self::TREE,
                         $mId == $activeId ? ' active' : '', $mIcon, $mName
-                    );
-                } else {
-                    $html .= sprintf(
+                    ) : sprintf(
                         self::SIMPLE,
                         $mId == $activeId ? ' class="active"' : '', $mId, $mUrl, $mIcon, $mName
                     );
-                }
-                if ($currLevel > $prevLevel) {
-                    $prevLevel = $currLevel;
-                }
+                $currLevel <= $prevLevel ?: $prevLevel = $currLevel;
                 if ($hasChildren) {
                     $currLevel++;
                     $html = $this->html($menus, $menuId, $html, $currLevel, $prevLevel);
                     $currLevel--;
                 }
-                
             }
         }
-        if ($currLevel == $prevLevel) $html .= "</ul></li>";
+        $currLevel != $prevLevel ?: $html .= "</ul></li>";
         
         return $html;
         

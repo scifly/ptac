@@ -313,11 +313,12 @@ class Department extends Model {
      */
     function tree($contact = true, $direct = true) {
         
-        $rootId = $rootId ?? $this->rootId($direct);
+        $rootId = $this->rootId($direct);
         $ids = collect([$rootId])->merge($this->subIds($rootId));
         $depts = $this->orderBy('order')->whereIn('id', $ids)->get();
         $firstId = $depts->first()->id;
         $nodes = [];
+        $fields = ['id', 'parent', 'text', 'selectable', 'type'];
         /** @var Department $dept */
         foreach ($depts as $dept) {
             $dt = $dept->dType;
@@ -325,14 +326,14 @@ class Department extends Model {
                 'class' => $dept->enabled ? $dt->color : 'text-gray',
                 'title' => $title ?? '',
             ])->toHtml();
-            $nodes[] = [
-                'id'         => $id = $dept->id,
-                'parent'     => $firstId == $id ? '#' : $dept->parent_id,
-                'text'       => $text,
-                'selectable' => 1,
-                'type'       => $type = $dt->remark,
-                'corp_id'    => !in_array($type, ['root', 'company']) ? $this->corpId($id) : null,
-            ];
+            $nodes[] = array_merge(
+                array_combine($fields, [
+                    $id = $dept->id,
+                    $firstId == $id ? '#' : $dept->parent_id,
+                    $text, 1, $type = $dt->remark
+                ]),
+                ['corp_id' => !in_array($type, ['root', 'company']) ? $this->corpId($id) : null]
+            );
         }
         if ($contact) {
             # 获取可见部门下的学生、教职员工 & 不可见部门下的教职员工
@@ -341,13 +342,10 @@ class Department extends Model {
                 $deptId = $node['id'];
                 foreach ($this->find($deptId)->users as $user) {
                     if ($user->educator || $visibleIds->has($deptId) && $user->student) {
-                        $contacts[] = [
-                            'id'         => 'user-' . $deptId . '-' . $user->id,
-                            'parent'     => $deptId,
-                            'text'       => $user->realname,
-                            'selectable' => 1,
-                            'type'       => 'user',
-                        ];
+                        $contacts[] = array_combine($fields, [
+                            'user-' . $deptId . '-' . $user->id,
+                            $deptId, $user->realname, 1, 'user',
+                        ]);
                     }
                 }
             }
@@ -482,8 +480,7 @@ class Department extends Model {
                 $id = Request::input('id');
                 $pId = Request::input('parentId');
                 throw_if(
-                    !isset($id, $pId) ||
-                    !$this->find($id) || !$this->find($pId) ||
+                    !isset($id, $pId) || !$this->find($id) || !$this->find($pId) ||
                     collect([$id, $pId])->intersect($this->departmentIds(Auth::id()))->count() < 2,
                     __('messages.forbidden')
                 );
@@ -492,60 +489,42 @@ class Department extends Model {
                         return $this->find($id)->dType->name;
                     }, [$id, $pId]
                 );
-                $same = $this->corpId($id) == $this->corpId($pId);
-                switch ($type) {
-                    case '运营':
-                        $movable = $pType == '根';
-                        break;
-                    case '企业':
-                        $movable = $pType == '运营';
-                        break;
-                    case '学校':
-                        $movable = $pType != '企业' ? false : $same;
-                        break;
-                    case '年级':
-                        $movable = !in_array($pType, ['学校', '其他']) ? false : $same;
-                        break;
-                    case '班级':
-                        $movable = !in_array($pType, ['年级', '其他']) ? false : $same;
-                        break;
-                    case '其他':
-                        $movable = !in_array($pType, ['运营', '企业']) && $same;
-                        break;
-                    default:
-                        $movable = false;
-                        break;
-                }
+                $relations = [
+                    '运营' => '根',
+                    '企业' => '运营',
+                    '学校' => ['企业'],
+                    '年级' => ['学校', '其他'],
+                    '班级' => ['年级', '其他'],
+                    '其他' => ['运营', '企业']
+                ];
+                $parents = $relations[$type];
+                $movable = in_array($pType, is_array($parents) ? $parents : [$parents])
+                    && (is_array($parents) ? $this->corpId($id) == $this->corpId($pId) : true);
                 throw_if(!$movable, new Exception(__('messages.forbidden')));
                 $dept = $this->find($id);
                 $dept->parent_id = $pId === '#' ? null : intval($pId);
                 throw_if(!$dept->save(), new Exception(__('messages.fail')));
                 # 更新部门对应企业/学校/年级/班级、菜单等对象
-                switch ($dept->dType->name) {
-                    case '企业':
-                        $corp = $this->find($id)->corp;
-                        $company = $this->find($pId)->company;
-                        $corp->update(['company_id' => $company->id]);
-                        Menu::find($corp->menu_id)->update([
-                            'parent_id' => Menu::find($company->menu_id)->first()->id,
-                        ]);
-                        break;
-                    case '年级':
-                        $grade = $this->find($id)->grade;
-                        $parent = $this->find($pId);
-                        if ($parent->dType->name == '学校') {
-                            $grade->update(['school_id' => $parent->school->id]);
-                        }
-                        break;
-                    case '班级':
-                        $class = Squad::whereDepartmentId($id)->first();
-                        $parent = $this->find($pId);
-                        if ($parent->dType->name == '年级') {
-                            $class->update(['grade_id' => $parent->grade->id]);
-                        }
-                        break;
-                    default: # 学校
-                        break;
+                $dType = $dept->dType->name;
+                if ($dType == '企业') {
+                    $corp = $this->find($id)->corp;
+                    $company = $this->find($pId)->company;
+                    $corp->update(['company_id' => $company->id]);
+                    Menu::find($corp->menu_id)->update([
+                        'parent_id' => Menu::find($company->menu_id)->first()->id,
+                    ]);
+                } elseif ($dType == '年级') {
+                    $grade = $this->find($id)->grade;
+                    $parent = $this->find($pId);
+                    if ($parent->dType->name == '学校') {
+                        $grade->update(['school_id' => $parent->school->id]);
+                    }
+                } else { # '班级':
+                    $class = Squad::whereDepartmentId($id)->first();
+                    $parent = $this->find($pId);
+                    if ($parent->dType->name == '年级') {
+                        $class->update(['grade_id' => $parent->grade->id]);
+                    }
                 }
                 !$dept->needSync($dept) ?: SyncDepartment::dispatch([$id], 'update', Auth::id());
             });

@@ -110,29 +110,20 @@ class MessageRequest extends FormRequest {
     private function title(string $type): string {
         
         $content = $this->input($type);
-        switch ($type) {
-            case 'image':
-            case 'voice':
-            case 'file':
-                $paths = explode('/', $content['path']);
-                $str = $paths[sizeof($paths) - 1];
-                break;
-            case 'video':
-            case 'textcard':
-                $str = $content['title'];
-                break;
-            case 'text':
-                $str = $content['content'];
-                break;
-            case 'mpnews':
-                $str = $content['articles'][0]['title'];
-                break;
-            default:    # sms
-                $str = $content;
-                break;
+        if (in_array($type, ['image', 'voice', 'file'])) {
+            $paths = explode('/', $content['path']);
+            $title = $paths[sizeof($paths) - 1];
+        } elseif (in_array($type, ['video', 'textcard'])) {
+            $title = $content['title'];
+        } elseif ($type == 'text') {
+            $title = $content['content'];
+        } elseif ($type == 'mpnews') {
+            $title = $content['articles'][0]['title'];
+        } else {
+            $title = $content;    # sms
         }
         
-        return mb_substr($str, 0, 64);
+        return mb_substr($title, 0, 64);
         
     }
     
