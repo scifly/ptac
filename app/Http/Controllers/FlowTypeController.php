@@ -15,16 +15,16 @@ use Throwable;
  */
 class FlowTypeController extends Controller {
     
-    protected $flowType;
+    protected $ft;
     
     /**
      * FlowTypeController constructor.
-     * @param FlowType $flowType
+     * @param FlowType $ft
      */
-    function __construct(FlowType $flowType) {
+    function __construct(FlowType $ft) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->approve($this->flowType = $flowType);
+        $this->approve($this->ft = $ft);
         
     }
     
@@ -37,7 +37,7 @@ class FlowTypeController extends Controller {
     public function index() {
         
         return Request::get('draw')
-            ? response()->json($this->flowType->index())
+            ? response()->json($this->ft->index())
             : $this->output();
         
     }
@@ -45,14 +45,12 @@ class FlowTypeController extends Controller {
     /**
      * 创建审批流程
      *
-     * @return bool|JsonResponse
+     * @return bool|JsonResponse|string
      * @throws Throwable
      */
     public function create() {
         
-        return Request::method() == 'POST'
-            ? $this->flowType->step()
-            : $this->output();
+        return Request::ajax() ? $this->ft->step() : $this->output();
         
     }
     
@@ -65,7 +63,7 @@ class FlowTypeController extends Controller {
     public function store(FlowTypeRequest $request) {
         
         return $this->result(
-            $this->flowType->store(
+            $this->ft->store(
                 $request->all()
             )
         );
@@ -76,15 +74,15 @@ class FlowTypeController extends Controller {
      * 编辑审批流程
      *
      * @param $id
-     * @return bool|JsonResponse
+     * @return bool|JsonResponse|string
      * @throws Throwable
      */
     public function edit($id) {
         
-        return Request::method() == 'POST'
-            ? $this->flowType->step()
+        return Request::ajax()
+            ? $this->ft->step()
             : $this->output([
-                'flowType' => $this->flowType->find($id),
+                'flowType' => $this->ft->find($id),
             ]);
         
     }
@@ -100,7 +98,7 @@ class FlowTypeController extends Controller {
     public function update(FlowTypeRequest $request, $id) {
         
         return $this->result(
-            $this->flowType->modify(
+            $this->ft->modify(
                 $request->all(), $id
             )
         );
@@ -117,7 +115,7 @@ class FlowTypeController extends Controller {
     public function destroy($id = null) {
         
         return $this->result(
-            $this->flowType->remove($id)
+            $this->ft->remove($id)
         );
         
     }

@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (isset($flowType))
-                {!! Form::hidden('id', $flowType['id']) !!}
+            @if (isset($ft))
+                {!! Form::hidden('id', $ft['id']) !!}
             @endif
             <div class="form-group">
                 @include('shared.label', ['field' => 'name', 'label' => '名称'])
@@ -40,7 +40,7 @@
                 </div>
             </div>
             @include('shared.remark')
-            @include('shared.switch', ['value' => $flowType['enabled'] ?? null])
+            @include('shared.switch', ['value' => $ft['enabled'] ?? null])
         </div>
     </div>
     @include('shared.form_buttons')

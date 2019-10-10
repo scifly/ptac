@@ -617,7 +617,7 @@ var page = {
                     $select.select2(option);
                 } else {
                     $.each(options, function () {
-                        $select = $('#' + this['id']);
+                        $select = $(this['name']);
                         if (typeof this['option'] !== 'undefined') {
                             $.extend(option, this['option']);
                         }

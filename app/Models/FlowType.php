@@ -7,8 +7,9 @@ use Eloquent;
 use Form;
 use Html;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\{Request};
+use Illuminate\Support\Facades\{DB, Request};
 use Illuminate\Support\HtmlString;
 use Throwable;
 
@@ -157,38 +158,52 @@ class FlowType extends Model {
     
     /**
      * @param array $step
-     * @return string
+     * @return JsonResponse|string
      */
     function step($step = []) {
         
-        $name = Form::text('steps[][name]', $step['name'] ?? null, [
-            'class' => 'form-control', 'required' => 'true'
-        ]);
-        $ids = Form::select(
-            'steps[][ids]',
-            $step['items'] ?? [],
-            $step['ids'] ?? [],
-            [
-                'multiple' => 'multiple',
-                'class' => 'form-control',
-                'style' => 'width: 100%;',
-                'required' => 'true',
-            ]
-        );
-        $btn = Form::button(
-            Html::tag('i', '', ['class' => 'fa fa-minus text-blue']),
-            ['class' => 'btn btn-box-tool remove-step', 'title' => '移除']
-        );
-        $tds = array_map(
-            function (HtmlString $input, $attr) {
-                return Html::tag(
-                    'td', $input->toHtml(),
-                    empty($attr) ? [] : ['class' => $attr]
-                )->toHtml();
-            }, [$name, $ids, $btn], ['', '', 'text-center']
-        );
+        if ($term = Request::query('term')) {
+            $keyword = '%' . $term . '%';
+            $educators = DB::table('educators')
+                ->leftJoin('users', 'users.id', '=', 'educators.user_id')
+                ->where('users.realname', 'like', $keyword)
+                ->orWhere('users.mobile', 'like', $keyword)
+                ->pluck('users.realname', 'educators.id');
+            foreach ($educators as $id => $text) {
+                $data['results'][] = ['id' => $id, 'text' => $text];
+            }
+            $data = response()->json($data ?? []);
+        } else {
+            $name = Form::text('steps[][name]', $step['name'] ?? null, [
+                'class' => 'form-control', 'required' => 'true'
+            ]);
+            $ids = Form::select(
+                'steps[][ids]',
+                $step['items'] ?? [],
+                $step['ids'] ?? [],
+                [
+                    'multiple' => 'multiple',
+                    'class' => 'form-control',
+                    'style' => 'width: 100%;',
+                    'required' => 'true',
+                ]
+            );
+            $btn = Form::button(
+                Html::tag('i', '', ['class' => 'fa fa-minus text-blue']),
+                ['class' => 'btn btn-box-tool remove-step', 'title' => '移除']
+            );
+            $tds = array_map(
+                function (HtmlString $input, $attr) {
+                    return Html::tag(
+                        'td', $input->toHtml(),
+                        empty($attr) ? [] : ['class' => $attr]
+                    )->toHtml();
+                }, [$name, $ids, $btn], ['', '', 'text-center']
+            );
+            $data = Html::tag('tr', join($tds))->toHtml();
+        }
         
-        return Html::tag('tr', join($tds))->toHtml();
+        return $data;
         
     }
     
