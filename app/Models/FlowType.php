@@ -144,8 +144,8 @@ class FlowType extends Model {
                 $steps = '';
                 foreach (json_decode($flowType->steps, true) ?? [] as $step) {
                     $step['items'] = Educator::with('user')
-                        ->whereIn('id', $step['ids'])->get()
-                        ->pluck('user.realname', 'id')->toArray();
+                        ->whereIn('id', explode(',', $step['ids']))
+                        ->get()->pluck('user.realname', 'id')->toArray();
                     $steps .= $this->step($step);
                 }
             }
