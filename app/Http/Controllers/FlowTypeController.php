@@ -50,7 +50,9 @@ class FlowTypeController extends Controller {
      */
     public function create() {
         
-        return Request::ajax() ? $this->ft->step() : $this->output();
+        return Request::method() == 'POST'
+            ? $this->ft->step()
+            : $this->output();
         
     }
     
@@ -79,7 +81,7 @@ class FlowTypeController extends Controller {
      */
     public function edit($id) {
         
-        return Request::ajax()
+        return Request::method() == 'POST'
             ? $this->ft->step()
             : $this->output([
                 'flowType' => $this->ft->find($id),
