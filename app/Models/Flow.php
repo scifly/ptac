@@ -215,71 +215,68 @@ class Flow extends Model {
     function compose() {
         
         $action = explode('/', Request::path())[1];
-        switch ($action) {
-            case 'index':
-                return [
-                    'titles' => [
-                        '#', '审批类型', '当前步骤', '发起人',
-                        ['title' => '创建于', 'html' => $this->htmlDTRange('创建于')],
-                        ['title' => '更新于', 'html' => $this->htmlDTRange('更新于')],
-                        [
-                            'title' => '状态 . 操作',
-                            'html'  => $this->htmlSelect(
-                                [null => '全部', 0 => '禁用', 1 => '启用'],
-                                'filter_enabled'
-                            ),
-                        ],
+        if ($action == 'index') {
+            $data = [
+                'titles' => [
+                    '#', '审批类型', '当前步骤', '发起人',
+                    ['title' => '创建于', 'html' => $this->htmlDTRange('创建于')],
+                    ['title' => '更新于', 'html' => $this->htmlDTRange('更新于')],
+                    [
+                        'title' => '状态 . 操作',
+                        'html'  => $this->htmlSelect(
+                            [null => '全部', 0 => '禁用', 1 => '启用'],
+                            'filter_enabled'
+                        ),
                     ],
-                    'batch'  => true,
-                    'filter' => true,
-                ];
-            case 'create':
-                return [
-                    'flowTypes' => FlowType::whereSchoolId($this->schoolId())->pluck('name', 'id'),
-                ];
-            default: # edit:
-                $states = ['待审批', '同意', '拒绝'];
-                $flow = $this->find(Request::route('id'));
-                $logs = json_decode($flow->logs, true) ?? [];
-                $steps = [];
-                $flowType = $flow->flowType->name;
-                $timeIcon = Html::tag('i', '', ['class' => 'fa fa-clock-o'])->toHtml();
-                $completed = false;
-                $status = 1;
-                for ($i = 0; $i < sizeof($logs); $i++) {
-                    if (!isset($status)) break;
-                    if ($i == 0) {
-                        $time = $flow->created_at;
-                        $name = $flow->user_id == Auth::id() ? '我' : $flow->user->realname;
-                        $action = '发起了' . $flowType . '审批请求';
-                    } else {
-                        $time = $status == 0 ? '' : $logs[$i]['time'];
-                        $name = $status == 0 ? '' : User::find($logs[$i]['userId'])->realname;
-                        $action = $states[$status] . ($status == 0 ? '' : '该请求');
-                    }
-                    $steps[] = [
-                        'step'   => $i,
-                        'status' => $status,
-                        'time'   => empty($time) ? '' : $timeIcon . $this->humanDate($time),
-                        'header' => Html::link('#', $name)->toHtml() . $action,
-                        'detail' => $this->detail($logs[$i]),
-                    ];
-                    if ($status == 2) {
-                        $completed = true;
-                        break;
-                    }
-                    $status = $logs[$i]['status'];
+                ],
+                'batch'  => true,
+                'filter' => true,
+            ];
+        } elseif ($action == 'create') {
+            $data = [
+                'flowTypes' => FlowType::whereSchoolId($this->schoolId())->pluck('name', 'id'),
+            ];
+        } else { # edit:
+            $states = ['待审批', '同意', '拒绝'];
+            $flow = $this->find(Request::route('id'));
+            $logs = json_decode($flow->logs, true) ?? [];
+            $steps = [];
+            $flowType = $flow->flowType->name;
+            $timeIcon = Html::tag('i', '', ['class' => 'fa fa-clock-o'])->toHtml();
+            $completed = false;
+            $status = 1;
+            for ($i = 0; $i < sizeof($logs); $i++) {
+                if (!isset($status)) break;
+                if ($i == 0) {
+                    $time = $flow->created_at;
+                    $name = $flow->user_id == Auth::id() ? '我' : $flow->user->realname;
+                    $action = '发起了' . $flowType . '审批请求';
+                } else {
+                    $time = $status == 0 ? '' : $logs[$i]['time'];
+                    $name = $status == 0 ? '' : User::find($logs[$i]['userId'])->realname;
+                    $action = $states[$status] . ($status == 0 ? '' : '该请求');
                 }
-                if (sizeof($steps) == sizeof($logs) && $status == 1) {
+                $steps[] = [
+                    'step'   => $i,
+                    'status' => $status,
+                    'time'   => empty($time) ? '' : $timeIcon . $this->humanDate($time),
+                    'header' => Html::link('#', $name)->toHtml() . $action,
+                    'detail' => $this->detail($logs[$i]),
+                ];
+                if ($status == 2) {
                     $completed = true;
+                    break;
                 }
-                
-                return [
-                    'steps'     => $steps,
-                    'completed' => $completed,
-                ];
-            
+                $status = $logs[$i]['status'];
+            }
+            !(sizeof($steps) == sizeof($logs) && $status == 1) ?: $completed = true;
+            $data = [
+                'steps'     => $steps,
+                'completed' => $completed,
+            ];
         }
+        
+        return $data;
         
     }
     

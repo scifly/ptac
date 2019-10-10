@@ -132,6 +132,29 @@ class FlowType extends Model {
         
     }
     
+    /** @return array */
+    function compose() {
+        
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            $data = ['titles' => ['#', '名称', '备注', '创建于', '更新于', '状态 . 操作']];
+        } else {
+            if ($flowType = $this->find(Request::route('id'))) {
+                $steps = '';
+                foreach (json_decode($flowType->steps, true) ?? [] as $step) {
+                    $step['items'] = Educator::with('user')
+                        ->whereIn('id', $step['ids'])->get()
+                        ->pluck('user.realname', 'id')->toArray();
+                    $steps .= $this->step($step);
+                }
+            }
+            $data = ['steps' => $steps ?? $this->step()];
+        }
+        
+        return $data;
+        
+    }
+    
     /**
      * @param array $step
      * @return string
@@ -166,28 +189,6 @@ class FlowType extends Model {
         );
         
         return Html::tag('tr', join($tds))->toHtml();
-        
-    }
-    
-    /** @return array */
-    function compose() {
-        
-        $action = explode('/', Request::path())[1];
-        if ($action == 'index') {
-            return ['titles' => ['#', '名称', '备注', '创建于', '更新于', '状态 . 操作']];
-        } else {
-            if ($flowType = $this->find(Request::route('id'))) {
-                $steps = '';
-                foreach (json_decode($flowType->steps, true) ?? [] as $step) {
-                    $step['items'] = Educator::with('user')
-                        ->whereIn('id', $step['ids'])->get()
-                        ->pluck('user.realname', 'id')->toArray();
-                    $steps .= $this->step($step);
-                }
-            }
-            
-            return ['steps' => $steps ?? $this->step()];
-        }
         
     }
     
