@@ -7,7 +7,7 @@ var options = [
         name: 'select[name=icon_id]'
     },
     {
-        name: 'select[name=tab_ids]'
+        name: 'select[name="tab_ids[]"]'
     }
 ];
 page.create('formMenu', 'menus', options);
