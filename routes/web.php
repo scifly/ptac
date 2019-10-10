@@ -53,28 +53,28 @@ $default = [
     'destroy' => ['{id?}' => 'delete'],
 ];
 $routes = [
-    'action'          => [
+    'action'         => [
         'index'  => ['get'],
         'edit'   => ['{id}' => 'get'],
         'update' => ['{id}' => 'put'],
     ],
-    'app'             => $default,
-    'article'     => [
+    'app'            => $default,
+    'article'        => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
         'edit'    => ['{id}' => ['get', 'post']],
         'update'  => ['{id}' => 'put'],
         'destroy' => ['{id}' => 'delete'],
-    ],    'bed'             => $default,
-    'building'        => $default,
-    'camera'          => [
+    ], 'bed'         => $default,
+    'building'       => $default,
+    'camera'         => [
         'index' => ['get'],
         'store' => ['post'],
     ],
-    'card'            => $default,
-    'class'           => $default,
-    'column' => [
+    'card'           => $default,
+    'class'          => $default,
+    'column'         => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
@@ -82,19 +82,19 @@ $routes = [
         'update'  => ['{id}' => 'put'],
         'destroy' => ['{id}' => 'delete'],
     ],
-    'combo_type'      => $default,
-    'company'         => $default,
-    'consumption'     => [
+    'combo_type'     => $default,
+    'company'        => $default,
+    'consumption'    => [
         'index'  => ['get'],
         'show'   => ['get'],
         'stat'   => ['post'],
         'export' => ['get'],
     ],
-    'conference'      => $default,
-    'corp'            => array_merge(
+    'conference'     => $default,
+    'corp'           => array_merge(
         $default, ['recharge' => ['{id}' => ['get', 'put']]]
     ),
-    'custodian'       => [
+    'custodian'      => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
@@ -105,7 +105,7 @@ $routes = [
         'grant'   => ['get', 'post'],
         'face'    => ['get', 'post'],
     ],
-    'department'      => [
+    'department'     => [
         'index'   => ['get', 'post'],
         'create'  => ['{parentId}' => 'get'],
         'store'   => ['post'],
@@ -113,7 +113,7 @@ $routes = [
         'update'  => ['{id}' => 'put'],
         'destroy' => ['{id}' => ['delete', 'get']],
     ],
-    'educator'        => [
+    'educator'       => [
         'index'    => ['get'],
         'create'   => ['get', 'post'],
         'store'    => ['post'],
@@ -127,18 +127,18 @@ $routes = [
         'grant'    => ['get', 'post'],
         'face'     => ['get', 'post'],
     ],
-    'evaluate'        => $default,
-    'event'           => $default,
-    'exam'            => $default,
-    'exam_type'       => $default,
-    'face'            => [
+    'evaluate'       => $default,
+    'event'          => $default,
+    'exam'           => $default,
+    'exam_type'      => $default,
+    'face'           => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
         'destroy' => ['{id?}' => 'delete'],
     ],
-    'flow'            => $default,
-    'flow_type'       => [
+    'flow'           => $default,
+    'flow_type'      => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
@@ -146,8 +146,8 @@ $routes = [
         'update'  => ['{id?}' => 'put'],
         'destroy' => ['{id?}' => 'delete'],
     ],
-    'grade'           => $default,
-    'group'           => [
+    'grade'          => $default,
+    'group'          => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'edit'    => ['{id}' => ['get', 'post']],
@@ -155,13 +155,13 @@ $routes = [
         'update'  => ['{id}' => 'put'],
         'store'   => ['post'],
     ],
-    'icon'            => $default,
-    'indicator'       => $default,
-    'init'            => [
+    'icon'           => $default,
+    'indicator'      => $default,
+    'init'           => [
         'index' => ['get', 'post'],
     ],
-    'major'           => $default,
-    'menu'            => [
+    'major'          => $default,
+    'menu'           => [
         'index'   => ['get', 'post'],
         'create'  => ['{parentId}' => 'get'],
         'store'   => ['post'],
@@ -170,7 +170,7 @@ $routes = [
         'destroy' => ['{id}' => ['delete', 'get']],
         'sort'    => ['{id}' => ['get', 'post']],
     ],
-    'message'         => [
+    'message'        => [
         'index'   => ['get', 'post'],
         'store'   => ['post'],
         'edit'    => ['{id}' => 'get'],
@@ -179,7 +179,7 @@ $routes = [
         'send'    => ['post'],
         'destroy' => ['{id?}' => 'delete'],
     ],
-    'module'          => [
+    'module'         => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
@@ -187,7 +187,7 @@ $routes = [
         'update'  => ['{id?}' => 'get'],
         'destroy' => ['{id?}' => 'delete'],
     ],
-    'operator'        => [
+    'operator'       => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
@@ -195,32 +195,32 @@ $routes = [
         'update'  => ['{id?}' => 'get'],
         'destroy' => ['{id?}' => 'delete'],
     ],
-    'participant'     => [
+    'participant'    => [
         'index' => ['get'],
         'store' => ['post'],
         'show'  => ['{id}' => 'get'],
     ],
-    'partner'         => array_merge(
-        $default, ['recharge' => ['{id}' => ['get', 'put']]],
-        ),
-    'passage_log'     => [
+    'partner'        => array_merge(
+        $default, ['recharge' => ['{id}' => ['get', 'put']]]
+    ),
+    'passage_log'    => [
         'index'  => ['get'],
         'store'  => ['post'],
         'export' => ['post'],
     ],
-    'passage_rule'    => array_merge(
+    'passage_rule'   => array_merge(
         $default,
         ['issue' => ['post']]
     ),
-    'poll'            => $default,
-    'poll_topic'      => $default,
-    'prize'           => $default,
-    'room'            => $default,
-    'room_type'       => $default,
-    'school'          => array_merge(
+    'poll'           => $default,
+    'poll_topic'     => $default,
+    'prize'          => $default,
+    'room'           => $default,
+    'room_type'      => $default,
+    'school'         => array_merge(
         $default, ['recharge' => ['{id}' => ['get', 'put']]]
     ),
-    'score'           => [
+    'score'          => [
         'index'   => ['get'],
         'create'  => ['{examId?}' => 'get'],
         'edit'    => ['{id}/{examId?}' => 'get'],
@@ -233,16 +233,16 @@ $routes = [
         'export'  => ['{examId?}' => ['get', 'post']],
         'send'    => ['post'],
     ],
-    'score_range'     => array_merge(
+    'score_range'    => array_merge(
         $default,
         ['stat' => ['get', 'post']]
     ),
-    'score_total'     => [
+    'score_total'    => [
         'index' => ['get'],
         'stat'  => ['{examId}' => 'get'],
     ],
-    'semester'        => $default,
-    'student'         => [
+    'semester'       => $default,
+    'student'        => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
@@ -255,14 +255,14 @@ $routes = [
         'grant'   => ['get', 'post'],
         'face'    => ['get', 'post'],
     ],
-    'subject'         => $default,
-    'subject_module'  => $default,
-    'tab'             => [
+    'subject'        => $default,
+    'subject_module' => $default,
+    'tab'            => [
         'index'  => ['get'],
         'edit'   => ['{id}' => 'get'],
         'update' => ['{id}' => 'put'],
     ],
-    'tag'             => [
+    'tag'            => [
         'index'   => ['get'],
         'create'  => ['get', 'post'],
         'store'   => ['post'],
@@ -270,30 +270,30 @@ $routes = [
         'update'  => ['{id?}' => 'get'],
         'destroy' => ['{id?}' => 'delete'],
     ],
-    'template'        => [
+    'template'       => [
         'index'   => ['get'],
         'config'  => ['get'],
         'store'   => ['post'],
         'fetch'   => ['post'],
         'destroy' => ['{id?}' => 'delete'],
     ],
-    'turnstile'       => [
+    'turnstile'      => [
         'index' => ['get'],
         'store' => ['post'],
     ],
-    'user'            => [
+    'user'           => [
         'edit'   => ['get'],
         'update' => ['put'],
         'reset'  => ['get', 'post'],
         'info'   => ['get'],
     ],
-    'wap'        => [
+    'wap'            => [
         'index'  => ['get'],
         'edit'   => ['{id}' => ['get', 'post']],
         'update' => ['{id}' => 'put'],
     ],
     # 演示(微信端)
-    'demo'            => [
+    'demo'           => [
         'index'     => ['get'],
         'safe'      => ['get'],
         'wisdom'    => ['get'],
