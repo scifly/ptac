@@ -22,7 +22,7 @@
                 ft.remove();
                 options['name'] = 'select[name="steps[][ids]"]';
                 options['option']['ajax']['url'] = url;
-                page[action]('formFlowType', 'flow_types', options);
+                page[action]('formFlowType', 'flow_types', [options]);
             },
             add: function (action) {
                 $(document).on('click', '.add-step', function () {
@@ -38,7 +38,7 @@
                             $('tbody').append(result);
                             options['name'] = 'tbody tr:last select';
                             options['option']['ajax']['url'] = uri;
-                            page.initSelect2(options);
+                            page.initSelect2([options]);
                             // $('tbody tr:last select').select2();
                             $('.overlay').hide();
                         },

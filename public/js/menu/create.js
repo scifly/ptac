@@ -4,10 +4,10 @@ var options = [
             templateResult: page.formatState,
             templateSelection: page.formatState
         },
-        id: 'icon_id'
+        name: 'select[name=icon_id]'
     },
     {
-        id: 'tab_ids'
+        name: 'select[name=tab_ids]'
     }
 ];
 page.create('formMenu', 'menus', options);
