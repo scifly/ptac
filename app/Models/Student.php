@@ -101,6 +101,9 @@ class Student extends Model {
     /** @return BelongsToMany */
     function modules() { return $this->belongsToMany('App\Models\Module', 'module_student'); }
     
+    /** @return HasMany */
+    function evals() { return $this->hasMany('App\Models\Evaluate', 'student_id'); }
+    
     /**
      * @param $id
      * @return Grade
@@ -112,9 +115,6 @@ class Student extends Model {
      * @return School
      */
     function school($id) { return $this->find($id)->squad->grade->school; }
-    
-    /** @return HasMany */
-    function evals() { return $this->hasMany('App\Models\Evaluate'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
     /**

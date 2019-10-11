@@ -141,7 +141,7 @@ class School extends Model {
     function corp() { return $this->belongsTo('App\Models\Corp'); }
     
     /** @return BelongsTo */
-    function corpApp() { return $this->belongsTo('App\Models\App'); }
+    function corpApp() { return $this->belongsTo('App\Models\App', 'app_id'); }
     
     /** @return HasMany */
     function groups() { return $this->hasMany('App\Models\Group'); }
@@ -208,10 +208,10 @@ class School extends Model {
     }
     
     /** @return HasMany */
-    function passageLogs() { return $this->hasMany('App\Models\PassageLog'); }
+    function passageLogs() { return $this->hasMany('App\Models\PassageLog', 'school_id'); }
     
     /** @return HasMany */
-    function passageRules() { return $this->hasMany('App\Models\PassageRule'); }
+    function passageRules() { return $this->hasMany('App\Models\PassageRule', 'school_id'); }
     
     /** @return HasManyThrough */
     function subjectModules() {
@@ -222,6 +222,9 @@ class School extends Model {
         );
         
     }
+    
+    /** @return HasMany */
+    function srs() { return $this->hasMany('App\Models\ScoreRange', 'school_id'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
     /**

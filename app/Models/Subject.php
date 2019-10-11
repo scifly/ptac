@@ -76,7 +76,7 @@ class Subject extends Model {
     function school() { return $this->belongsTo('App\Models\School'); }
     
     /** @return HasMany */
-    function modules() { return $this->hasMany('App\Models\SubjectModule'); }
+    function modules() { return $this->hasMany('App\Models\SubjectModule', 'subject_id'); }
     
     /** @return BelongsToMany */
     function majors() { return $this->belongsToMany('App\Models\Major', 'major_subject'); }

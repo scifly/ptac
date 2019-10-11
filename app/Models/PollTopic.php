@@ -53,7 +53,7 @@ class PollTopic extends Model {
     function poll() { return $this->belongsTo('App\Models\Poll'); }
     
     /** @return HasMany */
-    function replies() { return $this->hasMany('App\Models\PollReply'); }
+    function replies() { return $this->hasMany('App\Models\PollReply', 'poll_topic_id'); }
     
     /**
      * 投票问卷问题列表

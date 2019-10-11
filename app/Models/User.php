@@ -203,10 +203,10 @@ class User extends Authenticatable {
     function polls() { return $this->hasMany('App\Models\Poll'); }
     
     /** @return HasMany */
-    function pReplies() { return $this->hasMany('App\Models\PollReply'); }
+    function pReplies() { return $this->hasMany('App\Models\PollReply', 'user_id'); }
     
     /** @return HasMany */
-    function mReplies() { return $this->hasMany('App\Models\MessageReply'); }
+    function mReplies() { return $this->hasMany('App\Models\MessageReply', 'user_id'); }
     
     /** crud -------------------------------------------------------------------------------------------------------- */
     /**
