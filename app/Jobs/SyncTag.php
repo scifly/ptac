@@ -11,7 +11,6 @@ use Illuminate\{Bus\Queueable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
     Support\Facades\DB};
-use Pusher\PusherException;
 use Throwable;
 
 /**
@@ -26,7 +25,7 @@ class SyncTag implements ShouldQueue {
         SerializesModels, ModelTrait, JobTrait;
     
     protected $data, $userId, $action;
-    protected $response, $broadcaster, $app;
+    protected $response, $app;
     
     /**
      * Create a new job instance.
@@ -34,7 +33,6 @@ class SyncTag implements ShouldQueue {
      * @param array $data
      * @param $userId
      * @param $action
-     * @throws PusherException
      */
     function __construct(array $data, $userId, $action) {
         
@@ -45,7 +43,6 @@ class SyncTag implements ShouldQueue {
             $userId, Constant::SYNC_ACTIONS[$action],
             Constant::OK, __('messages.synced')
         ]);
-        $this->broadcaster = new Broadcaster();
         
     }
     
@@ -61,9 +58,8 @@ class SyncTag implements ShouldQueue {
             ($this->app = $school->app) ? $this->sync($this->app, $school) : $this->corpSync();
         } catch (Exception $e) {
             $this->eHandler($this, $e);
-            throw $e;
         }
-        $this->broadcaster->broadcast($this->response);
+        (new Broadcaster)->broadcast($this->response);
         
         return true;
     
@@ -86,7 +82,7 @@ class SyncTag implements ShouldQueue {
                     foreach ($this->data as $id) {
                         $tag = Tag::find($id);
                         $data['tag']['name'] = $tag->name;
-                        $this->action != 'update' ?: $data['tag']['id'] = $tag->tagid;
+                        $this->action != 'update' ?: $data['tag']['id'] = $tag->{'tagid'};
                         $this->throw_if($result = $this->invoke($this->action, [$token], $data));
                         $this->action != 'create' ?: $tag->update(['tagid' => $result['tag']['id']]);
                         # 同步标签用户绑定关系
@@ -94,23 +90,23 @@ class SyncTag implements ShouldQueue {
                             # 获取标签用户绑定关系
                             $this->throw_if(
                                 $result = $this->invoke('tag/get', [$token], [
-                                    'tagid' => $tag->tagid, 'next_openid' => ''
+                                    'tagid' => $tag->{'tagid'}, 'next_openid' => ''
                                 ])
                             );
                             # 删除标签用户绑定关系
                             if (!empty($openidList = $result['data']['openid'])) {
                                 $this->throw_if(
                                     $result = $this->invoke('members/batchuntagging', [$token], [
-                                        'tagid' => $tag->tagid, 'openid_list' => $result['data']['openid']
+                                        'tagid' => $tag->{'tagid'}, 'openid_list' => $result['data']['openid']
                                     ])
                                 );
                             }
                         }
                         # 添加标签绑定的用户
                         $userIds = $tag->users->pluck('id')->toArray();
-                        foreach ($tag->departments as $department) {
+                        foreach ($tag->depts as $dept) {
                             $userIds = array_merge(
-                                $userIds, $department->users->pluck('id')->toArray()
+                                $userIds, $dept->users->pluck('id')->toArray()
                             );
                         }
                         $openids = Openid::whereIn('user_id', array_unique($userIds))
@@ -121,7 +117,7 @@ class SyncTag implements ShouldQueue {
                             $this->invoke(
                                 'members/batchtagging', [$token], [
                                 'openid_list' => $openids,
-                                'tagid' => $tag->tagid
+                                'tagid' => $tag->{'tagid'}
                             ])
                         );
                         # 设置同步标记
@@ -131,7 +127,7 @@ class SyncTag implements ShouldQueue {
                     array_map(
                         function ($tagId) use ($token) {
                             $this->throw_if(
-                                $this->invoke($this->action, [$token, Tag::find($tagId)->tagid])
+                                $this->invoke($this->action, [$token, Tag::find($tagId)->{'tagid'}])
                             );
                         }, $this->data
                     );
@@ -166,7 +162,7 @@ class SyncTag implements ShouldQueue {
                     $data = [
                         'tagid'     => $this->data[$tag->id],
                         'userlist'  => $tag->users->pluck('userid')->toArray(),
-                        'partylist' => $tag->departments->pluck('id')->toArray(),
+                        'partylist' => $tag->depts->pluck('id')->toArray(),
                     ];
                     if ($this->action == 'update') {
                         # 获取标签绑定的部门与用户

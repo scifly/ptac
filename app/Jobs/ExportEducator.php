@@ -80,7 +80,7 @@ class ExportEducator implements ShouldQueue {
                     $user->gender ? '男' : '女',
                     strval($user->username),
                     $user->position,
-                    $user->departments->first()->name,
+                    $user->depts->first()->name,
                     $educator->school->name,
                     $user->mobile ?? 'n/a',
                     $grades,

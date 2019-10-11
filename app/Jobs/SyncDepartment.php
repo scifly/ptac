@@ -131,7 +131,7 @@ class SyncDepartment implements ShouldQueue {
                         ->pluck('user_id')->unique()->toArray();
                     /** @var User $user */
                     foreach (User::whereIn('id', $uUIds)->get() as $user) {
-                        $departments = $user->departments->pluck('id')
+                        $departments = $user->depts->pluck('id')
                             ->intersect($corpDIds)->diff($deptIds);
                         if ($departments->has($this->corp->department_id)) {
                             $departments = collect([$this->corp->departmentid])->merge(
