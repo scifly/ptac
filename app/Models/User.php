@@ -178,10 +178,17 @@ class User extends Authenticatable {
     function orders() { return $this->hasMany('App\Models\Order'); }
     
     /** @return BelongsToMany */
-    function depts() { return $this->belongsToMany('App\Models\Department', 'department_user'); }
+    function depts() {
+        
+        return $this->belongsToMany(
+            'App\Models\Department', 'department_user',
+            'user_id', 'department_id'
+        );
+    
+    }
     
     /** @return HasMany */
-    function _tags() { return $this->hasMany('App\Models\Tag'); }
+    function _tags() { return $this->hasMany('App\Models\Tag', 'tag_id'); }
     
     /** @return BelongsToMany */
     function tags() { return $this->belongsToMany('App\Models\Tag', 'tag_user'); }

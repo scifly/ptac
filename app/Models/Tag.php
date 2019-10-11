@@ -61,7 +61,14 @@ class Tag extends Model {
     function users() { return $this->belongsToMany('App\Models\User', 'tag_user'); }
     
     /** @return BelongsToMany */
-    function depts() { return $this->belongsToMany('App\Models\Department', 'department_tag'); }
+    function depts() {
+        
+        return $this->belongsToMany(
+            'App\Models\Department', 'department_tag',
+            'tag_id', 'department_id'
+        );
+    
+    }
     
     /**
      * 标签列表

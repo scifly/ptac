@@ -11,6 +11,7 @@ if (!function_exists('routes')) {
      * @param null $dir
      */
     function routes(array $routes, $prefix = null, $dir = null) {
+        
         foreach ($routes as $model => $methods) {
             $table = Inflector::pluralize($model);
             $model = $model == 'class' ? 'squad' : $model;
@@ -28,6 +29,7 @@ if (!function_exists('routes')) {
                 );
             }
         }
+        
     }
 }
 /** 后台路由 ---------------------------------------------------------------------------------------------------------- */
@@ -330,7 +332,7 @@ $routes = [
         'index' => ['get'],
     ],
 ];
-foreach (Corp::pluck('acronym')->toArray() as $acronym) {
+foreach (Corp::pluck('acronym') as $acronym) {
     /** 应用入口 */
     Route::group(['prefix' => $acronym . '/wechat'], function () {
         $c = 'Wechat\WechatController';

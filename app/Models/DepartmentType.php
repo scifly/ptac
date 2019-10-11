@@ -40,7 +40,7 @@ class DepartmentType extends Model {
     protected $fillable = ['name', 'color', 'icon', 'remark', 'enabled'];
     
     /** @return HasMany */
-    function depts() { return $this->hasMany('App\Models\Department'); }
+    function depts() { return $this->hasMany('App\Models\Department', 'department_type_id'); }
     
     /**
      * 删除部门类型
