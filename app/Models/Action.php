@@ -217,7 +217,6 @@ class Action extends Model {
                     $this->controllerNames($controllers),
                     Constant::EXCLUDED_CONTROLLERS
                 );
-                $selfDefinedMethods = [];
                 // remove actions of non-existing controllers
                 $ctlrs = $this->groupBy('tab_id')->get(['tab_id'])->toArray();
                 $existingCtlrs = Tab::whereIn('id', $ctlrs)->pluck('id')->toArray();
@@ -236,61 +235,38 @@ class Action extends Model {
                     $paths = explode('\\', $controller);
                     if (!in_array($paths[sizeof($paths) - 1], Constant::EXCLUDED_CONTROLLERS)) {
                         $obj = new ReflectionClass(ucfirst($controller));
-                        $className = $obj->getName();
+                        $class = $obj->getName();
                         $methods = $obj->getMethods();
                         // remove non-existing methods of current controller
-                        $this->delNonExistingMethods($methods, $className);
+                        $this->delNonExistingMethods($methods, $class);
                         foreach ($methods as $method) {
                             $action = $method->getName();
                             if (
-                                $method->class === $className &&
+                                $method->class === $class &&
                                 !($method->isConstructor()) &&
                                 $method->isUserDefined() &&
                                 $method->isPublic()
                             ) {
-                                $ctlr = $this->controllerName($className);
-                                $selfDefinedMethods[$className][$action] = [
+                                $ctlr = $this->controllerName($class);
+                                $tabId = Tab::whereName($ctlr)->first()->id;
+                                $data = [
                                     'name'            => $this->methodComment($obj, $method),
                                     'method'          => $action,
                                     'remark'          => '',
-                                    'tab_id'          => Tab::whereName($ctlr)->first()->id,
+                                    'tab_id'          => $tabId,
                                     'view'            => $this->viewPath($ctlr, $action),
                                     'route'           => $this->actionRoute($ctlr, $action),
                                     'action_type_ids' => $this->actionTypeIds($ctlr, $action),
                                     'js'              => $this->jsPath($ctlr, $action),
+                                    'enabled'         => Constant::ENABLED
                                 ];
+                                $where = ['tab_id' => $tabId, 'method' => $action];
+                                $record = $this->where($where)->first();
+                                $record ? $record->update($data) : $this->create($data);
                             }
                         }
                     }
                     
-                }
-                foreach ($selfDefinedMethods as $actions) {
-                    foreach ($actions as $action) {
-                        $a = $this->where([
-                            ['tab_id', $action['tab_id']],
-                            ['method', $action['method']],
-                        ])->first();
-                        if ($a) {
-                            $a->name = trim($action['name']);
-                            $a->route = $action['route'];
-                            $a->view = $action['view'];
-                            $a->js = $action['js'];
-                            $a->action_type_ids = $action['action_type_ids'];
-                            $a->save();
-                        } else {
-                            $this->create([
-                                'name'            => trim($action['name']),
-                                'method'          => $action['method'],
-                                'remark'          => $action['remark'],
-                                'tab_id'          => $action['tab_id'],
-                                'view'            => $action['view'],
-                                'route'           => $action['route'],
-                                'action_type_ids' => $action['action_type_ids'],
-                                'js'              => $action['js'],
-                                'enabled'         => Constant::ENABLED,
-                            ]);
-                        }
-                    }
                 }
             });
         } catch (Exception $e) {
@@ -582,7 +558,7 @@ class Action extends Model {
             }
         }
         
-        return $name;
+        return trim($name);
         
     }
     
