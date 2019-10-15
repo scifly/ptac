@@ -218,11 +218,11 @@ class Camera extends Model {
                 $status == Constant::INTERNAL_SERVER_ERROR,
                 new Exception($body['msg'])
             );
-            
-            return $body['data'];
         } catch (Exception $e) {
             throw $e;
         }
+    
+        return $body['data'];
         
     }
     

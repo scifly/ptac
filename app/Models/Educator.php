@@ -233,49 +233,7 @@ class Educator extends Model {
                 $this->whereIn('id', $ids)->pluck('user_id')->toArray()
             )
         );
-        // try {
-        //     DB::transaction(function () use ($data, $id) {
-        //         if (!$id) {
-        //             $this->batch($this);
-        //         } else {
-        //             throw_if(
-        //                 !$educator = $this->find($id),
-        //                 new Exception(__('messages.not_found'))
-        //             );
-        //             $educator->update($data);
-        //             # 用户
-        //             ($user = $educator->user)->update($data['user']);
-        //             # 一卡通
-        //             (new Card)->store($user);
-        //             # 绑定关系
-        //             $educator->bindings($educator, $data);
-        //             # 如果同时也是监护人
-        //             $custodian = $user->custodian;
-        //             if (!$data['singular'] && !$custodian) {
-        //                 Custodian::create(
-        //                     array_combine(
-        //                         ['user_id', 'enabled'],
-        //                         [$educator->user_id, $educator->enabled]
-        //                     )
-        //                 );
-        //             } elseif ($data['singular'] && $custodian) {
-        //                 $custodian->remove($custodian->id);
-        //             }
-        //         }
-        //         # 同步企业微信
-        //         $ids = $id ? [$id] : array_values(Request::input('ids'));
-        //         (new User)->sync(
-        //             array_map(
-        //                 function ($userId) { return [$userId, '', 'update']; },
-        //                 $this->whereIn('id', $ids)->pluck('user_id')->toArray()
-        //             )
-        //         );
-        //     });
-        // } catch (Exception $e) {
-        //     throw $e;
-        // }
-        //
-        // return true;
+
     }
     
     /**

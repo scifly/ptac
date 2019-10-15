@@ -246,19 +246,18 @@ class Corp extends Model {
      */
     function compose() {
         
-        switch (explode('/', Request::path())[1]) {
-            case 'index':
-                return [
-                    'titles' => [
-                        '#', '名称', '缩写', '所属运营', '企业号ID',
-                        '创建于', '更新于', '状态 . 操作',
-                    ],
-                ];
-            case 'create':
-            case 'edit':
-                return ['companies' => Company::pluck('name', 'id')];
-            default:
-                return (new Message)->compose('recharge');
+        $action = explode('/', Request::path())[1];
+        if ($action == 'index') {
+            return [
+                'titles' => [
+                    '#', '名称', '缩写', '所属运营', '企业号ID',
+                    '创建于', '更新于', '状态 . 操作',
+                ],
+            ];
+        } elseif (in_array($action, ['create', 'edit'])) {
+            return ['companies' => Company::pluck('name', 'id')];
+        } else {
+            return (new Message)->compose('recharge');
         }
         
     }

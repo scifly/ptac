@@ -210,25 +210,7 @@ class Department extends Model {
                 }
             }
         );
-        // try {
-        //     DB::transaction(function () use ($data, $id) {
-        //         throw_if(
-        //             !$dept = $this->find($id),
-        //             new Exception(__('messages.not_found'))
-        //         );
-        //         $dept->update($data);
-        //         if (isset($data['tag_ids'])) {
-        //             (new DepartmentTag)->storeByDeptId($dept->id, $data['tag_ids']);
-        //         }
-        //         if ($this->needSync($dept)) {
-        //             SyncDepartment::dispatch([$id], 'update', Auth::id());
-        //         }
-        //     });
-        // } catch (Exception $e) {
-        //     throw $e;
-        // }
-        //
-        // return true;
+
     }
     
     /**

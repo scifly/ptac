@@ -210,32 +210,7 @@ class Menu extends Model {
                 }
             }
         );
-        // try {
-        //     DB::transaction(function () use ($data, $id) {
-        //         $menu = $this->find($id);
-        //         # 更新指定Menu记录
-        //         $menu->update($data);
-        //         # 更新与指定Menu记录绑定的卡片记录
-        //         $menuTab = new MenuTab();
-        //         $menuTab::whereMenuId($id)->delete();
-        //         $tabIds = $data['tab_ids'] ?? [];
-        //         $uri = $data['uri'] ?? '';
-        //         if (empty($uri)) {
-        //             if (!empty($tabIds)) {
-        //                 $menu->children->count() ?: $menuTab->store($id, $tabIds);
-        //             } else {
-        //                 $enabledSubMenus = $menu->children->filter(
-        //                     function (Menu $menu) { return $menu->enabled; }
-        //                 );
-        //                 $menu->update(['enabled' => $enabledSubMenus->count() ? 1 : 0]);
-        //             }
-        //         }
-        //     });
-        // } catch (Exception $e) {
-        //     throw $e;
-        // }
-        //
-        // return true;
+
     }
     
     /**

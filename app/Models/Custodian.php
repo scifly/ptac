@@ -211,49 +211,6 @@ class Custodian extends Model {
             )
         );
         
-        // try {
-        //     DB::transaction(function () use ($data, $id) {
-        //         if (!$id) {
-        //             $this->batch($this);
-        //         } else {
-        //             throw_if(
-        //                 !$custodian = $this->find($id),
-        //                 new Exception(__('messages.not_found'))
-        //             );
-        //             $custodian->update($data);
-        //             $user = $custodian->user;
-        //             $user->update($data['user']);
-        //             (new Card)->store($user);
-        //             # 保存绑定关系
-        //             $custodian->bindings($custodian, $data);
-        //             # 如果同时也是教职员工
-        //             $educator = $user->educator;
-        //             if (!$educator && !$data['singular']) {
-        //                 Educator::create(
-        //                     array_combine(
-        //                         (new Educator)->getFillable(),
-        //                         [$custodian->user_id, $custodian->schoolId(), 0, 1]
-        //                     )
-        //                 );
-        //             } elseif ($educator && $data['singular']) {
-        //                 $educator->remove($educator->id);
-        //             }
-        //         }
-        //         # 同步企业微信
-        //         $ids = $id ? [$id] : array_values(Request::input('ids'));
-        //         (new User)->sync(
-        //             array_map(
-        //                 function ($userId) { return [$userId, '监护人', 'update']; },
-        //                 $this->whereIn('id', $ids)->pluck('user_id')->toArray()
-        //             )
-        //         );
-        //     });
-        // } catch (Exception $e) {
-        //     throw $e;
-        // }
-        //
-        // return true;
-        
     }
     
     /**
