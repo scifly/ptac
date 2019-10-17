@@ -252,13 +252,9 @@ class Tab extends Model {
                 $controllers = $this->controllerPaths($action->siteRoot() . Constant::CONTROLLER_DIR);
                 $action->controllerNamespaces($controllers);
                 // remove nonexisting controllers
-                $ctlrs = array_merge(
-                    array_diff(
-                        $this->pluck('name')->toArray(),
-                        $action->controllerNames($controllers)
-                    ),
-                    Constant::EXCLUDED_CONTROLLERS
-                );
+                $ctlrs = $this->pluck('name')->diff(
+                    $action->controllerNames($controllers)
+                )->merge(Constant::EXCLUDED_CONTROLLERS);
                 foreach ($ctlrs as $ctlr) {
                     $tab = $this->whereName($ctlr)->first();
                     throw_if(
@@ -282,13 +278,10 @@ class Tab extends Model {
                             ? $obj->getProperty('category')->getValue() : 0,
                         'enabled'   => Constant::ENABLED,
                     ];
-                    $tab = $this->whereName($record['name'])->first();
-                    if ($tab) {
+                    if ($tab = $this->whereName($record['name'])->first()) {
                         $tab->comment = $record['comment'];
                         $tab->category = $record['category'];
-                        if (empty($tab->action_id)) {
-                            $tab->action_id = $record['action_id'];
-                        }
+                        !empty($tab->action_id) ?: $tab->action_id = $record['action_id'];
                         $tab->save();
                     } else {
                         $this->create($record);
@@ -365,22 +358,20 @@ class Tab extends Model {
         
         $user = Auth::user();
         $role = $user->role();
-        list($corpGid, $schoolGid) = array_map(
+        [$corpGid, $schoolGid] = array_map(
             function ($role) {
                 return Group::whereName($role)->first()->id;
             }, ['企业', '学校']
         );
+        $builder = $this->whereEnabled(1);
         switch ($role) {
             case '运营':
-                $builder = $this->whereEnabled(1);
                 break;
             case '企业':
-                $builder = $this->whereEnabled(1)
-                    ->whereIn('group_id', [0, $corpGid, $schoolGid]);
+                $builder = $builder->whereIn('group_id', [0, $corpGid, $schoolGid]);
                 break;
             case '学校':
-                $builder = $this->whereEnabled(1)
-                    ->whereIn('group_id', [0, $schoolGid]);
+                $builder = $builder->whereIn('group_id', [0, $schoolGid]);
                 break;
             default:
                 $builder = GroupTab::whereGroupId($user->group_id);

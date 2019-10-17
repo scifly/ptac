@@ -8,7 +8,7 @@ use Doctrine\Common\Inflector\Inflector;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
-use Illuminate\Support\{Carbon, Facades\DB, Facades\Request, Facades\Route, Str};
+use Illuminate\Support\{Carbon, Collection as SCollection, Facades\DB, Facades\Request, Facades\Route, Str};
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -64,8 +64,6 @@ class Action extends Model {
         'view', 'method', 'js', 'route', 'enabled',
     ];
     protected $routes;
-    protected $acronyms;
-    protected $actionTypes;
     
     /** Properties -------------------------------------------------------------------------------------------------- */
     /** @return BelongsTo */
@@ -207,28 +205,23 @@ class Action extends Model {
         try {
             DB::transaction(function () {
                 $this->routes = Route::getRoutes()->getRoutes();
-                $this->acronyms = Corp::pluck('acronym')->toArray();
-                $this->actionTypes = ActionType::pluck('id', 'name')->toArray();
                 $controllers = self::scanDirs(self::siteRoot() . Constant::CONTROLLER_DIR);
                 # 获取控制器的名字空间
                 $this->controllerNamespaces($controllers);
                 # 移除excluded控制器
-                $controllerNames = array_diff(
-                    $this->controllerNames($controllers),
+                $names = $this->controllerNames($controllers)->diff(
                     Constant::EXCLUDED_CONTROLLERS
                 );
                 // remove actions of non-existing controllers
-                $ctlrs = $this->groupBy('tab_id')->get(['tab_id'])->toArray();
-                $existingCtlrs = Tab::whereIn('id', $ctlrs)->pluck('id')->toArray();
-                $ctlrDiffs = array_diff(
-                    $existingCtlrs,
-                    Tab::whereIn('name', $controllerNames)->pluck('id')->toArray()
+                $diffs = $this->pluck('tab_id')->unique()->diff(
+                    Tab::whereIn('name', $names)->pluck('id')
                 );
-                foreach ($ctlrDiffs as $ctlr) {
-                    $actions = self::whereTabId($ctlr)->get();
-                    foreach ($actions as $a) {
-                        $removed = $this->remove($a->id);
-                        throw_if(!$removed, new Exception(__('messages.del_fail')));
+                foreach ($diffs as $ctlr) {
+                    foreach ($this->whereTabId($ctlr)->get() as $a) {
+                        throw_if(
+                            !$this->remove($a->id),
+                            new Exception(__('messages.del_fail'))
+                        );
                     }
                 }
                 foreach ($controllers as $controller) {
@@ -236,24 +229,20 @@ class Action extends Model {
                     if (!in_array($paths[sizeof($paths) - 1], Constant::EXCLUDED_CONTROLLERS)) {
                         $obj = new ReflectionClass(ucfirst($controller));
                         $class = $obj->getName();
-                        $methods = $obj->getMethods();
                         // remove non-existing methods of current controller
-                        $this->delNonExistingMethods($methods, $class);
+                        $this->delNonExistingMethods($methods = $obj->getMethods(), $class);
                         foreach ($methods as $method) {
-                            $action = $method->getName();
                             if (
                                 $method->class === $class &&
-                                !($method->isConstructor()) &&
+                                !$method->isConstructor() &&
                                 $method->isUserDefined() &&
                                 $method->isPublic()
                             ) {
                                 $ctlr = $this->controllerName($class);
-                                $tabId = Tab::whereName($ctlr)->first()->id;
                                 $data = [
                                     'name'            => $this->methodComment($obj, $method),
-                                    'method'          => $action,
-                                    'remark'          => '',
-                                    'tab_id'          => $tabId,
+                                    'method'          => $action = $method->getName(),
+                                    'tab_id'          => $tabId = Tab::whereName($ctlr)->first()->id,
                                     'view'            => $this->viewPath($ctlr, $action),
                                     'route'           => $this->actionRoute($ctlr, $action),
                                     'action_type_ids' => $this->actionTypeIds($ctlr, $action),
@@ -285,20 +274,15 @@ class Action extends Model {
      */
     function actions() {
         
-        $data = self::whereEnabled(1)->get([
-            'tab_id', 'name', 'id',
-            'action_type_ids', 'route',
-        ]);
         $actions = [];
         # 获取HTTP请求类型为GET的Action类型ID
-        $id = ActionType::whereName('GET')->first()->id;
-        foreach ($data as $action) {
-            $tab = Tab::find($action->tab_id);
-            if (!$tab) continue;
+        $actionTypeId = ActionType::whereName('GET')->first()->id;
+        foreach ($this->whereEnabled(1)->get() as $action) {
+            if (!$action->tab) continue;
             if (
-                in_array($id, explode(',', $action['action_type_ids'])) &&
+                in_array($actionTypeId, explode(',', $action['action_type_ids'])) &&
                 !strpos($action['route'], '{') &&
-                $tab->category != 2 # 其他类型控制器
+                $action->tab->category != 2 # 其他类型控制器
             ) {
                 $actions[$action->tab->name][$action->id] = $action['name'] . ' - ' . $action['route'];
             }
@@ -321,7 +305,7 @@ class Action extends Model {
             $controller = class_basename(Request::route()->controller);
             $tabId = Tab::whereName($controller)->first()->id;
         }
-        $routes = Action::whereTabId($tabId)
+        $routes = $this->whereTabId($tabId)
             ->where('route', '<>', null)
             ->pluck('route', 'method');
         foreach ($routes as $method => $route) {
@@ -378,12 +362,11 @@ class Action extends Model {
                 'filter' => true,
             ];
         } else {
-            $actionTypeIds = explode(',', Action::find(Request::route('id'))->action_type_ids);
-            $selectedActionTypes = ActionType::whereIn('id', $actionTypeIds)->pluck('id');
+            $actionTypeIds = explode(',', $this->find(Request::route('id'))->action_type_ids);
             $data = [
                 'actionTypes'         => $actionTypes,
                 'tabs'                => Tab::pluck('name', 'id'),
-                'selectedActionTypes' => $selectedActionTypes,
+                'selectedActionTypes' => ActionType::whereIn('id', $actionTypeIds)->pluck('id'),
             ];
         }
         
@@ -411,17 +394,16 @@ class Action extends Model {
      * 返回去除名字空间路径的控制器名称数组
      *
      * @param array $controllers
-     * @return array
+     * @return SCollection
      */
     function controllerNames(array $controllers) {
         
-        $controllerNames = [];
         foreach ($controllers as $controller) {
             $paths = explode('\\', $controller);
-            $controllerNames[] = $paths[sizeof($paths) - 1];
+            $names[] = $paths[sizeof($paths) - 1];
         }
         
-        return $controllerNames;
+        return collect($names ?? []);
         
     }
     
@@ -485,10 +467,10 @@ class Action extends Model {
         // remove non-existing methods of current controller
         try {
             DB::transaction(function () use ($methods, $className) {
-                $currentMethods = $this->methodNames($methods);
                 $tabId = Tab::whereName($this->controllerName($className))->first()->id;
-                $existingMethods = $this->whereTabId($tabId)->pluck('method')->toArray();
-                $methodDiffs = array_diff($existingMethods, $currentMethods);
+                $methodDiffs = $this->whereTabId($tabId)->pluck('method')->diff(
+                    $this->methodNames($methods)
+                );
                 foreach ($methodDiffs as $method) {
                     $this->remove(
                         $this->where(['tab_id' => $tabId, 'method' => $method])->first()->id
@@ -508,17 +490,16 @@ class Action extends Model {
      * 获取指定方法的名称
      *
      * @param $methods
-     * @return array
+     * @return SCollection
      */
     private function methodNames($methods) {
         
-        $methodNames = [];
         /** @var ReflectionMethod $method */
         foreach ($methods as $method) {
-            $methodNames[] = $method->getName();
+            $names[] = $method->getName();
         }
         
-        return $methodNames;
+        return collect($names ?? []);
         
     }
     
@@ -530,9 +511,9 @@ class Action extends Model {
      */
     private function controllerName($controller) {
         
-        $nameSpacePaths = explode('\\', $controller);
+        $paths = explode('\\', $controller);
         
-        return $nameSpacePaths[sizeof($nameSpacePaths) - 1];
+        return $paths[sizeof($paths) - 1];
         
     }
     
@@ -653,6 +634,7 @@ class Action extends Model {
     private function actionRoute($controller, $action) {
         
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
+            $acronyms = Corp::pluck('acronym')->flip();
             /** @var \Illuminate\Routing\Route $route */
             foreach ($this->routes as $route) {
                 $aPos = stripos(
@@ -661,16 +643,14 @@ class Action extends Model {
                 );
                 if ($aPos === false) continue;
                 $tableName = $this->tableName($controller);
-                $uris = explode('/', $route->uri);
+                $paths = explode('/', $route->uri);
                 $rPos = stripos($route->uri, $tableName . '/' . $action);
-                if ($rPos === 0 || ($rPos === false && array_search($tableName, $uris) === false)) {
+                if ($rPos === 0 || ($rPos === false && array_search($tableName, $paths) === false)) {
                     return $route->uri;
                 }
-                if (in_array($uris[0], $this->acronyms)) {
-                    $uris[0] = '{acronym}';
-                }
+                !$acronyms->has($paths[0]) ?: $paths[0] = '{acronym}';
                 
-                return join('/', $uris);
+                return join('/', $paths);
             }
         }
         
@@ -726,7 +706,7 @@ class Action extends Model {
     
         try {
             DB::transaction(function () {
-                foreach (Action::all() as $action) {
+                foreach ($this->all() as $action) {
                     $action->tab ?: $ids[] = $action->id;
                 }
                 $this->whereIn('id', $ids ?? [])->delete();
