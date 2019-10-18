@@ -58,10 +58,9 @@ class TestController extends Controller {
      */
     public function index() {
     
-        /** @var \Illuminate\Routing\Route $route */
-        foreach (Route::getRoutes() as $route) {
+        foreach (Route::getRoutes()->getRoutes() as $route) {
             
-            $route->controller;
+            array_keys($route);
             
         };
         exit;
