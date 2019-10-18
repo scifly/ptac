@@ -58,7 +58,13 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(Route::getRoutes()->getRoutes());
+        /** @var \Illuminate\Routing\Route $route */
+        foreach (Route::getRoutes() as $route) {
+            
+            echo $route->controller;
+            
+        };
+        exit;
     
     }
     
@@ -280,7 +286,7 @@ class TestController extends Controller {
             foreach ($users as $id => $text) {
                 $data['results'][] = [
                     'id' => $id,
-                    'text' => $text
+                    'text' => $text,
                 ];
             }
             return response()->json($data);
