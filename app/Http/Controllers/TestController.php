@@ -9,8 +9,10 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
 use Pusher\Pusher;
 use Pusher\PusherException;
@@ -48,76 +50,16 @@ class TestController extends Controller {
         
     }
     
-    /**
-     * @param $id
-     * @param $callback
-     */
-    private function test($id, $callback) {
-        
-        $a = $id * 4;
-        $callback($a);
-        
-    }
+    
     
     /**
      * @throws Exception
      * @throws Throwable
      */
     public function index() {
-        
-        (new Department)->parentIds(39);
-        if (Request::ajax()) {
-            $data = [];
-            $keyword = Request::query('term');
-            $users = User::where('username', 'like', '%' . $keyword . '%')
-                ->pluck('realname', 'id');
-            foreach ($users as $id => $text) {
-                $data['results'][] = [
-                    'id' => $id,
-                    'text' => $text
-                ];
-            }
-            return response()->json($data);
-        }
-        
-        return view('user.test');
-        
-        // try {
-        //     DB::transaction(function () {
-        //         $apiGId = Group::whereName('api')->first()->id;
-        //         foreach (Member::all() as $member) {
-        //             $default = Mobile::where(['user_id' => $member->id, 'isdefault' => 1])->first();
-        //             if ($member->group_id != $apiGId) {
-        //                 $data = [
-        //                     'mobile'    => $default ? $default->mobile : null,
-        //                     'ent_attrs' => json_encode([
-        //                         'userid'            => $member->userid,
-        //                         'english_name'      => $member->english_name,
-        //                         'is_leader_in_dept' => $member->isleader,
-        //                         'position'          => $member->position,
-        //                         'telephone'         => $member->telephone,
-        //                         'order'             => $member->order,
-        //                         'synced'            => $member->synced,
-        //                         'subscribed'        => $member->subscribed,
-        //                     ], true),
-        //                 ];
-        //             } else {
-        //                 $data = [
-        //                     'mobile'    => $default ? $default->mobile : null,
-        //                     'api_attrs' => json_encode([
-        //                         'secret'    => $member->english_name,
-        //                         'classname' => $member->position,
-        //                         'contact'   => $member->telephone,
-        //                     ], true)
-        //                 ];
-        //             }
-        //             User::find($member->id)->update($data);
-        //         }
-        //     });
-        // } catch (Exception $e) {
-        //     throw $e;
-        // }
-        
+    
+        dd(Route::getRoutes()->getRoutes());
+    
     }
     
     function foreignKeys() {
@@ -310,6 +252,41 @@ class TestController extends Controller {
         foreach ($tags as &$tag) {
             $tag['a'] = $tag['a'] . '.tag';
         }
+        
+    }
+    
+    /**
+     * @param $id
+     * @param $callback
+     */
+    function test($id, $callback) {
+        
+        $a = $id * 4;
+        $callback($a);
+        
+    }
+    
+    /**
+     * @return Factory|JsonResponse|View
+     */
+    function ajaxSelect() {
+        
+        (new Department)->parentIds(39);
+        if (Request::ajax()) {
+            $data = [];
+            $keyword = Request::query('term');
+            $users = User::where('username', 'like', '%' . $keyword . '%')
+                ->pluck('realname', 'id');
+            foreach ($users as $id => $text) {
+                $data['results'][] = [
+                    'id' => $id,
+                    'text' => $text
+                ];
+            }
+            return response()->json($data);
+        }
+        
+        return view('user.test');
         
     }
     
