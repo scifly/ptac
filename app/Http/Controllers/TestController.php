@@ -61,7 +61,7 @@ class TestController extends Controller {
         /** @var \Illuminate\Routing\Route $route */
         foreach (Route::getRoutes() as $route) {
             
-            echo $route->controller;
+            dd($route->controller);
             
         };
         exit;
