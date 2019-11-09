@@ -39,7 +39,7 @@ class FlowRequest extends FormRequest {
     }
     
     protected function prepareForValidation() {
-    
+        
         $input = $this->all();
         if (Request::has('ids')) {
             $input['ids'] = Flow::whereUserId(Auth::id())
@@ -68,7 +68,7 @@ class FlowRequest extends FormRequest {
             $input['logs'] = json_encode($logs, JSON_UNESCAPED_UNICODE);
         }
         $this->replace($input);
-    
+        
     }
     
 }

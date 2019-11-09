@@ -161,7 +161,7 @@ class HomeWorkController extends Controller {
             $sign = strtoupper(md5($strTemp));
             $params['sign'] = $sign;
             $params = array_flip($params);
-            $xml = new SimpleXMLElement('<xml/>');
+            $xml = new SimpleXMLElement("<xml/>");
             array_walk_recursive($params, [$xml, 'addChild']);
             $strXml = preg_replace('/^.+\n/', '', $xml->asXML());
             $result = simplexml_load_string(

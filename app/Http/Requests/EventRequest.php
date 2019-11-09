@@ -36,12 +36,8 @@ class EventRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (!isset($input['start'])) {
-            $input['start'] = "1970-01-01 00:00:00";
-        }
-        if (!isset($input['end'])) {
-            $input['end'] = "1970-01-01 00:00:00";
-        }
+        $input['start'] = $input['start'] ?? "1970-01-01 00:00:00";
+        $input['end'] = $input['end'] ?? "1970-01-01 00:00:00";
         $this->replace($input);
         
     }

@@ -22,7 +22,7 @@ class ArticleRequest extends FormRequest {
     public function rules() {
         
         return [
-            'column_id'    => 'required|integer',
+            'column_id' => 'required|integer',
             'name'      => 'required|string|max:120',
             'summary'   => 'required|string|max:255',
             'content'   => 'required|string',
@@ -40,12 +40,6 @@ class ArticleRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['enabled']) && $input['enabled'] === 'on') {
-            $input['enabled'] = 1;
-        }
-        if (!isset($input['enabled'])) {
-            $input['enabled'] = 0;
-        }
         if (isset($input['media_ids'])) {
             $input['thumbnail_media_id'] = $input['media_ids'][0];
             $input['media_ids'] = join(',', $input['media_ids']);

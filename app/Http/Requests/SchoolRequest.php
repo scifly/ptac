@@ -25,7 +25,7 @@ class SchoolRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-    
+        
         $rules = [
             'name'           => 'required|string|between:6,255|unique:schools,name,' .
                 $this->input('id') . ',id',
@@ -37,7 +37,7 @@ class SchoolRequest extends FormRequest {
             'school_type_id' => 'required|integer',
             'enabled'        => 'required|boolean',
             'app_id'         => 'nullable|integer',
-            'user_ids'       => 'nullable|string'
+            'user_ids'       => 'nullable|string',
         ];
         $this->batchRules($rules);
         

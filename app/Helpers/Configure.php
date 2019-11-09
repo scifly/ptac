@@ -2,9 +2,7 @@
 namespace App\Helpers;
 
 use Exception;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\{Arr, Facades\DB, Facades\Request};
 use ReflectionException;
 use Throwable;
 

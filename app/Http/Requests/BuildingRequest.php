@@ -31,7 +31,7 @@ class BuildingRequest extends FormRequest {
             'school_id' => 'required|integer',
             'floors'    => 'required|integer',
             'remark'    => 'nullable|string|max:255',
-            'enabled'   => 'required|boolean'
+            'enabled'   => 'required|boolean',
         ];
         
     }

@@ -56,6 +56,7 @@ class CheckRole {
                 [$cGIds, $sGIds] = array_map(
                     function ($roles) {
                         $builder = Group::whereIn('name', $roles);
+                        
                         return collect([0])->merge($builder->pluck('id'));
                     }, $hypos, ['学校']
                 );
@@ -71,7 +72,7 @@ class CheckRole {
         }
         
         return $next($request);
-    
+        
     }
     
 }

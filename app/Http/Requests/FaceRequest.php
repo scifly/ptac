@@ -24,11 +24,11 @@ class FaceRequest extends FormRequest {
     public function rules() {
         
         return [
-            'faceid'      => 'required|string|between:6,255|unique:faces,faceid,' .
+            'faceid'  => 'required|string|between:6,255|unique:faces,faceid,' .
                 $this->input('id') . ',id',
             'user_id' => 'required|integer|unique:faces,user_id,' .
                 $this->input('id') . ',id',
-            'state'  => 'required|boolean'
+            'state'   => 'required|boolean',
         ];
         
     }

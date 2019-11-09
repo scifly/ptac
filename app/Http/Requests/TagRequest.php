@@ -46,20 +46,16 @@ class TagRequest extends FormRequest {
         $input['school_id'] = $this->schoolId();
         $input['user_id'] = Auth::id();
         $input['synced'] = 0;
-        if (isset($input['selected-node-ids'])) {
-            $deptIds = $userIds = [];
-            $targetIds = explode(',', $input['selected-node-ids']);
-            foreach ($targetIds as $targetId) {
-                $paths = explode('-', $targetId);
-                if (isset($paths[2])) {
-                    $userIds[] = $paths[2];
-                } else {
-                    $deptIds[] = $targetId;
-                }
-            }
-            $input['user_ids'] = array_unique($userIds);
-            $input['dept_ids'] = array_unique($deptIds);
+        $deptIds = $userIds = [];
+        $targetIds = explode(',', $input['selected-node-ids'] ?? '');
+        foreach ($targetIds as $targetId) {
+            $paths = explode('-', $targetId);
+            isset($paths[2])
+                ? $userIds[] = $paths[2]
+                : $deptIds[] = $targetId;
         }
+        $input['user_ids'] = array_unique($userIds);
+        $input['dept_ids'] = array_unique($deptIds);
         $this->replace($input);
         
     }

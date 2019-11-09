@@ -29,10 +29,10 @@ class IconRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name'         => 'required|string|max:60|unique:icons,name,'
+            'name'    => 'required|string|max:60|unique:icons,name,'
                 . $this->input('id') . ',id',
-            'remark'       => 'required|string|max:255',
-            'enabled'      => 'required|boolean',
+            'remark'  => 'required|string|max:255',
+            'enabled' => 'required|boolean',
         ];
         
     }

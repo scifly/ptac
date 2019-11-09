@@ -44,9 +44,7 @@ class ActionRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['action_type_ids'])) {
-            $input['action_type_ids'] = join(',', $input['action_type_ids']);
-        }
+        $input['action_type_ids'] = join(',', $input['action_type_ids'] ?? []);
         $this->replace($input);
         
     }

@@ -16,8 +16,8 @@ class CorpRole {
     /**
      * Handle an incoming request.
      *
-     * @param  Request $request
-     * @param  Closure $next
+     * @param Request $request
+     * @param Closure $next
      * @return mixed
      * @throws Exception
      */
@@ -40,13 +40,14 @@ class CorpRole {
                 if (!Request::query('part') && stripos(Request::path(), 'roles') === false) {
                     if (!session('part')) {
                         $acronym = Corp::find(session('corpId'))->acronym;
+                        
                         return redirect($acronym . '/wechat/roles');
                     }
                 } else {
                     session(['part' => Request::query('part')]);
                 }
             } else {
-                session(['part' =>  $isEducator ? 'educator' : 'custodian']);
+                session(['part' => $isEducator ? 'educator' : 'custodian']);
             }
         }
         

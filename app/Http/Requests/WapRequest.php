@@ -25,7 +25,7 @@ class WapRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|max:255|unique:waps,name,' .
+            'name'      => 'required|string|max:255|unique:waps,name,' .
                 $this->input('id') . ',id',
             'media_ids' => 'required|string',
             'enabled'   => 'required|boolean',

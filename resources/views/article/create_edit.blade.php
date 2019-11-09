@@ -9,7 +9,7 @@
             @endif
             @include('shared.single_select', [
                 'label' => '所属网站模块',
-                'id' => 'wsm_id',
+                'id' => 'column_id',
                 'items' => $columns
             ])
             <div class="form-group">

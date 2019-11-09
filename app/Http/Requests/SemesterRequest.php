@@ -43,20 +43,6 @@ class SemesterRequest extends FormRequest {
         
     }
     
-    protected function prepareForValidation() {
-        
-        $input = $this->all();
-        $input['school_id'] = $this->schoolId();
-        $input['startend'] = [
-            $input['start_date'],
-            $input['end_date'],
-            $input['id'] ?? null,
-        ];
-        
-        $this->replace($input);
-        
-    }
-    
     /**
      * 检查学期日期范围的有效性
      *
@@ -94,6 +80,19 @@ class SemesterRequest extends FormRequest {
         }
         
         return true;
+        
+    }
+    
+    protected function prepareForValidation() {
+        
+        $input = $this->all();
+        $input['school_id'] = $this->schoolId();
+        $input['startend'] = [
+            $input['start_date'],
+            $input['end_date'],
+            $input['id'] ?? null,
+        ];
+        $this->replace($input);
         
     }
     

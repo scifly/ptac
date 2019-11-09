@@ -32,7 +32,7 @@ class AppRequest extends FormRequest {
             'category'    => 'required|integer|between:1,3',
             'appsecret'   => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
-            'enabled'     => 'required|boolean'
+            'enabled'     => 'required|boolean',
         ];
         switch ($this->input('category')) {
             case 1:
@@ -45,7 +45,7 @@ class AppRequest extends FormRequest {
                     'appid'            => 'required|string|max:60',
                     'token'            => 'required|string|max:255',
                     'encoding_aes_key' => 'required|string|max:255',
-                    'type'             => 'required|boolean'
+                    'type'             => 'required|boolean',
                 ];
                 break;
             default:
@@ -62,14 +62,13 @@ class AppRequest extends FormRequest {
     }
     
     protected function prepareForValidation() {
-
+        
         $input = $this->input();
         $input['enabled'] = $input['enabled'] ?? 1;
         if ($input['category'] == 3) {
             $input['name'] = '通讯录同步';
             $input['appid'] = 0;
         }
-    
         $this->replace($input);
         
     }

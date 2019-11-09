@@ -9,8 +9,9 @@ use Illuminate\Foundation\Http\FormRequest;
  * @package App\Http\Requests
  */
 class CorpRequest extends FormRequest {
-
+    
     use ModelTrait;
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,19 +27,19 @@ class CorpRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name'                => 'required|string|between:3,120|unique:corps,name,' .
+            'name'          => 'required|string|between:3,120|unique:corps,name,' .
                 $this->input('id') . ',id,' .
                 'company_id,' . $this->input('company_id'),
-            'company_id'          => 'required|integer',
-            'acronym'             => 'required|string|between:3,20|unique:corps,acronym,' .
+            'company_id'    => 'required|integer',
+            'acronym'       => 'required|string|between:3,20|unique:corps,acronym,' .
                 $this->input('id') . ',id',
-            'department_id'       => 'nullable|integer',
-            'menu_id'             => 'nullable|integer',
-            'corpid'              => 'required|string|max:18',
-            'departmentid'        => 'nullable|integer',
-            'mchid'               => 'nullable|string|max:10',
-            'apikey'              => 'nullable|string|max:32',
-            'enabled'             => 'required|boolean'
+            'department_id' => 'nullable|integer',
+            'menu_id'       => 'nullable|integer',
+            'corpid'        => 'required|string|max:18',
+            'departmentid'  => 'nullable|integer',
+            'mchid'         => 'nullable|string|max:10',
+            'apikey'        => 'nullable|string|max:32',
+            'enabled'       => 'required|boolean',
         ];
         
     }

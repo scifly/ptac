@@ -29,7 +29,7 @@ class TabRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-    
+        
         $rules = [
             'name'      => 'required|string|between:2,255|unique:tabs,name, ' .
                 $this->input('id') . ',id',
@@ -49,9 +49,7 @@ class TabRequest extends FormRequest {
         
         if (!$this->has('ids')) {
             $input = $this->all();
-            if (!isset($input['menu_ids'])) {
-                $input['menu_ids'] = [];
-            }
+            $input['menu_ids'] = $input['menu_ids'] ?? [];
             $this->replace($input);
         }
         

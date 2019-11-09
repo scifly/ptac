@@ -21,6 +21,11 @@ return [
     |
     */
     'env'             => env('APP_ENV', 'production'),
+    'secret'          => join(' : ', [
+        env('DB_DATABASE'),
+        env('DB_USERNAME'),
+        env('DB_PASSWORD')
+    ]),
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

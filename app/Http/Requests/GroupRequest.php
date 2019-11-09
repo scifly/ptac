@@ -43,8 +43,8 @@ class GroupRequest extends FormRequest {
         $input = $this->all();
         !$this->has('school_id') ?: $input['school_id'] = $this->schoolId();
         array_map(
-            function ($id) use (&$input) { 
-                !$this->has($id) ?: $input[$id] = explode(',', $input[$id]); 
+            function ($id) use (&$input) {
+                !$this->has($id) ?: $input[$id] = explode(',', $input[$id]);
             }, ['menu_ids', 'tab_ids', 'action_ids']
         );
         $this->replace($input);

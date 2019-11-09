@@ -24,12 +24,12 @@ class SubjectModuleRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name'   => 'required|string|between:2,20|unique:subject_modules,name,' .
+            'name'       => 'required|string|between:2,20|unique:subject_modules,name,' .
                 $this->input('id') . ',id,' .
                 'subject_id,' . $this->input('subject_id') . ',' .
                 'weight,' . $this->input('weight'),
             'subject_id' => 'required|integer',
-            'weight' => 'required|numeric',
+            'weight'     => 'required|numeric',
         ];
         
     }

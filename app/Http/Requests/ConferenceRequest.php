@@ -24,27 +24,26 @@ class ConferenceRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name'         => 'required|string|between:4,120|unique:conferences,name,' .
+            'name'       => 'required|string|between:4,120|unique:conferences,name,' .
                 $this->input('id') . ',id,' .
                 'room_id,' . $this->input('room_id') . ',' .
                 'user_id,' . $this->input('user_id') . ',' .
                 'message_id' . $this->input('message_id'),
-            'user_id'      => 'required|integer',
-            'room_id'      => 'required|integer',
-            'message_id'   => 'required|integer',
-            'url'          => 'required|url',
-            'start'        => 'required|datetime',
-            'end'          => 'required|datetime',
-            'remark'       => 'required|string',
-            'status'       => 'required|integer'
+            'user_id'    => 'required|integer',
+            'room_id'    => 'required|integer',
+            'message_id' => 'required|integer',
+            'url'        => 'required|url',
+            'start'      => 'required|datetime',
+            'end'        => 'required|datetime',
+            'remark'     => 'required|string',
+            'status'     => 'required|integer',
         ];
         
     }
     
     protected function prepareForValidation() {
-    
+        
         // todo: create conference message & participant records
-    
     }
     
 }

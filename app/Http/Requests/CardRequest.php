@@ -28,7 +28,7 @@ class CardRequest extends FormRequest {
                 $this->input('id') . ',id',
             'user_id' => 'required|integer|unique:cards,user_id,' .
                 $this->input('id') . ',id',
-            'status'  => 'required|boolean'
+            'status'  => 'required|boolean',
         ];
         
     }
